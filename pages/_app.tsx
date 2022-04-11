@@ -35,7 +35,6 @@ export default function Website({ Component, pageProps }: AppProps) {
         >
             <Head>
                 <meta name='viewport' content='initial-scale=1, width=device-width' />
-
                 <title>eve0415</title>
             </Head>
 
