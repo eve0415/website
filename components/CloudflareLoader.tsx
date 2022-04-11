@@ -3,7 +3,7 @@ import type { ImageLoaderProps, ImageProps } from 'next/image';
 import Image from 'next/image';
 
 const cloudflareLoader = ({ src, width, quality }: ImageLoaderProps) =>
-    `/api/images?width=${width}&quality=${quality ?? 75}&${process.env.CF_PAGES_URL}image=${src.substring(
+    `/api/images?width=${width}&quality=${quality ?? 75}&image=${process.env.CF_PAGES_URL}${src.substring(
         1
     )}`;
 
