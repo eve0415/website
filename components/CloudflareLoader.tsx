@@ -3,7 +3,7 @@ import type { ImageLoaderProps, ImageProps } from 'next/image';
 import Image from 'next/image';
 
 const cloudflareLoader = ({ src, width, quality }: ImageLoaderProps) =>
-    `https://images.eve0415.workers.dev?width=${width}&quality=${quality ?? 75}&image=${src}`;
+    `/api/images?width=${width}&quality=${quality ?? 75}&image=${src.substring(1)}`;
 
 export function CloudflareImage(props: ImageProps) {
     if (process.env.NODE_ENV === 'development') {
