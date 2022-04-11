@@ -24,7 +24,7 @@ export async function onRequest({ request }: EventContext<unknown, '', unknown>)
     const imageURL = url.searchParams.get('image');
     if (!imageURL) return new Response('Missing "image" value', { status: 400 });
 
-    const imageRequest = new Request(`${request.headers.get('referer')}${imageURL.substring(1)}`, {
+    const imageRequest = new Request(`${process.env["CF_PAGES_URL"]}${imageURL.substring(1)}`, {
         headers: request.headers,
     });
 
