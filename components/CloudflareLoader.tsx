@@ -7,7 +7,7 @@ const cloudflareLoader = ({ src, width, quality }: ImageLoaderProps) =>
 
 export function CloudflareImage(props: ImageProps) {
     if (process.env.NODE_ENV === 'development') {
-        return <Image unoptimized={true} {...props} />;
+        return <Image {...props} />;
     } else {
         return <Image {...props} loader={cloudflareLoader} referrerPolicy='origin' />;
     }
