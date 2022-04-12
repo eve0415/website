@@ -41,8 +41,9 @@ async function response(request: Request) {
 
     const res = await fetch(imageRequest, options);
     const data = await res.json();
+
     const isTesting = url.searchParams.get('test');
-    if (isTesting) return JSON.stringify(data);
+    if (isTesting) return new Response(JSON.stringify(data), { status: 200 });
 
     return res;
 }
