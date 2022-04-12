@@ -285,13 +285,6 @@
           "error",
           "never"
         ],
-        "@typescript-eslint/indent": [
-          "error",
-          4,
-          {
-            "SwitchCase": 1
-          }
-        ],
         "@typescript-eslint/keyword-spacing": "error",
         "@typescript-eslint/lines-between-class-members": [
           "error",

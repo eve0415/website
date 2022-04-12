@@ -14,11 +14,12 @@ export default function Head() {
                     zIndex: -100,
                 }}
             >
-                {useMediaQuery(useTheme().breakpoints.up('sm')) ? (
-                    <CloudflareImage src={cat} alt='My Cat' layout='fill' placeholder='blur' />
-                ) : (
-                    <CloudflareImage src={catSleeping} alt='My Cat' layout='fill' placeholder='blur' />
-                )}
+                <CloudflareImage
+                    src={useMediaQuery(useTheme().breakpoints.up('sm')) ? cat : catSleeping}
+                    alt='My Cat'
+                    layout='fill'
+                    placeholder='blur'
+                />
             </Backdrop>
 
             <Main>
