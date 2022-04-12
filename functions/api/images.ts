@@ -5,7 +5,7 @@ export async function onRequest({ request }: EventContext<unknown, '', unknown>)
 
     return fetch(
         new Request(
-            `https://images.eve0415.net/_next/images?url=${
+            `https://images.eve0415.net/_next/image?url=${
                 imageURL.startsWith('http')
                     ? imageURL
                     : `${request.headers.get('referer')}${imageURL.substring(1)}`
