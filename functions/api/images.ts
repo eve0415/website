@@ -1,8 +1,4 @@
-export function onRequest({ request, waitUntil }: EventContext<unknown, '', unknown>) {
-    waitUntil(response(request));
-}
-
-async function response(request: Request) {
+export async function onRequest({ request }: EventContext<unknown, '', unknown>) {
     const url = new URL(request.url);
 
     const accept = `${request.headers.get('Accept')}`;
