@@ -28,22 +28,6 @@ export async function onRequest({ request }: EventContext<unknown, '', unknown>)
     const imageURL = url.searchParams.get('image');
     if (!imageURL) return new Response('Missing "image" value', { status: 400 });
 
-    const isTesting = url.searchParams.get('test');
-    if (isTesting)
-        return new Response(
-            JSON.stringify({
-                base: request.url,
-                ...options,
-                referer: request.headers.get('referer'),
-                accept: request.headers.get('accept'),
-                image: imageURL,
-                output: imageURL.startsWith('http')
-                    ? imageURL
-                    : `${request.headers.get('referer')}${imageURL.substring(1)}`,
-            }),
-            { status: 200 }
-        );
-
     const imageRequest = new Request(
         imageURL.startsWith('http') ? imageURL : `${request.headers.get('referer')}${imageURL.substring(1)}`,
         {
@@ -51,5 +35,10 @@ export async function onRequest({ request }: EventContext<unknown, '', unknown>)
         }
     );
 
-    return fetch(imageRequest, options);
+    const res = await fetch(imageRequest, options);
+    const data = await res.json();
+    const isTesting = url.searchParams.get('test');
+    if (isTesting) return JSON.stringify(data);
+
+    return res;
 }
