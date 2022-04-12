@@ -19,6 +19,7 @@ export default function Head() {
                     alt='My Cat'
                     layout='fill'
                     placeholder='blur'
+                    sizes='100vw'
                 />
             </Backdrop>
 
@@ -48,6 +49,7 @@ export default function Head() {
                                 src={profilePic}
                                 alt='My profile picture'
                                 layout='fill'
+                                sizes='1vw'
                                 priority
                             />
                         </Avatar>
