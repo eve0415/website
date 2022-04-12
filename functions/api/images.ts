@@ -20,6 +20,8 @@ export async function onRequest({ request }: EventContext<unknown, '', unknown>)
                     ? 'avif'
                     : accept.includes('image/webp')
                     ? 'webp'
+                    : url.searchParams.get('test')
+                    ? 'json'
                     : undefined,
             },
         },
@@ -35,11 +37,5 @@ export async function onRequest({ request }: EventContext<unknown, '', unknown>)
         }
     );
 
-    const res = await fetch(imageRequest, options);
-    const data = await res.json();
-
-    const isTesting = url.searchParams.get('test');
-    if (isTesting) return new Response(JSON.stringify(data), { status: 200 });
-
-    return res;
+    return fetch(imageRequest, options);
 }
