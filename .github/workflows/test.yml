@@ -12,13 +12,6 @@ on:
       - yarn.lock
       - ".github/workflows/test.yml"
   pull_request:
-    paths:
-      - "**/*.js"
-      - "**/*.ts"
-      - "**/*.tsx"
-      - "**/*.json"
-      - yarn.lock
-      - ".github/workflows/test.yml"
 
 concurrency:
   group: ci-tests-${{ github.head_ref || github.ref_name }}-test
