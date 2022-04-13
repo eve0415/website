@@ -48,7 +48,8 @@ export default function Head() {
                                 src={profilePic}
                                 alt='My profile picture'
                                 layout='fill'
-                                priority
+                                placeholder='blur'
+                                sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
                             />
                         </Avatar>
 
