@@ -55,11 +55,12 @@ export function Navbar({ isOpen, open, close }: { isOpen: boolean; open: () => v
             {useMediaQuery(theme.breakpoints.up('sm')) ? (
                 <Drawer
                     open
-                    variant='persistent'
-                    PaperProps={{
-                        sx: {
+                    variant='permanent'
+                    sx={{
+                        opacity: 0.8,
+                        '& .MuiDrawer-paper': {
                             width: '25%',
-                            opacity: 0.8,
+                            boxSizing: 'border-box',
                         },
                     }}
                 >
