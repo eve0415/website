@@ -18,7 +18,6 @@ export default function Head() {
                     src={useMediaQuery(useTheme().breakpoints.up('sm')) ? cat : catSleeping}
                     alt='My Cat'
                     layout='fill'
-                    placeholder='blur'
                 />
             </Backdrop>
 
@@ -48,7 +47,6 @@ export default function Head() {
                                 src={profilePic}
                                 alt='My profile picture'
                                 layout='fill'
-                                placeholder='blur'
                                 sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
                                 priority
                             />
