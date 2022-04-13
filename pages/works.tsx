@@ -158,7 +158,7 @@ function CreateCard({ project }: { project: Project }) {
             }}
         >
             <Avatar variant='rounded' sx={{ width: '95%', height: '35.5%', bgcolor: 'white' }}>
-                <CloudflareImage src={image} layout='fill' objectFit='cover' />
+                <CloudflareImage src={image} alt='project' layout='fill' objectFit='cover' sizes='283px' />
             </Avatar>
 
             <CardHeader title={name} />
