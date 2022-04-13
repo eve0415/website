@@ -5,12 +5,6 @@ export default class WebDocument extends Document {
         return (
             <Html lang='ja'>
                 <Head>
-                    <link rel='dns-prefetch' href='//fonts.googleapis.com' />
-                    <link rel='dns-prefetch' href='//fonts.gtatic.com/' />
-
-                    <link rel='preconnect' href='https://fonts.googleapis.com' crossOrigin='anonymous' />
-                    <link rel='preconnect' href='https://fonts.gstatic.com' crossOrigin='anonymous' />
-
                     <link
                         rel='stylesheet'
                         href='https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+JP:wght@300;400;500;700&display=swap'
