@@ -9,7 +9,7 @@ const Content = styled('div')(({ theme }) => ({
 }));
 
 export function Main({ children }: { children: ReactNode }) {
-    const [open, setOpen] = useState(true);
+    const [open, setOpen] = useState(false);
 
     return (
         <>
