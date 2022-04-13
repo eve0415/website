@@ -34,6 +34,8 @@ export default class WebDocument extends Document {
                     <meta name='twitter:site' content='@eveevekun' />
                     <meta name='twitter:creator' content='@eveevekun' />
                     <meta name='twitter:card' content='summary' />
+
+                    <meta name='description' content='eve0415 のサイト' />
                 </Head>
                 <body style={{ backgroundColor: '#E5FCFB' }}>
                     <Main />

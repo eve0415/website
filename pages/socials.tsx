@@ -282,23 +282,34 @@ export default function Socials() {
                             サポート
                         </Typography>
                         <Link href='https://www.buymeacoffee.com/eve0415' passHref>
-                            <Button target='_blank' rel='noopener noreferrer' href=''>
+                            <Button
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                href=''
+                                sx={{ width: 217, height: 60 }}
+                            >
                                 <CloudflareImage
                                     src='https://cdn.buymeacoffee.com/buttons/v2/default-violet.png'
                                     alt='Buy Me A Coffee'
-                                    height='60px'
-                                    width='217px'
+                                    layout='fill'
+                                    sizes='217px'
+                                    unoptimized
                                 />
                             </Button>
                         </Link>
 
                         <Link href='https://ko-fi.com/K3K6C24DN' passHref>
-                            <Button target='_blank' rel='noopener noreferrer' href=''>
+                            <Button
+                                target='_blank'
+                                rel='noopener noreferrer'
+                                href=''
+                                sx={{ width: 217, height: 60 }}
+                            >
                                 <CloudflareImage
                                     src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3'
                                     alt='Buy Me a Coffee at ko-fi.com'
-                                    height='60px'
-                                    width='217px'
+                                    layout='fill'
+                                    sizes='217px'
                                 />
                             </Button>
                         </Link>

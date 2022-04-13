@@ -5,6 +5,7 @@ import {
     Drawer,
     IconButton,
     List,
+    ListItem,
     ListItemButton,
     ListItemIcon,
     ListItemText,
@@ -31,16 +32,18 @@ export function Navbar() {
             <List>
                 {pages.map(({ title, icon, href }) => (
                     <Link key={href} href={href} passHref>
-                        <ListItemButton sx={{ height: 100 }} selected={router.pathname === href}>
-                            <ListItemIcon
-                                sx={{
-                                    color: router.pathname === href ? 'blueviolet' : 'inherit',
-                                }}
-                            >
-                                {icon}
-                            </ListItemIcon>
-                            <ListItemText primary={title} />
-                        </ListItemButton>
+                        <ListItem>
+                            <ListItemButton sx={{ height: 100 }} selected={router.pathname === href}>
+                                <ListItemIcon
+                                    sx={{
+                                        color: router.pathname === href ? 'blueviolet' : 'inherit',
+                                    }}
+                                >
+                                    {icon}
+                                </ListItemIcon>
+                                <ListItemText primary={title} />
+                            </ListItemButton>
+                        </ListItem>
                     </Link>
                 ))}
             </List>
@@ -64,7 +67,12 @@ export function Navbar() {
                         justifyContent='center'
                         zIndex={10000}
                     >
-                        <IconButton size='large' sx={{ borderRadius: '50%' }} onClick={() => setOpen(!open)}>
+                        <IconButton
+                            size='large'
+                            aria-label='Menu'
+                            sx={{ borderRadius: '50%' }}
+                            onClick={() => setOpen(!open)}
+                        >
                             {open ? <Close sx={{ fontSize: '40px' }} /> : <Menu sx={{ fontSize: '40px' }} />}
                         </IconButton>
                     </Box>
