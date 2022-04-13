@@ -1,0 +1,9 @@
+{
+  "tabWidth": 4,
+  "singleQuote": true,
+  "semi": true,
+  "parser": "typescript",
+  "arrowParens": "avoid",
+  "jsxSingleQuote": true,
+  "printWidth": 110
+}
