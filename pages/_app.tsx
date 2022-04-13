@@ -1,4 +1,4 @@
-import { createTheme, CssBaseline, responsiveFontSizes, styled, ThemeProvider } from '@mui/material';
+import { createTheme, CssBaseline, NoSsr, responsiveFontSizes, styled, ThemeProvider } from '@mui/material';
 import { motion } from 'framer-motion';
 import { NextSeo } from 'next-seo';
 import type { AppProps } from 'next/app';
@@ -65,9 +65,11 @@ export default function Website({ Component, pageProps }: AppProps) {
 
             <CssBaseline />
 
-            <Root sx={{ minHeight: '100dvh' }}>
-                <Component {...pageProps} />
-            </Root>
+            <NoSsr>
+                <Root sx={{ minHeight: '100dvh' }}>
+                    <Component {...pageProps} />
+                </Root>
+            </NoSsr>
         </ThemeProvider>
     );
 }
