@@ -48,13 +48,6 @@ export default function Website({ Component, pageProps }: AppProps) {
                     description: 'eve0415 のホームページ',
                     images: [
                         {
-                            url: 'https://eve0415.net/images/bannar.jpg',
-                            width: 1200,
-                            height: 630,
-                            alt: 'My Cat',
-                            type: 'image/jpeg',
-                        },
-                        {
                             url: 'https://eve0415.net/icon-256x256.png',
                             width: 256,
                             height: 256,

@@ -303,7 +303,7 @@ export default function Socials() {
                                 target='_blank'
                                 rel='noopener noreferrer'
                                 href=''
-                                sx={{ width: 217, height: 60 }}
+                                sx={{ width: 217, height: 60, mt: 2 }}
                             >
                                 <CloudflareImage
                                     src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3'
