@@ -50,6 +50,7 @@ export default function Head() {
                                 layout='fill'
                                 placeholder='blur'
                                 sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
+                                priority
                             />
                         </Avatar>
 
