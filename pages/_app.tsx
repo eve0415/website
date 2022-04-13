@@ -55,7 +55,7 @@ export default function Website({ Component, pageProps }: AppProps) {
                             type: 'image/png',
                         },
                         {
-                            url: 'https://eve0415.net/api/images?width=256&quality=75&image=https://eve0415.net/bannar.jpg',
+                            url: 'https://eve0415.net/api/images?width=1200&quality=75&image=https://eve0415.net/bannar.jpg',
                             width: 1200,
                             height: 630,
                             alt: 'My Cat',
