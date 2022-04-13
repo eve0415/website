@@ -18,7 +18,7 @@ export const BotProject: readonly Project[] = [
     },
     {
         name: 'TensorGame',
-        description: 'TensorFlow.js を使って Dicord でボードゲームできるボットです',
+        description: 'TensorFlow.js を使って Discord でボードゲームできるボットです',
         image: 'https://opengraph.githubassets.com/0415/eve0415/TensorGame',
         language: 'Typescript',
         tag: null,
