@@ -17,9 +17,6 @@ const nextConfig = {
             'cdn.ko-fi.com'
         ]
     },
-    experimental: {
-        optimizeCss: true,
-    }
 };
 
 export default nextConfig;
