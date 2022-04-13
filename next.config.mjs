@@ -6,7 +6,6 @@ const nextConfig = {
     swcMinify: true,
     images: {
         loader: 'custom',
-        imageSizes: [16, 32, 48, 64, 96, 128, 256, 286, 300, 384, 600],
         formats: ['image/avif', 'image/webp'],
         domains: [
             'opengraph.githubassets.com',

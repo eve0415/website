@@ -18,24 +18,9 @@ export default class WebDocument extends Document {
 
                     <link rel='apple-touch-icon' type='image/png' href='/apple-touch-icon-180x180.png' />
                     <link rel='icon' type='image/png' href='/icon-192x192.png' />
+                    <link rel='icon' type='image/png' href='/icon-256x256.png' />
 
                     <meta charSet='utf-8' />
-
-                    <meta property='og:title' content='eve0415' />
-                    <meta property='og:description' content='eve0415 のホームページ' />
-                    <meta property='og:url' content='https://eve0415.net' />
-                    <meta
-                        property='og:image'
-                        content='https://eve0415.net/api/images?quality=75&image=https://eve0415.net/icon-192x192.png'
-                    />
-                    <meta property='og:type' content='website' />
-                    <meta property='og:locale' content='ja_JP' />
-
-                    <meta name='twitter:site' content='@eveevekun' />
-                    <meta name='twitter:creator' content='@eveevekun' />
-                    <meta name='twitter:card' content='summary' />
-
-                    <meta name='description' content='eve0415 のサイト' />
                 </Head>
                 <body style={{ backgroundColor: '#E5FCFB' }}>
                     <Main />

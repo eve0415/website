@@ -1,5 +1,6 @@
 import { createTheme, CssBaseline, responsiveFontSizes, styled, ThemeProvider } from '@mui/material';
 import { motion } from 'framer-motion';
+import { NextSeo } from 'next-seo';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 
@@ -35,8 +36,39 @@ export default function Website({ Component, pageProps }: AppProps) {
         >
             <Head>
                 <meta name='viewport' content='initial-scale=1, width=device-width' />
-                <title>eve0415</title>
             </Head>
+
+            <NextSeo
+                title='eve0415'
+                description='eve0415 のホームページ'
+                canonical='https://eve0415.net'
+                openGraph={{
+                    url: 'https://eve0415.net',
+                    title: 'eve0415',
+                    description: 'eve0415 のホームページ',
+                    images: [
+                        {
+                            url: 'https://eve0415.net/api/images?width=256&quality=75&image=https://eve0415.net/icon-256x256.png',
+                            width: 256,
+                            height: 256,
+                            alt: 'My Profile',
+                            type: 'image/png',
+                        },
+                        {
+                            url: 'https://eve0415.net/api/images?width=256&quality=75&image=https://eve0415.net/bannar.jpg',
+                            width: 1200,
+                            height: 630,
+                            alt: 'My Cat',
+                            type: 'image/jpeg',
+                        },
+                    ],
+                }}
+                twitter={{
+                    handle: '@eveevekun',
+                    site: '@eveevekun',
+                    cardType: 'summary',
+                }}
+            />
 
             <CssBaseline />
 
