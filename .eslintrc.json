@@ -297,7 +297,7 @@
           "error",
           {
             "singleline": {
-              "delimiter": "comma"
+              "delimiter": "semi"
             }
           }
         ],

@@ -1,18 +1,19 @@
 import { styled } from '@mui/material';
 import type { ReactNode } from 'react';
+import { useState } from 'react';
 import { Navbar } from './Navbar';
 
 const Content = styled('div')(({ theme }) => ({
-    // minHeight: `calc(100vh - ${theme.spacing(20)})`,
-    // marginLeft: { md: '25%' },
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(5),
 }));
 
 export function Main({ children }: { children: ReactNode }) {
+    const [open, setOpen] = useState(false);
+
     return (
         <>
-            <Navbar />
+            <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
             <Content sx={{ ml: { md: '25%' } }}>{children}</Content>
         </>
     );

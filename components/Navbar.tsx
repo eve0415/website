@@ -15,16 +15,16 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { pages } from './constants';
 
-export function Navbar() {
+export function Navbar({ isOpen, open, close }: { isOpen: boolean; open: () => void; close: () => void }) {
     const router = useRouter();
     const theme = useTheme();
-    const [open, setOpen] = useState(true);
 
     useEffect(() => {
-        setOpen(false);
+        if (isOpen) close();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [router.pathname]);
 
     const content = (
@@ -52,7 +52,21 @@ export function Navbar() {
 
     return (
         <>
-            {useMediaQuery(theme.breakpoints.up('sm')) ? null : (
+            {useMediaQuery(theme.breakpoints.up('sm')) ? (
+                <Drawer
+                    open
+                    variant='permanent'
+                    sx={{
+                        opacity: 0.8,
+                        '& .MuiDrawer-paper': {
+                            width: '25%',
+                            boxSizing: 'border-box',
+                        },
+                    }}
+                >
+                    {content}
+                </Drawer>
+            ) : (
                 <>
                     <Box
                         sx={{ backgroundColor: '#E5FCFB' }}
@@ -71,30 +85,20 @@ export function Navbar() {
                             size='large'
                             aria-label='Menu'
                             sx={{ borderRadius: '50%' }}
-                            onClick={() => setOpen(!open)}
+                            onClick={() => (isOpen ? close() : open())}
                         >
-                            {open ? <Close sx={{ fontSize: '40px' }} /> : <Menu sx={{ fontSize: '40px' }} />}
+                            {isOpen ? (
+                                <Close sx={{ fontSize: '40px' }} />
+                            ) : (
+                                <Menu sx={{ fontSize: '40px' }} />
+                            )}
                         </IconButton>
                     </Box>
 
-                    <SwipeableDrawer open={open} onOpen={() => setOpen(true)} onClose={() => setOpen(false)}>
+                    <SwipeableDrawer open={isOpen} onOpen={open} onClose={close}>
                         {content}
                     </SwipeableDrawer>
                 </>
-            )}
-            {useMediaQuery(theme.breakpoints.down('sm')) ? null : (
-                <Drawer
-                    open
-                    variant='persistent'
-                    PaperProps={{
-                        sx: {
-                            width: '25%',
-                            opacity: 0.8,
-                        },
-                    }}
-                >
-                    {content}
-                </Drawer>
             )}
         </>
     );

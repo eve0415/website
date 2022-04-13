@@ -10,7 +10,7 @@ export default function Head() {
             <Backdrop
                 open
                 sx={{
-                    filter: { sm: 'blur(3px)', md: 'blur(5px)' },
+                    filter: { xs: 'blur(3px)', md: 'blur(5px)' },
                     zIndex: -100,
                 }}
             >
@@ -18,6 +18,8 @@ export default function Head() {
                     src={useMediaQuery(useTheme().breakpoints.up('sm')) ? cat : catSleeping}
                     alt='My Cat'
                     layout='fill'
+                    placeholder='blur'
+                    priority
                 />
             </Backdrop>
 
@@ -47,6 +49,7 @@ export default function Head() {
                                 src={profilePic}
                                 alt='My profile picture'
                                 layout='fill'
+                                placeholder='blur'
                                 sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
                                 priority
                             />
