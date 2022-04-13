@@ -26,7 +26,7 @@ export default class WebDocument extends Document {
                     <meta property='og:url' content='https://eve0415.net' />
                     <meta
                         property='og:image'
-                        content='https://eve0415.net/api/images?quality=75&image=https://eve0415.net/icon-192x192.png'
+                        content='https://eve0415.net/api/images?width=600&quality=75&image=https://eve0415.net/icon-192x192.png'
                     />
                     <meta property='og:type' content='website' />
                     <meta property='og:locale' content='ja_JP' />
