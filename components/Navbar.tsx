@@ -52,7 +52,7 @@ export function Navbar({ isOpen, open, close }: { isOpen: boolean; open: () => v
 
     return (
         <>
-            {useMediaQuery(theme.breakpoints.up('sm')) ? (
+            {useMediaQuery(theme.breakpoints.up('md')) ? (
                 <Drawer
                     open
                     variant='permanent'
