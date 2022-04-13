@@ -64,7 +64,12 @@ export function Navbar() {
                         justifyContent='center'
                         zIndex={10000}
                     >
-                        <IconButton size='large' sx={{ borderRadius: '50%' }} onClick={() => setOpen(!open)}>
+                        <IconButton
+                            size='large'
+                            aria-label='Menu'
+                            sx={{ borderRadius: '50%' }}
+                            onClick={() => setOpen(!open)}
+                        >
                             {open ? <Close sx={{ fontSize: '40px' }} /> : <Menu sx={{ fontSize: '40px' }} />}
                         </IconButton>
                     </Box>
