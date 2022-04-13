@@ -10,7 +10,7 @@ export default function Head() {
             <Backdrop
                 open
                 sx={{
-                    filter: { sm: 'blur(3px)', md: 'blur(5px)' },
+                    filter: { xs: 'blur(3px)', md: 'blur(5px)' },
                     zIndex: -100,
                 }}
             >
@@ -18,6 +18,7 @@ export default function Head() {
                     src={useMediaQuery(useTheme().breakpoints.up('sm')) ? cat : catSleeping}
                     alt='My Cat'
                     layout='fill'
+                    priority
                 />
             </Backdrop>
 
