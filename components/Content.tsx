@@ -1,7 +1,7 @@
 import { styled } from '@mui/material';
 import type { ReactNode } from 'react';
 import { useState } from 'react';
-import { Navbar } from './Navbar';
+import { Navbar } from './navbar';
 
 const Content = styled('div')(({ theme }) => ({
     marginTop: theme.spacing(5),
