@@ -4,6 +4,9 @@
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
+    compiler: {
+        styledComponents: true,
+    },
     images: {
         loader: 'custom',
         formats: ['image/avif', 'image/webp'],
