@@ -21,6 +21,9 @@ const nextConfig = {
             'cdn.ko-fi.com'
         ]
     },
+    experimental: {
+        runtime: 'edge',
+    },
 };
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
