@@ -1,4 +1,4 @@
-import { Avatar, Backdrop, Container, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Avatar, Backdrop, Container, NoSsr, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { CloudflareImage, Main } from '../components';
 import cat from '../public/images/cat.jpg';
 import catSleeping from '../public/images/catSleeping.jpg';
@@ -14,13 +14,15 @@ export default function Head() {
                     zIndex: -100,
                 }}
             >
-                <CloudflareImage
-                    src={useMediaQuery(useTheme().breakpoints.up('sm')) ? cat : catSleeping}
-                    alt='My Cat'
-                    layout='fill'
-                    placeholder='blur'
-                    priority
-                />
+                <NoSsr>
+                    <CloudflareImage
+                        src={useMediaQuery(useTheme().breakpoints.up('sm')) ? cat : catSleeping}
+                        alt='My Cat'
+                        layout='fill'
+                        placeholder='blur'
+                        priority
+                    />
+                </NoSsr>
             </Backdrop>
 
             <Main>

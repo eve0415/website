@@ -5,6 +5,7 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
+    NoSsr,
     useMediaQuery,
     useTheme,
 } from '@mui/material';
@@ -51,7 +52,7 @@ export function Navbar({ isOpen, open, close }: NavbarOperation) {
     );
 
     return (
-        <>
+        <NoSsr>
             {useMediaQuery(theme.breakpoints.up('md')) ? (
                 <NavbarBig>{content}</NavbarBig>
             ) : (
@@ -59,6 +60,6 @@ export function Navbar({ isOpen, open, close }: NavbarOperation) {
                     {content}
                 </NavbarSmall>
             )}
-        </>
+        </NoSsr>
     );
 }
