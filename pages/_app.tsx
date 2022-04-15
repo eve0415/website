@@ -1,11 +1,4 @@
-import {
-    createTheme,
-    NoSsr,
-    responsiveFontSizes,
-    ScopedCssBaseline,
-    styled,
-    ThemeProvider,
-} from '@mui/material';
+import { createTheme, CssBaseline, NoSsr, responsiveFontSizes, styled, ThemeProvider } from '@mui/material';
 import { motion } from 'framer-motion';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
@@ -57,13 +50,13 @@ export default function Website({ Component, pageProps }: AppProps) {
                 <meta name='viewport' content='initial-scale=1, width=device-width' />
             </Head>
 
-            <ScopedCssBaseline enableColorScheme>
-                <NoSsr>
-                    <Root sx={{ minHeight: '100dvh' }}>
-                        <Component {...pageProps} />
-                    </Root>
-                </NoSsr>
-            </ScopedCssBaseline>
+            <CssBaseline />
+
+            <NoSsr>
+                <Root sx={{ minHeight: '100dvh' }}>
+                    <Component {...pageProps} />
+                </Root>
+            </NoSsr>
         </ThemeProvider>
     );
 }
