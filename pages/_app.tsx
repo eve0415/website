@@ -50,7 +50,7 @@ export default function Website({ Component, pageProps }: AppProps) {
                 <meta name='viewport' content='initial-scale=1, width=device-width' />
             </Head>
 
-            <CssBaseline />
+            <CssBaseline enableColorScheme />
 
             <NoSsr>
                 <Root sx={{ minHeight: '100dvh' }}>
