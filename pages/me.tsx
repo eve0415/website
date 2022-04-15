@@ -9,10 +9,12 @@ import {
     SvgIcon,
     Typography,
 } from '@mui/material';
+import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { Main } from '../components';
 import type { LinkCard } from '../components/constants';
 import { editor, notUsed, technology } from '../components/constants';
+
+const Main = dynamic(() => import('../components/Content'), { ssr: false });
 
 export default function Me() {
     function Material({
