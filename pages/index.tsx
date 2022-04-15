@@ -1,4 +1,4 @@
-import { Avatar, Backdrop, Container, NoSsr, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Avatar, Backdrop, Box, Container, NoSsr, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { CloudflareImage, Main } from '../components';
 import cat from '../public/images/cat.jpg';
 import catSleeping from '../public/images/catSleeping.jpg';
@@ -7,8 +7,9 @@ import profilePic from '../public/images/me.png';
 export default function Head() {
     return (
         <>
-            <Backdrop
-                open
+            <Box
+                width='100%'
+                height='100vh'
                 sx={{
                     filter: { xs: 'blur(3px)', md: 'blur(5px)' },
                     zIndex: -100,
@@ -23,14 +24,13 @@ export default function Head() {
                         priority
                     />
                 </NoSsr>
-            </Backdrop>
+            </Box>
 
             <Main>
                 <Backdrop
                     open
                     sx={{
                         ml: { md: '25%' },
-                        zIndex: -1,
                     }}
                 >
                     <Container
