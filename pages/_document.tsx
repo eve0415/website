@@ -16,6 +16,7 @@ export default class WebDocument extends Document {
 
                     <meta charSet='utf-8' />
                 </Head>
+
                 <body style={{ backgroundColor: '#E5FCFB' }}>
                     <Main />
                     <NextScript />

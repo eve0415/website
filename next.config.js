@@ -4,6 +4,10 @@
 const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
+    compiler: {
+        styledComponents: true,
+        reactRemoveProperties: true,
+    },
     images: {
         loader: 'custom',
         formats: ['image/avif', 'image/webp'],
@@ -16,6 +20,9 @@ const nextConfig = {
             'cdn.buymeacoffee.com',
             'cdn.ko-fi.com'
         ]
+    },
+    experimental: {
+        runtime: 'edge',
     },
 };
 
