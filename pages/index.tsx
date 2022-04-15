@@ -37,6 +37,7 @@ export default function Head() {
                         alignItems='center'
                         height={`calc(100vh - ${useTheme().spacing(10)})`}
                         pb={{ xs: '20%', md: 0 }}
+                        color='white'
                     >
                         <Avatar
                             sx={{
@@ -54,16 +55,14 @@ export default function Head() {
                             />
                         </Avatar>
 
-                        <Typography variant='h3' color='white' pt={4}>
+                        <Typography variant='h3' pt={4}>
                             eve0415
                         </Typography>
 
-                        <Typography variant='body1' color='white' pt={1}>
+                        <Typography variant='body1' pt={1}>
                             ただの大学生
                         </Typography>
-                        <Typography variant='body1' color='white'>
-                            いつも眠たい人
-                        </Typography>
+                        <Typography variant='body1'>いつも眠たい人</Typography>
                     </Box>
                 </Main>
             </Box>
