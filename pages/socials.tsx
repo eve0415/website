@@ -13,8 +13,7 @@ import {
     Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { CloudflareImage } from '../components/CloudflareLoader';
-import { Main } from '../components/Content';
+import { CloudflareImage, Main } from '../components';
 
 export default function Socials() {
     return (

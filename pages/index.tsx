@@ -1,6 +1,5 @@
 import { Avatar, Backdrop, Container, Typography, useMediaQuery, useTheme } from '@mui/material';
-import { CloudflareImage } from '../components/CloudflareLoader';
-import { Main } from '../components/Content';
+import { CloudflareImage, Main } from '../components';
 import cat from '../public/images/cat.jpg';
 import catSleeping from '../public/images/catSleeping.jpg';
 import profilePic from '../public/images/me.png';
