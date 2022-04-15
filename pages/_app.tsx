@@ -1,9 +1,9 @@
 import { createTheme, CssBaseline, NoSsr, responsiveFontSizes, styled, ThemeProvider } from '@mui/material';
-import { motion } from 'framer-motion';
+import { m } from 'framer-motion';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 
-const Root = styled(motion.div)({
+const Root = styled(m.div)({
     minHeight: '100vh',
     overflow: 'hidden',
 });
