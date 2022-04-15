@@ -16,9 +16,10 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
-import { CloudflareImage, Main } from '../components';
+import { CloudflareImage } from '../components/CloudflareLoader';
 import type { Project } from '../components/constants';
 import { BotProject, MinecraftProject, tagList, TranslatedProject } from '../components/constants';
+import { Main } from '../components/Content';
 
 export default function Works() {
     return (

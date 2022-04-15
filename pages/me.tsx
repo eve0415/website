@@ -10,9 +10,9 @@ import {
     Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { Main } from '../components';
 import type { LinkCard } from '../components/constants';
 import { editor, notUsed, technology } from '../components/constants';
+import { Main } from '../components/Content';
 
 export default function Me() {
     function Material({
