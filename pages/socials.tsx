@@ -12,11 +12,8 @@ import {
     SvgIcon,
     Typography,
 } from '@mui/material';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
-import { CloudflareImage } from '../components';
-
-const Main = dynamic(() => import('../components/Content'), { ssr: false });
+import { CloudflareImage, Main } from '../components';
 
 export default function Socials() {
     return (

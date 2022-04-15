@@ -14,14 +14,11 @@ import {
     Tooltip,
     Typography,
 } from '@mui/material';
-import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useState } from 'react';
-import { CloudflareImage } from '../components';
+import { CloudflareImage, Main } from '../components';
 import type { Project } from '../components/constants';
 import { BotProject, MinecraftProject, tagList, TranslatedProject } from '../components/constants';
-
-const Main = dynamic(() => import('../components/Content'), { ssr: false });
 
 export default function Works() {
     return (

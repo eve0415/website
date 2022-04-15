@@ -8,7 +8,7 @@ const Content = styled('div')(({ theme }) => ({
     marginBottom: theme.spacing(5),
 }));
 
-export default function Main({ children }: { children: ReactNode }) {
+export function Main({ children }: { children: ReactNode }) {
     const [open, setOpen] = useState(false);
 
     return (

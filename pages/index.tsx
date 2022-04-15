@@ -1,11 +1,8 @@
 import { Avatar, Backdrop, Container, Typography, useMediaQuery, useTheme } from '@mui/material';
-import dynamic from 'next/dynamic';
-import { CloudflareImage } from '../components';
+import { CloudflareImage, Main } from '../components';
 import cat from '../public/images/cat.jpg';
 import catSleeping from '../public/images/catSleeping.jpg';
 import profilePic from '../public/images/me.png';
-
-const Main = dynamic(() => import('../components/Content'), { ssr: false });
 
 export default function Head() {
     return (
