@@ -1,4 +1,4 @@
-import { Avatar, Backdrop, Box, Container, NoSsr, Typography, useMediaQuery, useTheme } from '@mui/material';
+import { Avatar, Box, NoSsr, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { CloudflareImage, Main } from '../components';
 import cat from '../public/images/cat.jpg';
 import catSleeping from '../public/images/catSleeping.jpg';
@@ -8,7 +8,8 @@ export default function Head() {
     return (
         <>
             <Box
-                width='100%'
+                position='fixed'
+                width='100vw'
                 height='100vh'
                 sx={{
                     filter: { xs: 'blur(3px)', md: 'blur(5px)' },
@@ -21,25 +22,21 @@ export default function Head() {
                         alt='My Cat'
                         layout='fill'
                         placeholder='blur'
+                        objectFit='cover'
                         priority
                     />
                 </NoSsr>
             </Box>
 
-            <Main>
-                <Backdrop
-                    open
-                    sx={{
-                        ml: { md: '25%' },
-                    }}
-                >
-                    <Container
-                        sx={{
-                            display: 'flex',
-                            flexDirection: 'column',
-                            alignItems: 'center',
-                            pb: { xs: '20%', md: 0 },
-                        }}
+            <Box position='fixed' width='100vw' height='100vh' bgcolor='rgba(0,0,0,0.5)'>
+                <Main>
+                    <Box
+                        display='flex'
+                        justifyContent='center'
+                        flexDirection='column'
+                        alignItems='center'
+                        height={`calc(100vh - ${useTheme().spacing(10)})`}
+                        pb={{ xs: '20%', md: 0 }}
                     >
                         <Avatar
                             sx={{
@@ -67,9 +64,9 @@ export default function Head() {
                         <Typography variant='body1' color='white'>
                             いつも眠たい人
                         </Typography>
-                    </Container>
-                </Backdrop>
-            </Main>
+                    </Box>
+                </Main>
+            </Box>
         </>
     );
 }
