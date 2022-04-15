@@ -1,6 +1,5 @@
 import { createTheme, CssBaseline, NoSsr, responsiveFontSizes, styled, ThemeProvider } from '@mui/material';
 import { motion } from 'framer-motion';
-import { NextSeo } from 'next-seo';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 
@@ -35,33 +34,21 @@ export default function Website({ Component, pageProps }: AppProps) {
             )}
         >
             <Head>
+                <title>eve0415</title>
+                <meta name='description' content='eve0415 のホームページ' />
+                <meta name='twitter:card' content='summary' />
+                <meta name='twitter:site' content='@eveevekun' />
+                <meta name='twitter:creator' content='@eveevekun' />
+                <meta property='og:title' content='eve0415' />
+                <meta property='og:description' content='eve0415 のホームページ' />
+                <meta property='og:url' content='https://eve0415.net' />
+                <meta property='og:image' content='https://eve0415.net/icon-256x256.png' />
+                <meta property='og:image:alt' content='My Profile' />
+                <meta property='og:image:type' content='image/png' />
+                <meta property='og:image:width' content='256' />
+                <meta property='og:image:height' content='256' />
                 <meta name='viewport' content='initial-scale=1, width=device-width' />
             </Head>
-
-            <NextSeo
-                title='eve0415'
-                description='eve0415 のホームページ'
-                canonical='https://eve0415.net'
-                openGraph={{
-                    url: 'https://eve0415.net',
-                    title: 'eve0415',
-                    description: 'eve0415 のホームページ',
-                    images: [
-                        {
-                            url: 'https://eve0415.net/icon-256x256.png',
-                            width: 256,
-                            height: 256,
-                            alt: 'My Profile',
-                            type: 'image/png',
-                        },
-                    ],
-                }}
-                twitter={{
-                    handle: '@eveevekun',
-                    site: '@eveevekun',
-                    cardType: 'summary',
-                }}
-            />
 
             <CssBaseline />
 
