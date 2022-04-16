@@ -15,7 +15,6 @@ export default function Head() {
                 height='100vh'
                 sx={{
                     filter: { xs: 'blur(3px)', md: 'blur(5px)' },
-                    zIndex: -100,
                 }}
             >
                 <NoSsr>
@@ -30,11 +29,11 @@ export default function Head() {
                 </NoSsr>
             </Box>
 
-            <Box position='fixed' width='100vw' height='100vh' bgcolor='rgba(0,0,0,0.5)'>
-                <Main>
-                    <Home />
-                </Main>
-            </Box>
+            <Box position='fixed' width='100vw' height='100vh' bgcolor='rgba(0,0,0,0.5)' />
+
+            <Main>
+                <Home />
+            </Main>
         </>
     );
 }
