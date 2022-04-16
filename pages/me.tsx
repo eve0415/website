@@ -1,56 +1,10 @@
-import {
-    Box,
-    Card,
-    CardActionArea,
-    CardContent,
-    Container,
-    Grid,
-    Stack,
-    SvgIcon,
-    Typography,
-} from '@mui/material';
+import { Box, CardActionArea, Container, Grid, Paper, Stack, SvgIcon, Typography } from '@mui/material';
 import Link from 'next/link';
 import { Main } from '../components';
 import type { LinkCard } from '../components/constants';
 import { editor, notUsed, technology } from '../components/constants';
 
 export default function Me() {
-    function Material({
-        name,
-        url,
-        svg,
-        width,
-        height,
-    }: LinkCard & {
-        width: number;
-        height: number;
-    }) {
-        return (
-            <Grid item>
-                <Card sx={{ width: width, height: height }}>
-                    <Link href={url} passHref>
-                        <CardActionArea target='_blank' rel='noopener noreferrer' href=''>
-                            <CardContent
-                                sx={{
-                                    display: 'flex',
-                                    flexDirection: 'column',
-                                    alignItems: 'center',
-                                    width: width,
-                                    height: height,
-                                }}
-                            >
-                                <SvgIcon viewBox='0 0 128 128' sx={{ fontSize: '70px' }}>
-                                    {svg}
-                                </SvgIcon>
-                                {name}
-                            </CardContent>
-                        </CardActionArea>
-                    </Link>
-                </Card>
-            </Grid>
-        );
-    }
-
     return (
         <Main>
             <Container
@@ -166,5 +120,43 @@ export default function Me() {
                 </Stack>
             </Container>
         </Main>
+    );
+}
+
+function Material({
+    name,
+    url,
+    svg,
+    width,
+    height,
+}: LinkCard & {
+    width: number;
+    height: number;
+}) {
+    return (
+        <Grid item>
+            <Paper sx={{ width: width, height: height }}>
+                <Link href={url} passHref>
+                    <CardActionArea
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href=''
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: width,
+                            height: height,
+                        }}
+                    >
+                        <SvgIcon viewBox='0 0 128 128' sx={{ fontSize: '70px' }}>
+                            {svg}
+                        </SvgIcon>
+                        {name}
+                    </CardActionArea>
+                </Link>
+            </Paper>
+        </Grid>
     );
 }
