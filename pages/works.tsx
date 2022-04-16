@@ -2,7 +2,7 @@ import {
     Avatar,
     Box,
     Card,
-    CardActions,
+    cardActionsClasses,
     CardContent,
     CardHeader,
     Chip,
@@ -179,7 +179,7 @@ function CreateCard({ project }: { project: Project }) {
 
             <CardContent>{description}</CardContent>
 
-            <CardActions sx={{ position: 'absolute', bottom: 0 }}>
+            <Box sx={{ position: 'absolute', bottom: 0, p: 1 }} classes={cardActionsClasses}>
                 {link.map(({ name: linkName, url, svg }) => (
                     <Link href={url} key={linkName} passHref>
                         <IconButton target='_blank' rel='noopener noreferrer' href=''>
@@ -187,7 +187,7 @@ function CreateCard({ project }: { project: Project }) {
                         </IconButton>
                     </Link>
                 ))}
-            </CardActions>
+            </Box>
         </Card>
     );
 }
