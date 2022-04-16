@@ -5,7 +5,6 @@ import {
     ListItemButton,
     ListItemIcon,
     ListItemText,
-    NoSsr,
     useMediaQuery,
     useTheme,
 } from '@mui/material';
@@ -51,15 +50,11 @@ export function Navbar({ isOpen, open, close }: NavbarOperation) {
         </Container>
     );
 
-    return (
-        <NoSsr>
-            {useMediaQuery(theme.breakpoints.up('md')) ? (
-                <NavbarBig>{content}</NavbarBig>
-            ) : (
-                <NavbarSmall isOpen={isOpen} open={open} close={close}>
-                    {content}
-                </NavbarSmall>
-            )}
-        </NoSsr>
+    return useMediaQuery(theme.breakpoints.up('md')) ? (
+        <NavbarBig>{content}</NavbarBig>
+    ) : (
+        <NavbarSmall isOpen={isOpen} open={open} close={close}>
+            {content}
+        </NavbarSmall>
     );
 }
