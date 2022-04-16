@@ -2,6 +2,8 @@ import { createTheme, CssBaseline, responsiveFontSizes, styled, ThemeProvider } 
 import { m } from 'framer-motion';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
+import { useState } from 'react';
+import { Navbar } from '../components';
 
 const Root = styled(m.div)({
     minHeight: '100vh',
@@ -9,6 +11,8 @@ const Root = styled(m.div)({
 });
 
 export default function Website({ Component, pageProps }: AppProps) {
+    const [open, setOpen] = useState(false);
+
     return (
         <ThemeProvider
             theme={responsiveFontSizes(
@@ -53,7 +57,8 @@ export default function Website({ Component, pageProps }: AppProps) {
             <CssBaseline enableColorScheme />
 
             <Root sx={{ minHeight: '100dvh' }}>
-                <Component {...pageProps} />
+                <Component {...pageProps} />{' '}
+                <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
             </Root>
         </ThemeProvider>
     );
