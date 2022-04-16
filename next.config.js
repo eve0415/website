@@ -1,5 +1,3 @@
-const webpack = require('webpack');
-
 /**
  * @type {import('next').NextConfig}
  */
@@ -26,16 +24,6 @@ const nextConfig = {
     experimental: {
         runtime: 'edge',
     },
-    webpack: (config, { dev }) => {
-        if (!dev) {
-            config.plugins.push(
-                new webpack.DefinePlugin({
-                    __REACT_DEVTOOLS_GLOBAL_HOOK__: '({ isDisabled: true })'
-                })
-            );
-            return config;
-        }
-    }
 };
 
 const withBundleAnalyzer = require('@next/bundle-analyzer')({
