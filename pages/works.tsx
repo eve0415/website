@@ -1,11 +1,11 @@
 import {
     Box,
-    Card,
     CardActions,
     Chip,
     Container,
     Grid,
     IconButton,
+    Paper,
     Stack,
     SvgIcon,
     Tooltip,
@@ -143,7 +143,7 @@ function CreateCard({ project }: { project: Project }) {
     const { name, description, image, language, tag, link } = project;
 
     return (
-        <Card
+        <Paper
             sx={{
                 display: 'flex',
                 flexDirection: 'column',
@@ -155,7 +155,14 @@ function CreateCard({ project }: { project: Project }) {
             }}
         >
             <Box width='98%' height='38%' borderRadius={1} overflow='hidden' position='sticky'>
-                <CloudflareImage src={image} alt='project' layout='fill' sizes='283px' priority />
+                <CloudflareImage
+                    src={image}
+                    alt='project'
+                    layout='fill'
+                    objectFit={/opengraph.githubassets.com/.test(image) ? 'contain' : 'cover'}
+                    sizes='283px'
+                    priority
+                />
             </Box>
 
             <Typography variant='h5' p={1}>
@@ -180,7 +187,7 @@ function CreateCard({ project }: { project: Project }) {
                     </Link>
                 ))}
             </CardActions>
-        </Card>
+        </Paper>
     );
 }
 
