@@ -1,5 +1,4 @@
 import {
-    Avatar,
     Box,
     Card,
     CardActions,
@@ -157,7 +156,7 @@ function CreateCard({ project }: { project: Project }) {
                 position: 'relative',
             }}
         >
-            <Avatar variant='rounded' sx={{ width: '95%', height: '35.5%', bgcolor: 'white' }}>
+            <Box width='95%' height='40%' borderRadius={1} overflow='hidden' position='sticky'>
                 <CloudflareImage
                     src={image}
                     alt='project'
@@ -166,7 +165,7 @@ function CreateCard({ project }: { project: Project }) {
                     sizes='283px'
                     priority
                 />
-            </Avatar>
+            </Box>
 
             <CardHeader title={name} />
 
