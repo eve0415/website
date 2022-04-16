@@ -3,11 +3,11 @@ import {
     Avatar,
     Box,
     Button,
-    Card,
     CardActionArea,
     CardContent,
     Container,
     Grid,
+    Paper,
     Stack,
     SvgIcon,
     Typography,
@@ -45,7 +45,7 @@ export default function Socials() {
 
                         <Grid container spacing={2} mt={2}>
                             <Grid item xs={12} md={6}>
-                                <Card>
+                                <Paper>
                                     <CardActionArea
                                         sx={{
                                             p: 2,
@@ -85,11 +85,11 @@ export default function Socials() {
                                             <Typography variant='h5'>eve0415#0415</Typography>
                                         </CardContent>
                                     </CardActionArea>
-                                </Card>
+                                </Paper>
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Card>
+                                <Paper>
                                     <Link href='https://twitter.com/eveevekun' passHref>
                                         <CardActionArea
                                             sx={{
@@ -113,11 +113,11 @@ export default function Socials() {
                                             </CardContent>
                                         </CardActionArea>
                                     </Link>
-                                </Card>
+                                </Paper>
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Card>
+                                <Paper>
                                     <Link href='https://www.instagram.com/eveevekun/' passHref>
                                         <CardActionArea
                                             sx={{
@@ -196,11 +196,11 @@ export default function Socials() {
                                             </CardContent>
                                         </CardActionArea>
                                     </Link>
-                                </Card>
+                                </Paper>
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Card>
+                                <Paper>
                                     <Link href='https://github.com/eve0415' passHref>
                                         <CardActionArea
                                             sx={{
@@ -224,11 +224,11 @@ export default function Socials() {
                                             </CardContent>
                                         </CardActionArea>
                                     </Link>
-                                </Card>
+                                </Paper>
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Card>
+                                <Paper>
                                     <Link href='https://crowdin.com/profile/eve0415' passHref>
                                         <CardActionArea
                                             sx={{
@@ -262,7 +262,7 @@ export default function Socials() {
                                             </CardContent>
                                         </CardActionArea>
                                     </Link>
-                                </Card>
+                                </Paper>
                             </Grid>
                         </Grid>
                     </Box>
