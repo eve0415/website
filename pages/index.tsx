@@ -1,34 +1,14 @@
-import { Box, NoSsr, useMediaQuery, useTheme } from '@mui/material';
+import { Box } from '@mui/material';
 import dynamic from 'next/dynamic';
-import { CloudflareImage, Main } from '../components';
-import cat from '../public/images/cat.jpg';
-import catSleeping from '../public/images/catSleeping.jpg';
+import { Main } from '../components';
 
-const Home = dynamic(() => import('../components/Home'));
+const BackImage = dynamic(() => import('../components/BackImage'), { ssr: false });
+const Home = dynamic(() => import('../components/Home'), { ssr: false });
 
 export default function Head() {
     return (
         <>
-            <Box
-                position='fixed'
-                width='100vw'
-                height='100vh'
-                sx={{
-                    filter: { xs: 'blur(3px)', md: 'blur(5px)' },
-                }}
-            >
-                <NoSsr>
-                    <CloudflareImage
-                        src={useMediaQuery(useTheme().breakpoints.up('sm')) ? cat : catSleeping}
-                        alt='My Cat'
-                        layout='fill'
-                        placeholder='blur'
-                        objectFit='cover'
-                        priority
-                    />
-                </NoSsr>
-            </Box>
-
+            <BackImage />
             <Box position='fixed' width='100vw' height='100vh' bgcolor='rgba(0,0,0,0.5)' />
 
             <Main>
