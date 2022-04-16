@@ -4,11 +4,6 @@ import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';
 import { Navbar } from '../components';
-import { disableReactDevTools } from '../components/disableHook';
-
-if (process.env.NODE_ENV === 'production') {
-    disableReactDevTools();
-}
 
 const Root = styled(m.div)({
     minHeight: '100vh',
