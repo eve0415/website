@@ -137,22 +137,23 @@ function Material({
         <Grid item>
             <Paper sx={{ width: width, height: height }}>
                 <Link href={url} passHref>
-                    <CardActionArea target='_blank' rel='noopener noreferrer' href=''>
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: width,
-                                height: height,
-                            }}
-                        >
-                            <SvgIcon viewBox='0 0 128 128' sx={{ fontSize: '70px' }}>
-                                {svg}
-                            </SvgIcon>
-                            {name}
-                        </Box>
+                    <CardActionArea
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href=''
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: width,
+                            height: height,
+                        }}
+                    >
+                        <SvgIcon viewBox='0 0 128 128' sx={{ fontSize: '70px' }}>
+                            {svg}
+                        </SvgIcon>
+                        {name}
                     </CardActionArea>
                 </Link>
             </Paper>
