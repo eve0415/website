@@ -1,14 +1,4 @@
-import {
-    Box,
-    Card,
-    CardActionArea,
-    CardContent,
-    Container,
-    Grid,
-    Stack,
-    SvgIcon,
-    Typography,
-} from '@mui/material';
+import { Box, CardActionArea, Container, Grid, Paper, Stack, SvgIcon, Typography } from '@mui/material';
 import Link from 'next/link';
 import { Main } from '../components';
 import type { LinkCard } from '../components/constants';
@@ -145,14 +135,15 @@ function Material({
 }) {
     return (
         <Grid item>
-            <Card sx={{ width: width, height: height }}>
+            <Paper sx={{ width: width, height: height }}>
                 <Link href={url} passHref>
                     <CardActionArea target='_blank' rel='noopener noreferrer' href=''>
-                        <CardContent
+                        <Box
                             sx={{
                                 display: 'flex',
                                 flexDirection: 'column',
                                 alignItems: 'center',
+                                justifyContent: 'center',
                                 width: width,
                                 height: height,
                             }}
@@ -161,10 +152,10 @@ function Material({
                                 {svg}
                             </SvgIcon>
                             {name}
-                        </CardContent>
+                        </Box>
                     </CardActionArea>
                 </Link>
-            </Card>
+            </Paper>
         </Grid>
     );
 }
