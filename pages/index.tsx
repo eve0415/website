@@ -4,7 +4,7 @@ import { CloudflareImage, Main } from '../components';
 import cat from '../public/images/cat.jpg';
 import catSleeping from '../public/images/catSleeping.jpg';
 
-const Home = dynamic(() => import('../components/Home'), { ssr: false });
+const Home = dynamic(() => import('../components/Home'));
 
 export default function Head() {
     return (
