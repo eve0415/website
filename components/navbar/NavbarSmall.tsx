@@ -11,34 +11,40 @@ export default function NavbarSmall({
 }: {
     children: EmotionJSX.Element;
 } & NavbarOperation) {
-    return (
-        <>
-            <Box
-                sx={{ backgroundColor: '#E5FCFB' }}
-                position='fixed'
-                height={100}
-                width={100}
-                left={-20}
-                top={-20}
-                borderRadius='50%'
-                display='flex'
-                alignItems='center'
-                justifyContent='center'
-                zIndex={10000}
-            >
-                <IconButton
-                    size='large'
-                    aria-label='Menu'
-                    sx={{ borderRadius: '50%' }}
-                    onClick={() => (isOpen ? close() : open())}
-                >
-                    {isOpen ? <Close sx={{ fontSize: '40px' }} /> : <Menu sx={{ fontSize: '40px' }} />}
-                </IconButton>
-            </Box>
+    const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-            <SwipeableDrawer open={isOpen} onOpen={open} onClose={close}>
+    return (
+        <Box>
+            <IconButton
+                size='large'
+                aria-label='Menu'
+                onClick={() => (isOpen ? close() : open())}
+                sx={{
+                    backgroundColor: '#E5FCFB',
+                    position: 'fixed',
+                    borderRadius: '50%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: 100,
+                    width: 100,
+                    top: -20,
+                    left: -20,
+                    zIndex: 1500,
+                }}
+            >
+                {isOpen ? <Close sx={{ fontSize: '40px' }} /> : <Menu sx={{ fontSize: '40px' }} />}
+            </IconButton>
+
+            <SwipeableDrawer
+                open={isOpen}
+                onOpen={open}
+                onClose={close}
+                disableBackdropTransition={!iOS}
+                disableDiscovery={iOS}
+            >
                 {children}
             </SwipeableDrawer>
-        </>
+        </Box>
     );
 }

@@ -13,8 +13,8 @@ export function Main({ children }: { children: ReactNode }) {
 
     return (
         <>
-            <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
             <Content sx={{ ml: { md: '25%' } }}>{children}</Content>
+            <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
         </>
     );
 }
