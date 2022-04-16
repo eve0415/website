@@ -2,8 +2,6 @@ import {
     Box,
     Card,
     CardActions,
-    CardContent,
-    CardHeader,
     Chip,
     Container,
     Grid,
@@ -156,18 +154,13 @@ function CreateCard({ project }: { project: Project }) {
                 position: 'relative',
             }}
         >
-            <Box width='95%' height='40%' borderRadius={1} overflow='hidden' position='sticky'>
-                <CloudflareImage
-                    src={image}
-                    alt='project'
-                    layout='fill'
-                    objectFit='cover'
-                    sizes='283px'
-                    priority
-                />
+            <Box width='98%' height='38%' borderRadius={1} overflow='hidden' position='sticky'>
+                <CloudflareImage src={image} alt='project' layout='fill' sizes='283px' priority />
             </Box>
 
-            <CardHeader title={name} />
+            <Typography variant='h5' p={1}>
+                {name}
+            </Typography>
 
             <Box>
                 <Chip size='small' label={language} />
@@ -176,7 +169,7 @@ function CreateCard({ project }: { project: Project }) {
                 ))}
             </Box>
 
-            <CardContent>{description}</CardContent>
+            <Typography m={2}>{description}</Typography>
 
             <CardActions sx={{ position: 'absolute', bottom: 0 }}>
                 {link.map(({ name: linkName, url, svg }) => (
