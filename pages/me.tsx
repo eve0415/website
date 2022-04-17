@@ -78,7 +78,12 @@ export default function Me() {
                             textAlign: 'center',
                         }}
                     >
-                        <Typography variant='h4'>触れたことがある技術・分野</Typography>
+                        <Typography variant='h4' display='inline-block'>
+                            触れたことがある技術・
+                        </Typography>
+                        <Typography variant='h4' display='inline-block'>
+                            分野
+                        </Typography>
                         <Grid container spacing={5} mt={2} justifyContent='center'>
                             {notUsed.map(({ name, url, svg }) => (
                                 <Material
