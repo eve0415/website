@@ -43,7 +43,7 @@ export default function Socials() {
 
                         <Grid container spacing={2} mt={2}>
                             <Grid item xs={12} md={6}>
-                                <Paper>
+                                <Paper sx={{ borderRadius: 2 }}>
                                     <CardActionArea
                                         sx={{
                                             p: 2,
@@ -53,6 +53,7 @@ export default function Socials() {
                                             bgcolor: '#2532F2',
                                             height: 105,
                                             justifyContent: 'flex-start',
+                                            borderRadius: 2,
                                         }}
                                         target='_blank'
                                         rel='noopener noreferrer'
@@ -96,7 +97,7 @@ export default function Socials() {
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Paper>
+                                <Paper sx={{ borderRadius: 2 }}>
                                     <Link href='https://twitter.com/eveevekun' passHref>
                                         <CardActionArea
                                             sx={{
@@ -107,6 +108,7 @@ export default function Socials() {
                                                 bgcolor: '#1D9BF0',
                                                 height: 105,
                                                 justifyContent: 'flex-start',
+                                                borderRadius: 2,
                                             }}
                                             target='_blank'
                                             rel='noopener noreferrer'
@@ -133,7 +135,7 @@ export default function Socials() {
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Paper>
+                                <Paper sx={{ borderRadius: 2 }}>
                                     <Link href='https://www.instagram.com/eveevekun/' passHref>
                                         <CardActionArea
                                             sx={{
@@ -145,6 +147,7 @@ export default function Socials() {
                                                     'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 35%, #d6249f 40%, #285AEB 90%)',
                                                 height: 105,
                                                 justifyContent: 'flex-start',
+                                                borderRadius: 2,
                                             }}
                                             target='_blank'
                                             rel='noopener noreferrer'
@@ -225,7 +228,7 @@ export default function Socials() {
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Paper>
+                                <Paper sx={{ borderRadius: 2 }}>
                                     <Link href='https://github.com/eve0415' passHref>
                                         <CardActionArea
                                             sx={{
@@ -236,6 +239,7 @@ export default function Socials() {
                                                 bgcolor: 'black',
                                                 height: 105,
                                                 justifyContent: 'flex-start',
+                                                borderRadius: 2,
                                             }}
                                             target='_blank'
                                             rel='noopener noreferrer'
@@ -262,7 +266,7 @@ export default function Socials() {
                             </Grid>
 
                             <Grid item xs={12} md={6}>
-                                <Paper>
+                                <Paper sx={{ borderRadius: 2 }}>
                                     <Link href='https://crowdin.com/profile/eve0415' passHref>
                                         <CardActionArea
                                             sx={{
@@ -273,6 +277,7 @@ export default function Socials() {
                                                 bgcolor: '#2E3340',
                                                 height: 105,
                                                 justifyContent: 'flex-start',
+                                                borderRadius: 2,
                                             }}
                                             target='_blank'
                                             rel='noopener noreferrer'
