@@ -32,16 +32,20 @@ export function Navbar({ isOpen, open, close }: NavbarOperation) {
             <List>
                 {pages.map(({ title, icon, href }) => (
                     <Link key={href} href={href} passHref>
-                        <ListItem>
-                            <ListItemButton sx={{ height: 100 }} selected={router.pathname === href}>
+                        <ListItem sx={{ borderRadius: 0.5 }}>
+                            <ListItemButton sx={{ height: 60 }} selected={router.pathname === href}>
                                 <ListItemIcon
                                     sx={{
                                         color: router.pathname === href ? 'blueviolet' : 'inherit',
+                                        minWidth: 40,
                                     }}
                                 >
                                     {icon}
                                 </ListItemIcon>
-                                <ListItemText primary={title} />
+                                <ListItemText
+                                    primaryTypographyProps={{ fontSize: { md: 20, lg: 25 } }}
+                                    primary={title}
+                                />
                             </ListItemButton>
                         </ListItem>
                     </Link>
