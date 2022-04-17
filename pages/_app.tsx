@@ -57,7 +57,7 @@ export default function Website({ Component, pageProps }: AppProps) {
             <CssBaseline enableColorScheme />
 
             <Root sx={{ minHeight: '100dvh' }}>
-                <Component {...pageProps} />{' '}
+                <Component {...pageProps} />
                 <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
             </Root>
         </ThemeProvider>
