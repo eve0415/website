@@ -1,13 +1,13 @@
 import { createTheme, CssBaseline, responsiveFontSizes, styled, ThemeProvider } from '@mui/material';
-import { m } from 'framer-motion';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';
 import { Navbar } from '../components';
 
-const Root = styled(m.div)({
+const Root = styled('div')({
     minHeight: '100vh',
     overflow: 'hidden',
+    backgroundColor: '#E5FCFB',
 });
 
 export default function Website({ Component, pageProps }: AppProps) {
