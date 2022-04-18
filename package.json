@@ -37,6 +37,7 @@
     "prettier": "^2.6.2",
     "react": "^18.0.0",
     "react-dom": "^18.0.0",
+    "react-intersection-observer": "^8.34.0",
     "rimraf": "^3.0.2",
     "typescript": "^4.6.3"
   },
