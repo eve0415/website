@@ -11,7 +11,7 @@ const Root = styled(m.div)({
     backgroundColor: '#E5FCFB',
 });
 
-export default function Website({ Component, pageProps }: AppProps) {
+const Website = ({ Component, pageProps }: AppProps) => {
     const [open, setOpen] = useState(false);
 
     return (
@@ -51,4 +51,6 @@ export default function Website({ Component, pageProps }: AppProps) {
             </Root>
         </ThemeProvider>
     );
-}
+};
+
+export default Website;
