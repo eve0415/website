@@ -15,15 +15,21 @@ export default function Website({ Component, pageProps }: AppProps) {
     const [open, setOpen] = useState(false);
 
     return (
-        <ThemeProvider
-            theme={responsiveFontSizes(
-                createTheme({
-                    typography: {
-                        fontFamily: ['Roboto', 'Noto Sans JP', 'sans-serif'].join(','),
-                    },
-                    components: {
-                        MuiCssBaseline: {
-                            styleOverrides: `
+        <>
+            <Head>
+                <title>eve0415</title>
+                <meta name='viewport' content='initial-scale=1, width=device-width' />
+            </Head>
+
+            <ThemeProvider
+                theme={responsiveFontSizes(
+                    createTheme({
+                        typography: {
+                            fontFamily: ['Roboto', 'Noto Sans JP', 'sans-serif'].join(','),
+                        },
+                        components: {
+                            MuiCssBaseline: {
+                                styleOverrides: `
                                 ::-webkit-scrollbar {
                                     height: 10px;
                                     width: 10px;
@@ -33,22 +39,18 @@ export default function Website({ Component, pageProps }: AppProps) {
                                     border-radius: 10px;
                                 }
                             `,
+                            },
                         },
-                    },
-                })
-            )}
-        >
-            <Head>
-                <title>eve0415</title>
-                <meta name='viewport' content='initial-scale=1, width=device-width' />
-            </Head>
+                    })
+                )}
+            >
+                <CssBaseline enableColorScheme />
 
-            <CssBaseline enableColorScheme />
-
-            <Root sx={{ minHeight: '100dvh' }}>
-                <Component {...pageProps} />
-                <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
-            </Root>
-        </ThemeProvider>
+                <Root sx={{ minHeight: '100dvh' }}>
+                    <Component {...pageProps} />
+                    <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
+                </Root>
+            </ThemeProvider>
+        </>
     );
 }
