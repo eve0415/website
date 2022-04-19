@@ -11,7 +11,8 @@ import {
     Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { CloudflareImage, Main } from '../components';
+import { CloudflareImage } from '../components/CloudflareLoader';
+import { Main } from '../components/Content';
 
 export default function Socials() {
     return (

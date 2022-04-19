@@ -1,5 +1,5 @@
-import { GitHub } from '../../svg';
-import type { Project } from './project';
+import { GitHub } from '../svg';
+import type { Project } from '.';
 
 export const MinecraftProject: readonly Project[] = [
     {

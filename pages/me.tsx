@@ -1,9 +1,9 @@
 import { Box, CardActionArea, Container, Grid, Paper, Stack, SvgIcon, Typography, Zoom } from '@mui/material';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
-import { Main } from '../components';
-import type { LinkCard } from '../components/constants';
-import { editor, notUsed, technology } from '../components/constants';
+import { Main } from '../components/Content';
+import type { LinkCard } from '../components/me';
+import { editor, notUsed, technology } from '../components/me';
 
 export default function Me() {
     return (

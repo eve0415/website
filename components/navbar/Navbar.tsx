@@ -12,13 +12,13 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { pages } from '../constants';
 import type { NavbarOperation } from './Interface';
+import { pages } from './pages';
 
 const NavbarBig = dynamic(() => import('./NavbarBig'), { ssr: false });
 const NavbarSmall = dynamic(() => import('./NavbarSmall'), { ssr: false });
 
-export function Navbar({ isOpen, open, close }: NavbarOperation) {
+export const Navbar = ({ isOpen, open, close }: NavbarOperation) => {
     const router = useRouter();
     const theme = useTheme();
 
@@ -61,4 +61,4 @@ export function Navbar({ isOpen, open, close }: NavbarOperation) {
             {content}
         </NavbarSmall>
     );
-}
+};
