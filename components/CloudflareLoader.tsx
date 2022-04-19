@@ -5,10 +5,10 @@ import Image from 'next/image';
 const cloudflareLoader = ({ src, width, quality }: ImageLoaderProps) =>
     `/api/images/?width=${width}&quality=${quality || 75}&image=${src}`;
 
-export function CloudflareImage(props: ImageProps) {
+export const CloudflareImage = (props: ImageProps) => {
     if (process.env.NODE_ENV === 'development') {
         return <Image unoptimized {...props} />;
     } else {
         return <Image {...props} loader={cloudflareLoader} referrerPolicy='origin' />;
     }
-}
+};
