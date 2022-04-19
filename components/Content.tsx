@@ -6,6 +6,6 @@ const Content = styled('div')(({ theme }) => ({
     marginBottom: theme.spacing(5),
 }));
 
-export function Main({ children }: { children: ReactNode }) {
-    return <Content sx={{ ml: { md: '25%' } }}>{children}</Content>;
-}
+export const Main = ({ children }: { children: ReactNode }) => (
+    <Content sx={{ ml: { md: '25%' } }}>{children}</Content>
+);
