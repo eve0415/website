@@ -1,6 +1,6 @@
 import { Box } from '@mui/material';
 import dynamic from 'next/dynamic';
-import { Main } from '../components';
+import { Main } from '../components/Content';
 
 const BackImage = dynamic(() => import('../components/BackImage'), { ssr: false });
 const Home = dynamic(() => import('../components/Home'), { ssr: false });

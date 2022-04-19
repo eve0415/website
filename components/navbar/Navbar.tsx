@@ -12,7 +12,7 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
-import { pages } from '../constants';
+import { pages } from './pages';
 import type { NavbarOperation } from './Interface';
 
 const NavbarBig = dynamic(() => import('./NavbarBig'), { ssr: false });

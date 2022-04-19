@@ -1,4 +1,4 @@
-import { GitHub } from '../../svg';
+import { GitHub } from '../svg';
 import type { Project } from './project';
 
 export const BotProject: readonly Project[] = [

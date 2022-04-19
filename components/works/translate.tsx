@@ -1,5 +1,5 @@
 import { Language, Twitter } from '@mui/icons-material';
-import { Crowdin, GitHub } from '../../svg';
+import { Crowdin, GitHub } from '../svg';
 import type { Project } from './project';
 
 export const TranslatedProject: readonly Project[] = [

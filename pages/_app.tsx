@@ -3,7 +3,7 @@ import { m } from 'framer-motion';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';
-import { Navbar } from '../components';
+import { Navbar } from '../components/navbar';
 
 const Root = styled(m.div)({
     minHeight: '100vh',
