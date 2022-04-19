@@ -5,7 +5,7 @@ import Head from 'next/head';
 import { useState } from 'react';
 import { Navbar } from '../components/navbar';
 
-const Root = styled(m.div)({
+const Root = styled(m.main)({
     minHeight: '100vh',
     overflow: 'hidden',
     backgroundColor: '#E5FCFB',
