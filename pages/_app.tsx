@@ -48,7 +48,7 @@ export default function Website({ Component, pageProps, router }: AppProps) {
 
             <Root sx={{ minHeight: '100dvh' }}>
                 <SwitchTransition mode='out-in'>
-                    <CSSTransition key={router.pathname} classNames='page' timeout={300}>
+                    <CSSTransition key={router.pathname} classNames='page' timeout={300} unmountOnExit>
                         <Component {...pageProps} />
                     </CSSTransition>
                 </SwitchTransition>
