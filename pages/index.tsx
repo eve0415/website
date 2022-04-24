@@ -7,15 +7,13 @@ const Home = dynamic(() => import('../components/Home'), { ssr: false });
 
 export default function Head() {
     return (
-        <Box display='flow-root'>
+        <Box display='flow-root' height='100vh' overflow='auto'>
             <BackImage />
             <Box position='fixed' width='100vw' height='100vh' bgcolor='rgba(0,0,0,0.5)' />
 
-            <Box height='100vh' overflow='auto'>
-                <Main>
-                    <Home />
-                </Main>
-            </Box>
+            <Main>
+                <Home />
+            </Main>
         </Box>
     );
 }
