@@ -2,7 +2,9 @@ import { createTheme, CssBaseline, responsiveFontSizes, styled, ThemeProvider } 
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';
+import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { Navbar } from '../components/navbar';
+import '../public/global.css';
 
 const Root = styled('main')({
     minHeight: '100vh',
@@ -10,7 +12,7 @@ const Root = styled('main')({
     backgroundColor: '#E5FCFB',
 });
 
-export default function Website({ Component, pageProps }: AppProps) {
+export default function Website({ Component, pageProps, router }: AppProps) {
     const [open, setOpen] = useState(false);
 
     return (
@@ -45,7 +47,11 @@ export default function Website({ Component, pageProps }: AppProps) {
             <CssBaseline enableColorScheme />
 
             <Root sx={{ minHeight: '100dvh' }}>
-                <Component {...pageProps} />
+                <SwitchTransition mode='out-in'>
+                    <CSSTransition key={router.pathname} classNames='page' timeout={300} unmountOnExit>
+                        <Component {...pageProps} />
+                    </CSSTransition>
+                </SwitchTransition>
                 <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
             </Root>
         </ThemeProvider>

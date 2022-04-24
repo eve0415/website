@@ -1,4 +1,4 @@
-import { styled } from '@mui/material';
+import { Box, styled } from '@mui/material';
 import type { ReactNode } from 'react';
 
 const Content = styled('div')(({ theme }) => ({
@@ -7,5 +7,7 @@ const Content = styled('div')(({ theme }) => ({
 }));
 
 export const Main = ({ children }: { children: ReactNode }) => (
-    <Content sx={{ ml: { md: '25%' } }}>{children}</Content>
+    <Box height='100vh' overflow='auto'>
+        <Content sx={{ ml: { md: '25%' } }}>{children}</Content>
+    </Box>
 );
