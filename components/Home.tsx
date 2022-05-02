@@ -1,5 +1,5 @@
 import { Box, Typography, useTheme } from '@mui/material';
-import profilePic from '../public/images/me.png';
+import profilePic from '../public/images/me.jpg';
 import { CloudflareImage } from './CloudflareLoader';
 
 export default function Home() {
