@@ -1,25 +1,9 @@
-name: Test
-
-on:
+on: 
   push:
-    branches:
-      - main
-    paths:
-      - "**/*.js"
-      - "**/*.ts"
-      - "**/*.tsx"
-      - "**/*.json"
-      - yarn.lock
-      - .github/workflows/test.yml
-  pull_request:
-
-concurrency:
-  group: ci-tests-${{ github.head_ref || github.ref_name }}-test
-  cancel-in-progress: true
 
 jobs:
-  test:
-    name: Test
+  deploy:
+    name: Deploy
     runs-on: ubuntu-latest
     steps:
       - name: Checkout repository
@@ -41,8 +25,15 @@ jobs:
       - name: Install dependencies
         run: yarn install --frozen-lockfile
 
-      - name: Check code format
-        run: yarn lint:ci
-
       - name: Build
         run: yarn build
+
+      - name: Export
+        run: yarn export
+
+      - name: Publish
+        uses: cloudflare/wrangler-action@2
+        with:
+          apiToken: ${{ secrets.CF_API_TOKEN }}
+          accountId: ${{ secrets.CF_ACCOUNT_ID }}
+          command: pages publish out --project-name=website
