@@ -1,6 +1,7 @@
 import { Box, Typography, useTheme } from '@mui/material';
-import profilePic from '../public/images/me.jpg';
-import { CloudflareImage } from './CloudflareLoader';
+import { convertBlobToBase64 } from './Blob2Base64';
+import { CustomImageProxy } from './CustomImageProxy';
+import { profilePicture } from './StaticUrl';
 
 export default function Home() {
     return (
@@ -21,11 +22,10 @@ export default function Home() {
                 borderRadius='50%'
                 overflow='hidden'
             >
-                <CloudflareImage
-                    src={profilePic}
+                <CustomImageProxy
+                    src={profilePicture}
                     alt='My profile picture'
                     layout='fill'
-                    placeholder='blur'
                     sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
                     priority
                 />
@@ -41,4 +41,14 @@ export default function Home() {
             <Typography variant='body1'>いつも眠たい人</Typography>
         </Box>
     );
+}
+
+export async function getStaticProps() {
+    const res = await fetch(profilePicture);
+    console.log(res);
+    return {
+        props: {
+            profilePictureBlob: convertBlobToBase64(await res.blob()),
+        },
+    };
 }

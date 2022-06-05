@@ -11,8 +11,8 @@ import {
     Typography,
 } from '@mui/material';
 import Link from 'next/link';
-import { CloudflareImage } from '../components/CloudflareLoader';
 import { Main } from '../components/Content';
+import { CustomImageProxy } from '../components/CustomImageProxy';
 
 export default function Socials() {
     return (
@@ -340,7 +340,7 @@ export default function Socials() {
                                         href=''
                                         sx={{ width: 217, height: 60 }}
                                     >
-                                        <CloudflareImage
+                                        <CustomImageProxy
                                             src='https://cdn.buymeacoffee.com/buttons/v2/default-violet.png'
                                             alt='Buy Me A Coffee'
                                             layout='fill'
@@ -359,7 +359,7 @@ export default function Socials() {
                                         href=''
                                         sx={{ width: 217, height: 60 }}
                                     >
-                                        <CloudflareImage
+                                        <CustomImageProxy
                                             src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3'
                                             alt='Buy Me a Coffee at ko-fi.com'
                                             layout='fill'

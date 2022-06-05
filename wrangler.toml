@@ -1,0 +1,9 @@
+compatibility_date = "2022-06-05"
+main = "workers/index.ts"
+name = "website"
+
+account_id = "a9422d5e1427349481a306ee8b888b91"
+
+[[r2_buckets]]
+binding = 'MY_BUCKET'
+bucket_name = 'website'

@@ -10,7 +10,7 @@ on:
       - "**/*.tsx"
       - "**/*.json"
       - yarn.lock
-      - ".github/workflows/test.yml"
+      - .github/workflows/test.yml
   pull_request:
 
 concurrency:
@@ -36,7 +36,7 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
-          cache: 'yarn'
+          cache: yarn
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
