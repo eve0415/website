@@ -13,8 +13,8 @@ import {
 } from '@mui/material';
 import Link from 'next/link';
 import { useState } from 'react';
-import { CloudflareImage } from '../components/CloudflareLoader';
 import { Main } from '../components/Content';
+import { CustomImageProxy } from '../components/CustomImageProxy';
 import type { Project } from '../components/works';
 import { BotProject, MinecraftProject, tagList, TranslatedProject } from '../components/works';
 
@@ -156,7 +156,7 @@ function CreateCard({ project }: { project: Project }) {
             }}
         >
             <Box width='98%' height='38%' borderRadius={1} overflow='hidden' position='sticky'>
-                <CloudflareImage
+                <CustomImageProxy
                     src={image}
                     alt='project'
                     layout='fill'

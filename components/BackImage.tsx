@@ -1,7 +1,6 @@
 import { Box, useMediaQuery, useTheme } from '@mui/material';
-import cat from '../public/images/cat.jpg';
-import catSleeping from '../public/images/catSleeping.jpg';
-import { CloudflareImage } from './CloudflareLoader';
+import { CustomImageProxy } from './CustomImageProxy';
+import { horizontalPicture, verticalPicture } from './StaticUrl';
 
 export default function BackImage() {
     return (
@@ -13,11 +12,11 @@ export default function BackImage() {
                 filter: { xs: 'blur(3px)', md: 'blur(5px)' },
             }}
         >
-            <CloudflareImage
-                src={useMediaQuery(useTheme().breakpoints.up('sm')) ? cat : catSleeping}
+            <CustomImageProxy
+                src={useMediaQuery(useTheme().breakpoints.up('sm')) ? verticalPicture : horizontalPicture}
                 alt='My Cat'
                 layout='fill'
-                placeholder='blur'
+                // placeholder='blur'
                 objectFit='cover'
                 priority
             />

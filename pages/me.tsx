@@ -38,8 +38,6 @@ export default function Me() {
                             <br />
                             たまにプログラム書いてます
                             <br />
-                            この時期は、花粉で死んでます
-                            <br />
                             日本人ですが、どちらかといえば英語の方が得意です
                         </Typography>
                     </Box>
