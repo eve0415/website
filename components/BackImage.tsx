@@ -16,7 +16,6 @@ export default function BackImage() {
                 src={useMediaQuery(useTheme().breakpoints.up('sm')) ? verticalPicture : horizontalPicture}
                 alt='My Cat'
                 layout='fill'
-                // placeholder='blur'
                 objectFit='cover'
                 priority
             />

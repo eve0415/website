@@ -3,8 +3,7 @@ import { convertBlobToBase64 } from './Blob2Base64';
 import { CustomImageProxy } from './CustomImageProxy';
 import { profilePicture } from './StaticUrl';
 
-export default function Home({ profilePictureBlob }: { profilePictureBlob: string }) {
-    console.log(profilePictureBlob);
+export default function Home() {
     return (
         <Box
             display='flex'
@@ -27,8 +26,6 @@ export default function Home({ profilePictureBlob }: { profilePictureBlob: strin
                     src={profilePicture}
                     alt='My profile picture'
                     layout='fill'
-                    placeholder='blur'
-                    blurDataURL={profilePictureBlob}
                     sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
                     priority
                 />
