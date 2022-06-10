@@ -1,3 +1,4 @@
+/* eslint-disable no-case-declarations */
 /**
  * Welcome to Cloudflare Workers! This is your first worker.
  *
@@ -34,14 +35,27 @@ const func = {
             case 'PUT':
                 if (!authorizeRequest(request, env)) return new Response('Forbidden', { status: 403 });
 
-                await env.MY_BUCKET.put(key, request.body);
+                if (!request.headers.get('Content-Type')?.includes(`multipart/form-data`)) {
+                    await env.MY_BUCKET.put(key, await request.text());
+                    return new Response(`Put ${key} successfully!`);
+                }
+
+                const form = await request.formData();
+                const file = form.get('file') as File;
+                await env.MY_BUCKET.put(key, await file.arrayBuffer(), {
+                    httpMetadata: { contentType: file.type },
+                });
+
                 return new Response(`Put ${key} successfully!`);
             case 'GET':
-                // eslint-disable-next-line no-case-declarations
                 const object = await env.MY_BUCKET.get(key);
-                if (!object) return new Response('Object Not Found', { status: 404 });
+                if (!object?.body) return new Response('Object Not Found', { status: 404 });
 
-                return new Response(object.body);
+                const headers = new Headers();
+                object.writeHttpMetadata(headers);
+                headers.set('etag', object.httpEtag);
+
+                return new Response(object.body, { headers });
             case 'DELETE':
                 if (!authorizeRequest(request, env)) return new Response('Forbidden', { status: 403 });
 
@@ -49,7 +63,12 @@ const func = {
                 return new Response('Deleted!', { status: 200 });
 
             default:
-                return new Response('Method Not Allowed', { status: 405 });
+                return new Response('Method Not Allowed', {
+                    status: 405,
+                    headers: {
+                        Allow: 'PUT, GET, DELETE',
+                    },
+                });
         }
     },
 };
