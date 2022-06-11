@@ -7,3 +7,4 @@ account_id = "a9422d5e1427349481a306ee8b888b91"
 [[r2_buckets]]
 binding = 'MY_BUCKET'
 bucket_name = 'website'
+preview_bucket_name = 'website'

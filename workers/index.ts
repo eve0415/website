@@ -1,76 +1,47 @@
-/* eslint-disable no-case-declarations */
-/**
- * Welcome to Cloudflare Workers! This is your first worker.
- *
- * - Run `wrangler dev src/index.ts` in your terminal to start a development server
- * - Open a browser tab at http://localhost:8787/ to see your worker in action
- * - Run `wrangler publish src/index.ts --name my-worker` to publish your worker
- *
- * Learn more at https://developers.cloudflare.com/workers/
- */
+import { Hono } from 'hono';
+import { etag } from 'hono/etag';
 
-export interface Env {
-    // Example binding to KV. Learn more at https://developers.cloudflare.com/workers/runtime-apis/kv/
-    // MY_KV_NAMESPACE: KVNamespace;
-    //
-    // Example binding to Durable Object. Learn more at https://developers.cloudflare.com/workers/runtime-apis/durable-objects/
-    // MY_DURABLE_OBJECT: DurableObjectNamespace;
-    //
-    // Example binding to R2. Learn more at https://developers.cloudflare.com/workers/runtime-apis/r2/
+interface Env {
     MY_BUCKET: R2Bucket;
-
     AUTH_KEY_SECRET: string;
 }
 
-function authorizeRequest(request: Request, env: Env) {
-    return request.headers.get('X-Custom-Auth-Key') === env.AUTH_KEY_SECRET;
-}
+const app = new Hono<Env>();
 
-const func = {
-    async fetch(request: Request, env: Env): Promise<Response> {
-        const url = new URL(request.url);
-        const key = url.pathname.slice(1);
+app.use('*', etag());
 
-        switch (request.method) {
-            case 'PUT':
-                if (!authorizeRequest(request, env)) return new Response('Forbidden', { status: 403 });
+app.use('*', async (ctx, next) => {
+    if (!(ctx.req.method === 'GET' || ctx.req.headers.get('X-Custom-Auth-Key') === ctx.env.AUTH_KEY_SECRET)) {
+        ctx.res = new Response('Unauthorized', { status: 401 });
+        return;
+    }
+    // eslint-disable-next-line callback-return
+    await next();
+});
 
-                if (!request.headers.get('Content-Type')?.includes(`multipart/form-data`)) {
-                    await env.MY_BUCKET.put(key, await request.text());
-                    return new Response(`Put ${key} successfully!`);
-                }
+app.get('/:request', async ctx => {
+    console.log(ctx.env);
+    const object = await ctx.env.MY_BUCKET.get(ctx.req.param('request'));
+    if (!object?.body) return ctx.notFound();
 
-                const form = await request.formData();
-                const file = form.get('file') as File;
-                await env.MY_BUCKET.put(key, await file.arrayBuffer(), {
-                    httpMetadata: { contentType: file.type },
-                });
+    return ctx.body(object.body);
+});
 
-                return new Response(`Put ${key} successfully!`);
-            case 'GET':
-                const object = await env.MY_BUCKET.get(key);
-                if (!object?.body) return new Response('Object Not Found', { status: 404 });
+app.put('/:request', async ctx => {
+    if (!ctx.req.headers.get('Content-Type')?.includes(`multipart/form-data`)) {
+        await ctx.env.MY_BUCKET.put(ctx.req.param('request'), await ctx.req.text());
+        return new Response(`Put ${ctx.req.param('request')} successfully!`);
+    }
 
-                const headers = new Headers();
-                object.writeHttpMetadata(headers);
-                headers.set('etag', object.httpEtag);
+    const form = await ctx.req.formData();
+    const file = form.get('file') as File;
+    await ctx.env.MY_BUCKET.put(ctx.req.param('request'), await file.arrayBuffer(), {
+        httpMetadata: { contentType: file.type },
+    });
+});
+app.delete('/:request', async ctx => {
+    await ctx.env.MY_BUCKET.delete(ctx.req.param('request'));
+    return new Response('Deleted!', { status: 200 });
+});
 
-                return new Response(object.body, { headers });
-            case 'DELETE':
-                if (!authorizeRequest(request, env)) return new Response('Forbidden', { status: 403 });
-
-                await env.MY_BUCKET.delete(key);
-                return new Response('Deleted!', { status: 200 });
-
-            default:
-                return new Response('Method Not Allowed', {
-                    status: 405,
-                    headers: {
-                        Allow: 'PUT, GET, DELETE',
-                    },
-                });
-        }
-    },
-};
-
-export default func;
+export default app;
