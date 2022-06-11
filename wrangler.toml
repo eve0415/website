@@ -4,6 +4,8 @@ name = "website"
 
 account_id = "a9422d5e1427349481a306ee8b888b91"
 
+kv_namespaces = [{binding = "cache", id = "98be5e370fdd48ee89e3973b38fd116e", preview_id = ""}]
+
 [[r2_buckets]]
 binding = 'MY_BUCKET'
 bucket_name = 'website'
