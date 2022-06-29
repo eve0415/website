@@ -27,7 +27,7 @@ const nextConfig = {
         ]
     },
     experimental: {
-        runtime: 'edge',
+        runtime: 'experimental-edge',
     },
     webpack: (config, { dev }) => {
         if (!dev) {
