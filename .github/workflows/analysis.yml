@@ -50,17 +50,6 @@ jobs:
           name: bundle
           path: .next/analyze/__bundle_analysis.json
           
-      - name: Get Run ID
-        id: get_run_id
-        run: |
-          echo "::set-output name=run_id::$(\
-            gh run list \
-              --workflow "${{ github.event.pull_request.base.ref == 'main' && 'analysis.yml' }}" \
-              --json conclusion,headSha,status,databaseId \
-              --jq ".[] | select( .conclusion == \"success\" and .headSha == \"${{github.event.pull_request.base.sha}}\") | .databaseId" \
-          )"
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
 
       - name: Download base branch bundle stats
         uses: dawidd6/action-download-artifact@v2
@@ -68,7 +57,6 @@ jobs:
         with:
           workflow: ${{ github.event.pull_request.base.ref == 'main' && 'analysis.yml' }}
           branch: ${{ github.event.pull_request.base.ref }}
-          run_id: ${{ steps.get_run_id.outputs.run_id }}
           path: .next/analyze/base
 
       - name: Compare with base branch bundle

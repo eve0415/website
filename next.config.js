@@ -13,21 +13,13 @@ const nextConfig = {
         styledComponents: true,
         reactRemoveProperties: true,
     },
-    images: {
-        loader: 'custom',
-        formats: ['image/avif', 'image/webp'],
-        domains: [
-            'opengraph.githubassets.com',
-            'raw.githubusercontent.com',
-            'repository-images.githubusercontent.com',
-            's3.amazonaws.com',
-            'getsileo.app',
-            'cdn.buymeacoffee.com',
-            'cdn.ko-fi.com'
-        ]
-    },
     experimental: {
-        runtime: 'edge',
+        runtime: 'experimental-edge',
+        images: {
+            unoptimized: true,
+        },
+        browsersListForSwc: true,
+        legacyBrowsers: false
     },
     webpack: (config, { dev }) => {
         if (!dev) {
