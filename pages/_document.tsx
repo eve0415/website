@@ -19,6 +19,8 @@ export default class WebDocument extends Document {
                     <meta name='twitter:card' content='summary' />
                     <meta name='twitter:site' content='@eveevekun' />
                     <meta name='twitter:creator' content='@eveevekun' />
+                    <meta name='robots' content='nosnippet' />
+
                     <meta property='og:title' content='eve0415' />
                     <meta property='og:description' content='eve0415 のホームページ' />
                     <meta property='og:url' content='https://eve0415.net' />
