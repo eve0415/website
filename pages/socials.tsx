@@ -343,9 +343,8 @@ export default function Socials() {
                                         <CustomImageProxy
                                             src='https://cdn.buymeacoffee.com/buttons/v2/default-violet.png'
                                             alt='Buy Me A Coffee'
-                                            layout='fill'
                                             sizes='217px'
-                                            unoptimized
+                                            fill
                                         />
                                     </Button>
                                 </Link>
@@ -362,8 +361,8 @@ export default function Socials() {
                                         <CustomImageProxy
                                             src='https://cdn.ko-fi.com/cdn/kofi1.png?v=3'
                                             alt='Buy Me a Coffee at ko-fi.com'
-                                            layout='fill'
                                             sizes='217px'
+                                            fill
                                         />
                                     </Button>
                                 </Link>

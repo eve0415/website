@@ -18,16 +18,16 @@ export default function Home() {
             <Box
                 width={{ xs: 100, md: 200, lg: 300 }}
                 height={{ xs: 100, md: 200, lg: 300 }}
-                position='sticky'
+                position='relative'
                 borderRadius='50%'
                 overflow='hidden'
             >
                 <CustomImageProxy
                     src={profilePicture}
                     alt='My profile picture'
-                    layout='fill'
                     sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
-                    priority
+                    fill
+                    // priority
                 />
             </Box>
 
@@ -45,7 +45,6 @@ export default function Home() {
 
 export async function getStaticProps() {
     const res = await fetch(profilePicture);
-    console.log(res);
     return {
         props: {
             profilePictureBlob: convertBlobToBase64(await res.blob()),

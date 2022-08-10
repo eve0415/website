@@ -16,6 +16,7 @@ const nextConfig = {
     experimental: {
         runtime: 'experimental-edge',
         images: {
+            allowFutureImage: true,
             unoptimized: true,
         },
         browsersListForSwc: true,
