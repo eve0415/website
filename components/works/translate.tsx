@@ -6,7 +6,7 @@ export const TranslatedProject: readonly Project[] = [
     {
         name: 'Zebra',
         description: '🦓 A Useful Package Manager for iOS',
-        image: 'https://repository-images.githubusercontent.com/154848478/e9d26d80-6b6d-11e9-81ab-250514fec871',
+        image: 'https://github.com/zbrateam/zbrateam.github.io/blob/main/assets/banner.jpg?raw=true',
         language: 'English',
         tag: ['jailbreak'],
         link: [
