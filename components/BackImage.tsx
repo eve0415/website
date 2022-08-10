@@ -8,15 +8,12 @@ export default function BackImage() {
             position='fixed'
             width='100vw'
             height='100vh'
-            sx={{
-                filter: { xs: 'blur(3px)', md: 'blur(5px)' },
-            }}
+            sx={{ filter: { xs: 'blur(3px)', md: 'blur(5px)' } }}
         >
             <CustomImageProxy
                 src={useMediaQuery(useTheme().breakpoints.up('sm')) ? verticalPicture : horizontalPicture}
                 alt='My Cat'
                 fill
-                priority
             />
         </Box>
     );

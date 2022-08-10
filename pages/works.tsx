@@ -155,14 +155,13 @@ function CreateCard({ project }: { project: Project }) {
                 position: 'relative',
             }}
         >
-            <Box width='98%' height='38%' borderRadius={1} overflow='hidden' position='sticky'>
+            <Box width='98%' height='38%' borderRadius={1} overflow='hidden' position='relative'>
                 <CustomImageProxy
                     src={image}
                     alt='project'
                     style={{ objectFit: /opengraph.githubassets.com/.test(image) ? 'contain' : 'cover' }}
-                    sizes='283px'
+                    sizes='292px'
                     fill
-                    priority
                 />
             </Box>
 

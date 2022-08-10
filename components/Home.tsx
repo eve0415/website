@@ -18,7 +18,7 @@ export default function Home() {
             <Box
                 width={{ xs: 100, md: 200, lg: 300 }}
                 height={{ xs: 100, md: 200, lg: 300 }}
-                position='sticky'
+                position='relative'
                 borderRadius='50%'
                 overflow='hidden'
             >
@@ -27,7 +27,7 @@ export default function Home() {
                     alt='My profile picture'
                     sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
                     fill
-                    priority
+                    // priority
                 />
             </Box>
 
