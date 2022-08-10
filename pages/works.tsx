@@ -159,9 +159,9 @@ function CreateCard({ project }: { project: Project }) {
                 <CustomImageProxy
                     src={image}
                     alt='project'
-                    layout='fill'
-                    objectFit={/opengraph.githubassets.com/.test(image) ? 'contain' : 'cover'}
+                    style={{ objectFit: /opengraph.githubassets.com/.test(image) ? 'contain' : 'cover' }}
                     sizes='283px'
+                    fill
                     priority
                 />
             </Box>

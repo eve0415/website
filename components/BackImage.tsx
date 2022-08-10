@@ -15,8 +15,7 @@ export default function BackImage() {
             <CustomImageProxy
                 src={useMediaQuery(useTheme().breakpoints.up('sm')) ? verticalPicture : horizontalPicture}
                 alt='My Cat'
-                layout='fill'
-                objectFit='cover'
+                fill
                 priority
             />
         </Box>

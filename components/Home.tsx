@@ -25,8 +25,8 @@ export default function Home() {
                 <CustomImageProxy
                     src={profilePicture}
                     alt='My profile picture'
-                    layout='fill'
                     sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
+                    fill
                     priority
                 />
             </Box>
@@ -45,7 +45,6 @@ export default function Home() {
 
 export async function getStaticProps() {
     const res = await fetch(profilePicture);
-    console.log(res);
     return {
         props: {
             profilePictureBlob: convertBlobToBase64(await res.blob()),
