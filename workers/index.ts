@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Hono } from 'hono';
 import { etag } from 'hono/etag';
 
@@ -7,7 +8,47 @@ interface Env {
     AUTH_KEY_SECRET: string;
 }
 
-const app = new Hono<Env>();
+export default {
+    async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+        if (request.method !== `GET`) {
+            return new Response(`Method Not Allowed`, {
+                status: 405,
+                headers: { Allow: `GET` },
+            });
+        }
+
+        const url = new URL(request.url);
+        const cacheKey = new Request(url.toString(), request);
+        const cachedRes = await caches.default.match(cacheKey);
+
+        if (cachedRes && request.headers.get(`If-None-Match`) === cachedRes.headers.get(`ETag`))
+            return new Response(null, {
+                status: 304,
+                headers: cachedRes.headers,
+            });
+
+        const cache = await env.cache.get(`${cacheKey}`, 'arrayBuffer');
+        if (cache) return new Response(cache);
+
+        const object = await env.MY_BUCKET.get(url.pathname.slice(1));
+        if (!object?.body) return new Response(`Object Not Found`, { status: 404 });
+
+        const headers = new Headers();
+        object.writeHttpMetadata(headers);
+        headers.set(`etag`, object.httpEtag);
+        headers.set(`Cache-Control`, `max-age=5184000, s-max-age=2592000, immutable`);
+        headers.set(`Cloudflare-CDN-Cache-Control`, `max-age=1296000`);
+        headers.set(`CDN-Cache-Control`, `max-age=648000`);
+
+        const response = new Response(object.body, { headers });
+        ctx.waitUntil(caches.default.put(cacheKey, response.clone()));
+        ctx.waitUntil(env.cache.put(`${cacheKey}`, await response.clone().arrayBuffer()));
+
+        return response;
+    },
+};
+
+const app = new Hono<{ Bindings: Env }>();
 
 app.use('*', etag());
 
@@ -32,27 +73,3 @@ app.get('/:request', async ctx => {
     ctx.event?.waitUntil(ctx.env.cache.put(key, await object.arrayBuffer()));
     return ctx.body(object.body);
 });
-
-app.put('/:request', async ctx => {
-    const key = ctx.req.param('request');
-
-    if (!ctx.req.headers.get('Content-Type')?.includes(`multipart/form-data`)) {
-        await ctx.env.MY_BUCKET.put(key, await ctx.req.text());
-        return new Response(`Put ${key} successfully!`);
-    }
-
-    const form = await ctx.req.formData();
-    const file = form.get('file') as File;
-    await ctx.env.MY_BUCKET.put(key, await file.arrayBuffer(), {
-        httpMetadata: { contentType: file.type },
-    });
-});
-
-app.delete('/:request', async ctx => {
-    await ctx.env.MY_BUCKET.delete(ctx.req.param('request'));
-    ctx.event?.waitUntil(ctx.env.cache.delete(ctx.req.param('request')));
-
-    return new Response('Deleted!', { status: 200 });
-});
-
-export default app;
