@@ -17,15 +17,12 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "jsxImportSource": "@emotion/react",
-    "types": [
-      "@cloudflare/workers-types"
-    ]
+    "jsxImportSource": "@emotion/react"
   },
   "include": [
     "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
+    "components",
+    "pages"
   ],
   "exclude": [
     "node_modules"

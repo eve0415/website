@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "target": "ESNext",
+    "lib": [
+      "ESNext"
+    ],
+    "module": "esnext",
+    "moduleResolution": "node",
+    "types": [
+      "@cloudflare/workers-types",
+      "@types/node"
+    ],
+    "resolveJsonModule": true,
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "isolatedModules": true,
+    "esModuleInterop":true,
+    "allowSyntheticDefaultImports": true,
+    "forceConsistentCasingInFileNames": true,
+    "strict": true,
+  },
+  "include": [
+    "types.d.ts",
+    "index.ts"
+  ],
+}
