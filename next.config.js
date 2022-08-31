@@ -8,7 +8,7 @@ const { resolve } = require('path');
  */
 const nextConfig = {
     reactStrictMode: true,
-    swcMinify: true,
+    swcMinify: false,
     compiler: {
         styledComponents: true,
         reactRemoveProperties: true,
