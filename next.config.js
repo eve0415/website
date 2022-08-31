@@ -1,7 +1,6 @@
 // @ts-check
 
 const webpack = require('webpack');
-const { resolve } = require('path');
 
 /**
  * @type {import('next').NextConfig}
@@ -30,7 +29,6 @@ const nextConfig = {
                 })
             );
         }
-        config.resolve.alias['react-is'] = resolve(__dirname, 'node_modules', 'react-is');
         return config;
     }
 };
