@@ -1,11 +1,7 @@
 import { Box } from '@mui/material';
-// import dynamic from 'next/dynamic';
 import BackImage from '../components/BackImage';
 import { Main } from '../components/Content';
 import Home from '../components/Home';
-
-// const BackImage = dynamic(() => import('../components/BackImage'), { ssr: false });
-// const Home = dynamic(() => import('../components/Home'), { ssr: false });
 
 export default function Head() {
     return (
