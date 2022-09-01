@@ -8,12 +8,12 @@ export default function Head() {
         <Box display='flow-root'>
             <NoSsr>
                 <BackImage />
-            </NoSsr>
-            <Box position='fixed' width='100vw' height='100vh' bgcolor='rgba(0,0,0,0.5)' />
+                <Box position='fixed' width='100vw' height='100vh' bgcolor='rgba(0,0,0,0.5)' />
 
-            <Main>
-                <Home />
-            </Main>
+                <Main>
+                    <Home />
+                </Main>
+            </NoSsr>
         </Box>
     );
 }
