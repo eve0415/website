@@ -1,5 +1,4 @@
 import { Box, Typography, useTheme } from '@mui/material';
-import { convertBlobToBase64 } from './Blob2Base64';
 import { CustomImageProxy } from './CustomImageProxy';
 import { profilePicture } from './StaticUrl';
 
@@ -27,7 +26,6 @@ export default function Home() {
                     alt='My profile picture'
                     sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
                     fill
-                    // priority
                 />
             </Box>
 
@@ -41,13 +39,4 @@ export default function Home() {
             <Typography variant='body1'>いつも眠たい人</Typography>
         </Box>
     );
-}
-
-export async function getStaticProps() {
-    const res = await fetch(profilePicture);
-    return {
-        props: {
-            profilePictureBlob: convertBlobToBase64(await res.blob()),
-        },
-    };
 }
