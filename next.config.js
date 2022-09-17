@@ -1,6 +1,6 @@
 // @ts-check
 
-const webpack = require('webpack');
+const { DefinePlugin } = require('webpack');
 const { resolve } = require('path');
 
 /**
@@ -13,19 +13,18 @@ const nextConfig = {
         styledComponents: true,
         reactRemoveProperties: true,
     },
+    images: {
+        unoptimized: true
+    },
     experimental: {
-        runtime: 'experimental-edge',
-        images: {
-            allowFutureImage: true,
-            unoptimized: true,
-        },
+        // runtime: 'experimental-edge',
         browsersListForSwc: true,
         legacyBrowsers: false
     },
     webpack: (config, { dev }) => {
         if (!dev) {
             config.plugins.push(
-                new webpack.DefinePlugin({
+                new DefinePlugin({
                     __REACT_DEVTOOLS_GLOBAL_HOOK__: '({ isDisabled: true })'
                 })
             );
