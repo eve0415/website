@@ -31,27 +31,24 @@ export const Navbar = ({ isOpen, open, close }: NavbarOperation) => {
         <Container sx={{ m: 'auto' }}>
             <List>
                 {pages.map(({ title, icon, href }) => (
-                    <ListItem key={href} sx={{ borderRadius: 0.5 }}>
-                        <ListItemButton
-                            sx={{ height: 60 }}
-                            selected={router.pathname === href}
-                            LinkComponent={Link}
-                            href={href}
-                        >
-                            <ListItemIcon
-                                sx={{
-                                    color: router.pathname === href ? 'blueviolet' : 'inherit',
-                                    minWidth: 40,
-                                }}
-                            >
-                                {icon}
-                            </ListItemIcon>
-                            <ListItemText
-                                primaryTypographyProps={{ fontSize: { md: 20, lg: 25 } }}
-                                primary={title}
-                            />
-                        </ListItemButton>
-                    </ListItem>
+                    <Link key={href} href={href} passHref>
+                        <ListItem sx={{ borderRadius: 0.5 }}>
+                            <ListItemButton sx={{ height: 60 }} selected={router.pathname === href}>
+                                <ListItemIcon
+                                    sx={{
+                                        color: router.pathname === href ? 'blueviolet' : 'inherit',
+                                        minWidth: 40,
+                                    }}
+                                >
+                                    {icon}
+                                </ListItemIcon>
+                                <ListItemText
+                                    primaryTypographyProps={{ fontSize: { md: 20, lg: 25 } }}
+                                    primary={title}
+                                />
+                            </ListItemButton>
+                        </ListItem>
+                    </Link>
                 ))}
             </List>
         </Container>
