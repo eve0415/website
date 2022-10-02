@@ -1,5 +1,5 @@
-import { GitHub } from '../svg';
 import type { Project } from '.';
+import { GitHub } from '../svg';
 
 export const MinecraftProject: readonly Project[] = [
     {
@@ -35,20 +35,6 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/GregPatcher',
-                svg: GitHub,
-            },
-        ],
-    },
-    {
-        name: 'MC-API',
-        description: 'マイクラ関連のAPIのwrapperです',
-        image: 'https://opengraph.githubassets.com/0415/eve0415/MC-API',
-        language: 'TypeScript',
-        tag: ['deprecated'],
-        link: [
-            {
-                name: 'GitHub',
-                url: 'https://github.com/eve0415/MC-API',
                 svg: GitHub,
             },
         ],
