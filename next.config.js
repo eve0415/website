@@ -17,9 +17,12 @@ const nextConfig = {
         unoptimized: true
     },
     experimental: {
-        // runtime: 'experimental-edge',
+        adjustFontFallbacks: true,
         browsersListForSwc: true,
-        legacyBrowsers: false
+        newNextLinkBehavior: true,
+        legacyBrowsers: false,
+        optimisticClientCache: true,
+        // runtime: 'experimental-edge'
     },
     webpack: (config, { dev }) => {
         if (!dev) {
