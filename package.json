@@ -13,7 +13,6 @@
     "clean": "rimraf .next out"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^3.16.0",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
     "@mui/icons-material": "^5.10.6",
@@ -39,8 +38,7 @@
     "react-transition-group": "^4.4.5",
     "rimraf": "^3.0.2",
     "typescript": "^4.8.4",
-    "webpack": "^5.74.0",
-    "wrangler": "^2.1.9"
+    "webpack": "^5.74.0"
   },
   "nextBundleAnalysis": {
     "budget": 358400,
