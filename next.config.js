@@ -14,7 +14,7 @@ const nextConfig = {
         reactRemoveProperties: true,
     },
     images: {
-        unoptimized: true
+        loader: 'custom'
     },
     experimental: {
         adjustFontFallbacks: true,
