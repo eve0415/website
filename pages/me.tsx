@@ -143,7 +143,7 @@ function Material({
         <Grid item ref={ref}>
             <Zoom in={inView}>
                 <Paper sx={{ width: width, height: height }}>
-                    <Link href={url} passHref>
+                    <Link href={url} style={{ textDecoration: 'none', color: 'black' }} passHref>
                         <CardActionArea
                             target='_blank'
                             rel='noopener noreferrer'

@@ -31,7 +31,7 @@ export const Navbar = ({ isOpen, open, close }: NavbarOperation) => {
         <Container sx={{ m: 'auto' }}>
             <List>
                 {pages.map(({ title, icon, href }) => (
-                    <Link key={href} href={href} passHref>
+                    <Link key={href} href={href} passHref style={{ textDecoration: 'none', color: 'black' }}>
                         <ListItem sx={{ borderRadius: 0.5 }}>
                             <ListItemButton sx={{ height: 60 }} selected={router.pathname === href}>
                                 <ListItemIcon
