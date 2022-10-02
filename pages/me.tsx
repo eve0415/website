@@ -143,26 +143,25 @@ function Material({
         <Grid item ref={ref}>
             <Zoom in={inView}>
                 <Paper sx={{ width: width, height: height }}>
-                    <Link href={url} passHref>
-                        <CardActionArea
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            href=''
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: width,
-                                height: height,
-                            }}
-                        >
-                            <SvgIcon viewBox='0 0 128 128' sx={{ fontSize: '70px' }}>
-                                {svg}
-                            </SvgIcon>
-                            {name}
-                        </CardActionArea>
-                    </Link>
+                    <CardActionArea
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        href={url}
+                        sx={{
+                            display: 'flex',
+                            flexDirection: 'column',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            width: width,
+                            height: height,
+                        }}
+                        LinkComponent={Link}
+                    >
+                        <SvgIcon viewBox='0 0 128 128' sx={{ fontSize: '70px' }}>
+                            {svg}
+                        </SvgIcon>
+                        {name}
+                    </CardActionArea>
                 </Paper>
             </Zoom>
         </Grid>
