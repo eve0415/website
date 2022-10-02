@@ -1,3 +1,3 @@
-export const profilePicture = 'https://website.eve0415.workers.dev/me.webp';
-export const verticalPicture = 'https://website.eve0415.workers.dev/cat.jpg';
-export const horizontalPicture = 'https://website.eve0415.workers.dev/catSleeping.jpg';
+export const profilePicture = 'https://website-r2.eve0415.net/me.webp';
+export const verticalPicture = 'https://website-r2.eve0415.net/cat.jpg';
+export const horizontalPicture = 'https://website-r2.eve0415.net/catSleeping.jpg';
