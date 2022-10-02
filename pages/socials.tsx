@@ -99,7 +99,11 @@ export default function Socials() {
 
                             <Grid item xs={12} md={6}>
                                 <Paper sx={{ borderRadius: 2 }}>
-                                    <Link href='https://twitter.com/eveevekun' passHref>
+                                    <Link
+                                        href='https://twitter.com/eveevekun'
+                                        style={{ textDecoration: 'none', color: 'black' }}
+                                        passHref
+                                    >
                                         <CardActionArea
                                             sx={{
                                                 p: 2,
@@ -137,7 +141,11 @@ export default function Socials() {
 
                             <Grid item xs={12} md={6}>
                                 <Paper sx={{ borderRadius: 2 }}>
-                                    <Link href='https://www.instagram.com/eveevekun/' passHref>
+                                    <Link
+                                        href='https://www.instagram.com/eveevekun/'
+                                        style={{ textDecoration: 'none', color: 'black' }}
+                                        passHref
+                                    >
                                         <CardActionArea
                                             sx={{
                                                 p: 2,
@@ -230,7 +238,11 @@ export default function Socials() {
 
                             <Grid item xs={12} md={6}>
                                 <Paper sx={{ borderRadius: 2 }}>
-                                    <Link href='https://github.com/eve0415' passHref>
+                                    <Link
+                                        href='https://github.com/eve0415'
+                                        style={{ textDecoration: 'none', color: 'black' }}
+                                        passHref
+                                    >
                                         <CardActionArea
                                             sx={{
                                                 p: 2,
@@ -268,7 +280,11 @@ export default function Socials() {
 
                             <Grid item xs={12} md={6}>
                                 <Paper sx={{ borderRadius: 2 }}>
-                                    <Link href='https://crowdin.com/profile/eve0415' passHref>
+                                    <Link
+                                        href='https://crowdin.com/profile/eve0415'
+                                        style={{ textDecoration: 'none', color: 'black' }}
+                                        passHref
+                                    >
                                         <CardActionArea
                                             sx={{
                                                 p: 2,
