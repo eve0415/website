@@ -14,6 +14,6 @@ export const CustomImageProxy = (props: ImageProps) => (
 
 export const PreConnect = () => (
     <Head>
-        <link href='https://images.eve0415.net' rel='preconnect' />
+        <link rel='preconnect' href='https://images.eve0415.net' />
     </Head>
 );
