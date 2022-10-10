@@ -1,4 +1,4 @@
-name: 'Next.js Bundle Analysis'
+name: Next.js Bundle Analysis
 
 on:
   pull_request:
@@ -49,7 +49,6 @@ jobs:
         with:
           name: bundle
           path: .next/analyze/__bundle_analysis.json
-          
 
       - name: Download base branch bundle stats
         uses: dawidd6/action-download-artifact@v2
