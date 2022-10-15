@@ -26,6 +26,7 @@ export default function Home() {
                     alt='My profile picture'
                     sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
                     fill
+                    priority
                 />
             </Box>
 
