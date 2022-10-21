@@ -26,6 +26,20 @@ export const MinecraftProject: readonly Project[] = [
         ],
     },
     {
+        name: 'Cropper',
+        description: '右クリックで食物の収穫、葉っぱが早く枯れるなどの機能を追加するプラグインです',
+        image: 'https://opengraph.githubassets.com/0415/eve0415/Cropper',
+        language: 'Kotlin',
+        tag: null,
+        link: [
+            {
+                name: 'GitHub',
+                url: 'https://github.com/eve0415/Cropper',
+                svg: GitHub,
+            },
+        ],
+    },
+    {
         name: 'GregPatcher',
         description: 'GregTech Community Edition と Gregicality のバグを修正する mod です',
         image: 'https://opengraph.githubassets.com/0415/eve0415/GregPatcher',
