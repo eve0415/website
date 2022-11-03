@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/alt-text */
-import type { ImageProps } from 'next/future/image';
-import Image from 'next/future/image';
+import type { ImageProps } from 'next/image';
+import Image from 'next/image';
 import Head from 'next/head';
 
 export const CustomImageProxy = (props: ImageProps) => (
