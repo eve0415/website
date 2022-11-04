@@ -8,7 +8,6 @@ const { resolve } = require('path');
  */
 const nextConfig = {
     reactStrictMode: true,
-    swcMinify: false,
     compiler: {
         styledComponents: true,
         reactRemoveProperties: true,
@@ -18,7 +17,6 @@ const nextConfig = {
     },
     experimental: {
         adjustFontFallbacks: true,
-        browsersListForSwc: true,
         newNextLinkBehavior: true,
         legacyBrowsers: false,
         optimisticClientCache: true,
