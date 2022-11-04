@@ -1,4 +1,5 @@
 import { createTheme, CssBaseline, responsiveFontSizes, styled, ThemeProvider } from '@mui/material';
+import { Roboto } from '@next/font/google';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';
@@ -11,6 +12,12 @@ const Root = styled('main')({
     overflow: 'hidden',
     backgroundColor: '#E5FCFB',
 });
+const fonts = Roboto({
+    weight: ['300', '400', '500', '700'],
+    subsets: ['latin'],
+    display: 'swap',
+    fallback: ['Noto Sans JP', 'sans-serif'],
+});
 
 export default function Website({ Component, pageProps, router }: AppProps) {
     const [open, setOpen] = useState(false);
@@ -20,7 +27,7 @@ export default function Website({ Component, pageProps, router }: AppProps) {
             theme={responsiveFontSizes(
                 createTheme({
                     typography: {
-                        fontFamily: ['Roboto', 'Noto Sans JP', 'sans-serif'].join(','),
+                        fontFamily: fonts.style.fontFamily,
                     },
                     components: {
                         MuiCssBaseline: {
