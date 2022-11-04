@@ -25,6 +25,7 @@ const nextConfig = {
         newNextLinkBehavior: true,
         legacyBrowsers: false,
         optimisticClientCache: true,
+        swcFileReading: true,
         // runtime: 'experimental-edge'
     },
     webpack: (config, { dev }) => {
