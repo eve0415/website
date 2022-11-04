@@ -8,17 +8,17 @@ const { resolve } = require('path');
  */
 const nextConfig = {
     reactStrictMode: true,
-    swcMinify: false,
     compiler: {
-        styledComponents: true,
         reactRemoveProperties: true,
+        removeConsole: true,
+        styledComponents: true,
+        emotion: true
     },
     images: {
         loader: 'custom'
     },
     experimental: {
         adjustFontFallbacks: true,
-        browsersListForSwc: true,
         newNextLinkBehavior: true,
         legacyBrowsers: false,
         optimisticClientCache: true,
