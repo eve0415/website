@@ -9,8 +9,10 @@ const { resolve } = require('path');
 const nextConfig = {
     reactStrictMode: true,
     compiler: {
-        styledComponents: true,
         reactRemoveProperties: true,
+        removeConsole: true,
+        styledComponents: true,
+        emotion: true
     },
     images: {
         loader: 'custom'
