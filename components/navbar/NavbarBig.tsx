@@ -1,20 +1,10 @@
 import type { EmotionJSX } from '@emotion/react/types/jsx-namespace';
-import { Drawer } from '@mui/material';
+import { Center } from '@mantine/core';
 
 export default function NavbarBig({ children }: { children: EmotionJSX.Element }) {
     return (
-        <Drawer
-            open
-            variant='permanent'
-            sx={{
-                opacity: 0.8,
-                '& .MuiDrawer-paper': {
-                    width: '25%',
-                    boxSizing: 'border-box',
-                },
-            }}
-        >
+        <Center h='100dvh' w='25%' opacity={0.8} sx={{ flexDirection: 'column', backgroundColor: 'white' }}>
             {children}
-        </Drawer>
+        </Center>
     );
 }
