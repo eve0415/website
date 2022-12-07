@@ -1,4 +1,5 @@
-import { Box } from '@mantine/core';
+import { Box, useMantineTheme } from '@mantine/core';
+import { useMediaQuery } from '@mantine/hooks';
 import type { ReactNode } from 'react';
 
 // const Content = styled('div')(({ theme }) => ({
@@ -15,7 +16,7 @@ import type { ReactNode } from 'react';
 export const Main = ({ children }: { children: ReactNode }) => (
     <Box
         pos='absolute'
-        pl='25%'
+        pl={useMediaQuery(`(min-width: ${useMantineTheme().breakpoints.md}px)`) ? '25%' : 0}
         h='100dvh'
         w='100dvw'
         sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}

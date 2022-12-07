@@ -11,7 +11,7 @@ export default function NavbarSmall({
 }: {
     children: EmotionJSX.Element;
 } & NavbarOperation) {
-    const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+    // const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     <Box position='fixed' height={100} width={100} top={-20} left={-20}>
         <Burger opened />
