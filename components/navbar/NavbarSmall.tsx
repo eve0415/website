@@ -8,9 +8,7 @@ export default function NavbarSmall({
     isOpen,
     open,
     close,
-}: {
-    children: EmotionJSX.Element;
-} & NavbarOperation) {
+}: { children: EmotionJSX.Element } & NavbarOperation) {
     // const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
     <Box position='fixed' height={100} width={100} top={-20} left={-20}>

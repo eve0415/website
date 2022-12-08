@@ -3,7 +3,13 @@ import { Center } from '@mantine/core';
 
 export default function NavbarBig({ children }: { children: EmotionJSX.Element }) {
     return (
-        <Center h='100dvh' w='25%' opacity={0.8} sx={{ flexDirection: 'column', backgroundColor: 'white' }}>
+        <Center
+            h='100dvh'
+            w='25%'
+            pos='fixed'
+            opacity={0.8}
+            sx={{ flexDirection: 'column', backgroundColor: 'white' }}
+        >
             {children}
         </Center>
     );
