@@ -209,7 +209,7 @@ export default function Socials() {
                                             justifyContent: 'center',
                                         }}
                                     >
-                                        <GrGithub color='black' size='24' />
+                                        <GrGithub color='#181616' size='24' />
                                     </Box>
                                 }
                                 radius='md'
@@ -217,7 +217,7 @@ export default function Socials() {
                                 target='_blank'
                                 rel='noopener noreferrer'
                                 sx={{
-                                    backgroundColor: 'black',
+                                    backgroundColor: '#181616',
                                     display: 'flex',
                                     justifyContent: 'flex-start',
                                 }}

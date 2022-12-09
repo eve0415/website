@@ -1,6 +1,6 @@
 import { GrGithub, GrLanguage, GrTwitter } from 'react-icons/gr';
+import { SiCrowdin } from 'react-icons/si';
 import type { Project } from '.';
-import { Crowdin } from '../svg';
 
 export const TranslatedProject: readonly Project[] = [
     {
@@ -23,12 +23,12 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/zbrateam/Zebra',
-                svg: <GrGithub />,
+                svg: <GrGithub color='#181616' />,
             },
             {
                 name: 'Crowdin',
                 url: 'https://crowdin.com/project/zebra',
-                svg: Crowdin,
+                svg: <SiCrowdin color='#2E3340' />,
             },
         ],
     },
@@ -52,12 +52,12 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/Sileo/Sileo',
-                svg: <GrGithub />,
+                svg: <GrGithub color='#181616' />,
             },
             {
                 name: 'Crowdin',
                 url: 'https://crowdin.com/project/sileo',
-                svg: Crowdin,
+                svg: <SiCrowdin color='#2E3340' />,
             },
         ],
     },
@@ -76,12 +76,12 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/PaperMC/Velocity',
-                svg: <GrGithub />,
+                svg: <GrGithub color='#181616' />,
             },
             {
                 name: 'Crowdin',
                 url: 'https://crowdin.com/project/velocity',
-                svg: Crowdin,
+                svg: <SiCrowdin color='#2E3340' />,
             },
         ],
     },
@@ -105,7 +105,7 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Crowdin',
                 url: 'https://crowdin.com/project/topgg',
-                svg: Crowdin,
+                svg: <SiCrowdin color='#2E3340' />,
             },
         ],
     },

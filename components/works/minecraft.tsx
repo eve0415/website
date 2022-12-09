@@ -21,7 +21,7 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/IFPatcher',
-                svg: <GrGithub />,
+                svg: <GrGithub color='#181616' />,
             },
         ],
     },
@@ -35,7 +35,7 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/Cropper',
-                svg: <GrGithub />,
+                svg: <GrGithub color='#181616' />,
             },
         ],
     },
@@ -49,7 +49,7 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/GregPatcher',
-                svg: <GrGithub />,
+                svg: <GrGithub color='#181616' />,
             },
         ],
     },
@@ -63,7 +63,7 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/disboardorg/SpawnInternetProtocol',
-                svg: <GrGithub />,
+                svg: <GrGithub color='#181616' />,
             },
         ],
     },
