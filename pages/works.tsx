@@ -1,17 +1,4 @@
-import {
-    Box,
-    CardActions,
-    Chip,
-    Container,
-    Grid,
-    IconButton,
-    Paper,
-    Stack,
-    SvgIcon,
-    Tooltip,
-    Typography,
-} from '@mui/material';
-import Link from 'next/link';
+import { Box, Card, Chip, Grid, Paper, Stack, Text, Title, Tooltip } from '@mantine/core';
 import { useState } from 'react';
 import { Main } from '../components/Content';
 import { CustomImageProxy, PreConnect } from '../components/CustomImageProxy';
@@ -20,126 +7,57 @@ import { BotProject, MinecraftProject, tagList, TranslatedProject } from '../com
 
 export default function Works() {
     return (
-        <>
+        <Main>
             <PreConnect />
-            <Main>
-                <Container
-                    sx={{
-                        display: 'flex',
-                        flexDirection: 'column',
-                        alignItems: 'center',
-                    }}
-                >
-                    <Typography variant='h3' pt={4}>
-                        プロジェクト関連
-                    </Typography>
 
-                    <Stack spacing={3} mt={5} width='100%'>
-                        <Box
-                            sx={{
-                                boxShadow: 2,
-                                bgcolor: 'background.paper',
-                                borderRadius: 2,
-                                p: 2,
-                            }}
-                        >
-                            <Typography variant='h4'>Discord BOT 関連</Typography>
+            <Title size='3rem' pt={4}>
+                プロジェクト関連
+            </Title>
 
-                            <Box
-                                sx={{
-                                    border: '1px dashed grey',
-                                    mt: 2,
-                                    p: 2,
-                                }}
-                            >
-                                <Grid
-                                    container
-                                    columnSpacing={2}
-                                    flexWrap='nowrap'
-                                    overflow='auto'
-                                    width='calc(100% + 30px);'
-                                    p={1}
-                                >
-                                    {BotProject.map(p => (
-                                        <Grid item key={p.name}>
-                                            <CreateCard project={p} />
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </Box>
-                        </Box>
+            <Stack mt={40} w='95%' pos='relative'>
+                <Paper shadow='lg' radius='sm' p={15}>
+                    <Title order={4} size='2rem'>
+                        Discord BOT 関連
+                    </Title>
 
-                        <Box
-                            sx={{
-                                boxShadow: 2,
-                                bgcolor: 'background.paper',
-                                borderRadius: 2,
-                                p: 2,
-                            }}
-                        >
-                            <Typography variant='h4'>Minecraft 関連</Typography>
+                    <Box p={16} sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}>
+                        <Grid w='calc(100% + 20px);' sx={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
+                            {BotProject.map(p => (
+                                <CreateCard project={p} key={p.name} />
+                            ))}
+                        </Grid>
+                    </Box>
+                </Paper>
 
-                            <Box
-                                sx={{
-                                    border: '1px dashed grey',
-                                    mt: 2,
-                                    p: 2,
-                                }}
-                            >
-                                <Grid
-                                    container
-                                    columnSpacing={2}
-                                    flexWrap='nowrap'
-                                    overflow='auto'
-                                    width='calc(100% + 30px);'
-                                    p={1}
-                                >
-                                    {MinecraftProject.map(p => (
-                                        <Grid item key={p.name}>
-                                            <CreateCard project={p} />
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </Box>
-                        </Box>
+                <Paper shadow='lg' radius='sm' p={15}>
+                    <Title order={4} size='2rem'>
+                        Minecraft 関連
+                    </Title>
 
-                        <Box
-                            sx={{
-                                boxShadow: 2,
-                                bgcolor: 'background.paper',
-                                borderRadius: 2,
-                                p: 2,
-                            }}
-                        >
-                            <Typography variant='h4'>翻訳したプロジェクト</Typography>
+                    <Box p={16} sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}>
+                        <Grid w='calc(100% + 20px);' sx={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
+                            {MinecraftProject.map(p => (
+                                <CreateCard project={p} key={p.name} />
+                            ))}
+                        </Grid>
+                    </Box>
+                </Paper>
 
-                            <Box
-                                sx={{
-                                    border: '1px dashed grey',
-                                    mt: 2,
-                                    p: 2,
-                                }}
-                            >
-                                <Grid
-                                    container
-                                    columnSpacing={2}
-                                    flexWrap='nowrap'
-                                    overflow='auto'
-                                    width='calc(100% + 30px);'
-                                    p={1}
-                                >
-                                    {TranslatedProject.map(p => (
-                                        <Grid item key={p.name}>
-                                            <CreateCard project={p} />
-                                        </Grid>
-                                    ))}
-                                </Grid>
-                            </Box>
-                        </Box>
-                    </Stack>
-                </Container>
-            </Main>
-        </>
+                <Paper shadow='lg' radius='sm' p={15}>
+                    <Title order={4} size='2rem'>
+                        翻訳したプロジェクト
+                    </Title>
+
+                    <Box p={16} sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}>
+                        <Grid w='calc(100% + 20px);' sx={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
+                            {TranslatedProject.map(p => (
+                                <CreateCard project={p} key={p.name} />
+                            ))}
+                        </Grid>
+                    </Box>
+                </Paper>
+            </Stack>
+        </Main>
     );
 }
 
@@ -147,52 +65,41 @@ function CreateCard({ project }: { project: Project }) {
     const { name, description, image, language, tag, link } = project;
 
     return (
-        <Paper
-            sx={{
-                display: 'flex',
-                flexDirection: 'column',
-                alignItems: 'center',
-                width: 300,
-                height: 400,
-                border: '0.5px solid rgba(0,0,0, 0.25)',
-                position: 'relative',
-            }}
-        >
-            <Box width='98%' height='38%' borderRadius={1} overflow='hidden' position='relative'>
-                <CustomImageProxy
-                    src={image}
-                    alt='project'
-                    style={{ objectFit: /opengraph.githubassets.com/.test(image) ? 'contain' : 'cover' }}
-                    sizes='292px'
-                    fill
-                />
-            </Box>
+        <Grid.Col key={name} span='content'>
+            <Card w={300} h={400} withBorder>
+                <Card.Section>
+                    <CustomImageProxy
+                        src={image}
+                        alt={name}
+                        height={150}
+                        width={300}
+                        style={{ objectFit: /opengraph.githubassets.com/.test(image) ? 'contain' : 'cover' }}
+                    />
+                </Card.Section>
 
-            <Typography variant='h5' p={1}>
-                {name}
-            </Typography>
+                <Title order={5} size='2rem'>
+                    {name}
+                </Title>
 
-            <Box>
-                <Chip size='small' label={language} />
-                {tag?.map(t => (
-                    <CreateTag tagId={t} key={t} />
-                ))}
-            </Box>
+                <Chip.Group position='center' mb={10}>
+                    <Chip variant='filled'>{language}</Chip>
+                    {tag?.map(t => (
+                        <CreateTag tagId={t} key={t} />
+                    ))}
+                </Chip.Group>
 
-            <Typography m={2}>{description}</Typography>
-
-            <CardActions sx={{ position: 'absolute', bottom: 0 }}>
-                {link.map(({ name: linkName, url, svg }) => (
-                    <Link href={url} key={linkName} passHref>
-                        <IconButton target='_blank' rel='noopener noreferrer' href=''>
-                            <SvgIcon viewBox='0 0 128 128'>{svg}</SvgIcon>
-                        </IconButton>
-                    </Link>
-                ))}
-            </CardActions>
-        </Paper>
+                <Text>{description}</Text>
+            </Card>
+        </Grid.Col>
     );
 }
+
+//             <Box>
+//                 <Chip size='small' label={language} />
+//                 {tag?.map(t => (
+//                     <CreateTag tagId={t} key={t} />
+//                 ))}
+//             </Box>
 
 function CreateTag({ tagId }: { tagId: string }) {
     const [open, setOpen] = useState(false);
@@ -200,13 +107,14 @@ function CreateTag({ tagId }: { tagId: string }) {
 
     return (
         <Tooltip
-            onClose={() => setOpen(false)}
-            onClick={() => setOpen(true)}
-            onOpen={() => setOpen(true)}
-            open={open}
-            title={`${tagName?.description}`}
+            multiline
+            withinPortal
+            label={tagName?.description}
+            events={{ hover: false, focus: true, touch: true }}
+            transition='pop'
+            transitionDuration={0}
         >
-            <Chip size='small' label={`${tagName?.name}`} sx={{ ml: 1 }} />
+            <Chip variant='filled'>{`${tagName?.name}`}</Chip>
         </Tooltip>
     );
 }

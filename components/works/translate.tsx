@@ -1,6 +1,6 @@
-import { Language, Twitter } from '@mui/icons-material';
+import { GrGithub, GrLanguage, GrTwitter } from 'react-icons/gr';
 import type { Project } from '.';
-import { Crowdin, GitHub } from '../svg';
+import { Crowdin } from '../svg';
 
 export const TranslatedProject: readonly Project[] = [
     {
@@ -13,17 +13,17 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Homepage',
                 url: 'https://getzbra.com/',
-                svg: <Language />,
+                svg: <GrLanguage />,
             },
             {
                 name: 'Twitter',
                 url: 'https://twitter.com/getZebra',
-                svg: <Twitter sx={{ color: '#1D9BF0' }} />,
+                svg: <GrTwitter color='#1D9BF0' />,
             },
             {
                 name: 'GitHub',
                 url: 'https://github.com/zbrateam/Zebra',
-                svg: GitHub,
+                svg: <GrGithub />,
             },
             {
                 name: 'Crowdin',
@@ -42,17 +42,17 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Homepage',
                 url: 'https://getsileo.app/',
-                svg: <Language />,
+                svg: <GrLanguage />,
             },
             {
                 name: 'Twitter',
                 url: 'https://twitter.com/GetSileo',
-                svg: <Twitter sx={{ color: '#1D9BF0' }} />,
+                svg: <GrTwitter color='#1D9BF0' />,
             },
             {
                 name: 'GitHub',
                 url: 'https://github.com/Sileo/Sileo',
-                svg: GitHub,
+                svg: <GrGithub />,
             },
             {
                 name: 'Crowdin',
@@ -71,12 +71,12 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Homepage',
                 url: 'https://velocitypowered.com/',
-                svg: <Language />,
+                svg: <GrLanguage />,
             },
             {
                 name: 'GitHub',
                 url: 'https://github.com/PaperMC/Velocity',
-                svg: GitHub,
+                svg: <GrGithub />,
             },
             {
                 name: 'Crowdin',
@@ -95,12 +95,12 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Homepage',
                 url: 'https://top.gg/',
-                svg: <Language />,
+                svg: <GrLanguage />,
             },
             {
                 name: 'Twitter',
                 url: 'https://twitter.com/JoinTopgg',
-                svg: <Twitter sx={{ color: '#1D9BF0' }} />,
+                svg: <GrTwitter color='#1D9BF0' />,
             },
             {
                 name: 'Crowdin',

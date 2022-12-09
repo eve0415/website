@@ -1,5 +1,5 @@
+import { GrGithub } from 'react-icons/gr';
 import type { Project } from '.';
-import { GitHub } from '../svg';
 
 export const MinecraftProject: readonly Project[] = [
     {
@@ -21,7 +21,7 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/IFPatcher',
-                svg: GitHub,
+                svg: <GrGithub />,
             },
         ],
     },
@@ -35,7 +35,7 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/Cropper',
-                svg: GitHub,
+                svg: <GrGithub />,
             },
         ],
     },
@@ -49,7 +49,7 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/GregPatcher',
-                svg: GitHub,
+                svg: <GrGithub />,
             },
         ],
     },
@@ -63,7 +63,7 @@ export const MinecraftProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/disboardorg/SpawnInternetProtocol',
-                svg: GitHub,
+                svg: <GrGithub />,
             },
         ],
     },
