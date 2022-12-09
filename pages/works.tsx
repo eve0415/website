@@ -1,5 +1,5 @@
-import { Box, Card, Chip, Grid, Paper, Stack, Text, Title, Tooltip } from '@mantine/core';
-import { useState } from 'react';
+import { Box, Card, Chip, Flex, Grid, Paper, Stack, Text, Title, Tooltip } from '@mantine/core';
+import Link from 'next/link';
 import { Main } from '../components/Content';
 import { CustomImageProxy, PreConnect } from '../components/CustomImageProxy';
 import type { Project } from '../components/works';
@@ -89,20 +89,26 @@ function CreateCard({ project }: { project: Project }) {
                 </Chip.Group>
 
                 <Text>{description}</Text>
+
+                <Card.Section>
+                    <Flex pos='absolute' justify='center' w='100%' bottom={0}>
+                        {link.map(({ name: linkName, url, svg }) => (
+                            <Link
+                                href={url}
+                                key={linkName}
+                                style={{ fontSize: '1.5rem', paddingLeft: 10, paddingRight: 10 }}
+                            >
+                                {svg}
+                            </Link>
+                        ))}
+                    </Flex>
+                </Card.Section>
             </Card>
         </Grid.Col>
     );
 }
 
-//             <Box>
-//                 <Chip size='small' label={language} />
-//                 {tag?.map(t => (
-//                     <CreateTag tagId={t} key={t} />
-//                 ))}
-//             </Box>
-
 function CreateTag({ tagId }: { tagId: string }) {
-    const [open, setOpen] = useState(false);
     const tagName = tagList.find(({ id }) => id === tagId);
 
     return (
