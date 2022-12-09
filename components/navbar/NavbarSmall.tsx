@@ -1,6 +1,5 @@
 import type { EmotionJSX } from '@emotion/react/types/jsx-namespace';
-import { Burger, Button, Drawer } from '@mantine/core';
-import { Box } from '@mui/material';
+import { Box, Burger, Button, Drawer } from '@mantine/core';
 import type { NavbarOperation } from './Interface';
 
 export default function NavbarSmall({
@@ -11,7 +10,7 @@ export default function NavbarSmall({
 }: { children: EmotionJSX.Element } & NavbarOperation) {
     // const iOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
 
-    <Box position='fixed' height={100} width={100} top={-20} left={-20}>
+    <Box pos='fixed' h={100} w={100} top={-20} left={-20}>
         <Burger opened />
     </Box>;
 
@@ -28,7 +27,7 @@ export default function NavbarSmall({
             <Drawer withCloseButton={false} opened={isOpen} onClose={close}>
                 {/* {children} */}
                 <Box
-                    height='100dvh'
+                    h='100dvh'
                     sx={{
                         display: 'flex',
                         flexDirection: 'column',
