@@ -17,9 +17,14 @@ export const Main = ({ children }: { children: ReactNode }) => (
     <Box
         pos='absolute'
         pl={useMediaQuery(`(min-width: ${useMantineTheme().breakpoints.md}px)`) ? '25%' : 0}
-        h='100dvh'
         w='100dvw'
-        sx={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignItems: 'center' }}
+        sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'auto',
+        }}
     >
         {children}
     </Box>

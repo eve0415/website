@@ -18,7 +18,7 @@ export default function Head() {
             <Overlay zIndex={0} blur={5} sx={{ backgroundColor: 'rgba(0,0,0,0.4)' }} />
 
             <Main>
-                <Flex direction='column' align='center' sx={{ color: 'white' }}>
+                <Flex direction='column' align='center' justify='center' h='100dvh' sx={{ color: 'white' }}>
                     <Box
                         w={{ base: 100, md: 200, lg: 300 }}
                         h={{ base: 100, md: 200, lg: 300 }}
