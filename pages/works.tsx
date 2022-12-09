@@ -99,6 +99,8 @@ function CreateCard({ project }: { project: Project }) {
                             <Link
                                 href={url}
                                 key={linkName}
+                                target='_blank'
+                                rel='noopener noreferrer'
                                 style={{ fontSize: '1.5rem', paddingLeft: 10, paddingRight: 10 }}
                             >
                                 {svg}
