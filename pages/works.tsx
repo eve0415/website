@@ -73,7 +73,10 @@ function CreateCard({ project }: { project: Project }) {
                         alt={name}
                         height={150}
                         width={300}
-                        style={{ objectFit: /opengraph.githubassets.com/.test(image) ? 'contain' : 'cover' }}
+                        style={{
+                            objectFit: /opengraph.githubassets.com/.test(image) ? 'contain' : 'cover',
+                            borderRadius: 5,
+                        }}
                     />
                 </Card.Section>
 
