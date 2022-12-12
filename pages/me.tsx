@@ -1,6 +1,7 @@
-import { Button, Flex, Grid, Paper, Text, Title, Transition } from '@mantine/core';
+import { Button, Flex, Grid, Paper, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
+import { CSSTransition } from 'react-transition-group';
 import { Main } from '../components/Content';
 import type { LinkCard } from '../components/me';
 import { editor, notUsed, technology } from '../components/me';
@@ -104,34 +105,32 @@ function Material({
     width: number;
     height: number;
 }) {
-    const { ref, inView } = useInView({ threshold: 0.05, triggerOnce: true });
+    const { ref, inView } = useInView({ threshold: 0.25, triggerOnce: true });
 
     return (
-        <Grid.Col m={5} span='content' ref={ref} key={name}>
-            <Transition mounted={inView} transition='pop' duration={225}>
-                {styles => (
-                    <Paper shadow='md' w={width} h={height} radius='sm' style={styles}>
-                        <Button
-                            component={Link}
-                            href={url}
-                            w={width}
-                            h={height}
-                            p={0}
-                            variant='white'
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            style={{ textDecoration: 'none', color: 'black' }}
-                        >
-                            <Flex direction='column' align='center'>
-                                <svg style={{ width: 70, height: 70 }} viewBox='0 0 128 128'>
-                                    {svg}
-                                </svg>
-                                <Text>{name}</Text>
-                            </Flex>
-                        </Button>
-                    </Paper>
-                )}
-            </Transition>
-        </Grid.Col>
+        <CSSTransition in={inView} timeout={300} classNames='material'>
+            <Grid.Col m={5} span='content' ref={ref}>
+                <Paper shadow='md' w={width} h={height} radius='sm'>
+                    <Button
+                        component={Link}
+                        href={url}
+                        w={width}
+                        h={height}
+                        p={0}
+                        variant='white'
+                        target='_blank'
+                        rel='noopener noreferrer'
+                        style={{ textDecoration: 'none', color: 'black' }}
+                    >
+                        <Flex direction='column' align='center'>
+                            <svg style={{ width: 70, height: 70 }} viewBox='0 0 128 128'>
+                                {svg}
+                            </svg>
+                            <Text>{name}</Text>
+                        </Flex>
+                    </Button>
+                </Paper>
+            </Grid.Col>
+        </CSSTransition>
     );
 }
