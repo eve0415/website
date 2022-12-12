@@ -56,6 +56,7 @@ export default function Website({ Component, pageProps, router }: AppProps) {
                     <Component {...pageProps} />
                 </CSSTransition>
             </SwitchTransition>
+
             <Navbar isOpen={open} open={() => setOpen(true)} close={() => setOpen(false)} />
         </MantineProvider>
     );

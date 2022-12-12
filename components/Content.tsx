@@ -1,13 +1,11 @@
-import { Box, useMantineTheme } from '@mantine/core';
-import { useMediaQuery } from '@mantine/hooks';
+import { Box } from '@mantine/core';
 import type { ReactNode } from 'react';
 
 export const Main = ({ children, margin }: { children: ReactNode; margin?: number }) => (
     <Box
         pos='absolute'
-        pl={useMediaQuery(`(min-width: ${useMantineTheme().breakpoints.md}px)`) ? '25%' : 0}
         w='100%'
-        sx={{
+        sx={theme => ({
             display: 'flex',
             flexDirection: 'column',
             justifyContent: 'center',
@@ -15,7 +13,8 @@ export const Main = ({ children, margin }: { children: ReactNode; margin?: numbe
             overflow: 'auto',
             marginTop: margin ?? 40,
             marginBottom: margin ?? 40,
-        }}
+            [`@media (min-width: ${theme.breakpoints.md}px)`]: { paddingLeft: '25%' },
+        })}
     >
         {children}
     </Box>
