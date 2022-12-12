@@ -2,6 +2,7 @@ import { Button, Flex, Grid, Paper, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import { useInView } from 'react-intersection-observer';
 import { CSSTransition } from 'react-transition-group';
+import ripplet from 'ripplet.js';
 import { Main } from '../components/Content';
 import type { LinkCard } from '../components/me';
 import { editor, notUsed, technology } from '../components/me';
@@ -121,6 +122,9 @@ function Material({
                         target='_blank'
                         rel='noopener noreferrer'
                         style={{ textDecoration: 'none', color: 'black' }}
+                        onPointerDown={event => ripplet(event, { clearing: false })}
+                        onPointerUp={() => ripplet.clear()}
+                        onPointerLeave={() => ripplet.clear()}
                     >
                         <Flex direction='column' align='center'>
                             <svg style={{ width: 70, height: 70 }} viewBox='0 0 128 128'>
