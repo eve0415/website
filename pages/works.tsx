@@ -102,10 +102,19 @@ function CreateCard({ project }: { project: Project }) {
                                 key={linkName}
                                 target='_blank'
                                 rel='noopener noreferrer'
-                                style={{ fontSize: '1.5rem', paddingLeft: 10, paddingRight: 10 }}
+                                style={{
+                                    fontSize: '1.5rem',
+                                    boxSizing: 'content-box',
+                                    padding: 10,
+                                    marginBottom: 6,
+                                    width: '1.5rem',
+                                    height: '1.5rem',
+                                    borderRadius: '1.5rem',
+                                }}
                                 onPointerDown={event => ripplet(event, { clearing: false })}
                                 onPointerUp={() => ripplet.clear()}
                                 onPointerLeave={() => ripplet.clear()}
+                                className='work-card-link'
                             >
                                 {svg}
                             </Link>
