@@ -1,5 +1,6 @@
 import { Box, Card, Chip, Flex, Grid, Paper, Stack, Text, Title, Tooltip } from '@mantine/core';
 import Link from 'next/link';
+import ripplet from 'ripplet.js';
 import { Main } from '../components/Content';
 import { CustomImageProxy, PreConnect } from '../components/CustomImageProxy';
 import type { Project } from '../components/works';
@@ -102,6 +103,9 @@ function CreateCard({ project }: { project: Project }) {
                                 target='_blank'
                                 rel='noopener noreferrer'
                                 style={{ fontSize: '1.5rem', paddingLeft: 10, paddingRight: 10 }}
+                                onPointerDown={event => ripplet(event, { clearing: false })}
+                                onPointerUp={() => ripplet.clear()}
+                                onPointerLeave={() => ripplet.clear()}
                             >
                                 {svg}
                             </Link>

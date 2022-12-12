@@ -6,6 +6,7 @@ import { useRouter } from 'next/router';
 import { useEffect } from 'react';
 import type { NavbarOperation } from './Interface';
 import { pages } from './pages';
+import ripplet from 'ripplet.js';
 
 const NavbarBig = dynamic(() => import('./NavbarBig'), { ssr: false });
 const NavbarSmall = dynamic(() => import('./NavbarSmall'), { ssr: false });
@@ -46,6 +47,9 @@ export const Navbar = ({ isOpen, open, close }: NavbarOperation) => {
                         display: 'flex',
                         justifyContent: 'left',
                     }}
+                    onPointerDown={event => ripplet(event, { clearing: false })}
+                    onPointerUp={() => ripplet.clear()}
+                    onPointerLeave={() => ripplet.clear()}
                 >
                     <Text
                         sx={theme => ({

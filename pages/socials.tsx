@@ -2,6 +2,7 @@ import { Box, Button, Grid, Paper, Title } from '@mantine/core';
 import Link from 'next/link';
 import { GrGithub, GrTwitter } from 'react-icons/gr';
 import { SiCrowdin } from 'react-icons/si';
+import ripplet from 'ripplet.js';
 import { Main } from '../components/Content';
 import { PreConnect } from '../components/CustomImageProxy';
 
@@ -72,6 +73,9 @@ export default function Socials() {
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
                             }}
+                            onPointerDown={event => ripplet(event, { clearing: false })}
+                            onPointerUp={() => ripplet.clear()}
+                            onPointerLeave={() => ripplet.clear()}
                         >
                             eve0415#0415
                         </Button>
@@ -107,6 +111,9 @@ export default function Socials() {
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
                             }}
+                            onPointerDown={event => ripplet(event, { clearing: false })}
+                            onPointerUp={() => ripplet.clear()}
+                            onPointerLeave={() => ripplet.clear()}
                         >
                             @eveevekun
                         </Button>
@@ -197,6 +204,9 @@ export default function Socials() {
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
                             }}
+                            onPointerDown={event => ripplet(event, { clearing: false })}
+                            onPointerUp={() => ripplet.clear()}
+                            onPointerLeave={() => ripplet.clear()}
                         >
                             eveevekun
                         </Button>
@@ -232,6 +242,9 @@ export default function Socials() {
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
                             }}
+                            onPointerDown={event => ripplet(event, { clearing: false })}
+                            onPointerUp={() => ripplet.clear()}
+                            onPointerLeave={() => ripplet.clear()}
                         >
                             eve0415
                         </Button>
@@ -267,6 +280,9 @@ export default function Socials() {
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
                             }}
+                            onPointerDown={event => ripplet(event, { clearing: false })}
+                            onPointerUp={() => ripplet.clear()}
+                            onPointerLeave={() => ripplet.clear()}
                         >
                             eve0415
                         </Button>
