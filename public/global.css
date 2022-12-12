@@ -20,6 +20,10 @@
     transition: opacity 300ms, transform 300ms;
 }
 
+.material-cols {
+    transform: scale(0);
+}
+
 .material-enter {
     transform: scale(0);
     visibility: hidden;
@@ -28,7 +32,6 @@
 .material-enter-active {
     transform: scale(1);
     transition: 1s;
-    
 }
 
 .material-enter-done {

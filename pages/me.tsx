@@ -110,7 +110,7 @@ function Material({
 
     return (
         <CSSTransition in={inView} timeout={300} classNames='material'>
-            <Grid.Col m={5} span='content' ref={ref}>
+            <Grid.Col m={5} span='content' ref={ref} className='material-cols'>
                 <Paper shadow='md' w={width} h={height} radius='sm'>
                     <Button
                         component={Link}
