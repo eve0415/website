@@ -5,7 +5,7 @@ import { horizontalPicture, profilePicture, verticalPicture } from '../component
 
 export default function Head() {
     return (
-        <div>
+        <>
             <PreConnect />
 
             <MediaQuery smallerThan='sm' styles={{ display: 'none' }}>
@@ -41,6 +41,6 @@ export default function Head() {
                     <Text fz='xl'>いつも眠たい人</Text>
                 </Flex>
             </Main>
-        </div>
+        </>
     );
 }
