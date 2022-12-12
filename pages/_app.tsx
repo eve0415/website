@@ -53,14 +53,16 @@ export default function Website({ Component, pageProps, router }: AppProps) {
 
             <SwitchTransition mode='out-in'>
                 <CSSTransition key={router.pathname} classNames='page' timeout={300} unmountOnExit>
-                    <div style={{
-                        width: '100dvw',
-                        height: '100dvh',
-                        position: 'absolute',
-                        top: '0',
-                        left: '0',
-                        overflowX: 'hidden',
-                    }}>
+                    <div
+                        style={{
+                            width: '100dvw',
+                            height: '100dvh',
+                            position: 'absolute',
+                            top: '0',
+                            left: '0',
+                            overflowX: 'hidden',
+                        }}
+                    >
                         <Component {...pageProps} />
                     </div>
                 </CSSTransition>

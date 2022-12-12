@@ -30,11 +30,13 @@ export default class WebDocument extends Document {
                     <meta property='og:image:height' content='256' />
                 </Head>
 
-                <body style={{
-                    width: '100dvw',
-                    height: '100dvh',
-                    overflow: 'hidden',
-                }}>
+                <body
+                    style={{
+                        width: '100dvw',
+                        height: '100dvh',
+                        overflow: 'hidden',
+                    }}
+                >
                     <Main />
                     <NextScript />
                 </body>
