@@ -67,12 +67,16 @@ export default function Socials() {
                                 </Box>
                             }
                             radius='md'
-                            sx={{
+                            sx={theme => ({
                                 backgroundColor: '#2532F2',
                                 display: 'flex',
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
-                            }}
+                                transitionDuration: '500ms',
+                                '&:hover': {
+                                    backgroundColor: theme.fn.darken('#2532F2', 0.2),
+                                },
+                            })}
                             onPointerDown={event => ripplet(event, { clearing: false })}
                             onPointerUp={() => ripplet.clear()}
                             onPointerLeave={() => ripplet.clear()}
@@ -105,12 +109,16 @@ export default function Socials() {
                             href='https://twitter.com/eveevekun'
                             target='_blank'
                             rel='noopener noreferrer'
-                            sx={{
+                            sx={theme => ({
                                 backgroundColor: '#1D9BF0',
                                 display: 'flex',
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
-                            }}
+                                transitionDuration: '500ms',
+                                '&:hover': {
+                                    backgroundColor: theme.fn.darken('#1D9BF0', 0.2),
+                                },
+                            })}
                             onPointerDown={event => ripplet(event, { clearing: false })}
                             onPointerUp={() => ripplet.clear()}
                             onPointerLeave={() => ripplet.clear()}
@@ -236,12 +244,16 @@ export default function Socials() {
                             href='https://github.com/eve0415'
                             target='_blank'
                             rel='noopener noreferrer'
-                            sx={{
+                            sx={theme => ({
                                 backgroundColor: '#181616',
                                 display: 'flex',
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
-                            }}
+                                transitionDuration: '500ms',
+                                '&:hover': {
+                                    backgroundColor: theme.fn.darken('#fff', 0.7),
+                                },
+                            })}
                             onPointerDown={event => ripplet(event, { clearing: false })}
                             onPointerUp={() => ripplet.clear()}
                             onPointerLeave={() => ripplet.clear()}
@@ -274,12 +286,16 @@ export default function Socials() {
                             href='https://crowdin.com/profile/eve0415'
                             target='_blank'
                             rel='noopener noreferrer'
-                            sx={{
+                            sx={theme => ({
                                 backgroundColor: '#2E3340',
                                 display: 'flex',
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
-                            }}
+                                transitionDuration: '500ms',
+                                '&:hover': {
+                                    backgroundColor: theme.fn.darken('#2E3340', 0.5),
+                                },
+                            })}
                             onPointerDown={event => ripplet(event, { clearing: false })}
                             onPointerUp={() => ripplet.clear()}
                             onPointerLeave={() => ripplet.clear()}

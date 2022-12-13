@@ -58,8 +58,8 @@ export default function Website({ Component, pageProps, router }: AppProps) {
                             width: '100dvw',
                             height: '100dvh',
                             position: 'absolute',
-                            top: '0',
-                            left: '0',
+                            top: 0,
+                            left: 0,
                             overflowX: 'hidden',
                         }}
                     >

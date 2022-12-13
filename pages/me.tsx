@@ -121,7 +121,14 @@ function Material({
                         variant='white'
                         target='_blank'
                         rel='noopener noreferrer'
-                        style={{ textDecoration: 'none', color: 'black' }}
+                        sx={theme => ({
+                            textDecoration: 'none',
+                            color: 'black',
+                            transitionDuration: '500ms',
+                            '&:hover': {
+                                backgroundColor: theme.fn.darken('#fff', 0.05),
+                            },
+                        })}
                         onPointerDown={event => ripplet(event, { clearing: false })}
                         onPointerUp={() => ripplet.clear()}
                         onPointerLeave={() => ripplet.clear()}
