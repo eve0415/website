@@ -31,7 +31,7 @@
 
 .material-enter-active {
     transform: scale(1);
-    transition: 1s;
+    transition: 200ms;
 }
 
 .material-enter-done {

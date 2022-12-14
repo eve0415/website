@@ -6,7 +6,7 @@ import { useState } from 'react';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { Navbar } from '../components/navbar';
 
-import '../public/global.css';
+import '../styles/global.css';
 
 const fonts = Roboto({
     weight: ['300', '400', '500', '700'],
