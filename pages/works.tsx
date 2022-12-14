@@ -1,10 +1,8 @@
-import { Box, Card, Chip, Flex, Grid, Paper, Stack, Text, Title, Tooltip } from '@mantine/core';
-import Link from 'next/link';
-import ripplet from 'ripplet.js';
+import { Box, Grid, Paper, Stack, Title } from '@mantine/core';
+import { WorkCard } from '../components/card/WorkCard';
 import { Main } from '../components/Content';
-import { CustomImageProxy, PreConnect } from '../components/CustomImageProxy';
-import type { Project } from '../components/works';
-import { BotProject, MinecraftProject, tagList, TranslatedProject } from '../components/works';
+import { PreConnect } from '../components/CustomImageProxy';
+import { BotProject, MinecraftProject, TranslatedProject } from '../components/works';
 
 export default function Works() {
     return (
@@ -24,7 +22,7 @@ export default function Works() {
                     <Box p={16} sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}>
                         <Grid w='calc(100% + 20px);' sx={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
                             {BotProject.map(p => (
-                                <CreateCard project={p} key={p.name} />
+                                <WorkCard project={p} key={p.name} />
                             ))}
                         </Grid>
                     </Box>
@@ -38,7 +36,7 @@ export default function Works() {
                     <Box p={16} sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}>
                         <Grid w='calc(100% + 20px);' sx={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
                             {MinecraftProject.map(p => (
-                                <CreateCard project={p} key={p.name} />
+                                <WorkCard project={p} key={p.name} />
                             ))}
                         </Grid>
                     </Box>
@@ -52,93 +50,12 @@ export default function Works() {
                     <Box p={16} sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}>
                         <Grid w='calc(100% + 20px);' sx={{ flexWrap: 'nowrap', overflowX: 'auto' }}>
                             {TranslatedProject.map(p => (
-                                <CreateCard project={p} key={p.name} />
+                                <WorkCard project={p} key={p.name} />
                             ))}
                         </Grid>
                     </Box>
                 </Paper>
             </Stack>
         </Main>
-    );
-}
-
-function CreateCard({ project }: { project: Project }) {
-    const { name, description, image, language, tag, link } = project;
-
-    return (
-        <Grid.Col key={name} span='content'>
-            <Card w={300} h={400} withBorder>
-                <Card.Section>
-                    <CustomImageProxy
-                        src={image}
-                        alt={name}
-                        height={150}
-                        width={300}
-                        style={{
-                            objectFit: /opengraph.githubassets.com/.test(image) ? 'contain' : 'cover',
-                            borderRadius: 5,
-                        }}
-                    />
-                </Card.Section>
-
-                <Title order={5} size='2rem'>
-                    {name}
-                </Title>
-
-                <Chip.Group position='center' mb={10}>
-                    <Chip variant='filled'>{language}</Chip>
-                    {tag?.map(t => (
-                        <CreateTag tagId={t} key={t} />
-                    ))}
-                </Chip.Group>
-
-                <Text>{description}</Text>
-
-                <Card.Section>
-                    <Flex pos='absolute' justify='center' w='100%' bottom={0}>
-                        {link.map(({ name: linkName, url, svg }) => (
-                            <Link
-                                href={url}
-                                key={linkName}
-                                target='_blank'
-                                rel='noopener noreferrer'
-                                style={{
-                                    fontSize: '1.5rem',
-                                    boxSizing: 'content-box',
-                                    padding: 10,
-                                    marginBottom: 6,
-                                    width: '1.5rem',
-                                    height: '1.5rem',
-                                    borderRadius: '1.5rem',
-                                }}
-                                onPointerDown={event => ripplet(event, { clearing: false })}
-                                onPointerUp={() => ripplet.clear()}
-                                onPointerLeave={() => ripplet.clear()}
-                                className='work-card-link'
-                            >
-                                {svg}
-                            </Link>
-                        ))}
-                    </Flex>
-                </Card.Section>
-            </Card>
-        </Grid.Col>
-    );
-}
-
-function CreateTag({ tagId }: { tagId: string }) {
-    const tagName = tagList.find(({ id }) => id === tagId);
-
-    return (
-        <Tooltip
-            multiline
-            withinPortal
-            label={tagName?.description}
-            events={{ hover: false, focus: true, touch: true }}
-            transition='pop'
-            transitionDuration={0}
-        >
-            <Chip variant='filled'>{`${tagName?.name}`}</Chip>
-        </Tooltip>
     );
 }
