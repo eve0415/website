@@ -1,4 +1,4 @@
-import { Box, Card, Chip, Flex, Grid, Text, Title } from '@mantine/core';
+import { Card, Chip, Flex, Grid, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import ripplet from 'ripplet.js';
 import { CustomImageProxy } from '../CustomImageProxy';
@@ -62,7 +62,7 @@ export const WorkCard = ({ project }: { project: Project }) => {
                                 onPointerUp={() => ripplet.clear()}
                                 onPointerLeave={() => ripplet.clear()}
                             >
-                                <Box>{svg}</Box>
+                                {svg}
                             </Link>
                         ))}
                     </Flex>
