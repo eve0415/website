@@ -5,7 +5,7 @@ import { CSSTransition } from 'react-transition-group';
 import ripplet from 'ripplet.js';
 import type { LinkCard } from '../me';
 
-export function Material({
+export const Material = ({
     name,
     url,
     svg,
@@ -14,7 +14,7 @@ export function Material({
 }: LinkCard & {
     width: number;
     height: number;
-}) {
+}) => {
     const { ref, inView } = useInView({ threshold: 0.25, triggerOnce: true });
 
     return (
@@ -53,4 +53,4 @@ export function Material({
             </Grid.Col>
         </CSSTransition>
     );
-}
+};
