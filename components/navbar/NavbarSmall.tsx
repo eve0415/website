@@ -26,7 +26,7 @@ export default function NavbarSmall({
             sx={{ top: -20, left: -20, zIndex: 1000, borderRadius: '50%', backgroundColor: '#E5FCFB' }}
             onClick={() => (isOpen ? close() : open())}
         >
-            <Burger opened={isOpen} />
+        >
             <Drawer withCloseButton={false} opened={isOpen} onClose={close}>
                 {/* {children} */}
                 <Box
