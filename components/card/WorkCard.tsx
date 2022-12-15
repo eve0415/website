@@ -26,7 +26,7 @@ export const WorkCard = ({ project }: { project: Project }) => {
                     />
                 </Card.Section>
 
-                <Title order={5} size='2rem'>
+                <Title order={3} size='2rem'>
                     {name}
                 </Title>
 
@@ -45,6 +45,7 @@ export const WorkCard = ({ project }: { project: Project }) => {
                             <Link
                                 href={url}
                                 key={linkName}
+                                aria-label={linkName}
                                 target='_blank'
                                 className={styles.work}
                                 rel='noopener noreferrer'

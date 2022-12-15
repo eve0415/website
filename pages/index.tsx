@@ -28,9 +28,9 @@ export default function Head() {
                         <CustomImageProxy
                             src={profilePicture}
                             alt='My profile picture'
-                            // sizes='(min-width: 1200px) 300px, (min-width: 900px) 200px, 100px'
+                            sizes='(min-width: 1200px) 300px, (min-width: 1000px) 200px, 100px'
                             fill
-                            // priority
+                            priority
                         />
                     </Box>
 

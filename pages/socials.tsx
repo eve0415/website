@@ -11,7 +11,7 @@ export default function Socials() {
         <Main>
             <PreConnect />
 
-            <Title size='3rem' pt={4}>
+            <Title order={1} size='3rem' pt={4}>
                 ソーシャルアカウント
             </Title>
 
@@ -24,7 +24,7 @@ export default function Socials() {
                 m={30}
                 sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}
             >
-                <Title order={4} p={5} size='2rem'>
+                <Title order={2} p={5} size='2rem'>
                     連絡方法
                 </Title>
 

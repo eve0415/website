@@ -18,6 +18,9 @@ export default function NavbarSmall({
         <Button
             size='xl'
             variant='subtle'
+            role='navigation'
+            aria-label={`${isOpen ? 'close' : 'open'} menu`}
+            title='menu'
             h={100}
             w={100}
             sx={{ top: -20, left: -20, zIndex: 1000, borderRadius: '50%', backgroundColor: '#E5FCFB' }}
