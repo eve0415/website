@@ -85,7 +85,7 @@ export default function Me() {
 
                 <Grid justify='center' align='center' gutter='lg' p={10}>
                     {editor.map(({ name, url, svg }) => (
-                        <Material key={name} name={name} url={url} svg={svg} width={150} height={150} />
+                        <Material key={name} name={name} url={url} svg={svg} width={130} height={130} />
                     ))}
                 </Grid>
             </Paper>
