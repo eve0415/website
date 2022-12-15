@@ -1,19 +1,22 @@
-import { Card, Chip, Flex, Grid, Text, Title } from '@mantine/core';
+import { Card, Chip, Flex, Grid, Loader, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import ripplet from 'ripplet.js';
 import { CustomImageProxy } from '../CustomImageProxy';
 import type { Project } from '../works';
 import { Tag } from './Tag';
 
+import { useState } from 'react';
 import styles from './card.module.css';
 
 export const WorkCard = ({ project }: { project: Project }) => {
     const { name, description, image, language, tag, link } = project;
+    const [loading, setLoading] = useState(true);
 
     return (
         <Grid.Col key={name} span='content'>
             <Card w={300} h={400} withBorder>
                 <Card.Section>
+                    {loading && <Loader variant='bars' fontSize='1px' pos='absolute' h={150} w={300} />}
                     <CustomImageProxy
                         src={image}
                         alt={name}
@@ -23,10 +26,11 @@ export const WorkCard = ({ project }: { project: Project }) => {
                             objectFit: /opengraph.githubassets.com/.test(image) ? 'contain' : 'cover',
                             borderRadius: 5,
                         }}
+                        onLoadingComplete={() => setLoading(false)}
                     />
                 </Card.Section>
 
-                <Title order={3} size='2rem'>
+                <Title order={3} size='1.5rem'>
                     {name}
                 </Title>
 
