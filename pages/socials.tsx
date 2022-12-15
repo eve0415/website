@@ -72,6 +72,7 @@ export default function Socials() {
                                 display: 'flex',
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
+                                border: 'none',
                                 transitionDuration: '500ms',
                                 '&:hover': {
                                     backgroundColor: theme.fn.darken('#2532F2', 0.2),
@@ -114,6 +115,7 @@ export default function Socials() {
                                 display: 'flex',
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
+                                border: 'none',
                                 transitionDuration: '500ms',
                                 '&:hover': {
                                     backgroundColor: theme.fn.darken('#1D9BF0', 0.2),
@@ -210,6 +212,7 @@ export default function Socials() {
                                     'radial-gradient(circle at 30% 107%, #fdf497 0%, #fdf497 5%, #fd5949 35%, #d6249f 40%, #285AEB 90%)',
                                 display: 'flex',
                                 justifyContent: 'flex-start',
+                                border: 'none',
                                 fontSize: '1.5rem',
                             }}
                             onPointerDown={event => ripplet(event, { clearing: false })}
@@ -249,6 +252,7 @@ export default function Socials() {
                                 display: 'flex',
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
+                                border: 'none',
                                 transitionDuration: '500ms',
                                 '&:hover': {
                                     backgroundColor: theme.fn.darken('#fff', 0.7),
@@ -291,6 +295,7 @@ export default function Socials() {
                                 display: 'flex',
                                 justifyContent: 'flex-start',
                                 fontSize: '1.5rem',
+                                border: 'none',
                                 transitionDuration: '500ms',
                                 '&:hover': {
                                     backgroundColor: theme.fn.darken('#2E3340', 0.5),
