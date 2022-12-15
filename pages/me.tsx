@@ -6,7 +6,7 @@ import { editor, notUsed, technology } from '../components/me';
 export default function Me() {
     return (
         <Main>
-            <Title order={1} size='3rem' pt={4}>
+            <Title order={1} size='2.2rem' pt={4}>
                 プロフィール
             </Title>
 
@@ -14,6 +14,7 @@ export default function Me() {
                 shadow='sm'
                 radius='sm'
                 mt={20}
+                mx={5}
                 p={10}
                 sx={{ border: '1px dashed grey', textAlign: 'center' }}
             >
@@ -40,7 +41,7 @@ export default function Me() {
                 withBorder
                 sx={{ border: '1px dashed grey', textAlign: 'center' }}
             >
-                <Title order={2} size='2rem'>
+                <Title order={2} size='1.8rem' pt={10}>
                     使用している技術・分野
                 </Title>
 
@@ -59,7 +60,7 @@ export default function Me() {
                 withBorder
                 sx={{ border: '1px dashed grey', textAlign: 'center' }}
             >
-                <Title order={2} size='2rem'>
+                <Title order={2} size='1.8rem' pt={10}>
                     触れたことがある技術・分野
                 </Title>
 
@@ -78,7 +79,7 @@ export default function Me() {
                 withBorder
                 sx={{ border: '1px dashed grey', textAlign: 'center' }}
             >
-                <Title order={2} size='2rem'>
+                <Title order={2} size='1.8rem' pt={10}>
                     使用しているエディター・IDE
                 </Title>
 

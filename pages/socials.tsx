@@ -11,7 +11,7 @@ export default function Socials() {
         <Main>
             <PreConnect />
 
-            <Title order={1} size='3rem' pt={4}>
+            <Title order={1} size='2.2rem' pt={4}>
                 ソーシャルアカウント
             </Title>
 

@@ -9,13 +9,13 @@ export default function Works() {
         <Main>
             <PreConnect />
 
-            <Title order={1} size='3rem' pt={4}>
+            <Title order={1} size='2.2rem' pt={4}>
                 プロジェクト関連
             </Title>
 
             <Stack mt={40} w='95%' pos='relative'>
                 <Paper shadow='lg' radius='sm' p={15}>
-                    <Title order={2} size='2rem'>
+                    <Title order={2} size='1.8rem' pb={8}>
                         Discord BOT 関連
                     </Title>
 
@@ -29,7 +29,7 @@ export default function Works() {
                 </Paper>
 
                 <Paper shadow='lg' radius='sm' p={15}>
-                    <Title order={2} size='2rem'>
+                    <Title order={2} size='1.8rem' pb={8}>
                         Minecraft 関連
                     </Title>
 
@@ -43,7 +43,7 @@ export default function Works() {
                 </Paper>
 
                 <Paper shadow='lg' radius='sm' p={15}>
-                    <Title order={2} size='2rem'>
+                    <Title order={2} size='1.8rem' pb={8}>
                         翻訳したプロジェクト
                     </Title>
 
