@@ -129,7 +129,8 @@ export default function Socials() {
                         </Button>
                     </Grid.Col>
 
-                    <Grid.Col md={6}>
+                    {/* I currently don't have any plan to use Instagram tbh */}
+                    {/* <Grid.Col md={6}>
                         <Button
                             fullWidth
                             component={Link}
@@ -221,7 +222,7 @@ export default function Socials() {
                         >
                             eveevekun
                         </Button>
-                    </Grid.Col>
+                    </Grid.Col> */}
 
                     <Grid.Col md={6}>
                         <Button
