@@ -1,6 +1,6 @@
-import { Language, Twitter } from '@mui/icons-material';
+import { GrGithub, GrLanguage, GrTwitter } from 'react-icons/gr';
+import { SiCrowdin } from 'react-icons/si';
 import type { Project } from '.';
-import { Crowdin, GitHub } from '../svg';
 
 export const TranslatedProject: readonly Project[] = [
     {
@@ -13,22 +13,22 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Homepage',
                 url: 'https://getzbra.com/',
-                svg: <Language />,
+                svg: <GrLanguage />,
             },
             {
                 name: 'Twitter',
                 url: 'https://twitter.com/getZebra',
-                svg: <Twitter sx={{ color: '#1D9BF0' }} />,
+                svg: <GrTwitter color='#1D9BF0' />,
             },
             {
                 name: 'GitHub',
                 url: 'https://github.com/zbrateam/Zebra',
-                svg: GitHub,
+                svg: <GrGithub color='#181616' />,
             },
             {
                 name: 'Crowdin',
                 url: 'https://crowdin.com/project/zebra',
-                svg: Crowdin,
+                svg: <SiCrowdin color='#2E3340' />,
             },
         ],
     },
@@ -42,22 +42,22 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Homepage',
                 url: 'https://getsileo.app/',
-                svg: <Language />,
+                svg: <GrLanguage />,
             },
             {
                 name: 'Twitter',
                 url: 'https://twitter.com/GetSileo',
-                svg: <Twitter sx={{ color: '#1D9BF0' }} />,
+                svg: <GrTwitter color='#1D9BF0' />,
             },
             {
                 name: 'GitHub',
                 url: 'https://github.com/Sileo/Sileo',
-                svg: GitHub,
+                svg: <GrGithub color='#181616' />,
             },
             {
                 name: 'Crowdin',
                 url: 'https://crowdin.com/project/sileo',
-                svg: Crowdin,
+                svg: <SiCrowdin color='#2E3340' />,
             },
         ],
     },
@@ -71,17 +71,17 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Homepage',
                 url: 'https://velocitypowered.com/',
-                svg: <Language />,
+                svg: <GrLanguage />,
             },
             {
                 name: 'GitHub',
                 url: 'https://github.com/PaperMC/Velocity',
-                svg: GitHub,
+                svg: <GrGithub color='#181616' />,
             },
             {
                 name: 'Crowdin',
                 url: 'https://crowdin.com/project/velocity',
-                svg: Crowdin,
+                svg: <SiCrowdin color='#2E3340' />,
             },
         ],
     },
@@ -95,17 +95,17 @@ export const TranslatedProject: readonly Project[] = [
             {
                 name: 'Homepage',
                 url: 'https://top.gg/',
-                svg: <Language />,
+                svg: <GrLanguage />,
             },
             {
                 name: 'Twitter',
                 url: 'https://twitter.com/JoinTopgg',
-                svg: <Twitter sx={{ color: '#1D9BF0' }} />,
+                svg: <GrTwitter color='#1D9BF0' />,
             },
             {
                 name: 'Crowdin',
                 url: 'https://crowdin.com/project/topgg',
-                svg: Crowdin,
+                svg: <SiCrowdin color='#2E3340' />,
             },
         ],
     },

@@ -1,4 +1,4 @@
-import { GitHub } from '../svg';
+import { GrGithub } from 'react-icons/gr';
 import type { Project } from '.';
 
 export const BotProject: readonly Project[] = [
@@ -12,7 +12,7 @@ export const BotProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/DevTool',
-                svg: GitHub,
+                svg: <GrGithub color='#181616' />,
             },
         ],
     },
@@ -26,7 +26,7 @@ export const BotProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/TensorGame',
-                svg: GitHub,
+                svg: <GrGithub color='#181616' />,
             },
         ],
     },
@@ -40,7 +40,7 @@ export const BotProject: readonly Project[] = [
             {
                 name: 'GitHub',
                 url: 'https://github.com/eve0415/AnnoyYou',
-                svg: GitHub,
+                svg: <GrGithub color='#181616' />,
             },
         ],
     },
@@ -55,7 +55,7 @@ export const BotProject: readonly Project[] = [
             {
                 name: 'PinIt',
                 url: 'https://github.com/eve0415/PinIt',
-                svg: GitHub,
+                svg: <GrGithub color='#181616' />,
             },
         ],
     },

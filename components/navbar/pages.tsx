@@ -1,24 +1,25 @@
-import { ContactPage, Face, Home, Work } from '@mui/icons-material';
+import { AiFillHome } from 'react-icons/ai';
+import { MdContactPage, MdFace, MdWork } from 'react-icons/md';
 
 export const pages = [
     {
         title: 'Home',
-        icon: <Home sx={{ fontSize: { md: 25, lg: 30 } }} />,
+        icon: <AiFillHome />,
         href: '/',
     },
     {
         title: 'About Me',
-        icon: <Face sx={{ fontSize: { md: 25, lg: 30 } }} />,
+        icon: <MdFace />,
         href: '/me',
     },
     {
         title: 'My Works',
-        icon: <Work sx={{ fontSize: { md: 25, lg: 30 } }} />,
+        icon: <MdWork />,
         href: '/works',
     },
     {
         title: 'Socials',
-        icon: <ContactPage sx={{ fontSize: { md: 25, lg: 30 } }} />,
+        icon: <MdContactPage />,
         href: '/socials',
     },
 ] as const;

@@ -1,13 +1,21 @@
-import { Box, styled } from '@mui/material';
+import { Box } from '@mantine/core';
 import type { ReactNode } from 'react';
 
-const Content = styled('div')(({ theme }) => ({
-    marginTop: theme.spacing(5),
-    marginBottom: theme.spacing(5),
-}));
-
-export const Main = ({ children }: { children: ReactNode }) => (
-    <Box height='100vh' overflow='auto'>
-        <Content sx={{ ml: { md: '25%' } }}>{children}</Content>
+export const Main = ({ children, margin }: { children: ReactNode; margin?: number }) => (
+    <Box
+        pos='absolute'
+        w='100%'
+        sx={theme => ({
+            display: 'flex',
+            flexDirection: 'column',
+            justifyContent: 'center',
+            alignItems: 'center',
+            overflow: 'auto',
+            marginTop: margin ?? 70,
+            paddingBottom: margin ?? 100,
+            [`@media (min-width: ${theme.breakpoints.md}px)`]: { paddingLeft: '25%' },
+        })}
+    >
+        {children}
     </Box>
 );

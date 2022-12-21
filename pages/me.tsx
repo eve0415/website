@@ -1,170 +1,94 @@
-import { Box, CardActionArea, Container, Grid, Paper, Stack, SvgIcon, Typography, Zoom } from '@mui/material';
-import Link from 'next/link';
-import { useInView } from 'react-intersection-observer';
+import { Grid, Paper, Text, Title } from '@mantine/core';
 import { Main } from '../components/Content';
-import type { LinkCard } from '../components/me';
+import { Material } from '../components/material/Material';
 import { editor, notUsed, technology } from '../components/me';
 
 export default function Me() {
     return (
         <Main>
-            <Container
-                sx={{
-                    display: 'flex',
-                    flexDirection: 'column',
-                    alignItems: 'center',
-                }}
+            <Title order={1} size='2.2rem' pt={4}>
+                プロフィール
+            </Title>
+
+            <Paper
+                shadow='sm'
+                radius='sm'
+                mt={20}
+                mx={5}
+                p={10}
+                sx={{ border: '1px dashed grey', textAlign: 'center' }}
             >
-                <Typography variant='h3' pt={4}>
-                    プロフィール
-                </Typography>
+                <Title order={2} size='2rem'>
+                    自己紹介
+                </Title>
 
-                <Stack spacing={3} mt={5} alignItems='center' justifyContent='center'>
-                    <Box
-                        sx={{
-                            boxShadow: 2,
-                            bgcolor: 'background.paper',
-                            borderRadius: 2,
-                            p: 2,
-                            border: '1px dashed grey',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <Typography variant='h4'>自己紹介</Typography>
-                        <Typography variant='body1' pt={3}>
-                            こんにちは
-                            <br />
-                            猫と寝るの大好き
-                            <br />
-                            たまにプログラム書いてます
-                            <br />
-                            日本人ですが、どちらかといえば英語の方が得意です
-                        </Typography>
-                    </Box>
+                <Text pt={3}>
+                    こんにちは
+                    <br />
+                    猫と寝るの大好き
+                    <br />
+                    毎日プログラム書いてます
+                    <br />
+                    日本人ですが、どちらかといえば英語の方が得意です
+                </Text>
+            </Paper>
 
-                    <Box
-                        sx={{
-                            boxShadow: 2,
-                            bgcolor: 'background.paper',
-                            borderRadius: 2,
-                            p: 2,
-                            border: '1px dashed grey',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <Typography variant='h4'>使用している技術・分野</Typography>
-                        <Grid container spacing={5} mt={2} justifyContent='center'>
-                            {technology.map(({ name, url, svg }) => (
-                                <Material
-                                    key={name}
-                                    name={name}
-                                    url={url}
-                                    svg={svg}
-                                    width={128}
-                                    height={128}
-                                />
-                            ))}
-                        </Grid>
-                    </Box>
+            <Paper
+                shadow='sm'
+                radius='sm'
+                my={20}
+                w='90%'
+                withBorder
+                sx={{ border: '1px dashed grey', textAlign: 'center' }}
+            >
+                <Title order={2} size='1.8rem' pt={10}>
+                    使用している技術・分野
+                </Title>
 
-                    <Box
-                        sx={{
-                            boxShadow: 2,
-                            bgcolor: 'background.paper',
-                            borderRadius: 2,
-                            p: 2,
-                            border: '1px dashed grey',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <Typography variant='h4' display='inline-block'>
-                            触れたことがある技術・
-                        </Typography>
-                        <Typography variant='h4' display='inline-block'>
-                            分野
-                        </Typography>
-                        <Grid container spacing={5} mt={2} justifyContent='center'>
-                            {notUsed.map(({ name, url, svg }) => (
-                                <Material
-                                    key={name}
-                                    name={name}
-                                    url={url}
-                                    svg={svg}
-                                    width={150}
-                                    height={150}
-                                />
-                            ))}
-                        </Grid>
-                    </Box>
+                <Grid justify='center' align='center' gutter='lg' p={10}>
+                    {technology.map(({ name, url, svg }) => (
+                        <Material key={name} name={name} url={url} svg={svg} width={128} height={128} />
+                    ))}
+                </Grid>
+            </Paper>
 
-                    <Box
-                        sx={{
-                            boxShadow: 2,
-                            bgcolor: 'background.paper',
-                            borderRadius: 2,
-                            p: 2,
-                            border: '1px dashed grey',
-                            textAlign: 'center',
-                        }}
-                    >
-                        <Typography variant='h4'>使用しているエディター・IDE</Typography>
-                        <Grid container spacing={5} mt={2} justifyContent='center'>
-                            {editor.map(({ name, url, svg }) => (
-                                <Material
-                                    key={name}
-                                    name={name}
-                                    url={url}
-                                    svg={svg}
-                                    width={150}
-                                    height={150}
-                                />
-                            ))}
-                        </Grid>
-                    </Box>
-                </Stack>
-            </Container>
+            <Paper
+                shadow='sm'
+                radius='sm'
+                my={20}
+                w='90%'
+                withBorder
+                sx={{ border: '1px dashed grey', textAlign: 'center' }}
+            >
+                <Title order={2} size='1.8rem' pt={10}>
+                    触れたことがある技術・分野
+                </Title>
+
+                <Grid justify='center' align='center' gutter='lg' p={10}>
+                    {notUsed.map(({ name, url, svg }) => (
+                        <Material key={name} name={name} url={url} svg={svg} width={150} height={150} />
+                    ))}
+                </Grid>
+            </Paper>
+
+            <Paper
+                shadow='sm'
+                radius='sm'
+                my={20}
+                w='90%'
+                withBorder
+                sx={{ border: '1px dashed grey', textAlign: 'center' }}
+            >
+                <Title order={2} size='1.8rem' pt={10}>
+                    使用しているエディター・IDE
+                </Title>
+
+                <Grid justify='center' align='center' gutter='lg' p={10}>
+                    {editor.map(({ name, url, svg }) => (
+                        <Material key={name} name={name} url={url} svg={svg} width={130} height={130} />
+                    ))}
+                </Grid>
+            </Paper>
         </Main>
-    );
-}
-
-function Material({
-    name,
-    url,
-    svg,
-    width,
-    height,
-}: LinkCard & {
-    width: number;
-    height: number;
-}) {
-    const { ref, inView } = useInView({ threshold: 0.5, triggerOnce: true });
-
-    return (
-        <Grid item ref={ref}>
-            <Zoom in={inView}>
-                <Paper sx={{ width: width, height: height }}>
-                    <Link href={url} style={{ textDecoration: 'none', color: 'black' }} passHref>
-                        <CardActionArea
-                            target='_blank'
-                            rel='noopener noreferrer'
-                            href=''
-                            sx={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                justifyContent: 'center',
-                                width: width,
-                                height: height,
-                            }}
-                        >
-                            <SvgIcon viewBox='0 0 128 128' sx={{ fontSize: '70px' }}>
-                                {svg}
-                            </SvgIcon>
-                            {name}
-                        </CardActionArea>
-                    </Link>
-                </Paper>
-            </Zoom>
-        </Grid>
     );
 }
