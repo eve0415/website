@@ -1,6 +1,6 @@
 import { Grid, Paper, Text, Title } from '@mantine/core';
 import { Main } from '../components/Content';
-import { Material } from '../components/material/Material';
+import { Material } from '../components/material';
 import { editor, notUsed, technology } from '../components/me';
 
 export default function Me() {
