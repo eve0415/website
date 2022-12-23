@@ -1,5 +1,6 @@
 import { Box, Button, Grid, Paper, Title } from '@mantine/core';
 import Link from 'next/link';
+import { FiExternalLink } from 'react-icons/fi';
 import { GrGithub, GrTwitter } from 'react-icons/gr';
 import { SiCrowdin } from 'react-icons/si';
 import ripplet from 'ripplet.js';
@@ -106,6 +107,7 @@ export default function Socials() {
                                     <GrTwitter color='#1D9BF0' size='24' />
                                 </Box>
                             }
+                            rightIcon={<FiExternalLink style={{ position: 'absolute', right: '10' }} />}
                             radius='md'
                             href='https://twitter.com/eveevekun'
                             target='_blank'
@@ -244,6 +246,7 @@ export default function Socials() {
                                     <GrGithub color='#181616' size='24' />
                                 </Box>
                             }
+                            rightIcon={<FiExternalLink style={{ position: 'absolute', right: '10' }} />}
                             radius='md'
                             href='https://github.com/eve0415'
                             target='_blank'
@@ -287,6 +290,7 @@ export default function Socials() {
                                     <SiCrowdin color='#2E3340' size='24' />
                                 </Box>
                             }
+                            rightIcon={<FiExternalLink style={{ position: 'absolute', right: '10' }} />}
                             radius='md'
                             href='https://crowdin.com/profile/eve0415'
                             target='_blank'
