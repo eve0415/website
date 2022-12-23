@@ -1,5 +1,5 @@
 import { Box, Grid, Paper, Stack, Title } from '@mantine/core';
-import { WorkCard } from '../components/card/WorkCard';
+import { WorkCard } from '../components/card';
 import { Main } from '../components/Content';
 import { PreConnect } from '../components/CustomImageProxy';
 import { BotProject, MinecraftProject, TranslatedProject } from '../components/works';
