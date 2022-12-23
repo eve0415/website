@@ -1,5 +1,5 @@
 import { MantineProvider } from '@mantine/core';
-import { Roboto } from '@next/font/google';
+import localFont from '@next/font/local';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';
@@ -8,11 +8,9 @@ import { Navbar } from '../components/navbar';
 
 import '../styles/global.css';
 
-const fonts = Roboto({
-    weight: ['300', '400', '500', '700'],
-    subsets: ['latin'],
+const font = localFont({
+    src: '../font/LINESeedJP_OTF_Rg.woff2',
     display: 'swap',
-    fallback: ['Noto Sans JP', 'sans-serif'],
 });
 
 export default function Website({ Component, pageProps, router }: AppProps) {
@@ -25,9 +23,9 @@ export default function Website({ Component, pageProps, router }: AppProps) {
             withCSSVariables
             theme={{
                 respectReducedMotion: true,
-                fontFamily: fonts.style.fontFamily,
+                fontFamily: font.style.fontFamily,
                 headings: {
-                    fontFamily: fonts.style.fontFamily,
+                    fontFamily: font.style.fontFamily,
                     fontWeight: 400,
                 },
                 globalStyles: () => ({
