@@ -18,9 +18,6 @@ const nextConfig = {
     },
     experimental: {
         adjustFontFallbacks: true,
-        fontLoaders: [
-            { loader: '@next/font/google' },
-        ],
         newNextLinkBehavior: true,
         legacyBrowsers: false,
         optimisticClientCache: true,
