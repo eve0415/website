@@ -16,4 +16,4 @@ export const tagList = [
     },
 ] as const;
 
-export type Tag = typeof tagList[number]['id'];
+export type Tag = (typeof tagList)[number]['id'];
