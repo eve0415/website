@@ -4,9 +4,9 @@ import dynamic from 'next/dynamic';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useEffect } from 'react';
+import ripplet from 'ripplet.js';
 import type { NavbarOperation } from './Interface';
 import { pages } from './pages';
-import ripplet from 'ripplet.js';
 
 const NavbarBig = dynamic(() => import('./NavbarBig'), { ssr: false });
 const NavbarSmall = dynamic(() => import('./NavbarSmall'), { ssr: false });
