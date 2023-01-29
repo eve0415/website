@@ -1,17 +1,14 @@
-import { Box, Button, Grid, Paper, Title } from '@mantine/core';
+import { Box, Button, Grid, Paper, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import { FiExternalLink } from 'react-icons/fi';
 import { GrGithub, GrTwitter } from 'react-icons/gr';
 import { SiCrowdin } from 'react-icons/si';
 import ripplet from 'ripplet.js';
 import { Main } from '../components/Content';
-import { PreConnect } from '../components/CustomImageProxy';
 
 export default function Socials() {
   return (
     <Main>
-      <PreConnect />
-
       <Title order={1} size='2.2rem' pt={4}>
         ソーシャルアカウント
       </Title>
@@ -20,14 +17,21 @@ export default function Socials() {
         withBorder
         shadow='lg'
         radius='sm'
-        p={32}
+        p={24}
         pt={16}
         m={30}
+        w='90%'
         sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}
       >
         <Title order={2} p={5} size='2rem'>
           連絡方法
         </Title>
+
+        <Text py={3}>
+          お仕事などの依頼は Discord の DM のお願いします。
+          <br />
+          DM できない場合は Twitter の DM にてお願いします。
+        </Text>
 
         <Grid pt={10}>
           <Grid.Col md={6}>
@@ -311,6 +315,96 @@ export default function Socials() {
               onPointerLeave={() => ripplet.clear()}
             >
               eve0415
+            </Button>
+          </Grid.Col>
+        </Grid>
+      </Paper>
+
+      <Paper
+        withBorder
+        shadow='lg'
+        radius='sm'
+        p={24}
+        pt={16}
+        m={30}
+        mt={10}
+        w='90%'
+        sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}
+      >
+        <Title order={2} p={5} size='2rem'>
+          サポート・寄付・支援
+        </Title>
+
+        <Text py={3}>
+          GitHub Sponsors に登録しています。
+          <br />
+          ３月までは学生です。趣味で自分の時間を使って開発しています。
+          <br />
+          幅広く浅く様々な技術を学び活用し、いろいろなものを作っています。
+          <br />
+          自分のノーパソがないので、自立しても開発できるよう購入を検討しています。
+          <br />
+          バイトと開発の両立は難しい。。。。
+          <br />
+          ご支援いただけると嬉しいです。
+        </Text>
+
+        <Grid pt={10}>
+          <Grid.Col md={6}>
+            <Button
+              fullWidth
+              component={Link}
+              h={60}
+              rightIcon={<FiExternalLink style={{ position: 'absolute', right: '10' }} />}
+              radius='md'
+              href='https://github.com/sponsors/eve0415?o=esb&frequency=one-time'
+              target='_blank'
+              rel='noopener noreferrer'
+              sx={theme => ({
+                backgroundColor: '#181616',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                fontSize: '1.5rem',
+                border: 'none',
+                transitionDuration: '500ms',
+                '&:hover': {
+                  backgroundColor: theme.fn.darken('#fff', 0.7),
+                },
+              })}
+              onPointerDown={event => ripplet(event, { clearing: false })}
+              onPointerUp={() => ripplet.clear()}
+              onPointerLeave={() => ripplet.clear()}
+            >
+              一度のみ
+            </Button>
+          </Grid.Col>
+
+          <Grid.Col md={6}>
+            <Button
+              fullWidth
+              component={Link}
+              h={60}
+              rightIcon={<FiExternalLink style={{ position: 'absolute', right: '10' }} />}
+              radius='md'
+              href='https://github.com/sponsors/eve0415?o=esb&'
+              target='_blank'
+              rel='noopener noreferrer'
+              sx={theme => ({
+                backgroundColor: '#181616',
+                display: 'flex',
+                justifyContent: 'flex-start',
+                fontSize: '1.5rem',
+                border: 'none',
+                transitionDuration: '500ms',
+                '&:hover': {
+                  backgroundColor: theme.fn.darken('#fff', 0.7),
+                },
+              })}
+              onPointerDown={event => ripplet(event, { clearing: false })}
+              onPointerUp={() => ripplet.clear()}
+              onPointerLeave={() => ripplet.clear()}
+            >
+              毎月
             </Button>
           </Grid.Col>
         </Grid>
