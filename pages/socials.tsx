@@ -17,7 +17,7 @@ export default function Socials() {
         withBorder
         shadow='lg'
         radius='sm'
-        p={32}
+        p={24}
         pt={16}
         m={30}
         w='90%'
@@ -324,7 +324,7 @@ export default function Socials() {
         withBorder
         shadow='lg'
         radius='sm'
-        p={32}
+        p={24}
         pt={16}
         m={30}
         mt={10}
