@@ -327,6 +327,7 @@ export default function Socials() {
         p={32}
         pt={16}
         m={30}
+        mt={10}
         w='90%'
         sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}
       >
