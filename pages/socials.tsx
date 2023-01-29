@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Paper, Title } from '@mantine/core';
+import { Box, Button, Grid, Paper, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import { FiExternalLink } from 'react-icons/fi';
 import { GrGithub, GrTwitter } from 'react-icons/gr';
@@ -314,6 +314,74 @@ export default function Socials() {
             </Button>
           </Grid.Col>
         </Grid>
+      </Paper>
+
+      <Paper
+        withBorder
+        shadow='lg'
+        radius='sm'
+        p={32}
+        pt={16}
+        m={30}
+        sx={{ border: '1px dashed grey', borderRadius: 8, textAlign: 'center' }}
+      >
+        <Title order={2} p={5} size='2rem'>
+          サポート・寄付・支援
+        </Title>
+        <Text py={3}>GitHub Sponsors に登録しています</Text>
+
+        <Button
+          fullWidth
+          component={Link}
+          h={50}
+          rightIcon={<FiExternalLink style={{ position: 'absolute', right: '10' }} />}
+          radius='md'
+          href='https://github.com/sponsors/eve0415?o=esb&frequency=one-time'
+          target='_blank'
+          rel='noopener noreferrer'
+          sx={theme => ({
+            backgroundColor: '#181616',
+            display: 'flex',
+            justifyContent: 'flex-start',
+            fontSize: '1.5rem',
+            border: 'none',
+            transitionDuration: '500ms',
+            '&:hover': {
+              backgroundColor: theme.fn.darken('#fff', 0.7),
+            },
+          })}
+          onPointerDown={event => ripplet(event, { clearing: false })}
+          onPointerUp={() => ripplet.clear()}
+          onPointerLeave={() => ripplet.clear()}
+        >
+          一度のみ
+        </Button>
+        <Button
+          fullWidth
+          component={Link}
+          h={50}
+          rightIcon={<FiExternalLink style={{ position: 'absolute', right: '10' }} />}
+          radius='md'
+          href='https://github.com/sponsors/eve0415?o=esb&'
+          target='_blank'
+          rel='noopener noreferrer'
+          sx={theme => ({
+            backgroundColor: '#181616',
+            display: 'flex',
+            justifyContent: 'flex-start',
+            fontSize: '1.5rem',
+            border: 'none',
+            transitionDuration: '500ms',
+            '&:hover': {
+              backgroundColor: theme.fn.darken('#fff', 0.7),
+            },
+          })}
+          onPointerDown={event => ripplet(event, { clearing: false })}
+          onPointerUp={() => ripplet.clear()}
+          onPointerLeave={() => ripplet.clear()}
+        >
+          毎月
+        </Button>
       </Paper>
     </Main>
   );
