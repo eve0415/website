@@ -13,10 +13,6 @@ export default function Socials() {
         ソーシャルアカウント
       </Title>
 
-      <Text pt={10}>
-        お仕事などの依頼は Discord の DM のお願いします。 DM できない場合は Twitter の DM にてお願いします。
-      </Text>
-
       <Paper
         withBorder
         shadow='lg'
@@ -30,6 +26,12 @@ export default function Socials() {
         <Title order={2} p={5} size='2rem'>
           連絡方法
         </Title>
+
+        <Text py={3}>
+          お仕事などの依頼は Discord の DM のお願いします。
+          <br />
+          DM できない場合は Twitter の DM にてお願いします。
+        </Text>
 
         <Grid pt={10}>
           <Grid.Col md={6}>
@@ -331,6 +333,7 @@ export default function Socials() {
         <Title order={2} p={5} size='2rem'>
           サポート・寄付・支援
         </Title>
+
         <Text py={3}>
           GitHub Sponsors に登録しています。
           <br />
