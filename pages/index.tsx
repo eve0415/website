@@ -37,8 +37,9 @@ export default function Head() {
           <Title size='3rem' pt='32px'>
             eve0415
           </Title>
-          <Text fz='xl'>ただの大学生</Text>
-          <Text fz='xl'>いつも眠たい人</Text>
+          <Text fz='lg'>学生という</Text>
+          <Text fz='lg'>ステータスを</Text>
+          <Text fz='lg'>失った人</Text>
         </Flex>
       </Main>
     </>
