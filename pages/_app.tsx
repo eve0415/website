@@ -1,5 +1,5 @@
 import { MantineProvider } from '@mantine/core';
-import localFont from '@next/font/local';
+import localFont from 'next/font/local';
 import type { AppProps } from 'next/app';
 import Head from 'next/head';
 import { useState } from 'react';

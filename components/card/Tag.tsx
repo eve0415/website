@@ -11,8 +11,7 @@ export const Tag = ({ tagId }: { tagId: string }) => {
       withinPortal
       label={tagName.description}
       events={{ hover: false, focus: true, touch: true }}
-      transition='pop'
-      transitionDuration={0}
+      transitionProps={{ transition: 'pop', duration: 0 }}
     >
       <Chip variant='filled'>{`${tagName.name}`}</Chip>
     </Tooltip>
