@@ -19,7 +19,6 @@
     "@mantine/hooks": "^6.0.5",
     "@mantine/next": "^6.0.5",
     "@next/bundle-analyzer": "^13.2.4",
-    "@next/font": "^13.2.4",
     "@types/node": "^18.15.11",
     "@types/react": "^18.0.31",
     "@types/react-dom": "^18.0.11",
