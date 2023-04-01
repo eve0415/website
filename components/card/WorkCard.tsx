@@ -1,4 +1,4 @@
-import { Card, Chip, Flex, Grid, Loader, Text, Title } from '@mantine/core';
+import { Card, Chip, Flex, Grid, Group, Loader, Text, Title } from '@mantine/core';
 import Link from 'next/link';
 import ripplet from 'ripplet.js';
 import { CustomImageProxy } from '../CustomImageProxy';
@@ -34,11 +34,13 @@ export const WorkCard = ({ project }: { project: Project }) => {
           {name}
         </Title>
 
-        <Chip.Group position='center' mb={10}>
-          <Chip variant='filled'>{language}</Chip>
-          {tag?.map(t => (
-            <Tag tagId={t} key={t} />
-          ))}
+        <Chip.Group>
+          <Group position='center' mb={10}>
+            <Chip variant='filled'>{language}</Chip>
+            {tag?.map(t => (
+              <Tag tagId={t} key={t} />
+            ))}
+          </Group>
         </Chip.Group>
 
         <Text>{description}</Text>
