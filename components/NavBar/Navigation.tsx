@@ -1,12 +1,10 @@
 "use client";
 
-import Item from "@components/NavBar/Item";
-import { pages } from "@components/NavBar/pages";
-import { useState } from "react";
+import { FC, ReactNode, useState } from "react";
 import { css } from "styled-system/css";
-import { center, circle, flex } from "styled-system/patterns";
+import { center, circle } from "styled-system/patterns";
 
-export default function Button() {
+const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
   const [open, setOpen] = useState(false);
 
   return (
@@ -70,27 +68,24 @@ export default function Button() {
 
       <nav
         className={center({
-          width: "3/4",
           height: "100dvh",
           backgroundColor: "white",
           alignItems: "center",
-          position: "absolute",
           zIndex: 10,
-          display: open ? "flex" : "none",
+          mdDown: {
+            width: "3/4",
+            position: "absolute",
+            display: open ? "flex" : "none",
+          },
+          md: {
+            width: "1/4",
+          },
         })}
       >
-        <div
-          className={flex({
-            direction: "column",
-            justifyContent: "center",
-            fontSize: "xl",
-          })}
-        >
-          {pages.map((page) => (
-            <Item key={page.path} page={page} />
-          ))}
-        </div>
+        {menu}
       </nav>
     </>
   );
-}
+};
+
+export default Navigation;
