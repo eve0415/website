@@ -21,8 +21,12 @@ const Item: FC<{
         marginY: 2,
         alignItems: "center",
         width: "100%",
-        bgColor: pathName === path ? "#E5FCFB" : "white",
+        _active: {
+          bgColor: "#E5FCFB",
+          color: "blueviolet",
+        },
       })}
+      {...(pathName === path && { "data-active": true })}
     >
       {icon}
       <h3 className={css({ paddingLeft: 2 })}>{name}</h3>
