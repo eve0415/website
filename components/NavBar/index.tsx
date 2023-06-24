@@ -1,27 +1,28 @@
-import Link from "next/link";
-import { flex } from "styled-system/patterns";
+import { center, flex } from "styled-system/patterns";
+import Item from "./Item";
 import { pages } from "./pages";
 
 const NavBar = () => {
   return (
     <nav
-      className={flex({
+      className={center({
         width: "1/4",
-        direction: "column",
-        justifyContent: "center",
-        alignItems: "center",
         backgroundColor: "white",
+        alignItems: "center",
       })}
     >
-      {pages.map(({ name, icon, path }) => (
-        <Link
-          href={path}
-          className={flex({ marginX: 16, marginY: 8, alignItems: "center" })}
-        >
-          {icon}
-          {name}
-        </Link>
-      ))}
+      <div
+        className={flex({
+          direction: "column",
+          justifyContent: "center",
+          fontSize: "xl",
+          height: "100dvh",
+        })}
+      >
+        {pages.map((page) => (
+          <Item key={page.path} page={page} />
+        ))}
+      </div>
     </nav>
   );
 };
