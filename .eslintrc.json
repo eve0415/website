@@ -24,13 +24,7 @@
       "error",
       {
         "newlines-between": "always",
-        "groups": [
-          "type",
-          "builtin",
-          "external",
-          "internal",
-          ["parent", "sibling", "index"]
-        ],
+        "groups": ["type", "builtin", "external", "internal", ["parent", "sibling", "index"]],
         "pathGroups": [
           {
             "pattern": "@**/**",
@@ -113,10 +107,7 @@
           "error",
           { "fixMixedExportsWithInlineTypeSpecifier": false }
         ],
-        "@typescript-eslint/consistent-type-imports": [
-          "error",
-          { "disallowTypeAnnotations": false }
-        ],
+        "@typescript-eslint/consistent-type-imports": ["error", { "disallowTypeAnnotations": false }],
         "@typescript-eslint/method-signature-style": "error",
         "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
         "@typescript-eslint/no-unnecessary-qualifier": "error",
