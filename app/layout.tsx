@@ -27,7 +27,9 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
       >
         <NavBar />
 
-        <main className={css({ width: "3/4" })}>{children}</main>
+        <main className={css({ width: { mdDown: "100dvw", md: "3/4" } })}>
+          {children}
+        </main>
       </body>
     </html>
   );
