@@ -1,25 +1,25 @@
-import { AiFillHome } from "react-icons/ai";
-import { MdContactPage, MdFace, MdWork } from "react-icons/md";
+import { AiFillHome } from 'react-icons/ai';
+import { MdContactPage, MdFace, MdWork } from 'react-icons/md';
 
 export const pages = [
   {
-    name: "Home",
+    name: 'Home',
     icon: <AiFillHome />,
-    path: "/",
+    path: '/',
   },
   {
-    name: "About Me",
+    name: 'About Me',
     icon: <MdFace />,
-    path: "/me",
+    path: '/me',
   },
   {
-    name: "Projects",
+    name: 'Projects',
     icon: <MdWork />,
-    path: "/projects",
+    path: '/projects',
   },
   {
-    name: "Contact",
+    name: 'Contact',
     icon: <MdContactPage />,
-    path: "/contact",
+    path: '/contact',
   },
 ] as const;
