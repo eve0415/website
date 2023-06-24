@@ -79,6 +79,7 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
           },
           md: {
             width: '1/4',
+            opacity: 0.9,
           },
         })}
       >
