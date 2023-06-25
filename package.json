@@ -3,11 +3,15 @@
   "packageManager": "yarn@3.6.0",
   "private": true,
   "scripts": {
-    "panda": "panda codegen",
-    "dev": "next dev",
-    "build": "next build",
+    "panda": "turbo panda:turbo",
+    "panda:turbo": "panda codegen",
+    "dev": "turbo dev:turbo",
+    "dev:turbo": "next dev",
+    "build": "turbo build:turbo",
+    "build:turbo": "next build",
     "start": "next start",
-    "lint": "next lint & prettier --write \"./**/*.{ts,tsx,js,json,yml}\"",
+    "lint": "turbo lint:fix",
+    "lint:fix": "next lint & prettier --write \"./**/*.{ts,tsx,js,json,yml}\"",
     "sdk": "yarn dlx @yarnpkg/sdks"
   },
   "devDependencies": {
