@@ -6,8 +6,12 @@ import '@assets/globals.css';
 import NavBar from '@components/NavBar';
 import { css } from 'styled-system/css';
 
-const font = localFont({
+const japanese = localFont({
   src: '../assets/LINESeedJP_OTF_Rg.woff2',
+  display: 'swap',
+});
+const english = localFont({
+  src: '../assets/LINESeedSans_W_Rg.woff2',
   display: 'swap',
 });
 
@@ -19,7 +23,7 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <html lang='ja'>
       <body
-        className={`${font.className} ${css({
+        className={`${japanese.className} ${english.className} ${css({
           bgColor: '#E5FCFB',
           minHeight: '100dvh',
           display: 'flex',
