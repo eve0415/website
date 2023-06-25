@@ -9,6 +9,7 @@ export default function Page() {
         src='https://eve0415.net/cdn-cgi/imagedelivery/e1FmkEoJCgY0rL0NK8GfGA/1eec637e-fed1-46b7-6c35-bcf496fe2c01/background'
         alt='background'
         style={{ objectFit: 'cover' }}
+        className={css({ zIndex: -100 })}
         fill
       />
 
@@ -18,6 +19,7 @@ export default function Page() {
           alignItems: 'center',
           justifyContent: 'center',
           height: '100dvh',
+          color: 'white',
         })}
       >
         <div
