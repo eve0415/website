@@ -28,12 +28,12 @@
         "pathGroups": [
           {
             "pattern": "@**/**",
-            "group": "internal",
+            "group": "parent",
             "position": "after"
           },
           {
             "pattern": "@**",
-            "group": "internal",
+            "group": "parent",
             "position": "after"
           }
         ],
@@ -140,9 +140,30 @@
         "next/core-web-vitals",
         "prettier"
       ],
+      "settings": {
+        "import/resolver": {
+          "typescript": {}
+        }
+      },
       "env": {
         "node": false,
         "browser": true
+      },
+      "rules": {
+        "@typescript-eslint/consistent-type-exports": [
+          "error",
+          { "fixMixedExportsWithInlineTypeSpecifier": false }
+        ],
+        "@typescript-eslint/consistent-type-imports": ["error", { "disallowTypeAnnotations": false }],
+        "@typescript-eslint/method-signature-style": "error",
+        "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
+        "@typescript-eslint/no-unnecessary-qualifier": "error",
+        "@typescript-eslint/no-useless-empty-export": "error",
+        "@typescript-eslint/prefer-readonly": "error",
+        "@typescript-eslint/prefer-regexp-exec": "error",
+        "@typescript-eslint/sort-type-constituents": "error",
+        "require-jsdoc": "off",
+        "no-unused-vars": "off"
       }
     }
   ]
