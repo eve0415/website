@@ -1,9 +1,10 @@
 'use client';
 
-import { Route } from 'next';
+import type { Route } from 'next';
+import type { FC } from 'react';
+
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { FC } from 'react';
 import { css } from 'styled-system/css';
 import { flex } from 'styled-system/patterns';
 

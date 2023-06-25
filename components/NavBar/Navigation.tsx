@@ -1,6 +1,8 @@
 'use client';
 
-import { FC, ReactNode, useState } from 'react';
+import type { FC, ReactNode } from 'react';
+
+import { useState } from 'react';
 import { css } from 'styled-system/css';
 import { center, circle } from 'styled-system/patterns';
 
@@ -61,7 +63,7 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
               },
             },
           })}
-          // @ts-expect-error
+          // @ts-expect-error 2322
           open={open}
         />
       </button>
@@ -74,10 +76,12 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
           zIndex: 10,
           mdDown: {
             width: '3/4',
-            position: 'absolute',
+            position: 'fixed',
             display: open ? 'flex' : 'none',
           },
           md: {
+            position: 'sticky',
+            top: 0,
             width: '1/4',
             opacity: 0.9,
           },
