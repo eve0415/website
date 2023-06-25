@@ -1,10 +1,10 @@
 import type { FC, ReactNode } from 'react';
 
 import localFont from 'next/font/local';
+import { css } from 'styled-system/css';
 
 import '@assets/globals.css';
 import NavBar from '@components/NavBar';
-import { css } from 'styled-system/css';
 
 const japanese = localFont({
   src: '../assets/LINESeedJP_OTF_Rg.woff2',
