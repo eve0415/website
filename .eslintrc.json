@@ -41,7 +41,7 @@
             "position": "after"
           }
         ],
-        "distinctGroup": false
+        "distinctGroup": true
       }
     ],
     "array-callback-return": "error",
