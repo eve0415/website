@@ -1,6 +1,6 @@
 import { defineConfig } from '@pandacss/dev';
 
-import { boxRecipe } from './panda/box.recipe';
+import { paperRecipe } from './panda/paper.recipe';
 
 export default defineConfig({
   preflight: true,
@@ -12,7 +12,7 @@ export default defineConfig({
   theme: {
     extend: {
       recipes: {
-        box: boxRecipe,
+        paper: paperRecipe,
       },
     },
   },
