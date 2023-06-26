@@ -37,9 +37,11 @@ const Card: FC<{ data: { url: string; svg: ReactElement; name: string } }> = ({
   });
 
   return url === '' ? (
-    <div className={className}>{item}</div>
+    <div className={className} data-ripplet>
+      {item}
+    </div>
   ) : (
-    <Link href={url as Route} className={className} target='_blank' rel='noopener noreferrer'>
+    <Link href={url as Route} className={className} target='_blank' rel='noopener noreferrer' data-ripplet>
       {item}
     </Link>
   );

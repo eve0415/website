@@ -47,6 +47,7 @@ const Card: FC<{ data: AdvancedProject }> = ({ data: { name, image, description,
             className={css({ marginX: 2 })}
             target='_blank'
             rel='noopener noreferrer'
+            data-ripplet
           >
             {svg}
           </Link>

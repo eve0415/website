@@ -34,6 +34,7 @@ const Item: FC<{
         }),
       })}
       {...(pathName === path && { 'aria-selected': true })}
+      data-ripplet
     >
       {icon}
       <h3 className={css({ paddingLeft: 2 })}>{name}</h3>

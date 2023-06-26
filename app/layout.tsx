@@ -1,9 +1,10 @@
 import type { FC, ReactNode } from 'react';
 
+import '@assets/globals.css';
 import localFont from 'next/font/local';
+import Script from 'next/script';
 import { css } from 'styled-system/css/css';
 
-import '@assets/globals.css';
 import NavBar from '@components/NavBar';
 
 const line = localFont({
@@ -34,6 +35,8 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         },
       })}`}
     >
+      <Script src='https://cdn.jsdelivr.net/npm/ripplet.js@1.1.0/umd/ripplet-declarative.min.js' />
+
       <body className={css({ display: 'flex' })}>
         <NavBar />
 
