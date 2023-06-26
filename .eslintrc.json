@@ -27,13 +27,17 @@
         "groups": ["type", "builtin", "external", "internal", ["parent", "sibling", "index"]],
         "pathGroups": [
           {
+            "pattern": "@pandacss/**",
+            "group": "external"
+          },
+          {
             "pattern": "@**/**",
-            "group": "parent",
+            "group": "internal",
             "position": "after"
           },
           {
             "pattern": "@**",
-            "group": "parent",
+            "group": "internal",
             "position": "after"
           }
         ],
