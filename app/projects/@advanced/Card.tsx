@@ -41,7 +41,13 @@ const Card: FC<{ data: AdvancedProject }> = ({ data: { name, image, description,
 
       <div className={flex({ fontSize: '1.2rem' })}>
         {links.map(({ svg, url }) => (
-          <Link key={name} href={url as Route} className={css({ marginX: 2 })}>
+          <Link
+            key={name}
+            href={url as Route}
+            className={css({ marginX: 2 })}
+            target='_blank'
+            rel='noopener noreferrer'
+          >
             {svg}
           </Link>
         ))}

@@ -25,6 +25,8 @@ const Card: FC<{ data: SimpleProject }> = ({ data: { name, image, description, u
         height: 300,
         width: 350,
       })}
+      target='_blank'
+      rel='noopener noreferrer'
     >
       <Image
         src={image}
