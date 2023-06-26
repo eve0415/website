@@ -68,6 +68,16 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
         />
       </button>
 
+      <div
+        className={css({
+          display: { mdDown: open ? 'block' : 'none', md: 'none' },
+          height: '100dvh',
+          width: '100dvw',
+          position: 'fixed',
+          backgroundColor: 'rgba(0,0,0,0.5)',
+        })}
+      />
+
       <nav
         className={center({
           height: '100dvh',
