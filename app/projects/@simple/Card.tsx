@@ -24,6 +24,10 @@ const Card: FC<{ data: SimpleProject }> = ({ data: { name, image, description, u
         backgroundColor: 'white',
         height: 300,
         width: 350,
+        transition: 'all 0.3s ease-in-out',
+        _hover: {
+          boxShadow: '0 25px 45px -15px rgba(0,0,0,0.15)',
+        },
       })}
       target='_blank'
       rel='noopener noreferrer'

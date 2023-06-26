@@ -39,7 +39,7 @@ const Card: FC<{ data: AdvancedProject }> = ({ data: { name, image, description,
         <p>{description}</p>
       </div>
 
-      <div className={flex({ fontSize: '1.2rem' })}>
+      <div className={flex({ fontSize: '1.2rem', alignItems: 'center' })}>
         {links.map(({ svg, url }) => (
           <Link
             key={name}
