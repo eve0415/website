@@ -22,6 +22,7 @@ const Item: FC<{
         marginY: 2,
         alignItems: 'center',
         width: '100%',
+        transition: 'all 0.2s ease-in-out',
         _selected: {
           bgColor: { base: '#E5FCFB', _hover: 'rgba(208, 235, 255, 0.65)' },
           color: 'blueviolet',
