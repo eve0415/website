@@ -2,4 +2,5 @@
 .vscode
 .yarn
 .pnp.*
+out
 styled-system
