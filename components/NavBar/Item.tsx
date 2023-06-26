@@ -22,12 +22,17 @@ const Item: FC<{
         marginY: 2,
         alignItems: 'center',
         width: '100%',
-        _active: {
-          bgColor: '#E5FCFB',
+        _selected: {
+          bgColor: { base: '#E5FCFB', _hover: 'rgba(208, 235, 255, 0.65)' },
           color: 'blueviolet',
         },
+        ...(pathName !== path && {
+          _hover: {
+            bgColor: { base: '#E5FCFB' },
+          },
+        }),
       })}
-      {...(pathName === path && { 'data-active': true })}
+      {...(pathName === path && { 'aria-selected': true })}
     >
       {icon}
       <h3 className={css({ paddingLeft: 2 })}>{name}</h3>
