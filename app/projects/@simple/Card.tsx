@@ -31,6 +31,7 @@ const Card: FC<{ data: SimpleProject }> = ({ data: { name, image, description, u
       })}
       target='_blank'
       rel='noopener noreferrer'
+      data-ripplet
     >
       <Image
         src={image}
