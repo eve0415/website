@@ -30,6 +30,10 @@ const Card: FC<{ data: { url: string; svg: ReactElement; name: string } }> = ({
     backgroundColor: 'white',
     height: 130,
     width: 130,
+    transition: 'all 0.2s ease-in-out',
+    _hover: {
+      backgroundColor: 'rgba(242, 242, 242, 1)',
+    },
   });
 
   return url === '' ? (
