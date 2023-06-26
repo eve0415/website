@@ -24,6 +24,14 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         bgColor: '#E5FCFB',
         minHeight: '100dvh',
         fontFamily: ['line'],
+        '&::-webkit-scrollbar': {
+          height: 2,
+          width: 2,
+        },
+        '&::-webkit-scrollbar-thumb': {
+          backgroundColor: '#c7dfde',
+          borderRadius: 10,
+        },
       })}`}
     >
       <body className={css({ display: 'flex' })}>
