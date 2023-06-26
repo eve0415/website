@@ -11,6 +11,11 @@ export default defineConfig({
   outdir: 'styled-system',
   theme: {
     extend: {
+      tokens: {
+        fonts: {
+          line: { value: 'var(--font-line)' },
+        },
+      },
       recipes: {
         paper: paperRecipe,
       },
