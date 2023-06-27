@@ -22,7 +22,7 @@ export interface BuildManifest {
 export interface MiddlewareManifest {
   sortedMiddleware: string[];
   middleware: {
-    '/': {
+    '/'?: {
       env: string[];
       files: string[];
       name: string;
@@ -50,6 +50,9 @@ export interface BundleAnalysis {
     app: number;
     pages: number;
   };
-  routes: { app: { route: string; size: number }[] };
+  routes: {
+    app: { route: string; size: number }[];
+    pages: { route: string; size: number }[];
+  };
   middleware: number;
 }

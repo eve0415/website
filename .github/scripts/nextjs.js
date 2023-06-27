@@ -29,9 +29,18 @@ module.exports = async ({ core }) => {
   /** @type {import('./nextjs.js').BundleAnalysis | null} */
   const analysis = existsSync('analysis/analysis.json')
     ? JSON.parse(readFileSync('analysis/analysis.json', 'utf8'))
-    : null;
+    : {
+        global: {
+          app: 0,
+          pages: 0,
+        },
+        routes: {
+          app: [],
+          pages: [],
+        },
+        middleware: 0,
+      };
 
-  const pageGlobal = Object.values(buildManifest.pages).flatMap(v => v);
   const globalSize = getFileSize(buildManifest.pages['/_app']);
   const appGlobal = appManifest ? Object.values(appManifest.pages).flatMap(v => v) : [];
   const appGlobalSize = appManifest
@@ -113,6 +122,14 @@ module.exports = async ({ core }) => {
         }))
         .filter(({ before, size }) => before === size)
         .sort(),
+      pages: pageRouterPages
+        ?.filter(({ route }) => detectedRoutes.find(a => a === route))
+        .map(({ route, size, js }) => ({
+          route,
+          size,
+          before: analysis.routes.pages.find(a => a.route === route)?.size ?? 0,
+          js,
+        })),
       changes: {
         app: appRouterPages
           ?.filter(({ route }) => detectedRoutes.find(a => a === route))
@@ -120,6 +137,16 @@ module.exports = async ({ core }) => {
             route,
             size,
             before: analysis.routes.app.find(a => a.route === route)?.size ?? 0,
+            js,
+          }))
+          .filter(({ before, size }) => before !== size)
+          .sort(),
+        pages: appRouterPages
+          ?.filter(({ route }) => detectedRoutes.find(a => a === route))
+          .map(({ route, size, js }) => ({
+            route,
+            size,
+            before: analysis.routes.pages.find(a => a.route === route)?.size ?? 0,
             js,
           }))
           .filter(({ before, size }) => before !== size)
@@ -132,6 +159,15 @@ module.exports = async ({ core }) => {
             route,
             size,
             before: analysis.routes.app.find(a => a.route === route)?.size ?? 0,
+            js,
+          }))
+          .sort(),
+        pages: appRouterPages
+          ?.filter(({ route }) => !detectedRoutes.find(a => a === route))
+          .map(({ route, size, js }) => ({
+            route,
+            size,
+            before: analysis.routes.pages.find(a => a.route === route)?.size ?? 0,
             js,
           }))
           .sort(),
@@ -160,6 +196,10 @@ module.exports = async ({ core }) => {
     );
     return;
   }
+
+  const newPages = [...results.routes.new.app, ...results.routes.new.pages].sort();
+  const changedPages = [...results.routes.changes.app, ...results.routes.changes.pages].sort();
+  const pages = [...results.routes.app, ...results.routes.pages].sort();
 
   core.setOutput(
     'body',
@@ -197,28 +237,26 @@ module.exports = async ({ core }) => {
       '',
       '## Pages',
       '',
-      ...(results.routes.new.app?.length
+      ...(newPages.length
         ? [
             '### New',
             '',
             '| Page | Size (compressed) | First Load JS |',
             '| --- | --- | --- |',
-            ...(results.routes.new.app?.map(
+            ...(newPages.map(
               ({ route, size, js }) => `| \`${route}\` | ${prettyBytes(size)} | ${prettyBytes(js)} |`
             ) ?? []),
             '',
           ]
         : []),
       '',
-      ...(results.routes.changes.app?.length
+      ...(changedPages.length
         ? [
-            `### ${results.routes.changes.app.length} Page${
-              results.routes.changes.app.length > 1 ? 's' : ''
-            } Changed Size`,
+            `### ${changedPages.length} Page${changedPages.length > 1 ? 's' : ''} Changed Size`,
             '',
             '| Page | Size (compressed) | First Load JS |',
             '| --- | --- | --- |',
-            ...(results.routes.changes.app?.map(
+            ...(changedPages.map(
               ({ route, size, before, js }) =>
                 `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`
             ) ?? []),
@@ -227,18 +265,18 @@ module.exports = async ({ core }) => {
         : []),
       '',
       '<details>',
-      '<summary><strong>app</strong></summary>',
+      '<summary><strong>Routes</strong></summary>',
       '<br />',
       '',
       '| Page | Size (compressed) | First Load JS |',
       '| --- | --- | --- |',
-      ...(results.routes.app?.map(
+      ...(pages.map(
         ({ route, size, before, js }) =>
           `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`
       ) ?? []),
       '</details>',
       '',
-      ...(middlewareManifest
+      ...(middlewareManifest?.middleware['/']
         ? [
             '## Middleware',
             `Size (compressed): ${prettyBytes(results.middleware.size)} ${
