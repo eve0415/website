@@ -44,7 +44,7 @@ const Card: FC<{ data: AdvancedProject }> = ({ data: { name, image, description,
           <Link
             key={name}
             href={url as Route}
-            className={css({ marginX: 2 })}
+            className={css({ borderRadius: '50%', padding: 2 })}
             target='_blank'
             rel='noopener noreferrer'
             data-ripplet
