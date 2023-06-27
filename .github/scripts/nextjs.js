@@ -182,24 +182,19 @@ module.exports = async ({ core }) => {
   const globalChanged = results.global.app.diff || results.global.pages.diff;
   const globalIncreased = results.global.app.increase || results.global.pages.increase;
 
+  const newPages = [...results.routes.new.app, ...results.routes.new.pages].sort();
+  const changedPages = [...results.routes.changes.app, ...results.routes.changes.pages].sort();
+  const pages = [...results.routes.app, ...results.routes.pages].sort();
+
   const title = ['# Next.js Bundle Analysis', ''];
 
-  if (
-    !globalChanged &&
-    !results.middleware.diff &&
-    !results.routes.new.app?.length &&
-    !results.routes.changes.app.length
-  ) {
+  if (!globalChanged && !results.middleware.diff && !newPages.length && !changedPages.length) {
     core.setOutput(
       'body',
       [...title, 'This PR introduced no changes to the JavaScript bundle! 🙌'].join('\n')
     );
     return;
   }
-
-  const newPages = [...results.routes.new.app, ...results.routes.new.pages].sort();
-  const changedPages = [...results.routes.changes.app, ...results.routes.changes.pages].sort();
-  const pages = [...results.routes.app, ...results.routes.pages].sort();
 
   core.setOutput(
     'body',
@@ -241,7 +236,7 @@ module.exports = async ({ core }) => {
         ? [
             '### New',
             '',
-            '| Page | Size (compressed) | First Load JS |',
+            '| Route | Size (compressed) | First Load JS |',
             '| --- | --- | --- |',
             ...(newPages.map(
               ({ route, size, js }) => `| \`${route}\` | ${prettyBytes(size)} | ${prettyBytes(js)} |`
@@ -254,7 +249,7 @@ module.exports = async ({ core }) => {
         ? [
             `### ${changedPages.length} Page${changedPages.length > 1 ? 's' : ''} Changed Size`,
             '',
-            '| Page | Size (compressed) | First Load JS |',
+            '| Route | Size (compressed) | First Load JS |',
             '| --- | --- | --- |',
             ...(changedPages.map(
               ({ route, size, before, js }) =>
@@ -265,10 +260,10 @@ module.exports = async ({ core }) => {
         : []),
       '',
       '<details>',
-      '<summary><strong>Routes</strong></summary>',
+      '<summary><strong>Unchanged Routes</strong></summary>',
       '<br />',
       '',
-      '| Page | Size (compressed) | First Load JS |',
+      '| Route | Size (compressed) | First Load JS |',
       '| --- | --- | --- |',
       ...(pages.map(
         ({ route, size, before, js }) =>
