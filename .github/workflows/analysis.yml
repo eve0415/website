@@ -1,22 +1,31 @@
 name: Next.js Bundle Analysis
 
 on:
+  workflow_dispatch:
   pull_request:
   push:
     branches:
       - main
 
 concurrency:
-  group: ci-analysis-${{ github.head_ref || github.ref_name }}-
+  group: ci-analysis-${{ github.head_ref || github.ref_name }}-anaylysis
   cancel-in-progress: true
 
 jobs:
   analyze:
     name: Analyze
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v3
+
+      - name: Setup Node.js v18
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18
+          cache: yarn
 
       - name: Cache Next.js
         uses: actions/cache@v3
@@ -25,53 +34,44 @@ jobs:
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
           restore-keys: ${{ runner.os }}-nextjs-
 
-      - name: Setup Node.js v16
-        uses: actions/setup-node@v3
-        with:
-          node-version: 16
-          cache: yarn
-
       - name: Install dependencies
-        run: yarn install --frozen-lockfile
+        run: yarn install --immutable
 
-      - name: Build
+      - name: Build website
         run: yarn build
-
-      - name: Analyze bundle
-        run: npx -p nextjs-bundle-analysis report
-
-      - name: Upload bundle
-        uses: actions/upload-artifact@v3
-        with:
-          name: bundle
-          path: .next/analyze/__bundle_analysis.json
 
       - name: Download base branch bundle stats
         uses: dawidd6/action-download-artifact@v2
         if: success() && github.event.number
         with:
-          workflow: ${{ github.event.pull_request.base.ref == 'main' && 'analysis.yml' }}
+          workflow: analysis.yml
+          workflow_conclusion:
           branch: ${{ github.event.pull_request.base.ref }}
-          path: .next/analyze/base
+          path: .
 
-      - name: Compare with base branch bundle
-        if: success() && github.event.number
-        run: ls -laR .next/analyze/base && npx -p nextjs-bundle-analysis compare
-
-      - name: Get comment body
+      - name: Generate comment body
         uses: actions/github-script@v6
-        id: get-comment-body
-        if: success() && github.event.number
+        if: success()
+        id: bundle-results
         with:
           result-encoding: string
           script: |
-            const { readFileSync } = require('fs')
-            const comment = readFileSync('.next/analyze/__bundle_analysis_comment.txt', 'utf8')
-            core.setOutput('body', comment)
+            const script = require('.github/scripts/nextjs.js')
+            await script({core})
 
-      - name: Create Comment
-        uses: peter-evans/create-or-update-comment@v2
-        if: success() && github.event.number
+      - name: Upload bundle
+        uses: actions/upload-artifact@v3
+        if: success()
         with:
-          issue-number: ${{ github.event.number }}
-          body: ${{ steps.get-comment-body.outputs.body }}
+          name: analysis
+          path: analysis.json
+
+      - name: Add comment to PR
+        uses: marocchino/sticky-pull-request-comment@v2
+        if: github.event.number
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          number: ${{ github.event.number }}
+          header: bundle
+          message: |
+            ${{ steps.bundle-results.outputs.body }}
