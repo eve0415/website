@@ -29,17 +29,7 @@ module.exports = async ({ core }) => {
   /** @type {import('./nextjs.js').BundleAnalysis | null} */
   const analysis = existsSync('analysis/analysis.json')
     ? JSON.parse(readFileSync('analysis/analysis.json', 'utf8'))
-    : {
-        global: {
-          app: 0,
-          pages: 0,
-        },
-        routes: {
-          app: [],
-          pages: [],
-        },
-        middleware: 0,
-      };
+    : null;
 
   const globalSize = getFileSize(buildManifest.pages['/_app']);
   const appGlobal = appManifest ? Object.values(appManifest.pages).flatMap(v => v) : [];
@@ -59,7 +49,7 @@ module.exports = async ({ core }) => {
       const routeSize = getFileSize(value.filter(a => !buildManifest.pages['/_app'].includes(a)));
 
       return {
-        route: key,
+        route: key === '/_error' ? '/404' : key,
         size: routeSize,
         js: routeSize + globalSize,
       };
@@ -96,7 +86,11 @@ module.exports = async ({ core }) => {
 
   if (!analysis) return;
 
-  const detectedRoutes = Object.values(appRoutes ?? []);
+  const detectedRoutes = [
+    ...Object.values(appRoutes ?? []),
+    ...Object.keys(buildManifest.pages),
+    '/404',
+  ].filter(r => r);
 
   const results = {
     global: {
