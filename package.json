@@ -13,6 +13,7 @@
     "clean": "rimraf .next out"
   },
   "devDependencies": {
+    "@actions/core": "^1.10.0",
     "@emotion/react": "^11.10.6",
     "@emotion/server": "^11.10.0",
     "@mantine/core": "^6.0.5",
@@ -31,9 +32,11 @@
     "eslint-config-prettier": "^8.8.0",
     "eslint-import-resolver-typescript": "^3.5.4",
     "eslint-plugin-import": "^2.27.5",
+    "gzip-size": "^7.0.0",
     "next": "^13.2.4",
     "nextjs-bundle-analysis": "^0.4.0",
     "prettier": "^2.8.7",
+    "pretty-bytes": "^6.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-icons": "^4.8.0",
