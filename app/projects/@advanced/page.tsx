@@ -1,10 +1,38 @@
+import { gridItem } from 'styled-system/patterns';
+
 import Card from './Card';
 import { localizedProjects } from './localized';
 import { minecraft } from './minecraft';
 
 export default function Page() {
-  return [
-    ...minecraft,
-    ...localizedProjects.map(l => ({ ...l, description: `【翻訳】 ${l.description}` })),
-  ].map(data => <Card key={data.name} data={data} />);
+  return (
+    <>
+      {minecraft.map(data => (
+        <Card key={data.name} data={data} />
+      ))}
+
+      <div
+        className={gridItem({
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          alignSelf: 'center',
+          justifySelf: 'center',
+          textAlign: 'center',
+          border: '0.0625rem solid #dee2e6',
+          borderRadius: 'lg',
+          boxShadow: '0 20px 30px -15px rgba(0,0,0,0.15)',
+          backgroundColor: 'white',
+          height: 330,
+          width: 350,
+        })}
+      >
+        翻訳に参加したプロジェクト
+      </div>
+
+      {localizedProjects.map(data => (
+        <Card key={data.name} data={data} />
+      ))}
+    </>
+  );
 }
