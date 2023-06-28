@@ -2,8 +2,6 @@ import Image from 'next/image';
 import { css } from 'styled-system/css';
 import { circle, flex } from 'styled-system/patterns';
 
-export const runtime = 'experimental-edge';
-
 export default function Page() {
   return (
     <>
