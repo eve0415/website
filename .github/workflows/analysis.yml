@@ -53,7 +53,7 @@ jobs:
           path: .
 
       - name: Prepare script
-        run: yarn esbuild .\.github\scripts\nextjs.js --bundle --platform=node --outfile=.\.github\scripts\next.js
+        run: yarn esbuild ./.github/scripts/nextjs.js --bundle --platform=node --outfile=./.github/scripts/next.js
 
       - name: Generate comment body
         uses: actions/github-script@v6
