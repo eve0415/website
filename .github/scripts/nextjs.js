@@ -132,7 +132,10 @@ module.exports = async ({ core }) => {
           .map(({ route, size, js }) => ({
             route,
             size,
-            before: analysis.routes.app.find(a => a.route === route)?.size ?? 0,
+            before:
+              analysis.routes.app.find(a => a.route === route)?.size ??
+              analysis.routes.pages.find(a => a.route === route)?.size ??
+              0,
             js,
           }))
           .filter(({ before, size }) => before !== size)
@@ -142,7 +145,10 @@ module.exports = async ({ core }) => {
           .map(({ route, size, js }) => ({
             route,
             size,
-            before: analysis.routes.pages.find(a => a.route === route)?.size ?? 0,
+            before:
+              analysis.routes.app.find(a => a.route === route)?.size ??
+              analysis.routes.pages.find(a => a.route === route)?.size ??
+              0,
             js,
           }))
           .filter(({ before, size }) => before !== size)
