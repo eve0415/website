@@ -6,6 +6,10 @@ import { css } from 'styled-system/css';
 import { flex, grid } from 'styled-system/patterns';
 import { paper } from 'styled-system/recipes';
 
+export const metadata = {
+  title: 'コンタクト',
+};
+
 export default function Page() {
   const buttonStyle = flex({
     alignItems: 'center',

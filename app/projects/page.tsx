@@ -1,6 +1,10 @@
 import { css } from 'styled-system/css';
 import { paper } from 'styled-system/recipes';
 
+export const metadata = {
+  title: 'プロジェクト一覧',
+};
+
 export default function Page() {
   return (
     <div className={paper()}>

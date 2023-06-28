@@ -14,7 +14,29 @@ const line = localFont({
 });
 
 export const metadata = {
-  title: 'eve0415',
+  title: {
+    default: 'eve0415',
+    template: '%s | eve0415',
+  },
+  description: 'eve0415 のプロフィールページです',
+  applicationName: 'eve0415',
+  authors: [{ name: 'eve0415', url: 'https://eve0415.net' }],
+  themeColor: '#E5FCFB',
+  metadataBase: new URL('https://eve0415.net'),
+  openGraph: {
+    title: {
+      default: 'eve0415',
+      template: '%s | eve0415',
+    },
+    description: 'eve0415 のプロフィールページです',
+    url: 'https://eve0415.net',
+    siteName: 'eve0415',
+    type: 'profile',
+    locale: 'ja_JP',
+  },
+  twitter: {
+    creator: '@eve0415',
+  },
   robots: {
     follow: process.env.BRANCH === 'main',
     index: process.env.BRANCH === 'main',

@@ -2,6 +2,10 @@ import { paper } from 'styled-system/recipes';
 
 import { title } from './styles';
 
+export const metadata = {
+  title: 'プロフィール',
+};
+
 export default function Page() {
   return (
     <div className={paper()}>
