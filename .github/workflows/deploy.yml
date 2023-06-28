@@ -45,6 +45,8 @@ jobs:
 
       - name: Build website
         run: yarn build
+        env:
+          BRANCH: '${{ github.ref }}'
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1

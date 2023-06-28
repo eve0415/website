@@ -15,6 +15,14 @@ const line = localFont({
 
 export const metadata = {
   title: 'eve0415',
+  robots: {
+    follow: process.env.BRANCH === 'main',
+    index: process.env.BRANCH === 'main',
+    googleBot: {
+      follow: process.env.BRANCH === 'main',
+      index: process.env.BRANCH === 'main',
+    },
+  },
 };
 
 const Layout: FC<{ children: ReactNode }> = ({ children }) => {
