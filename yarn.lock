@@ -6,9 +6,9 @@ __metadata:
   cacheKey: 8
 
 "@aashutoshrathi/word-wrap@npm:^1.2.3":
-  version: 1.2.5
-  resolution: "@aashutoshrathi/word-wrap@npm:1.2.5"
-  checksum: 06e2e20959a4dbbb06f9d324dc2f877c7fb1b5317237daf08a2ddfcbca6ddcaec67bcf0c9e8e1b7764d5b17b480dc4ef61ecb4f362644d0db5a33192df27680b
+  version: 1.2.6
+  resolution: "@aashutoshrathi/word-wrap@npm:1.2.6"
+  checksum: ada901b9e7c680d190f1d012c84217ce0063d8f5c5a7725bb91ec3c5ed99bb7572680eb2d2938a531ccbaec39a95422fcd8a6b4a13110c7d98dd75402f66a0cd
   languageName: node
   linkType: hard
 
