@@ -52,6 +52,9 @@ jobs:
           branch: ${{ github.event.pull_request.base.ref }}
           path: .
 
+      - name: Prepare script
+        run: yarn esbuild .\.github\scripts\nextjs.js --bundle --platform=node --outfile=.\.github\scripts\next.js
+
       - name: Generate comment body
         uses: actions/github-script@v6
         if: success()
@@ -59,8 +62,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            require('./.pnp.cjs').setup();
-            const script = require('.github/scripts/nextjs.js')
+            const script = require('.github/scripts/next.js')
             await script({core})
 
       - name: Upload bundle
