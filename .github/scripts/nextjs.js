@@ -4,8 +4,6 @@
  * @param {{core: import('@actions/core')}} param0
  */
 module.exports = async ({ core }) => {
-  require('../../.pnp.cjs').setup();
-
   const { readFileSync, existsSync, writeFileSync } = require('fs');
   const { cwd } = require('process');
   const { join } = require('path');
