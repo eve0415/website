@@ -33,6 +33,13 @@ export const metadata = {
     siteName: 'eve0415',
     type: 'profile',
     locale: 'ja_JP',
+    images: [
+      {
+        url: 'https://eve0415.net/cdn-cgi/imagedelivery/e1FmkEoJCgY0rL0NK8GfGA/648ac891-edcf-4ae6-2c20-9cc7adae0401/og',
+        width: 600,
+        height: 600,
+      },
+    ],
   },
   twitter: {
     creator: '@eve0415',
