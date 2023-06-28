@@ -59,7 +59,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            require('.pnp.cjs').setup();
+            require('./.pnp.cjs').setup();
             const script = require('.github/scripts/nextjs.js')
             await script({core})
 
