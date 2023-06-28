@@ -57,8 +57,8 @@ module.exports = async ({ core }) => {
   const appRouterPages = appManifest
     ? Object.entries(appRoutes ?? {}).map(([key, value]) => {
         if (key.endsWith('route')) return { route: value, size: 0, js: 0 };
-        console.log('checking key: %s', key);
-        console.log('checking length: %d', appManifest.pages[key]);
+
+        key = key === '/_not-found' ? '/not-found' : key;
         return {
           route: value,
           size: getFileSize([appManifest.pages[key][appManifest.pages[key].length - 1]]),
