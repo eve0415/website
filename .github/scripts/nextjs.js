@@ -123,7 +123,9 @@ module.exports = async ({ core }) => {
           size,
           before: analysis.routes.pages.find(a => a.route === route)?.size ?? 0,
           js,
-        })),
+        }))
+        .filter(({ before, size }) => before === size)
+        .sort(),
       changes: {
         app: appRouterPages
           ?.filter(({ route }) => detectedRoutes.find(a => a === route))
