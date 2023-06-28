@@ -203,7 +203,8 @@ module.exports = async ({ core }) => {
       `| \`pages\` | ${prettyBytes(results.global.pages.size)} ${
         globalChanged
           ? `(${renderStatusIndicator(analysis.global.pages, results.global.pages.size)}${prettyBytes(
-              results.global.pages.diff
+              results.global.pages.diff,
+              { signed: true }
             )})`
           : ''
       } |`,
@@ -211,7 +212,8 @@ module.exports = async ({ core }) => {
         ? `| \`app\` | ${prettyBytes(results.global.app.size)} ${
             globalChanged
               ? `(${renderStatusIndicator(analysis.global.app, results.global.app.size)}${prettyBytes(
-                  results.global.app.diff
+                  results.global.app.diff,
+                  { signed: true }
                 )})`
               : ''
           } |`
@@ -302,7 +304,7 @@ module.exports = async ({ core }) => {
   function diffSize(before, after) {
     if (before === after) return '';
 
-    return `(${renderStatusIndicator(before, after)}${prettyBytes(after - before)})`;
+    return `(${renderStatusIndicator(before, after)}${prettyBytes(after - before, { signed: true })})`;
   }
 
   /**
@@ -313,8 +315,8 @@ module.exports = async ({ core }) => {
   function renderStatusIndicator(before, after) {
     const change = ((after - before) / after) * 100;
 
-    if (change > 0 && change < 20) return '🟡 +';
-    if (change >= 20) return '🔴 +';
+    if (change > 0 && change < 20) return '🟡 ';
+    if (change >= 20) return '🔴 ';
     if (change < 0.01 && change > -0.01) return '';
     return '🟢 ';
   }
