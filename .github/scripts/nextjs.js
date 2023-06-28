@@ -7,7 +7,7 @@ module.exports = async ({ core }) => {
   const { readFileSync, existsSync, writeFileSync } = require('fs');
   const { cwd } = require('process');
   const { join } = require('path');
-  const prettyBytes = (await import('pretty-bytes')).default;
+  const prettyBytes = require('pretty-bytes').default;
   const { gzipSizeFromFileSync } = await import('gzip-size');
 
   /** @type {{[key: string]: string} | null} */
