@@ -135,7 +135,7 @@ module.exports = async ({ core }) => {
           }))
           .filter(({ before, size }) => before !== size)
           .sort(),
-        pages: appRouterPages
+        pages: pageRouterPages
           ?.filter(({ route }) => detectedRoutes.find(a => a === route))
           .map(({ route, size, js }) => ({
             route,
@@ -156,7 +156,7 @@ module.exports = async ({ core }) => {
             js,
           }))
           .sort(),
-        pages: appRouterPages
+        pages: pageRouterPages
           ?.filter(({ route }) => !detectedRoutes.find(a => a === route))
           .map(({ route, size, js }) => ({
             route,
