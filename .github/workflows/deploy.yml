@@ -56,3 +56,4 @@ jobs:
           projectName: website
           directory: out
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
