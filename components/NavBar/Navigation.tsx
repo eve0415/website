@@ -2,12 +2,19 @@
 
 import type { FC, ReactNode } from 'react';
 
-import { useState } from 'react';
+import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { css } from 'styled-system/css';
 import { center, circle } from 'styled-system/patterns';
 
 const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    if (open) setOpen(false);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname]);
 
   return (
     <>
@@ -70,12 +77,21 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
 
       <div
         className={css({
-          display: { mdDown: open ? 'block' : 'none', md: 'none' },
+          display: { md: 'none' },
           height: '100dvh',
           width: '100dvw',
           position: 'fixed',
           backgroundColor: 'rgba(0,0,0,0.5)',
+          transition: '.5s',
+          visibility: 'hidden',
+          opacity: 0,
+          _open: {
+            visibility: 'visible',
+            opacity: 1,
+          },
         })}
+        // @ts-expect-error 2322
+        open={open}
       />
 
       <nav
@@ -87,7 +103,8 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
           mdDown: {
             width: '3/4',
             position: 'fixed',
-            display: open ? 'flex' : 'none',
+            transform: `translate3d(${open ? 0 : '-100%'}, 0, 0)`,
+            transition: '.5s',
           },
           md: {
             position: 'sticky',
