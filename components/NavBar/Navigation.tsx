@@ -85,6 +85,7 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
           transition: '.5s',
           visibility: 'hidden',
           opacity: 0,
+          zIndex: 5,
           _open: {
             visibility: 'visible',
             opacity: 1,
