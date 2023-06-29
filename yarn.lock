@@ -2900,7 +2900,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"aria-query@npm:^5.1.3, aria-query@npm:^5.2.1":
+"aria-query@npm:^5.1.3, aria-query@npm:^5.3.0":
   version: 5.3.0
   resolution: "aria-query@npm:5.3.0"
   dependencies:
@@ -2919,7 +2919,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"array-includes@npm:^3.1.5, array-includes@npm:^3.1.6":
+"array-includes@npm:^3.1.6":
   version: 3.1.6
   resolution: "array-includes@npm:3.1.6"
   dependencies:
@@ -3434,9 +3434,9 @@ __metadata:
   linkType: hard
 
 "chalk@npm:^5.0.0":
-  version: 5.2.0
-  resolution: "chalk@npm:5.2.0"
-  checksum: 03d8060277de6cf2fd567dc25fcf770593eb5bb85f460ce443e49255a30ff1242edd0c90a06a03803b0466ff0687a939b41db1757bec987113e83de89a003caa
+  version: 5.3.0
+  resolution: "chalk@npm:5.3.0"
+  checksum: 623922e077b7d1e9dedaea6f8b9e9352921f8ae3afe739132e0e00c275971bdd331268183b2628cf4ab1727c45ea1f28d7e24ac23ce1db1eb653c414ca8a5a80
   languageName: node
   linkType: hard
 
@@ -3923,9 +3923,9 @@ __metadata:
   linkType: hard
 
 "electron-to-chromium@npm:^1.4.431":
-  version: 1.4.442
-  resolution: "electron-to-chromium@npm:1.4.442"
-  checksum: 2905d01dc9b888ec2b3687801d130e868e951052d856727843e1ed22377e7887d472fd67854392c3944ea329865581a634e1e32e9c077dac63e1542fbc9847d2
+  version: 1.4.445
+  resolution: "electron-to-chromium@npm:1.4.445"
+  checksum: 6f42497e5a7d466fd3a4cf716f7c0c0c71b85d5bdc32cb8988ab969ae46aad1bad6fe267d6ab09877aa5769bf8db7b158a18b9bb67dd8a8a98565fc54cd45a3a
   languageName: node
   linkType: hard
 
@@ -6043,12 +6043,14 @@ __metadata:
   linkType: hard
 
 "jsx-ast-utils@npm:^2.4.1 || ^3.0.0, jsx-ast-utils@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "jsx-ast-utils@npm:3.3.3"
+  version: 3.3.4
+  resolution: "jsx-ast-utils@npm:3.3.4"
   dependencies:
-    array-includes: ^3.1.5
-    object.assign: ^4.1.3
-  checksum: a2ed78cac49a0f0c4be8b1eafe3c5257a1411341d8e7f1ac740debae003de04e5f6372bfcfbd9d082e954ffd99aac85bcda85b7c6bc11609992483f4cdc0f745
+    array-includes: ^3.1.6
+    array.prototype.flat: ^1.3.1
+    object.assign: ^4.1.4
+    object.values: ^1.1.6
+  checksum: a6a00d324e38f0d47e04f973d79670248a663422a4dccdc02efd6f1caf1c00042fb0aafcff1023707c85dea6f013d435b90db67c1c6841bf345628f0a720d8b3
   languageName: node
   linkType: hard
 
@@ -7314,7 +7316,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"object.assign@npm:^4.1.3, object.assign@npm:^4.1.4":
+"object.assign@npm:^4.1.4":
   version: 4.1.4
   resolution: "object.assign@npm:4.1.4"
   dependencies:
@@ -7834,61 +7836,6 @@ __metadata:
     sass-formatter: ^0.7.5
     synckit: ^0.8.4
   checksum: f5ec1022187a59be11425b34c40ac5f03039ef236e55c87bd038f17eae5164ed401e3a784d6a41029b9b69d4427625414db5abf1e9d49721e4a90c9ceaf38b43
-  languageName: node
-  linkType: hard
-
-"prettier-plugin-tailwindcss@npm:^0.3.0":
-  version: 0.3.0
-  resolution: "prettier-plugin-tailwindcss@npm:0.3.0"
-  peerDependencies:
-    "@ianvs/prettier-plugin-sort-imports": "*"
-    "@prettier/plugin-pug": "*"
-    "@shopify/prettier-plugin-liquid": "*"
-    "@shufo/prettier-plugin-blade": "*"
-    "@trivago/prettier-plugin-sort-imports": "*"
-    prettier: ">=2.2.0"
-    prettier-plugin-astro: "*"
-    prettier-plugin-css-order: "*"
-    prettier-plugin-import-sort: "*"
-    prettier-plugin-jsdoc: "*"
-    prettier-plugin-marko: "*"
-    prettier-plugin-organize-attributes: "*"
-    prettier-plugin-organize-imports: "*"
-    prettier-plugin-style-order: "*"
-    prettier-plugin-svelte: "*"
-    prettier-plugin-twig-melody: "*"
-  peerDependenciesMeta:
-    "@ianvs/prettier-plugin-sort-imports":
-      optional: true
-    "@prettier/plugin-pug":
-      optional: true
-    "@shopify/prettier-plugin-liquid":
-      optional: true
-    "@shufo/prettier-plugin-blade":
-      optional: true
-    "@trivago/prettier-plugin-sort-imports":
-      optional: true
-    prettier-plugin-astro:
-      optional: true
-    prettier-plugin-css-order:
-      optional: true
-    prettier-plugin-import-sort:
-      optional: true
-    prettier-plugin-jsdoc:
-      optional: true
-    prettier-plugin-marko:
-      optional: true
-    prettier-plugin-organize-attributes:
-      optional: true
-    prettier-plugin-organize-imports:
-      optional: true
-    prettier-plugin-style-order:
-      optional: true
-    prettier-plugin-svelte:
-      optional: true
-    prettier-plugin-twig-melody:
-      optional: true
-  checksum: 007c09558433dac0c81d42fd9695f8ed17be56be2e446a03e2557f01ae8e26bb11945780f9afa4e6e90b861aad3fbfac6a65d381804273d5539e7d26b0a270c9
   languageName: node
   linkType: hard
 
@@ -8935,14 +8882,14 @@ __metadata:
   linkType: hard
 
 "svelte@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "svelte@npm:4.0.0"
+  version: 4.0.1
+  resolution: "svelte@npm:4.0.1"
   dependencies:
     "@ampproject/remapping": ^2.2.1
     "@jridgewell/sourcemap-codec": ^1.4.15
     "@jridgewell/trace-mapping": ^0.3.18
-    acorn: ^8.8.2
-    aria-query: ^5.2.1
+    acorn: ^8.9.0
+    aria-query: ^5.3.0
     axobject-query: ^3.2.1
     code-red: ^1.0.3
     css-tree: ^2.3.1
@@ -8951,7 +8898,7 @@ __metadata:
     locate-character: ^3.0.0
     magic-string: ^0.30.0
     periscopic: ^3.1.0
-  checksum: 65966729971a0963b74f02afe83628ba171d7019a91ecdc5a020bc496716e6c2b4ea12782fd0f1c1e5d46464870ea3bbba68ebbe9e780e1bff24448a42451444
+  checksum: 81382cda8a8d2ade1b359f3b52a300baab01778fc948185660b7615d16001b700c8ad2c772df706c6642980a74bc01d63dd43fa8d404d26f2dbfaa2f138a9665
   languageName: node
   linkType: hard
 
@@ -9290,22 +9237,22 @@ __metadata:
   linkType: hard
 
 "typescript@npm:*, typescript@npm:^5.1.5":
-  version: 5.1.5
-  resolution: "typescript@npm:5.1.5"
+  version: 5.1.6
+  resolution: "typescript@npm:5.1.6"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 0eef8699e05ae767096924dbed633c340b4d36e953bb8ed87fb12e9dd9dcea5055ceac7182c614a556dbd346a8a82df799d330e1e286ae66e17c84e1710f6a6f
+  checksum: b2f2c35096035fe1f5facd1e38922ccb8558996331405eb00a5111cc948b2e733163cc22fab5db46992aba7dd520fff637f2c1df4996ff0e134e77d3249a7350
   languageName: node
   linkType: hard
 
 "typescript@patch:typescript@*#~builtin<compat/typescript>, typescript@patch:typescript@^5.1.5#~builtin<compat/typescript>":
-  version: 5.1.5
-  resolution: "typescript@patch:typescript@npm%3A5.1.5#~builtin<compat/typescript>::version=5.1.5&hash=5da071"
+  version: 5.1.6
+  resolution: "typescript@patch:typescript@npm%3A5.1.6#~builtin<compat/typescript>::version=5.1.6&hash=5da071"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 12ff5d14888805f24479e54bc8a3f83647107a6345f6c29dffcd429fb345be55f584a37e262cca58a0105203e41d4cb4e31b1b9096c9abeca0e2ace8eb00935e
+  checksum: f53bfe97f7c8b2b6d23cf572750d4e7d1e0c5fff1c36d859d0ec84556a827b8785077bc27676bf7e71fae538e517c3ecc0f37e7f593be913d884805d931bc8be
   languageName: node
   linkType: hard
 
@@ -9739,7 +9686,6 @@ __metadata:
     gzip-size: ^7.0.0
     next: ^13.4.7
     prettier: ^2.8.8
-    prettier-plugin-tailwindcss: ^0.3.0
     pretty-bytes: ^6.1.0
     react: ^18.2.0
     react-dom: ^18.2.0
