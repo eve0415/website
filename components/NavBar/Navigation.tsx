@@ -30,6 +30,7 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
           hideFrom: 'md',
         })}
         onClick={() => setOpen(!open)}
+        aria-label='メニュー'
       >
         <div
           className={css({
