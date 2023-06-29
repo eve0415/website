@@ -22,6 +22,7 @@ export default function Page() {
           justifyContent: 'center',
           height: '100dvh',
           color: 'white',
+          backgroundColor: 'rgba(0,0,0,0.4)',
         })}
       >
         <div
