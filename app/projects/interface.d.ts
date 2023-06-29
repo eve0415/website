@@ -10,6 +10,7 @@ export interface SimpleProject extends Base {
 
 export interface AdvancedProject extends Base {
   links: {
+    name: string;
     svg: JSX.Element;
     url: string;
   }[];

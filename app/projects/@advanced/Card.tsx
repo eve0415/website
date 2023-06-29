@@ -40,11 +40,12 @@ const Card: FC<{ data: AdvancedProject }> = ({ data: { name, image, description,
       </div>
 
       <div className={flex({ fontSize: '1.2rem', alignItems: 'center' })}>
-        {links.map(({ svg, url }) => (
+        {links.map(({ svg, url, name: iconName }) => (
           <Link
-            key={name}
+            key={iconName}
             href={url as Route}
             className={css({ borderRadius: '50%', padding: 2 })}
+            aria-label={iconName}
             target='_blank'
             rel='noopener noreferrer'
             data-ripplet
