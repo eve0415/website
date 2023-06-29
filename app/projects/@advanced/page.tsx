@@ -23,8 +23,8 @@ export default function Page() {
           borderRadius: 'lg',
           boxShadow: '0 20px 30px -15px rgba(0,0,0,0.15)',
           backgroundColor: 'white',
-          height: 330,
-          width: 350,
+          height: '330px',
+          width: '350px',
         })}
       >
         翻訳に参加したプロジェクト

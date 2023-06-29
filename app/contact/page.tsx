@@ -13,8 +13,8 @@ export const metadata = {
 export default function Page() {
   const buttonStyle = flex({
     alignItems: 'center',
-    height: 90,
-    width: { mdDown: '100%', md: 350 },
+    height: '90px',
+    width: { mdDown: '100%', md: '350px' },
     padding: 4,
     fontSize: '1.5rem',
     color: 'white',
@@ -24,8 +24,8 @@ export default function Page() {
   const iconStyle = css({
     backgroundColor: 'white',
     borderRadius: '50%',
-    height: 38,
-    width: 38,
+    height: '38px',
+    width: '38px',
     padding: 2,
     marginRight: 4,
   });

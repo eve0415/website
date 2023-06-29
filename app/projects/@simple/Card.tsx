@@ -22,8 +22,8 @@ const Card: FC<{ data: SimpleProject }> = ({ data: { name, image, description, u
         borderRadius: 'lg',
         boxShadow: '0 20px 30px -15px rgba(0,0,0,0.15)',
         backgroundColor: 'white',
-        height: 300,
-        width: 350,
+        height: '300px',
+        width: '350px',
         transition: 'all 0.3s ease-in-out',
         _hover: {
           boxShadow: '0 25px 45px -15px rgba(0,0,0,0.15)',
@@ -38,7 +38,7 @@ const Card: FC<{ data: SimpleProject }> = ({ data: { name, image, description, u
         alt={name}
         height={180}
         width={350}
-        className={css({ borderTopRadius: 'lg', height: 180, width: 350 })}
+        className={css({ borderTopRadius: 'lg', height: '180px', width: '350px' })}
       />
 
       <div className={css({ padding: 2 })}>

@@ -63,12 +63,12 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
         minHeight: '100dvh',
         fontFamily: ['line'],
         '&::-webkit-scrollbar': {
-          height: 2,
-          width: 2,
+          height: '2',
+          width: '2',
         },
         '&::-webkit-scrollbar-thumb': {
           backgroundColor: '#c7dfde',
-          borderRadius: 10,
+          borderRadius: '10px',
         },
       })}`}
     >

@@ -21,8 +21,8 @@ const Card: FC<{ data: AdvancedProject }> = ({ data: { name, image, description,
         borderRadius: 'lg',
         boxShadow: '0 20px 30px -15px rgba(0,0,0,0.15)',
         backgroundColor: 'white',
-        height: 330,
-        width: 350,
+        height: '330px',
+        width: '350px',
       })}
     >
       <Image
@@ -30,7 +30,7 @@ const Card: FC<{ data: AdvancedProject }> = ({ data: { name, image, description,
         alt={name}
         height={180}
         width={350}
-        className={css({ borderTopRadius: 'lg', height: 180, width: 350 })}
+        className={css({ borderTopRadius: 'lg', height: '180px', width: '350px' })}
         style={{ objectFit: 'cover' }}
       />
 

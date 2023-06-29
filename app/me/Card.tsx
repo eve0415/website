@@ -28,8 +28,8 @@ const Card: FC<{ data: { url: string; svg: ReactElement; name: string } }> = ({
     boxShadow:
       '0 0.0625rem 0.1875rem rgba(0, 0, 0, 0.05), rgba(0, 0, 0, 0.05) 0 0.625rem 0.9375rem -0.3125rem, rgba(0, 0, 0, 0.04) 0 0.4375rem 0.4375rem -0.3125rem',
     backgroundColor: 'white',
-    height: 130,
-    width: 130,
+    height: '130px',
+    width: '130px',
     transition: 'all 0.2s ease-in-out',
     _hover: {
       backgroundColor: 'rgba(242, 242, 242, 1)',
