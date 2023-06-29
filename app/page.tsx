@@ -5,13 +5,15 @@ import { circle, flex } from 'styled-system/patterns';
 export default function Page() {
   return (
     <>
-      <Image
-        src='https://eve0415.net/cdn-cgi/imagedelivery/e1FmkEoJCgY0rL0NK8GfGA/1eec637e-fed1-46b7-6c35-bcf496fe2c01/background'
-        alt='background'
-        style={{ objectFit: 'cover' }}
-        className={css({ zIndex: -100 })}
-        fill
-      />
+      <div className={css({ position: 'static' })}>
+        <Image
+          src='https://eve0415.net/cdn-cgi/imagedelivery/e1FmkEoJCgY0rL0NK8GfGA/1eec637e-fed1-46b7-6c35-bcf496fe2c01/background'
+          alt='background'
+          style={{ objectFit: 'cover' }}
+          className={css({ zIndex: -100 })}
+          fill
+        />
+      </div>
 
       <div
         className={flex({
@@ -33,6 +35,7 @@ export default function Page() {
             alt='me'
             className={css({ borderRadius: '50%' })}
             fill
+            priority
           />
         </div>
 
