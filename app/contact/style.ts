@@ -1,3 +1,4 @@
+import { css } from 'styled-system/css';
 import { flex } from 'styled-system/patterns';
 
 export const buttonStyle = flex({
@@ -10,3 +11,5 @@ export const buttonStyle = flex({
   borderRadius: 'xl',
   transition: 'background-color 0.2s ease-in-out',
 });
+
+export const title = css({ fontSize: '1.8rem', marginBottom: 4 });

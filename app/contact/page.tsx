@@ -6,7 +6,7 @@ import { css } from 'styled-system/css';
 import { grid } from 'styled-system/patterns';
 import { paper } from 'styled-system/recipes';
 
-import { buttonStyle } from './style';
+import { buttonStyle, title } from './style';
 
 export const metadata = {
   title: 'コンタクト',
@@ -24,7 +24,7 @@ export default function Page() {
 
   return (
     <div className={paper()}>
-      <h2>連絡先</h2>
+      <h2 className={title}>連絡先</h2>
       <p>お仕事などの依頼は Discord の DM にお願いします。</p>
 
       <div

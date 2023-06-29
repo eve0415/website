@@ -4,7 +4,7 @@ import { css } from 'styled-system/css';
 import { grid } from 'styled-system/patterns';
 import { paper } from 'styled-system/recipes';
 
-import { buttonStyle } from '../style';
+import { buttonStyle, title } from '../style';
 
 export default function Page() {
   const iconStyle = css({
@@ -17,7 +17,7 @@ export default function Page() {
 
   return (
     <div className={paper()}>
-      <h2>サポート・寄付・支援</h2>
+      <h2 className={title}>サポート・寄付・支援</h2>
       <p>GitHub Sponsors に登録しています。</p>
       <p>ご支援いただけると嬉しいです。</p>
 
