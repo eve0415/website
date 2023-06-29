@@ -5,7 +5,8 @@ import { stack } from 'styled-system/patterns';
 
 const Layout: FC<{
   children: ReactNode;
-}> = ({ children }) => {
+  donation: ReactNode;
+}> = ({ children, donation }) => {
   return (
     <div
       className={stack({
@@ -17,6 +18,7 @@ const Layout: FC<{
     >
       <h1 className={css({ fontSize: '2.2rem' })}>コンタクト</h1>
       {children}
+      {donation}
     </div>
   );
 };

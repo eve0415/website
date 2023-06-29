@@ -3,24 +3,16 @@ import { BsDiscord } from 'react-icons/bs';
 import { GrGithub, GrTwitter } from 'react-icons/gr';
 import { SiCrowdin } from 'react-icons/si';
 import { css } from 'styled-system/css';
-import { flex, grid } from 'styled-system/patterns';
+import { grid } from 'styled-system/patterns';
 import { paper } from 'styled-system/recipes';
+
+import { buttonStyle } from './style';
 
 export const metadata = {
   title: 'コンタクト',
 };
 
 export default function Page() {
-  const buttonStyle = flex({
-    alignItems: 'center',
-    height: '90px',
-    width: { mdDown: '100%', md: '350px' },
-    padding: 4,
-    fontSize: '1.5rem',
-    color: 'white',
-    borderRadius: 'xl',
-    transition: 'background-color 0.2s ease-in-out',
-  });
   const iconStyle = css({
     backgroundColor: 'white',
     borderRadius: '50%',
