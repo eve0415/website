@@ -61,6 +61,7 @@ jobs:
 
   clean:
     name: Clean Deployments
+    needs: deploy
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
