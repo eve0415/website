@@ -11,13 +11,14 @@ concurrency:
   group: ci-analysis-${{ github.head_ref || github.ref_name }}-deploy
   cancel-in-progress: true
 
+permissions:
+  contents: read
+  deployments: write
+
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      deployments: write
     timeout-minutes: 10
 
     steps:
@@ -58,6 +59,12 @@ jobs:
           gitHubToken: ${{ secrets.GITHUB_TOKEN }}
           wranglerVersion: '3'
 
+  clean:
+    name: Clean Deployments
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
       - name: Destroy old deployments
         uses: eve0415/cf-pages-clean-deployments-action@v0
         with:
