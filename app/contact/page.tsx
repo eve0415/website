@@ -3,9 +3,10 @@ import { BsDiscord } from 'react-icons/bs';
 import { GrGithub, GrTwitter } from 'react-icons/gr';
 import { SiCrowdin } from 'react-icons/si';
 import { css } from 'styled-system/css';
-import { grid, gridItem } from 'styled-system/patterns';
+import { grid } from 'styled-system/patterns';
 import { paper } from 'styled-system/recipes';
 
+import FormButton from './form/button';
 import { buttonStyle, title } from './style';
 
 export const metadata = {
@@ -88,18 +89,7 @@ export default function Page() {
           eve0415
         </Link>
 
-        <button
-          className={`${buttonStyle} ${gridItem({
-            colSpan: 2,
-            width: { xlDown: '100%' },
-            justifyContent: 'center',
-            backgroundColor: 'sky.600',
-            cursor: 'pointer',
-          })}`}
-          data-ripplet
-        >
-          コンタクトフォーム
-        </button>
+        <FormButton />
       </div>
     </div>
   );
