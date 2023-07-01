@@ -7,7 +7,7 @@ export default defineConfig({
   minify: true,
   hash: true,
   clean: true,
-  include: ['./{app,components}/**/*.{ts,tsx}'],
+  include: ['./app/**/*.{ts,tsx}'],
   outdir: 'styled-system',
   theme: {
     extend: {

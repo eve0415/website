@@ -5,8 +5,6 @@ import localFont from 'next/font/local';
 import Script from 'next/script';
 import { css } from 'styled-system/css/css';
 
-import NavBar from '@components/NavBar';
-
 const line = localFont({
   src: '../assets/LINESeedJP_OTF_Rg.woff2',
   display: 'swap',
@@ -74,11 +72,7 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
     >
       <Script src='https://cdn.jsdelivr.net/npm/ripplet.js@1.1.0/umd/ripplet-declarative.min.js' />
 
-      <body className={css({ display: 'flex' })}>
-        <NavBar />
-
-        <main className={css({ width: { mdDown: '100dvw', md: '3/4' } })}>{children}</main>
-      </body>
+      {children}
     </html>
   );
 };
