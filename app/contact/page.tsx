@@ -40,7 +40,6 @@ export default function Page() {
           href='https://discord.com/users/456937186856665098'
           className={`${buttonStyle} ${css({
             backgroundColor: '#2532F2',
-            _hover: { opacity: 0.7 },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -54,7 +53,6 @@ export default function Page() {
           href='https://twitter.com/eveevekun'
           className={`${buttonStyle} ${css({
             backgroundColor: '#1D9BF0',
-            _hover: { opacity: 0.8 },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -68,7 +66,6 @@ export default function Page() {
           href='https://github.com/eve0415'
           className={`${buttonStyle} ${css({
             backgroundColor: '#181616',
-            _hover: { opacity: 0.8 },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -82,7 +79,6 @@ export default function Page() {
           href='https://crowdin.com/profile/eve0415'
           className={`${buttonStyle} ${css({
             backgroundColor: '#2E3340',
-            _hover: { opacity: 0.8 },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -99,7 +95,6 @@ export default function Page() {
             justifyContent: 'center',
             backgroundColor: 'sky.600',
             cursor: 'pointer',
-            _hover: { opacity: 0.8 },
           })}`}
           data-ripplet
         >

@@ -10,6 +10,7 @@ export const buttonStyle = flex({
   color: 'white',
   borderRadius: 'xl',
   transition: 'opacity 0.2s ease-in-out',
+  _hover: { opacity: 0.7 },
 });
 
 export const title = css({ fontSize: '1.8rem', marginBottom: 4 });

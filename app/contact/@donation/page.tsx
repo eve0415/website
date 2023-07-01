@@ -33,7 +33,6 @@ export default function Page() {
           href='https://discord.com/users/456937186856665098'
           className={`${buttonStyle} ${css({
             backgroundColor: '#181616',
-            _hover: { backgroundColor: 'rgba(77, 77, 77, 1)' },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -47,7 +46,6 @@ export default function Page() {
           href='https://github.com/sponsors/eve0415?o=esb&'
           className={`${buttonStyle} ${css({
             backgroundColor: '#181616',
-            _hover: { backgroundColor: 'rgba(77, 77, 77, 1)' },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
