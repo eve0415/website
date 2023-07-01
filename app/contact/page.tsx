@@ -3,7 +3,7 @@ import { BsDiscord } from 'react-icons/bs';
 import { GrGithub, GrTwitter } from 'react-icons/gr';
 import { SiCrowdin } from 'react-icons/si';
 import { css } from 'styled-system/css';
-import { grid } from 'styled-system/patterns';
+import { grid, gridItem } from 'styled-system/patterns';
 import { paper } from 'styled-system/recipes';
 
 import { buttonStyle, title } from './style';
@@ -24,8 +24,9 @@ export default function Page() {
 
   return (
     <div className={paper()}>
-      <h2 className={title}>連絡先</h2>
+      <h2 className={title}>アカウント・連絡先</h2>
       <p>お仕事などの依頼は Discord の DM にお願いします。</p>
+      <p>または、下記のコンタクトフォームからお願いします。</p>
 
       <div
         className={grid({
@@ -39,7 +40,7 @@ export default function Page() {
           href='https://discord.com/users/456937186856665098'
           className={`${buttonStyle} ${css({
             backgroundColor: '#2532F2',
-            _hover: { backgroundColor: 'rgba(30, 40, 194, 1)' },
+            _hover: { opacity: 0.7 },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -53,7 +54,7 @@ export default function Page() {
           href='https://twitter.com/eveevekun'
           className={`${buttonStyle} ${css({
             backgroundColor: '#1D9BF0',
-            _hover: { backgroundColor: 'rgba(23, 124, 192, 1)' },
+            _hover: { opacity: 0.8 },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -67,7 +68,7 @@ export default function Page() {
           href='https://github.com/eve0415'
           className={`${buttonStyle} ${css({
             backgroundColor: '#181616',
-            _hover: { backgroundColor: 'rgba(77, 77, 77, 1)' },
+            _hover: { opacity: 0.8 },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -81,7 +82,7 @@ export default function Page() {
           href='https://crowdin.com/profile/eve0415'
           className={`${buttonStyle} ${css({
             backgroundColor: '#2E3340',
-            _hover: { backgroundColor: 'rgba(23, 26, 32, 1)' },
+            _hover: { opacity: 0.8 },
           })}`}
           target='_blank'
           rel='noopener noreferrer'
@@ -90,6 +91,20 @@ export default function Page() {
           <SiCrowdin color='#2E3340' className={iconStyle} />
           eve0415
         </Link>
+
+        <button
+          className={`${buttonStyle} ${gridItem({
+            colSpan: 2,
+            width: { xlDown: '100%' },
+            justifyContent: 'center',
+            backgroundColor: 'sky.600',
+            cursor: 'pointer',
+            _hover: { opacity: 0.8 },
+          })}`}
+          data-ripplet
+        >
+          コンタクトフォーム
+        </button>
       </div>
     </div>
   );

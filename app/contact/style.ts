@@ -9,7 +9,7 @@ export const buttonStyle = flex({
   fontSize: '1.5rem',
   color: 'white',
   borderRadius: 'xl',
-  transition: 'background-color 0.2s ease-in-out',
+  transition: 'opacity 0.2s ease-in-out',
 });
 
 export const title = css({ fontSize: '1.8rem', marginBottom: 4 });
