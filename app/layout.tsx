@@ -12,8 +12,6 @@ const line = localFont({
   variable: '--font-line',
 });
 
-export const runtime = 'edge';
-
 export const metadata = {
   title: {
     default: 'eve0415',

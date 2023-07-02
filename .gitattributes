@@ -4,5 +4,3 @@
 /.yarn/releases/*    binary
 /.yarn/plugins/**/*  binary
 /.yarn/sdks/**/*     binary
-
-next-env.d.ts        linguist-generated

@@ -1,5 +1,6 @@
 import type { FC, ReactNode } from 'react';
 
+import '@assets/globals.css';
 import { css } from 'styled-system/css/css';
 
 import NavBar from './NavBar';

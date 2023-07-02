@@ -7,18 +7,15 @@
     },
     "sourceType": "module"
   },
-  "plugins": ["next-on-pages"],
   "extends": [
     "eslint:recommended",
     "plugin:@typescript-eslint/recommended",
     "plugin:@typescript-eslint/recommended-requiring-type-checking",
     "plugin:@typescript-eslint/strict",
     "plugin:import/recommended",
-    "plugin:next-on-pages/recommended",
     "prettier"
   ],
   "rules": {
-    "next-on-pages/missing-image-loader": "off",
     "import/newline-after-import": "error",
     "import/no-empty-named-blocks": "error",
     "import/no-extraneous-dependencies": "error",
@@ -30,8 +27,18 @@
         "groups": ["type", "builtin", "external", "internal", ["parent", "sibling", "index"]],
         "pathGroups": [
           {
-            "pattern": "styled-system/**",
+            "pattern": "@pandacss/**",
             "group": "external"
+          },
+          {
+            "pattern": "@**/**",
+            "group": "internal",
+            "position": "after"
+          },
+          {
+            "pattern": "@**",
+            "group": "internal",
+            "position": "after"
           }
         ],
         "distinctGroup": true

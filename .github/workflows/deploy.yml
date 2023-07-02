@@ -46,35 +46,30 @@ jobs:
         run: yarn install --immutable
 
       - name: Build website
-        run: yarn next-on-pages
+        run: yarn build
         env:
           BRANCH: '${{ github.ref }}'
 
-      # - name: Build website
-      #   run: yarn build
-      #   env:
-      #     BRANCH: '${{ github.ref }}'
+      - name: Publish to Cloudflare Pages
+        uses: cloudflare/pages-action@v1
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT }}
+          projectName: website
+          directory: out
+          gitHubToken: ${{ secrets.GITHUB_TOKEN }}
+          wranglerVersion: '3'
 
-      # - name: Publish to Cloudflare Pages
-      #   uses: cloudflare/pages-action@v1
-      #   with:
-      #     apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-      #     accountId: ${{ secrets.CLOUDFLARE_ACCOUNT }}
-      #     projectName: website
-      #     directory: out
-      #     gitHubToken: ${{ secrets.GITHUB_TOKEN }}
-      #     wranglerVersion: '3'
+  clean:
+    name: Clean Deployments
+    needs: deploy
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
 
-  # clean:
-  #   name: Clean Deployments
-  #   needs: deploy
-  #   runs-on: ubuntu-latest
-  #   timeout-minutes: 10
-
-  #   steps:
-  #     - name: Destroy old deployments
-  #       uses: eve0415/cf-pages-clean-deployments-action@v0
-  #       with:
-  #         apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-  #         accountId: ${{ secrets.CLOUDFLARE_ACCOUNT }}
-  #         projectName: website
+    steps:
+      - name: Destroy old deployments
+        uses: eve0415/cf-pages-clean-deployments-action@v0
+        with:
+          apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          accountId: ${{ secrets.CLOUDFLARE_ACCOUNT }}
+          projectName: website
