@@ -26,7 +26,7 @@ export default function Page() {
     <div className={paper()}>
       <h2 className={title}>アカウント・連絡先</h2>
       <p>お仕事などの依頼は Discord の DM にお願いします。</p>
-      <p>または、下記のコンタクトフォームからお願いします。</p>
+      <p>または、下記の「お問い合わせ」からお願いします。</p>
 
       <div
         className={grid({
@@ -99,7 +99,7 @@ export default function Page() {
           })}`}
           data-ripplet
         >
-          コンタクトフォーム
+          お問い合わせ
         </Link>
       </div>
     </div>

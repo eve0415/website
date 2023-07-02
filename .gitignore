@@ -42,3 +42,6 @@ styled-system
 
 # tubo
 .turbo
+
+# env
+.env

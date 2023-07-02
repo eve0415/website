@@ -4,6 +4,7 @@ import '@assets/globals.css';
 import localFont from 'next/font/local';
 import Script from 'next/script';
 import { css } from 'styled-system/css/css';
+import { flex } from 'styled-system/patterns';
 
 const line = localFont({
   src: '../assets/LINESeedJP_OTF_Rg.woff2',
@@ -72,7 +73,7 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
     >
       <Script src='https://cdn.jsdelivr.net/npm/ripplet.js@1.1.0/umd/ripplet-declarative.min.js' />
 
-      {children}
+      <body className={flex({ width: '100dvw' })}>{children}</body>
     </html>
   );
 };

@@ -10,7 +10,7 @@
     "noEmit": true,
     "esModuleInterop": true,
     "module": "ESNext",
-    "moduleResolution": "Node",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
@@ -23,8 +23,9 @@
       {
         "name": "next"
       }
-    ]
+    ],
+    "types": ["@cloudflare/workers-types"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "styled-system/"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "styled-system/", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

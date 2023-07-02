@@ -7,11 +7,11 @@ import NavBar from './NavBar';
 
 const Layout: FC<{ children: ReactNode }> = ({ children }) => {
   return (
-    <body className={css({ display: 'flex' })}>
+    <>
       <NavBar />
 
-      <main className={css({ width: { mdDown: '100dvw', md: '3/4' } })}>{children}</main>
-    </body>
+      <main className={css({ width: { md: '3/4' } })}>{children}</main>
+    </>
   );
 };
 
