@@ -3,7 +3,7 @@
 /** @type {import('next').NextConfig} */
 module.exports = {
   reactStrictMode: true,
-  output: 'export',
+  // output: 'export',
   poweredByHeader: false,
   images: {
     unoptimized: true,

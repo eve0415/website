@@ -1,6 +1,5 @@
 import type { FC, ReactNode } from 'react';
 
-import '@assets/globals.css';
 import Script from 'next/script';
 import { flex } from 'styled-system/patterns';
 

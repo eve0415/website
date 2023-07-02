@@ -23,8 +23,7 @@
       {
         "name": "next"
       }
-    ],
-    "types": ["@cloudflare/workers-types"]
+    ]
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "styled-system/", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
