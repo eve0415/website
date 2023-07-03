@@ -8,7 +8,7 @@ on:
       - main
 
 concurrency:
-  group: ci-analysis-${{ github.head_ref || github.ref_name }}-anaylysis
+  group: ci-analysis-${{ github.head_ref || github.ref_name }}
   cancel-in-progress: true
 
 jobs:

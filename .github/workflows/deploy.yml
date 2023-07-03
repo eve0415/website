@@ -9,7 +9,7 @@ on:
   delete:
 
 concurrency:
-  group: ci-analysis-${{ github.head_ref || github.ref_name }}-deploy
+  group: ci-deploy-${{ github.head_ref || github.ref_name }}-${{github.event_name}}
   cancel-in-progress: true
 
 permissions:
