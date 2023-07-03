@@ -68,5 +68,5 @@ export const onRequest: PagesFunction<Env> = async context => {
     })
   );
 
-  return new Response();
+  return new Response(null, { status: 202 });
 };
