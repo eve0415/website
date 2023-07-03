@@ -61,7 +61,6 @@ export default function Page() {
           className={inputStyle}
           autoComplete='off'
           autoCapitalize='off'
-          autoFocus
         />
       </label>
 
@@ -74,7 +73,6 @@ export default function Page() {
           color='#E5FCFB'
           className={inputStyle}
           autoComplete='off'
-          autoFocus
           required
         />
       </label>
@@ -99,7 +97,6 @@ export default function Page() {
           transition: 'background-color 0.2s ease-in-out',
           _hover: { backgroundColor: 'blue.100' },
         })}`}
-        autoFocus={false}
         data-ripplet
       >
         送信

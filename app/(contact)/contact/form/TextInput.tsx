@@ -13,7 +13,6 @@ export default function TextInput() {
       className={inputStyle}
       minRows={2}
       autoComplete='off'
-      autoFocus
       required
     />
   );
