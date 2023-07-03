@@ -48,7 +48,7 @@ export const onRequest: PagesFunction<Env> = async context => {
       body: JSON.stringify({
         personalizations: [
           {
-            to: ['contactform@eve0415.net'],
+            to: [{ name: 'Contact Form', email: 'contactform@eve0415.net' }],
             dkim_domain: `eve0415.net`,
             dkim_selector: `mailchannels`,
             dkim_private_key: DKIM_PRIVATE_KEY,
