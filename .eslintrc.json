@@ -4,17 +4,12 @@
     "ecmaVersion": "latest",
     "ecmaFeatures": {
       "modules": true
-    },
-    "sourceType": "module"
+    }
   },
-  "extends": [
-    "eslint:recommended",
-    "plugin:@typescript-eslint/recommended",
-    "plugin:@typescript-eslint/recommended-requiring-type-checking",
-    "plugin:@typescript-eslint/strict",
-    "plugin:import/recommended",
-    "prettier"
-  ],
+  "extends": ["eslint:recommended", "plugin:import/recommended", "prettier"],
+  "env": {
+    "node": true
+  },
   "rules": {
     "import/newline-after-import": "error",
     "import/no-empty-named-blocks": "error",
@@ -24,24 +19,7 @@
       "error",
       {
         "newlines-between": "always",
-        "groups": ["type", "builtin", "external", "internal", ["parent", "sibling", "index"]],
-        "pathGroups": [
-          {
-            "pattern": "@pandacss/**",
-            "group": "external"
-          },
-          {
-            "pattern": "@**/**",
-            "group": "internal",
-            "position": "after"
-          },
-          {
-            "pattern": "@**",
-            "group": "internal",
-            "position": "after"
-          }
-        ],
-        "distinctGroup": true
+        "groups": ["type", "builtin", "external", "internal", ["parent", "sibling", "index"]]
       }
     ],
     "array-callback-return": "error",
