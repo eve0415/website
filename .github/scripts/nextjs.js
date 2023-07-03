@@ -7,7 +7,7 @@ module.exports = async ({ core }) => {
   const { readFileSync, existsSync, writeFileSync } = require('fs');
   const { cwd } = require('process');
   const { join } = require('path');
-  const prettyBytes = (await import('pretty-bytes')).default;
+  const { default: prettyBytes } = await import('pretty-bytes');
   const { gzipSizeFromFileSync } = await import('gzip-size');
 
   /** @type {{[key: string]: string} | null} */
@@ -57,6 +57,8 @@ module.exports = async ({ core }) => {
   const appRouterPages = appManifest
     ? Object.entries(appRoutes ?? {}).map(([key, value]) => {
         if (key.endsWith('route')) return { route: value, size: 0, js: 0 };
+        if (key === '/_not-found') return { route: key, size: 0, js: 0 };
+
         return {
           route: value,
           size: getFileSize([appManifest.pages[key][appManifest.pages[key].length - 1]]),
@@ -91,6 +93,13 @@ module.exports = async ({ core }) => {
     ...Object.keys(buildManifest.pages),
     '/404',
   ].filter(r => r);
+  const detectedRoutesOld = [
+    ...analysis.routes.app.map(({ route }) => route),
+    ...analysis.routes.pages.map(({ route }) => route),
+  ];
+
+  const appRouterNew = appRouterPages?.filter(({ route }) => !detectedRoutesOld.find(a => a === route));
+  const pageRouterNew = pageRouterPages?.filter(({ route }) => !detectedRoutesOld.find(a => a === route));
 
   const results = {
     global: {
@@ -107,64 +116,68 @@ module.exports = async ({ core }) => {
     },
     routes: {
       app: appRouterPages
-        ?.filter(({ route }) => detectedRoutes.find(a => a === route))
+        ?.filter(({ route }) => analysis.routes.app.find(a => a.route === route))
         .map(({ route, size, js }) => ({
           route,
           size,
           before: analysis.routes.app.find(a => a.route === route)?.size ?? 0,
           js,
         }))
-        .filter(({ before, size }) => before === size)
-        .sort(),
+        .filter(({ before, size }) => before === size),
       pages: pageRouterPages
-        ?.filter(({ route }) => detectedRoutes.find(a => a === route))
+        ?.filter(({ route }) => analysis.routes.pages.find(a => a.route === route))
         .map(({ route, size, js }) => ({
           route,
           size,
           before: analysis.routes.pages.find(a => a.route === route)?.size ?? 0,
           js,
-        })),
+        }))
+        .filter(({ before, size }) => before === size),
       changes: {
         app: appRouterPages
-          ?.filter(({ route }) => detectedRoutes.find(a => a === route))
+          ?.filter(({ route }) => !appRouterNew.find(a => a.route === route))
           .map(({ route, size, js }) => ({
             route,
             size,
-            before: analysis.routes.app.find(a => a.route === route)?.size ?? 0,
+            before:
+              analysis.routes.app.find(a => a.route === route)?.size ??
+              analysis.routes.pages.find(a => a.route === route)?.size ??
+              0,
             js,
           }))
-          .filter(({ before, size }) => before !== size)
-          .sort(),
-        pages: appRouterPages
-          ?.filter(({ route }) => detectedRoutes.find(a => a === route))
+          .filter(({ before, size }) => before !== size),
+        pages: pageRouterPages
+          ?.filter(({ route }) => !pageRouterNew.find(a => a.route === route))
           .map(({ route, size, js }) => ({
             route,
             size,
-            before: analysis.routes.pages.find(a => a.route === route)?.size ?? 0,
+            before:
+              analysis.routes.app.find(a => a.route === route)?.size ??
+              analysis.routes.pages.find(a => a.route === route)?.size ??
+              0,
             js,
           }))
-          .filter(({ before, size }) => before !== size)
-          .sort(),
+          .filter(({ before, size }) => before !== size),
       },
       new: {
-        app: appRouterPages
-          ?.filter(({ route }) => !detectedRoutes.find(a => a === route))
-          .map(({ route, size, js }) => ({
-            route,
-            size,
-            before: analysis.routes.app.find(a => a.route === route)?.size ?? 0,
-            js,
-          }))
-          .sort(),
-        pages: appRouterPages
-          ?.filter(({ route }) => !detectedRoutes.find(a => a === route))
-          .map(({ route, size, js }) => ({
-            route,
-            size,
-            before: analysis.routes.pages.find(a => a.route === route)?.size ?? 0,
-            js,
-          }))
-          .sort(),
+        app: appRouterNew.map(({ route, size, js }) => ({
+          route,
+          size,
+          before:
+            analysis.routes.app.find(a => a.route === route)?.size ??
+            analysis.routes.pages.find(a => a.route === route)?.size ??
+            0,
+          js,
+        })),
+        pages: pageRouterNew.map(({ route, size, js }) => ({
+          route,
+          size,
+          before:
+            analysis.routes.app.find(a => a.route === route)?.size ??
+            analysis.routes.pages.find(a => a.route === route)?.size ??
+            0,
+          js,
+        })),
       },
     },
     middleware: {
@@ -176,9 +189,15 @@ module.exports = async ({ core }) => {
   const globalChanged = results.global.app.diff || results.global.pages.diff;
   const globalIncreased = results.global.app.increase || results.global.pages.increase;
 
-  const newPages = [...results.routes.new.app, ...results.routes.new.pages].sort();
-  const changedPages = [...results.routes.changes.app, ...results.routes.changes.pages].sort();
-  const pages = [...results.routes.app, ...results.routes.pages].sort();
+  const newPages = [...results.routes.new.app, ...results.routes.new.pages].sort((a, b) =>
+    a.route.localeCompare(b.route)
+  );
+  const changedPages = [...results.routes.changes.app, ...results.routes.changes.pages].sort((a, b) =>
+    a.route.localeCompare(b.route)
+  );
+  const pages = [...results.routes.app, ...results.routes.pages].sort((a, b) =>
+    a.route.localeCompare(b.route)
+  );
 
   const title = ['# Next.js Bundle Analysis', ''];
 
@@ -203,7 +222,8 @@ module.exports = async ({ core }) => {
       `| \`pages\` | ${prettyBytes(results.global.pages.size)} ${
         globalChanged
           ? `(${renderStatusIndicator(analysis.global.pages, results.global.pages.size)}${prettyBytes(
-              results.global.pages.diff
+              results.global.pages.diff,
+              { signed: true }
             )})`
           : ''
       } |`,
@@ -211,7 +231,8 @@ module.exports = async ({ core }) => {
         ? `| \`app\` | ${prettyBytes(results.global.app.size)} ${
             globalChanged
               ? `(${renderStatusIndicator(analysis.global.app, results.global.app.size)}${prettyBytes(
-                  results.global.app.diff
+                  results.global.app.diff,
+                  { signed: true }
                 )})`
               : ''
           } |`
@@ -302,7 +323,7 @@ module.exports = async ({ core }) => {
   function diffSize(before, after) {
     if (before === after) return '';
 
-    return `(${renderStatusIndicator(before, after)}${prettyBytes(after - before)})`;
+    return `(${renderStatusIndicator(before, after)}${prettyBytes(after - before, { signed: true })})`;
   }
 
   /**
@@ -313,8 +334,8 @@ module.exports = async ({ core }) => {
   function renderStatusIndicator(before, after) {
     const change = ((after - before) / after) * 100;
 
-    if (change > 0 && change < 20) return '🟡 +';
-    if (change >= 20) return '🔴 +';
+    if (change > 0 && change < 20) return '🟡 ';
+    if (change >= 20) return '🔴 ';
     if (change < 0.01 && change > -0.01) return '';
     return '🟢 ';
   }

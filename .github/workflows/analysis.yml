@@ -18,6 +18,9 @@ jobs:
     timeout-minutes: 10
 
     steps:
+      - name: Setup TURBOREPO cache server
+        uses: dtinth/setup-github-actions-caching-for-turbo@v1
+
       - name: Checkout repository
         uses: actions/checkout@v3
 
@@ -31,8 +34,8 @@ jobs:
         uses: actions/cache@v3
         with:
           path: ${{ github.workspace }}/.next/cache
-          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: ${{ runner.os }}-nextjs-
+          key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/*.ts', '**/*.tsx') }}
+          restore-keys: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}
 
       - name: Install dependencies
         run: yarn install --immutable
@@ -49,6 +52,9 @@ jobs:
           branch: ${{ github.event.pull_request.base.ref }}
           path: .
 
+      - name: Prepare script
+        run: yarn esbuild ./.github/scripts/nextjs.js --bundle --platform=node --outfile=./.github/scripts/next.js
+
       - name: Generate comment body
         uses: actions/github-script@v6
         if: success()
@@ -56,7 +62,7 @@ jobs:
         with:
           result-encoding: string
           script: |
-            const script = require('.github/scripts/nextjs.js')
+            const script = require('.github/scripts/next.js')
             await script({core})
 
       - name: Upload bundle

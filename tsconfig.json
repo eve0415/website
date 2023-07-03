@@ -1,21 +1,31 @@
 {
   "compilerOptions": {
-    "target": "esnext",
-    "lib": ["dom", "esnext"],
-    "allowJs": false,
+    "target": "ESNext",
+    "lib": ["DOM", "ESNext"],
+    "allowJs": true,
+    "checkJs": false,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
     "noEmit": true,
-    "incremental": true,
     "esModuleInterop": true,
-    "module": "esnext",
-    "moduleResolution": "node",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "jsxImportSource": "@emotion/react"
+    "incremental": true,
+    "baseUrl": ".",
+    "paths": {
+      "@assets/*": ["assets/*"]
+    },
+    "plugins": [
+      {
+        "name": "next"
+      }
+    ],
+    "types": ["@cloudflare/workers-types"]
   },
-  "include": ["next-env.d.ts", "components", "pages"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "styled-system/", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]
 }

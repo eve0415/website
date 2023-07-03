@@ -1,5 +1,6 @@
+.next
+.vscode
 .yarn
 .pnp.*
-
-.next
 out
+styled-system
