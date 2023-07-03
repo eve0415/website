@@ -2,6 +2,7 @@ import { css } from 'styled-system/css';
 import { flex } from 'styled-system/patterns';
 import { paper } from 'styled-system/recipes';
 
+import FormParent from './Parent';
 import TextInput from './TextInput';
 import { inputStyle } from './style';
 
@@ -13,11 +14,7 @@ export default function Page() {
   })}`;
 
   return (
-    <form
-      className={flex({ direction: 'column', width: { mdDown: '90%', md: '1/2' } })}
-      action='/api/contact'
-      method='POST'
-    >
+    <FormParent>
       <div className={paper()}>
         <h1 className={css({ fontSize: '2.2rem', marginBottom: 2 })}>お問い合わせ</h1>
         <p>
@@ -101,6 +98,6 @@ export default function Page() {
       >
         送信
       </button>
-    </form>
+    </FormParent>
   );
 }
