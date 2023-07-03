@@ -55,7 +55,7 @@ export const onRequest: PagesFunction<Env> = async context => {
             dkim_private_key: DKIM_PRIVATE_KEY,
           },
         ],
-        from: { name: 'Cloudflare Worker - Contact Form', email: 'noreply@eve0415.net' },
+        from: { name: 'Cloudflare Worker', email: 'noreply@eve0415.net' },
         subject: title,
         content: [
           {
