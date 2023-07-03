@@ -47,7 +47,7 @@ jobs:
       - name: Build website
         run: yarn build
         env:
-          BRANCH: '${{ github.ref }}'
+          BRANCH: '${{ github.ref_name }}'
           CF_SITE_KEY: '${{ secrets.CF_SITE_KEY }}'
 
       - name: Publish to Cloudflare Pages
