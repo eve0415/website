@@ -80,7 +80,7 @@ export default function Page() {
       </label>
 
       <div
-        className={`cf-turnstile ${flex({ justifyContent: 'center' })}`}
+        className={`cf-turnstile ${css({ alignSelf: 'center', height: '65px', width: '300px' })}`}
         data-sitekey={process.env.CF_SITE_KEY}
         data-theme='light'
       />
