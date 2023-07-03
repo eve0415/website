@@ -26,7 +26,7 @@ const FormParent: FC<{ children: ReactNode }> = ({ children }) => {
       action=''
       method='POST'
       onSubmit={(e: FormEvent<ContactFormElement>) => {
-        fetch('http://127.0.0.1:8788/api/contact', {
+        fetch('/api/contact', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
