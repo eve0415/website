@@ -1,12 +1,13 @@
 interface Env {
   CF_SECRET_KEY: string;
   DKIM_PRIVATE_KEY: string;
+  MAIL_ADDRESS: string;
 }
 
 export const onRequest: PagesFunction<Env> = async context => {
   const {
     request,
-    env: { CF_SECRET_KEY, DKIM_PRIVATE_KEY },
+    env: { CF_SECRET_KEY, DKIM_PRIVATE_KEY, MAIL_ADDRESS },
     waitUntil,
   } = context;
 
@@ -48,7 +49,7 @@ export const onRequest: PagesFunction<Env> = async context => {
       body: JSON.stringify({
         personalizations: [
           {
-            to: [{ name: 'Contact Form', email: 'contactform@eve0415.net' }],
+            to: [{ name: 'Contact Form', email: MAIL_ADDRESS }],
             dkim_domain: `eve0415.net`,
             dkim_selector: `mailchannels`,
             dkim_private_key: DKIM_PRIVATE_KEY,
