@@ -69,7 +69,7 @@ jobs:
 
     steps:
       - name: Destroy old deployments
-        uses: eve0415/cf-pages-clean-deployments-action@v0
+        uses: eve0415/cf-pages-clean-deployments-action@pr-1
         with:
           apiToken: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           accountId: ${{ secrets.CLOUDFLARE_ACCOUNT }}
