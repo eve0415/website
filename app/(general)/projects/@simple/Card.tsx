@@ -22,7 +22,7 @@ const Card: FC<{ data: SimpleProject }> = ({ data: { name, image, description, u
         borderRadius: 'lg',
         boxShadow: '0 20px 30px -15px rgba(0,0,0,0.15)',
         backgroundColor: 'white',
-        height: '300px',
+        height: '330px',
         width: '360px',
         transition: 'all 0.3s ease-in-out',
         _hover: {
