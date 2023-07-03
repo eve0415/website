@@ -49,13 +49,13 @@ export const onRequest: PagesFunction<Env> = async context => {
       body: JSON.stringify({
         personalizations: [
           {
-            to: [{ name: 'Contact Form', email: MAIL_ADDRESS }],
+            to: [{ name: 'eve0415', email: MAIL_ADDRESS }],
             dkim_domain: `eve0415.net`,
             dkim_selector: `mailchannels`,
             dkim_private_key: DKIM_PRIVATE_KEY,
           },
         ],
-        from: { name: 'Cloudflare Worker', email: 'noreply@eve0415.net' },
+        from: { name: 'Cloudflare Worker - Contact Form', email: 'noreply@eve0415.net' },
         subject: title,
         content: [
           {
@@ -67,7 +67,7 @@ export const onRequest: PagesFunction<Env> = async context => {
         ],
       }),
     })
-      .then(res => console.log(res.status, res.ok))
+      .then(res => console.log(res.status, res.statusText, res.ok))
       .catch(console.error)
   );
 
