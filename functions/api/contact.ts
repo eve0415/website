@@ -1,3 +1,5 @@
+import { inspect } from 'util';
+
 interface Env {
   CF_SECRET_KEY: string;
   DKIM_PRIVATE_KEY: string;
@@ -67,7 +69,7 @@ export const onRequest: PagesFunction<Env> = async context => {
         ],
       }),
     })
-      .then(console.log)
+      .then(res => console.log(inspect(res, { depth: null })))
       .catch(console.error)
   );
 
