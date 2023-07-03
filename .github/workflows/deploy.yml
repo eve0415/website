@@ -49,6 +49,7 @@ jobs:
         run: yarn build
         env:
           BRANCH: '${{ github.ref }}'
+          CF_SITE_KEY: '${{ secrets.CF_SITE_KEY }}'
 
       - name: Publish to Cloudflare Pages
         uses: cloudflare/pages-action@v1

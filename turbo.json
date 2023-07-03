@@ -7,7 +7,7 @@
     },
     "build:turbo": {
       "dependsOn": ["panda:turbo"],
-      "env": ["BRANCH"],
+      "env": ["BRANCH", "CF_SITE_KEY"],
       "inputs": [
         "app/**",
         "assets/**",
