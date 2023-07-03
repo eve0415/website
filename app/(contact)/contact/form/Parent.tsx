@@ -23,8 +23,6 @@ const FormParent: FC<{ children: ReactNode }> = ({ children }) => {
   return (
     <form
       className={flex({ direction: 'column', width: { mdDown: '90%', md: '1/2' } })}
-      action=''
-      method='POST'
       onSubmit={(e: FormEvent<ContactFormElement>) => {
         fetch('/api/contact', {
           method: 'POST',
