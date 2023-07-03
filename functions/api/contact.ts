@@ -67,7 +67,7 @@ export const onRequest: PagesFunction<Env> = async context => {
         ],
       }),
     })
-      .then(res => console.log(res.status, res.statusText, res.ok))
+      .then(async res => console.log(res.status, res.statusText, await res.json()))
       .catch(console.error)
   );
 
