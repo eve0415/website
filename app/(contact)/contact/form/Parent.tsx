@@ -28,6 +28,7 @@ const FormParent: FC<{ children: ReactNode }> = ({ children }) => {
 
         fetch('/api/contact', {
           method: 'POST',
+          mode: 'same-origin',
           headers: {
             'Content-Type': 'application/json',
           },
