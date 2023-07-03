@@ -18,6 +18,7 @@ export default function Page() {
           alignItems: 'center',
           alignSelf: 'center',
           justifySelf: 'center',
+          justifyContent: 'center',
           textAlign: 'center',
           border: '0.0625rem solid #dee2e6',
           borderRadius: 'lg',
