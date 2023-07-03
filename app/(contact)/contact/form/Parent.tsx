@@ -37,9 +37,9 @@ const FormParent: FC<{ children: ReactNode }> = ({ children }) => {
             turnstile: e.currentTarget.elements['cf-turnstile-response'].value,
           }),
         })
+          .catch(null)
           // @ts-expect-error 2345
-          .then(() => router.push('/contact'))
-          .catch(null);
+          .finally(() => router.push('/contact'));
       }}
     >
       {children}
