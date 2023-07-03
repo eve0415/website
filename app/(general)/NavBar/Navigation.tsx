@@ -105,8 +105,11 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
           mdDown: {
             width: '3/4',
             position: 'fixed',
-            transform: `translate3d(${open ? 0 : '-100%'}, 0, 0)`,
+            transform: `translate3d(-100%, 0, 0)`,
             transition: '.5s',
+            _open: {
+              transform: 'translate3d(0, 0, 0)',
+            },
           },
           md: {
             position: 'sticky',
@@ -115,6 +118,8 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
             opacity: 0.9,
           },
         })}
+        // @ts-expect-error 2322
+        open={open}
       >
         {menu}
       </nav>

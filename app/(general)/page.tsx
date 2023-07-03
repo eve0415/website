@@ -21,6 +21,7 @@ export default function Page() {
           alignItems: 'center',
           justifyContent: 'center',
           height: '100dvh',
+          width: '100dvw',
           color: 'white',
           backgroundColor: 'rgba(0,0,0,0.4)',
         })}

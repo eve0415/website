@@ -91,7 +91,7 @@ export default function Page() {
         <Link
           href='/contact/form'
           className={`${buttonStyle} ${gridItem({
-            colSpan: 2,
+            colSpan: { mdDown: 1, md: 2 },
             width: { xlDown: '100%', '2xl': '100%' },
             justifyContent: 'center',
             backgroundColor: 'sky.600',
