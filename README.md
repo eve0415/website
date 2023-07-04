@@ -17,6 +17,7 @@
 - [panda](https://panda-css.com/)
 - [ripplet.js](https://github.com/luncheon/ripplet.js)
 - [Cloudflare](https://www.cloudflare.com/)
+  - [Cloudflare Pages](https://pages.cloudflare.com/)
   - [Browser Insight](https://blog.cloudflare.com/introducing-browser-insights/)
   - [Bot Management](https://www.cloudflare.com/products/bot-management/)
   - [Rocket Loader](https://developers.cloudflare.com/fundamentals/speed/rocket-loader/)
