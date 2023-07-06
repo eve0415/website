@@ -37,8 +37,8 @@ module.exports = async ({ core }) => {
     ? getFileSize([
         ...new Set(
           appGlobal.filter(
-            a => (appGlobal.filter(s => a === s)?.length ?? 0) == Object.values(appManifest.pages).length
-          )
+            a => (appGlobal.filter(s => a === s)?.length ?? 0) == Object.values(appManifest.pages).length,
+          ),
         ),
       ])
     : 0;
@@ -83,7 +83,7 @@ module.exports = async ({ core }) => {
         pages: pageRouterPages,
       },
       middleware: middlewareSize,
-    })
+    }),
   );
 
   if (!analysis) return;
@@ -190,13 +190,13 @@ module.exports = async ({ core }) => {
   const globalIncreased = results.global.app.increase || results.global.pages.increase;
 
   const newPages = [...results.routes.new.app, ...results.routes.new.pages].sort((a, b) =>
-    a.route.localeCompare(b.route)
+    a.route.localeCompare(b.route),
   );
   const changedPages = [...results.routes.changes.app, ...results.routes.changes.pages].sort((a, b) =>
-    a.route.localeCompare(b.route)
+    a.route.localeCompare(b.route),
   );
   const pages = [...results.routes.app, ...results.routes.pages].sort((a, b) =>
-    a.route.localeCompare(b.route)
+    a.route.localeCompare(b.route),
   );
 
   const title = ['# Next.js Bundle Analysis', ''];
@@ -204,7 +204,7 @@ module.exports = async ({ core }) => {
   if (!globalChanged && !results.middleware.diff && !newPages.length && !changedPages.length) {
     core.setOutput(
       'body',
-      [...title, 'This PR introduced no changes to the JavaScript bundle! 🙌'].join('\n')
+      [...title, 'This PR introduced no changes to the JavaScript bundle! 🙌'].join('\n'),
     );
     return;
   }
@@ -223,7 +223,7 @@ module.exports = async ({ core }) => {
         globalChanged
           ? `(${renderStatusIndicator(analysis.global.pages, results.global.pages.size)}${prettyBytes(
               results.global.pages.diff,
-              { signed: true }
+              { signed: true },
             )})`
           : ''
       } |`,
@@ -232,7 +232,7 @@ module.exports = async ({ core }) => {
             globalChanged
               ? `(${renderStatusIndicator(analysis.global.app, results.global.app.size)}${prettyBytes(
                   results.global.app.diff,
-                  { signed: true }
+                  { signed: true },
                 )})`
               : ''
           } |`
@@ -254,7 +254,7 @@ module.exports = async ({ core }) => {
             '| Route | Size (compressed) | First Load JS |',
             '| --- | --- | --- |',
             ...(newPages.map(
-              ({ route, size, js }) => `| \`${route}\` | ${prettyBytes(size)} | ${prettyBytes(js)} |`
+              ({ route, size, js }) => `| \`${route}\` | ${prettyBytes(size)} | ${prettyBytes(js)} |`,
             ) ?? []),
             '',
           ]
@@ -268,7 +268,7 @@ module.exports = async ({ core }) => {
             '| --- | --- | --- |',
             ...(changedPages.map(
               ({ route, size, before, js }) =>
-                `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`
+                `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`,
             ) ?? []),
             '',
           ]
@@ -282,7 +282,7 @@ module.exports = async ({ core }) => {
       '| --- | --- | --- |',
       ...(pages.map(
         ({ route, size, before, js }) =>
-          `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`
+          `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`,
       ) ?? []),
       '</details>',
       '',
@@ -299,7 +299,7 @@ module.exports = async ({ core }) => {
     ]
       .map(s => s.trim())
       .join('\n')
-      .trimEnd()
+      .trimEnd(),
   );
 
   /**

@@ -61,14 +61,14 @@ export const onRequest: PagesFunction<Env> = async context => {
           {
             type: `text/plain`,
             value: [`お名前: ${name}`, `返信先: ${reply ?? 'なし'}`, `お問い合わせ内容: `, message].join(
-              '\n'
+              '\n',
             ),
           },
         ],
       }),
     })
       .then(async res => console.log(res.status, res.statusText, await res.json()))
-      .catch(console.error)
+      .catch(console.error),
   );
 
   return new Response(null, { status: 202 });
