@@ -42,6 +42,8 @@ jobs:
 
       - name: Build website
         run: yarn build
+        env:
+          BRANCH: main
 
       - name: Download base branch bundle stats
         uses: dawidd6/action-download-artifact@v2
