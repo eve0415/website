@@ -29,7 +29,9 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
           backgroundColor: '#E5FCFB',
           hideFrom: 'md',
         })}
-        onClick={() => setOpen(!open)}
+        onClick={() => {
+          setOpen(!open);
+        }}
         aria-label='メニュー'
       >
         <div

@@ -73,8 +73,11 @@
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:@typescript-eslint/recommended-type-checked",
         "plugin:@typescript-eslint/strict",
+        "plugin:@typescript-eslint/strict-type-checked",
+        "plugin:@typescript-eslint/stylistic",
+        "plugin:@typescript-eslint/stylistic-type-checked",
         "plugin:import/recommended",
         "plugin:import/typescript",
         "prettier"
@@ -96,9 +99,7 @@
         "@typescript-eslint/no-useless-empty-export": "error",
         "@typescript-eslint/prefer-readonly": "error",
         "@typescript-eslint/prefer-regexp-exec": "error",
-        "@typescript-eslint/sort-type-constituents": "error",
-        "require-jsdoc": "off",
-        "no-unused-vars": "off"
+        "@typescript-eslint/sort-type-constituents": "error"
       }
     },
     {
@@ -115,8 +116,11 @@
       "extends": [
         "eslint:recommended",
         "plugin:@typescript-eslint/recommended",
-        "plugin:@typescript-eslint/recommended-requiring-type-checking",
+        "plugin:@typescript-eslint/recommended-type-checked",
         "plugin:@typescript-eslint/strict",
+        "plugin:@typescript-eslint/strict-type-checked",
+        "plugin:@typescript-eslint/stylistic",
+        "plugin:@typescript-eslint/stylistic-type-checked",
         "plugin:import/recommended",
         "plugin:import/typescript",
         "next/core-web-vitals",
@@ -143,9 +147,7 @@
         "@typescript-eslint/no-useless-empty-export": "error",
         "@typescript-eslint/prefer-readonly": "error",
         "@typescript-eslint/prefer-regexp-exec": "error",
-        "@typescript-eslint/sort-type-constituents": "error",
-        "require-jsdoc": "off",
-        "no-unused-vars": "off"
+        "@typescript-eslint/sort-type-constituents": "error"
       }
     }
   ]
