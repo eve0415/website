@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { BsDiscord } from 'react-icons/bs';
 import { GrGithub, GrTwitter } from 'react-icons/gr';
 import { SiCrowdin } from 'react-icons/si';
+
 import { css } from 'styled-system/css';
 import { grid, gridItem } from 'styled-system/patterns';
 import { paper } from 'styled-system/recipes';

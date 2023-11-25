@@ -4,6 +4,7 @@ import type { AdvancedProject } from '../interface';
 
 import Image from 'next/image';
 import Link from 'next/link';
+
 import { css } from 'styled-system/css';
 import { flex, gridItem } from 'styled-system/patterns';
 

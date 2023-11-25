@@ -1,6 +1,7 @@
 import type { FC, ReactNode } from 'react';
 
 import Script from 'next/script';
+
 import { flex } from 'styled-system/patterns';
 
 const Layout: FC<{ children: ReactNode }> = ({ children }) => {

@@ -2,6 +2,7 @@ import { paper } from 'styled-system/recipes';
 
 import Card from '../Card';
 import { gridClass, title } from '../styles';
+
 import { monitoring } from './monitor';
 
 export default function Page() {

@@ -3,6 +3,7 @@ import type { FC, ReactNode } from 'react';
 import '@assets/globals.css';
 import localFont from 'next/font/local';
 import Script from 'next/script';
+
 import { css } from 'styled-system/css/css';
 import { flex } from 'styled-system/patterns';
 
