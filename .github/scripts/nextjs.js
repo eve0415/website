@@ -32,8 +32,8 @@ module.exports = async ({ core }) => {
     : null;
 
   const globalSize = getFileSize(buildManifest.pages['/_app']);
-  const appGlobal = appManifest?.pages.length ? Object.values(appManifest.pages).flatMap(v => v) : [];
-  const appGlobalSize = appManifest?.pages.length
+  const appGlobal = appManifest?.pages ? Object.values(appManifest.pages).flatMap(v => v) : [];
+  const appGlobalSize = appManifest?.pages
     ? getFileSize([
         ...new Set(
           appGlobal.filter(
