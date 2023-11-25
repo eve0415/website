@@ -3,7 +3,7 @@
     "target": "ESNext",
     "lib": ["DOM", "ESNext"],
     "allowJs": true,
-    "checkJs": false,
+    "checkJs": true,
     "skipLibCheck": true,
     "strict": true,
     "forceConsistentCasingInFileNames": true,
