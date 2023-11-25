@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * @param {{core: import('@actions/core')}} param0
+ * @param {import('github-script').AsyncFunctionArguments} AsyncFunctionArguments
  */
 module.exports = async ({ core }) => {
   const { readFileSync, existsSync, writeFileSync } = require('fs');
