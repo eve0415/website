@@ -32,8 +32,8 @@ module.exports = async ({ core }) => {
     : null;
 
   const globalSize = getFileSize(buildManifest.pages['/_app']);
-  const appGlobal = appManifest ? Object.values(appManifest.pages).flatMap(v => v) : [];
-  const appGlobalSize = appManifest
+  const appGlobal = appManifest?.pages.length ? Object.values(appManifest.pages).flatMap(v => v) : [];
+  const appGlobalSize = appManifest?.pages.length
     ? getFileSize([
         ...new Set(
           appGlobal.filter(
@@ -54,7 +54,7 @@ module.exports = async ({ core }) => {
         js: routeSize + globalSize,
       };
     });
-  const appRouterPages = appManifest
+  const appRouterPages = appManifest?.pages.length
     ? Object.entries(appRoutes ?? {}).map(([key, value]) => {
         if (key.endsWith('route')) return { route: value, size: 0, js: 0 };
 
