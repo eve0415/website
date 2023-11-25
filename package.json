@@ -11,8 +11,8 @@
     "build:turbo": "next build",
     "start": "next start",
     "lint": "turbo lint:fix",
-    "lint:fix": "next lint --fix . & prettier --write \"./**/*.{ts,tsx,js,json,yml}\"",
-    "lint:ci": "next lint . && yarn prettier --check \"./**/*.{ts,tsx,js,json,yml}\"",
+    "lint:fix": "next lint --fix . & prettier --write . --cache",
+    "lint:ci": "next lint . && prettier --check . --cache",
     "sdk": "yarn dlx @yarnpkg/sdks"
   },
   "devDependencies": {
