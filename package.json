@@ -1,6 +1,9 @@
 {
   "name": "website",
   "packageManager": "yarn@4.0.2",
+  "engines": {
+    "node": ">=20.10.0"
+  },
   "private": true,
   "scripts": {
     "panda": "turbo panda:turbo",
