@@ -1,6 +1,7 @@
 import { BsDiscord } from 'react-icons/bs';
 import { GrGithub, GrLanguage, GrTwitter } from 'react-icons/gr';
 import { SiCrowdin } from 'react-icons/si';
+
 import { css } from 'styled-system/css';
 
 export const curseforge = (

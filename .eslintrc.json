@@ -1,14 +1,16 @@
 {
   "root": true,
   "parserOptions": {
-    "ecmaVersion": "latest",
-    "ecmaFeatures": {
-      "modules": true
-    }
+    "ecmaVersion": "latest"
   },
   "extends": ["eslint:recommended", "plugin:import/recommended", "prettier"],
   "env": {
-    "node": true
+    "node": true,
+    "commonjs": true,
+    "es2024": true
+  },
+  "settings": {
+    "import/external-module-folders": [".yarn", "node_modules"]
   },
   "rules": {
     "import/newline-after-import": "error",
@@ -19,13 +21,27 @@
       "error",
       {
         "newlines-between": "always",
-        "groups": ["type", "builtin", "external", "internal", ["parent", "sibling", "index"]]
+        "groups": ["type", "builtin", "external", "internal", "parent", "sibling", "index"],
+        "pathGroups": [
+          {
+            "pattern": "@assets/**",
+            "group": "internal"
+          }
+        ],
+        "pathGroupsExcludedImportTypes": ["type"]
       }
     ],
     "array-callback-return": "error",
-    "camelcase": ["error", { "ignoreImports": true, "properties": "never" }],
+    "camelcase": [
+      "error",
+      {
+        "ignoreImports": true,
+        "properties": "never"
+      }
+    ],
     "eqeqeq": "error",
     "logical-assignment-operators": "error",
+    "newline-per-chained-call": "error",
     "no-array-constructor": "error",
     "no-await-in-loop": "error",
     "no-constructor-return": "error",
@@ -60,14 +76,30 @@
   },
   "overrides": [
     {
+      "files": ["*.mjs"],
+      "parserOptions": {
+        "ecmaVersion": "latest",
+        "sourceType": "module"
+      },
+      "extends": ["eslint:recommended", "plugin:import/recommended", "prettier"],
+      "env": {
+        "commonjs": false
+      },
+      "settings": {
+        "import/external-module-folders": [".yarn", "node_modules"],
+        "import/resolver": {
+          "typescript": {}
+        }
+      },
+      "rules": {
+        "import/no-commonjs": "error"
+      }
+    },
+    {
       "files": ["*.ts"],
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "ecmaVersion": "latest",
-        "ecmaFeatures": {
-          "modules": true
-        },
-        "sourceType": "module",
         "project": "./tsconfig.json"
       },
       "extends": [
@@ -83,6 +115,7 @@
         "prettier"
       ],
       "settings": {
+        "import/external-module-folders": [".yarn", "node_modules"],
         "import/resolver": {
           "typescript": {}
         }
@@ -90,13 +123,27 @@
       "rules": {
         "@typescript-eslint/consistent-type-exports": [
           "error",
-          { "fixMixedExportsWithInlineTypeSpecifier": false }
+          {
+            "fixMixedExportsWithInlineTypeSpecifier": false
+          }
         ],
-        "@typescript-eslint/consistent-type-imports": ["error", { "disallowTypeAnnotations": false }],
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            "disallowTypeAnnotations": false
+          }
+        ],
         "@typescript-eslint/method-signature-style": "error",
+        "@typescript-eslint/no-import-type-side-effects": "error",
         "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
         "@typescript-eslint/no-unnecessary-qualifier": "error",
         "@typescript-eslint/no-useless-empty-export": "error",
+        "@typescript-eslint/prefer-literal-enum-member": [
+          "error",
+          {
+            "allowBitwiseExpressions": true
+          }
+        ],
         "@typescript-eslint/prefer-readonly": "error",
         "@typescript-eslint/prefer-regexp-exec": "error",
         "@typescript-eslint/sort-type-constituents": "error"
@@ -107,10 +154,6 @@
       "parser": "@typescript-eslint/parser",
       "parserOptions": {
         "ecmaVersion": "latest",
-        "ecmaFeatures": {
-          "modules": true
-        },
-        "sourceType": "module",
         "project": "./tsconfig.json"
       },
       "extends": [
@@ -127,6 +170,7 @@
         "prettier"
       ],
       "settings": {
+        "import/external-module-folders": [".yarn", "node_modules"],
         "import/resolver": {
           "typescript": {}
         }
@@ -138,13 +182,27 @@
       "rules": {
         "@typescript-eslint/consistent-type-exports": [
           "error",
-          { "fixMixedExportsWithInlineTypeSpecifier": false }
+          {
+            "fixMixedExportsWithInlineTypeSpecifier": false
+          }
         ],
-        "@typescript-eslint/consistent-type-imports": ["error", { "disallowTypeAnnotations": false }],
+        "@typescript-eslint/consistent-type-imports": [
+          "error",
+          {
+            "disallowTypeAnnotations": false
+          }
+        ],
         "@typescript-eslint/method-signature-style": "error",
+        "@typescript-eslint/no-import-type-side-effects": "error",
         "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
         "@typescript-eslint/no-unnecessary-qualifier": "error",
         "@typescript-eslint/no-useless-empty-export": "error",
+        "@typescript-eslint/prefer-literal-enum-member": [
+          "error",
+          {
+            "allowBitwiseExpressions": true
+          }
+        ],
         "@typescript-eslint/prefer-readonly": "error",
         "@typescript-eslint/prefer-regexp-exec": "error",
         "@typescript-eslint/sort-type-constituents": "error"

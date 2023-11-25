@@ -2,6 +2,7 @@ import type { Route } from 'next';
 import type { FC, ReactElement } from 'react';
 
 import Link from 'next/link';
+
 import { gridItem } from 'styled-system/patterns';
 
 const Card: FC<{ data: { url: string; svg: ReactElement; name: string } }> = ({
