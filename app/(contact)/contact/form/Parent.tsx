@@ -26,7 +26,7 @@ const FormParent: FC<{ children: ReactNode }> = ({ children }) => {
       onSubmit={(e: FormEvent<ContactFormElement>) => {
         e.preventDefault();
 
-        fetch('/api/contact', {
+        void fetch('/api/contact', {
           method: 'POST',
           mode: 'same-origin',
           headers: {

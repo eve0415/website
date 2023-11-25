@@ -1,7 +1,7 @@
 import { defineRecipe } from '@pandacss/dev';
 
 export const paperRecipe = defineRecipe({
-  name: 'paper',
+  className: 'paper',
   base: {
     textAlign: 'center',
     padding: 5,
