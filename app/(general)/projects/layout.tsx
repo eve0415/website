@@ -21,7 +21,7 @@ const Layout: FC<{
 
       {children}
 
-      <div className={grid({ columns: { sm: 2, xl: 3 }, gap: { smDown: 2, md: 6 } })}>
+      <div className={grid({ columns: { smToXl: 1, xl: 2, '2xlOnly': 4 }, gap: { smDown: 2, md: 6 } })}>
         {simple}
         {advanced}
       </div>
