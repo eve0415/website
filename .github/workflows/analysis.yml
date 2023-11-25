@@ -22,12 +22,12 @@ jobs:
         uses: dtinth/setup-github-actions-caching-for-turbo@v1
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
-      - name: Setup Node.js v18
-        uses: actions/setup-node@v3
+      - name: Setup Node.js v20
+        uses: actions/setup-node@v4
         with:
-          node-version: 18
+          node-version: 20
           cache: yarn
 
       - name: Cache Next.js
@@ -58,7 +58,7 @@ jobs:
         run: yarn esbuild ./.github/scripts/nextjs.js --bundle --platform=node --outfile=./.github/scripts/next.js
 
       - name: Generate comment body
-        uses: actions/github-script@v6
+        uses: actions/github-script@v7
         if: success()
         id: bundle-results
         with:
