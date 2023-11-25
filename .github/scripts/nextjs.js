@@ -57,7 +57,6 @@ module.exports = async ({ core }) => {
   const appRouterPages = appManifest
     ? Object.entries(appRoutes ?? {}).map(([key, value]) => {
         if (key.endsWith('route')) return { route: value, size: 0, js: 0 };
-        if (key === '/_not-found') return { route: key, size: 0, js: 0 };
 
         return {
           route: value,
