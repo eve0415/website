@@ -1,7 +1,7 @@
 // @ts-check
 
 /**
- * @param {{core: import('@actions/core')}} param0
+ * @param {import('github-script').AsyncFunctionArguments} AsyncFunctionArguments
  */
 module.exports = async ({ core }) => {
   const { readFileSync, existsSync, writeFileSync } = require('fs');
@@ -32,8 +32,8 @@ module.exports = async ({ core }) => {
     : null;
 
   const globalSize = getFileSize(buildManifest.pages['/_app']);
-  const appGlobal = appManifest ? Object.values(appManifest.pages).flatMap(v => v) : [];
-  const appGlobalSize = appManifest
+  const appGlobal = appManifest?.pages ? Object.values(appManifest.pages).flatMap(v => v) : [];
+  const appGlobalSize = appManifest?.pages
     ? getFileSize([
         ...new Set(
           appGlobal.filter(
@@ -54,10 +54,9 @@ module.exports = async ({ core }) => {
         js: routeSize + globalSize,
       };
     });
-  const appRouterPages = appManifest
+  const appRouterPages = appManifest?.pages.length
     ? Object.entries(appRoutes ?? {}).map(([key, value]) => {
         if (key.endsWith('route')) return { route: value, size: 0, js: 0 };
-        if (key === '/_not-found') return { route: key, size: 0, js: 0 };
 
         return {
           route: value,
