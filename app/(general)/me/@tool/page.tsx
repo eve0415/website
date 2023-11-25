@@ -8,7 +8,7 @@ import { tools } from './tools';
 export default function Page() {
   return (
     <div className={paper()}>
-      <h2 className={title}>プログラミング言語</h2>
+      <h2 className={title}>ツール類</h2>
 
       <div className={gridClass}>
         {tools.map(tool => (
