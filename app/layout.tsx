@@ -1,3 +1,4 @@
+import type { Viewport } from 'next';
 import type { FC, ReactNode } from 'react';
 
 import '@assets/globals.css';
@@ -12,6 +13,10 @@ const line = localFont({
   variable: '--font-line',
 });
 
+export const viewport: Viewport = {
+  themeColor: '#E5FCFB',
+};
+
 export const metadata = {
   title: {
     default: 'eve0415',
@@ -20,7 +25,6 @@ export const metadata = {
   description: 'eve0415 のプロフィールページです',
   applicationName: 'eve0415',
   authors: [{ name: 'eve0415', url: 'https://eve0415.net' }],
-  themeColor: '#E5FCFB',
   metadataBase: new URL('https://eve0415.net'),
   openGraph: {
     title: {
