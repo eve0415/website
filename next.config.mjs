@@ -1,7 +1,9 @@
 // @ts-check
 
+import { next } from 'million/compiler';
+
 /** @type {import('next').NextConfig} */
-module.exports = {
+const config = {
   output: 'export',
   poweredByHeader: false,
   images: {
@@ -11,3 +13,5 @@ module.exports = {
     typedRoutes: true,
   },
 };
+
+export default next(config, { auto: { rsc: true } });
