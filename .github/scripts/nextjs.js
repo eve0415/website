@@ -54,7 +54,7 @@ module.exports = async ({ core }) => {
         js: routeSize + globalSize,
       };
     });
-  const appRouterPages = appManifest?.pages.length
+  const appRouterPages = appManifest?.pages
     ? Object.entries(appRoutes ?? {}).map(([key, value]) => {
         if (key.endsWith('route')) return { route: value, size: 0, js: 0 };
 
