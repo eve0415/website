@@ -81,7 +81,7 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
     >
       <Script src='https://cdn.jsdelivr.net/npm/ripplet.js@1.1.0/umd/ripplet-declarative.min.js' />
 
-      <body className={css({ display: { sm: 'contents', md: 'flex' } })}>{children}</body>
+      <body className={css({ display: 'flex' })}>{children}</body>
     </html>
   );
 };
