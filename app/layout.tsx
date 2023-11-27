@@ -50,9 +50,13 @@ export const metadata = {
   robots: {
     follow: process.env.BRANCH === 'main',
     index: process.env.BRANCH === 'main',
+    nocache: process.env.BRANCH !== 'main',
+    noarchive: process.env.BRANCH !== 'main',
     googleBot: {
       follow: process.env.BRANCH === 'main',
       index: process.env.BRANCH === 'main',
+      nocache: process.env.BRANCH !== 'main',
+      noarchive: process.env.BRANCH !== 'main',
     },
   },
 };
