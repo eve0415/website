@@ -2,8 +2,8 @@
 
 import type { FC, ReactNode } from 'react';
 
-import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 
 import { css } from 'styled-system/css';
 import { center, circle } from 'styled-system/patterns';
@@ -33,6 +33,7 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
         onClick={() => {
           setOpen(!open);
         }}
+        type='button'
         aria-label='メニュー'
       >
         <div
@@ -74,8 +75,7 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
               },
             },
           })}
-          // @ts-expect-error 2322
-          open={open}
+          data-state={open ? 'open' : 'closed'}
         />
       </button>
 
@@ -95,8 +95,7 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
             opacity: 1,
           },
         })}
-        // @ts-expect-error 2322
-        open={open}
+        data-state={open ? 'open' : 'closed'}
       />
 
       <nav
@@ -121,8 +120,7 @@ const Navigation: FC<{ menu: ReactNode }> = ({ menu }) => {
             opacity: 0.9,
           },
         })}
-        // @ts-expect-error 2322
-        open={open}
+        data-state={open ? 'open' : 'closed'}
       >
         {menu}
       </nav>
