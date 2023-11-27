@@ -11,9 +11,8 @@
       "inputs": [
         "app/**",
         "assets/**",
-        "components/**",
         "styled-system/**",
-        "next.config.js",
+        "next.config.mjs",
         "postcss.config.cjs",
         "next-env.d.ts"
       ],
