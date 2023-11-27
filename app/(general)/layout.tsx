@@ -9,7 +9,7 @@ const Layout: FC<{ children: ReactNode }> = ({ children }) => {
     <>
       <NavBar />
 
-      <main className={css({ width: { md: '3/4' } })}>{children}</main>
+      <main className={css({ width: { smDown: 'screen', md: '3/4' } })}>{children}</main>
     </>
   );
 };
