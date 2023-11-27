@@ -14,6 +14,7 @@ export default defineConfig({
       tokens: {
         fonts: {
           line: { value: 'var(--font-line)' },
+          neon: { value: 'var(--font-neon)' },
         },
       },
       recipes: {

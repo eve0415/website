@@ -3,6 +3,7 @@ import type { FC, ReactElement } from 'react';
 
 import Link from 'next/link';
 
+import { css } from 'styled-system/css';
 import { gridItem } from 'styled-system/patterns';
 
 const Card: FC<{ data: { url: string; svg: ReactElement; name: string } }> = ({
@@ -13,7 +14,7 @@ const Card: FC<{ data: { url: string; svg: ReactElement; name: string } }> = ({
       <svg style={{ width: 70, height: 70 }} viewBox='0 0 128 128'>
         {svg}
       </svg>
-      <h3>{name}</h3>
+      <h3 className={css({ paddingTop: 1 })}>{name}</h3>
     </>
   );
   const className = gridItem({
