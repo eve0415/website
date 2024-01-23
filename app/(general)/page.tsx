@@ -36,7 +36,7 @@ export default function Page() {
           })}
         >
           <Image
-            src='https://eve0415.net/cdn-cgi/imagedelivery/e1FmkEoJCgY0rL0NK8GfGA/648ac891-edcf-4ae6-2c20-9cc7adae0401/avatar'
+            src='https://eve0415.net/cdn-cgi/imagedelivery/e1FmkEoJCgY0rL0NK8GfGA/793f258f-c41a-416d-684d-131d0c94a201/avatar'
             alt='me'
             className={css({ borderRadius: '50%' })}
             fill
