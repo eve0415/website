@@ -17,15 +17,15 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@assets/*": ["assets/*"]
+      "@assets/*": ["assets/*"],
     },
     "plugins": [
       {
-        "name": "next"
-      }
+        "name": "next",
+      },
     ],
-    "types": ["@cloudflare/workers-types"]
+    "types": ["@cloudflare/workers-types"],
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "styled-system/", ".next/types/**/*.ts"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
 }
