@@ -31,8 +31,7 @@ const Card: FC<{ data: AdvancedProject }> = ({ data: { name, image, description,
         alt={name}
         height={180}
         width={360}
-        className={css({ borderTopRadius: 'lg', height: '180px', width: '360px' })}
-        style={{ objectFit: 'cover' }}
+        className={css({ borderTopRadius: 'lg', height: '180px', width: '360px', objectFit: 'cover' })}
       />
 
       <div className={css({ padding: 2 })}>

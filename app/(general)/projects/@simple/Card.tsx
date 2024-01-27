@@ -34,13 +34,7 @@ const Card: FC<{ data: SimpleProject }> = ({ data: { name, image, description, u
       rel='noopener noreferrer'
       data-ripplet
     >
-      <Image
-        src={image}
-        alt={name}
-        height={180}
-        width={360}
-        className={css({ borderTopRadius: 'lg', height: '180px', width: '360px' })}
-      />
+      <Image src={image} alt={name} height={180} width={360} className={css({ borderTopRadius: 'lg' })} />
 
       <div className={css({ padding: 2 })}>
         <h3 className={css({ fontSize: 20, paddingBottom: 2 })}>{name}</h3>
