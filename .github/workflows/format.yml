@@ -20,14 +20,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup yarn
+        run: corepack enable yarn
+
       - name: Setup Node.js v20
         uses: actions/setup-node@v4
         with:
           node-version: 20
           cache: yarn
-
-      - name: Setup yarn
-        run: corepack enable yarn
 
       - name: Cache Next.js
         uses: actions/cache@v4
