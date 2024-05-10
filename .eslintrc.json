@@ -135,7 +135,7 @@
         ],
         "@typescript-eslint/method-signature-style": "error",
         "@typescript-eslint/no-import-type-side-effects": "error",
-        "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
+        "@typescript-eslint/no-use-before-define": "error",
         "@typescript-eslint/no-unnecessary-qualifier": "error",
         "@typescript-eslint/no-useless-empty-export": "error",
         "@typescript-eslint/prefer-literal-enum-member": [
@@ -194,7 +194,7 @@
         ],
         "@typescript-eslint/method-signature-style": "error",
         "@typescript-eslint/no-import-type-side-effects": "error",
-        "@typescript-eslint/no-use-before-define": ["error", "nofunc"],
+        "@typescript-eslint/no-use-before-define": "error",
         "@typescript-eslint/no-unnecessary-qualifier": "error",
         "@typescript-eslint/no-useless-empty-export": "error",
         "@typescript-eslint/prefer-literal-enum-member": [
