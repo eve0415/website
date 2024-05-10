@@ -43,7 +43,7 @@ const FormParent: FC<{ children: ReactNode }> = ({ children }) => {
         })
           .catch(null)
           .finally(() => {
-            // @ts-expect-error 2345
+            // @ts-expect-error 2345: TBH, I don't know why this is an error.
             router.push('/contact');
           });
       }}
