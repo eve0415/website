@@ -204,98 +204,105 @@ module.exports = async ({ core }) => {
   const title = ['# Next.js Bundle Analysis', ''];
 
   if (!globalChanged && !results.middleware.diff && !newPages.length && !changedPages.length) {
-    return [...title, 'This PR introduced no changes to the JavaScript bundle! 🙌'].join('\n');
+    core.setOutput(
+      'body',
+      [...title, 'This PR introduced no changes to the JavaScript bundle! 🙌'].join('\n'),
+    );
+    return;
   }
 
-  return [
-    ...title,
-    `## ${globalChanged ? (globalIncreased ? '⚠️' : '🎉') : ''} First Load JS shared by all ${
-      globalChanged ? (globalIncreased ? 'Increased' : 'Decreased') : ''
-    }`,
-    '',
-    '| Route | Size (compressed) |',
-    '| --- | --- |',
-    `| \`pages\` | ${prettyBytes(results.global.pages.size)} ${
-      globalChanged
-        ? `(${renderStatusIndicator(analysis.global.pages, results.global.pages.size)}${prettyBytes(
-            results.global.pages.diff,
-            { signed: true },
-          )})`
-        : ''
-    } |`,
-    appManifest
-      ? `| \`app\` | ${prettyBytes(results.global.app.size)} ${
-          globalChanged
-            ? `(${renderStatusIndicator(analysis.global.app, results.global.app.size)}${prettyBytes(
-                results.global.app.diff,
-                { signed: true },
-              )})`
-            : ''
-        } |`
-      : '',
-    '',
-    '<details>',
-    '<summary>Details</summary>',
-    '',
-    'The **global bundle** is the javascript bundle that loads alongside every page. It is in its own category because its impact is much higher - an increase to its size means that every page on your website loads slower, and a decrease means every page loads faster.  ',
-    'Any third party scripts you have added directly to your app using the `<script>` tag are not accounted for in this analysis',
-    '</details>',
-    '',
-    '## Pages',
-    '',
-    ...(newPages.length
-      ? [
-          '### New',
-          '',
-          '| Route | Size (compressed) | First Load JS |',
-          '| --- | --- | --- |',
-          ...(newPages.map(
-            ({ route, size, js }) => `| \`${route}\` | ${prettyBytes(size)} | ${prettyBytes(js)} |`,
-          ) ?? []),
-          '',
-        ]
-      : []),
-    '',
-    ...(changedPages.length
-      ? [
-          `### ${changedPages.length} Page${changedPages.length > 1 ? 's' : ''} Changed Size`,
-          '',
-          '| Route | Size (compressed) | First Load JS |',
-          '| --- | --- | --- |',
-          ...(changedPages.map(
-            ({ route, size, before, js }) =>
-              `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`,
-          ) ?? []),
-          '',
-        ]
-      : []),
-    '',
-    '<details>',
-    '<summary><strong>Unchanged Routes</strong></summary>',
-    '<br />',
-    '',
-    '| Route | Size (compressed) | First Load JS |',
-    '| --- | --- | --- |',
-    ...(pages.map(
-      ({ route, size, before, js }) =>
-        `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`,
-    ) ?? []),
-    '</details>',
-    '',
-    ...(middlewareManifest?.middleware['/']
-      ? [
-          '## Middleware',
-          `Size (compressed): ${prettyBytes(results.middleware.size)} ${
-            results.middleware.diff
-              ? `(${results.middleware.increase ? '+' : ''}${prettyBytes(results.middleware.diff)})`
+  core.setOutput(
+    'body',
+    [
+      ...title,
+      `## ${globalChanged ? (globalIncreased ? '⚠️' : '🎉') : ''} First Load JS shared by all ${
+        globalChanged ? (globalIncreased ? 'Increased' : 'Decreased') : ''
+      }`,
+      '',
+      '| Route | Size (compressed) |',
+      '| --- | --- |',
+      `| \`pages\` | ${prettyBytes(results.global.pages.size)} ${
+        globalChanged
+          ? `(${renderStatusIndicator(analysis.global.pages, results.global.pages.size)}${prettyBytes(
+              results.global.pages.diff,
+              { signed: true },
+            )})`
+          : ''
+      } |`,
+      appManifest
+        ? `| \`app\` | ${prettyBytes(results.global.app.size)} ${
+            globalChanged
+              ? `(${renderStatusIndicator(analysis.global.app, results.global.app.size)}${prettyBytes(
+                  results.global.app.diff,
+                  { signed: true },
+                )})`
               : ''
-          }`,
-        ]
-      : []),
-  ]
-    .map(s => s.trim())
-    .join('\n')
-    .trimEnd();
+          } |`
+        : '',
+      '',
+      '<details>',
+      '<summary>Details</summary>',
+      '',
+      'The **global bundle** is the javascript bundle that loads alongside every page. It is in its own category because its impact is much higher - an increase to its size means that every page on your website loads slower, and a decrease means every page loads faster.  ',
+      'Any third party scripts you have added directly to your app using the `<script>` tag are not accounted for in this analysis',
+      '</details>',
+      '',
+      '## Pages',
+      '',
+      ...(newPages.length
+        ? [
+            '### New',
+            '',
+            '| Route | Size (compressed) | First Load JS |',
+            '| --- | --- | --- |',
+            ...(newPages.map(
+              ({ route, size, js }) => `| \`${route}\` | ${prettyBytes(size)} | ${prettyBytes(js)} |`,
+            ) ?? []),
+            '',
+          ]
+        : []),
+      '',
+      ...(changedPages.length
+        ? [
+            `### ${changedPages.length} Page${changedPages.length > 1 ? 's' : ''} Changed Size`,
+            '',
+            '| Route | Size (compressed) | First Load JS |',
+            '| --- | --- | --- |',
+            ...(changedPages.map(
+              ({ route, size, before, js }) =>
+                `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`,
+            ) ?? []),
+            '',
+          ]
+        : []),
+      '',
+      '<details>',
+      '<summary><strong>Unchanged Routes</strong></summary>',
+      '<br />',
+      '',
+      '| Route | Size (compressed) | First Load JS |',
+      '| --- | --- | --- |',
+      ...(pages.map(
+        ({ route, size, before, js }) =>
+          `| \`${route}\` | ${prettyBytes(size)} ${diffSize(before, size)} | ${prettyBytes(js)} |`,
+      ) ?? []),
+      '</details>',
+      '',
+      ...(middlewareManifest?.middleware['/']
+        ? [
+            '## Middleware',
+            `Size (compressed): ${prettyBytes(results.middleware.size)} ${
+              results.middleware.diff
+                ? `(${results.middleware.increase ? '+' : ''}${prettyBytes(results.middleware.diff)})`
+                : ''
+            }`,
+          ]
+        : []),
+    ]
+      .map(s => s.trim())
+      .join('\n')
+      .trimEnd(),
+  );
 
   /**
    * @param {string[]} path

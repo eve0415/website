@@ -85,4 +85,4 @@ jobs:
           number: ${{ github.event.number }}
           header: bundle
           message: |
-            ${{ steps.bundle-results.outputs.result }}
+            ${{ steps.bundle-results.outputs.body }}
