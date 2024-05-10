@@ -205,14 +205,14 @@ module.exports = async ({ core }) => {
 
   if (!globalChanged && !results.middleware.diff && !newPages.length && !changedPages.length) {
     core.setOutput(
-      'body',
+      'result',
       [...title, 'This PR introduced no changes to the JavaScript bundle! 🙌'].join('\n'),
     );
     return;
   }
 
   core.setOutput(
-    'body',
+    'result',
     [
       ...title,
       `## ${globalChanged ? (globalIncreased ? '⚠️' : '🎉') : ''} First Load JS shared by all ${
