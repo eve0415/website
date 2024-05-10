@@ -24,6 +24,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Setup yarn
+        run: corepack enable yarn
+
       - name: Setup Node.js v20
         uses: actions/setup-node@v4
         with:
@@ -31,7 +34,7 @@ jobs:
           cache: yarn
 
       - name: Cache Next.js
-        uses: actions/cache@v3
+        uses: actions/cache@v4
         with:
           path: ${{ github.workspace }}/.next/cache
           key: ${{ runner.os }}-nextjs-${{ hashFiles('**/yarn.lock') }}-${{ hashFiles('**/*.ts', '**/*.tsx') }}
@@ -46,7 +49,7 @@ jobs:
           BRANCH: main
 
       - name: Download base branch bundle stats
-        uses: dawidd6/action-download-artifact@v2
+        uses: dawidd6/action-download-artifact@v3
         if: success() && github.event.number
         with:
           workflow: analysis.yml
@@ -68,7 +71,7 @@ jobs:
             await script({core})
 
       - name: Upload bundle
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         if: success()
         with:
           name: analysis

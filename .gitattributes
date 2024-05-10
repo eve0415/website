@@ -1,6 +1,9 @@
-* text=auto
+# Auto detect text files and perform LF normalization
+* text=auto eol=lf
+*.bat       eol=crlf
 
-/.yarn/**            linguist-vendored
-/.yarn/releases/*    binary
-/.yarn/plugins/**/*  binary
-/.yarn/sdks/**/*     binary
+/.yarn/**             linguist-vendored
+/.yarn/releases/*     binary
+/.yarn/plugins/**/*   binary
+/.yarn/sdks/**/*      binary
+/yarn.lock            linguist-generated
