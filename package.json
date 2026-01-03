@@ -1,0 +1,44 @@
+{
+  "packageManager": "pnpm@10.27.0",
+  "type": "module",
+  "devDependencies": {
+    "@biomejs/biome": "^2.3.10",
+    "@browser-echo/vite": "^1.1.0",
+    "@cloudflare/vite-plugin": "^1.17.1",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/devtools-vite": "^0.4.0",
+    "@tanstack/eslint-plugin-router": "^1.141.0",
+    "@tanstack/react-devtools": "^0.9.0",
+    "@tanstack/react-router": "^1.144.0",
+    "@tanstack/react-router-devtools": "^1.144.0",
+    "@tanstack/react-start": "^1.145.3",
+    "@types/node": "^25.0.3",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@typescript/native-preview": "7.0.0-dev.20260103.1",
+    "@vitejs/plugin-react": "^5.1.2",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "eslint-plugin-oxlint": "^1.36.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "oxfmt": "^0.21.0",
+    "oxlint": "^1.36.0",
+    "oxlint-tsgolint": "^0.10.1",
+    "playwright": "^1.57.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "tailwindcss": "^4.1.18",
+    "vite": "8.0.0-beta.5",
+    "vite-plugin-devtools-json": "^1.0.0",
+    "wrangler": "^4.54.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.27.0"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "24.12.x"
+    }
+  }
+}
