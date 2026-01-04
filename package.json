@@ -1,6 +1,7 @@
 {
   "type": "module",
   "scripts": {
+    "generate": "wrangler types",
     "lint": "biome check --write --unsafe && oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously && oxfmt"
   },
   "devDependencies": {
