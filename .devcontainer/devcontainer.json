@@ -52,9 +52,7 @@
         "editor.cursorSmoothCaretAnimation": "on",
         "editor.defaultFormatter": "oxc.oxc-vscode",
         "editor.linkedEditing": true,
-        "editor.pasteAs.preferences": [
-          "text.updateImports.jsts"
-        ],
+        "editor.pasteAs.preferences": ["text.updateImports.jsts"],
         "editor.quickSuggestions": {
           "strings": "on"
         },
@@ -79,42 +77,28 @@
         "files.watcherExclude": {
           "**/.wrangler": true,
           "**/worker-configuration.d.ts": true,
-          "**/dist": true,
           "**/routeTree.gen.ts": true,
           "**/tanstack-start.d.ts": true,
-          "**/.eslintcache": true
+          "**/dist": true
         },
         "javascript.updateImportsOnPaste.enabled": true,
         "oxc.fixKind": "all",
         "oxc.typeAware": true,
-        "oxc.unusedDisableDirectives": "allow",
+        "oxc.unusedDisableDirectives": "deny",
         "search.exclude": {
           "pnpm-lock.yaml": true,
           "**/.wrangler": true,
           "**/worker-configuration.d.ts": true,
-          "**/dist": true,
           "**/routeTree.gen.ts": true,
           "**/tanstack-start.d.ts": true,
           "**/.tanstack": true,
-          "**/.eslintcache": true
+          "**/dist": true
         },
-        "tailwindCSS.classAttributes": [
-          "className",
-          ".*Styles"
-        ],
+        "tailwindCSS.classAttributes": ["className", ".*Styles"],
         "tailwindCSS.experimental.classRegex": [
-          [
-            "cva\\(((?:[^()]|\\([^()]*\\))*)\\)",
-            "[\"'`]([^\"'`]*).*?[\"'`]"
-          ],
-          [
-            "cx\\(((?:[^()]|\\([^()]*\\))*)\\)",
-            "(?:'|\"|`)([^']*)(?:'|\"|`)"
-          ],
-          [
-            "cva\\(([^;]*)[\\);]",
-            "[`'\"`]([^'\"`;]*)[`'\"`]"
-          ]
+          ["cva\\(((?:[^()]|\\([^()]*\\))*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
+          ["cx\\(((?:[^()]|\\([^()]*\\))*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
+          ["cva\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"]
         ],
         "terminal.integrated.defaultProfile.linux": "zsh",
         "terminal.integrated.profiles.linux": {
@@ -127,19 +111,14 @@
         "typescript.inlayHints.parameterNames.enabled": "all",
         "typescript.inlayHints.parameterTypes.enabled": true,
         "typescript.inlayHints.variableTypes.enabled": true,
-        "typescript.preferences.autoImportFileExcludePatterns": [
-          "vm",
-          "node:vm"
-        ],
+        "typescript.preferences.autoImportFileExcludePatterns": ["vm", "node:vm"],
         "typescript.preferences.preferTypeOnlyAutoImports": true,
         "typescript.implementationsCodeLens.enabled": true,
         "typescript.tsserver.watchOptions": {
           "fallbackPolling": "dynamicPriorityPolling",
           "watchFile": "useFsEvents",
           "synchronousWatchDirectory": true,
-          "excludeDirectories": [
-            "**/node_modules/**/*"
-          ]
+          "excludeDirectories": ["**/node_modules/**/*"]
         },
         "vitest.maximumConfigs": 50,
         "[css]": {
