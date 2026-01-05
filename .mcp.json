@@ -1,0 +1,13 @@
+{
+  "mcpServers": {
+    "codex": {
+      "type": "stdio",
+      "command": "codex",
+      "args": ["mcp-server"]
+    },
+    "playwright": {
+      "command": "pnpx",
+      "args": ["@playwright/mcp", "--headless", "--save-session", "--browser", "chromium", "--isolated", "--no-sandbox"]
+    }
+  }
+}

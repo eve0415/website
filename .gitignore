@@ -8,3 +8,6 @@ worker-configuration.d.ts
 
 # tanstacl
 dist/
+
+# AI
+.claude/settings.local.json
