@@ -4,7 +4,7 @@
     "module": "esnext",
     "target": "esnext",
     "lib": ["ESNext"],
-    "types": ["./worker-configuration.d.ts"],
+    "types": ["./worker-configuration.d.ts", "vite/client"],
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
