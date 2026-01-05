@@ -1,6 +1,8 @@
 {
   "type": "module",
   "scripts": {
+    "dev": "vite dev --host",
+    "build": "vite build",
     "generate": "wrangler types",
     "lint": "biome check --write --unsafe && oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously && oxfmt"
   },

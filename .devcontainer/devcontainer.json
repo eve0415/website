@@ -69,8 +69,7 @@
         "files.readonlyInclude": {
           "pnpm-lock.yaml": true,
           "**/worker-configuration.d.ts": true,
-          "**/routeTree.gen.ts": true,
-          "**/tanstack-start.d.ts": true
+          "**/routeTree.gen.ts": true
         },
         "files.trimFinalNewlines": true,
         "files.trimTrailingWhitespace": true,
@@ -78,7 +77,6 @@
           "**/.wrangler": true,
           "**/worker-configuration.d.ts": true,
           "**/routeTree.gen.ts": true,
-          "**/tanstack-start.d.ts": true,
           "**/dist": true
         },
         "javascript.updateImportsOnPaste.enabled": true,
@@ -90,7 +88,6 @@
           "**/.wrangler": true,
           "**/worker-configuration.d.ts": true,
           "**/routeTree.gen.ts": true,
-          "**/tanstack-start.d.ts": true,
           "**/.tanstack": true,
           "**/dist": true
         },

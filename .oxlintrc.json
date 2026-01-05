@@ -15,7 +15,6 @@
     ".wrangler",
     "dist",
     "src/routeTree.gen.ts",
-    "src/tanstack-start.d.ts",
     "worker-configuration.d.ts"
   ],
   "settings": {
