@@ -43,6 +43,9 @@ export default defineConfig({
       stackMode: "condensed",
     }),
   ],
+  build: {
+    minify: "oxc",
+  },
   css: {
     transformer: "lightningcss",
     devSourcemap: true,
