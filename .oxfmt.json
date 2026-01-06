@@ -1,11 +1,6 @@
 {
   "$schema": "./node_modules/oxfmt/configuration_schema.json",
-  "ignorePatterns": [
-    ".wrangler",
-    "dist",
-    "src/routeTree.gen.ts",
-    "worker-configuration.d.ts"
-  ],
+  "ignorePatterns": [".wrangler", "dist", "src/routeTree.gen.ts", "worker-configuration.d.ts"],
   "arrowParens": "avoid",
   "singleQuote": true,
   "jsxSingleQuote": true,

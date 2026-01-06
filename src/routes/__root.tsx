@@ -1,4 +1,5 @@
 import type { FC, PropsWithChildren } from "react";
+
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 
 import rootCss from "./__root.css?url";
@@ -17,7 +18,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
       <head>
         <HeadContent />
       </head>
-      <body>
+      <body className="min-h-dvh bg-bg-primary text-text-primary">
         {children}
         <Scripts />
       </body>
@@ -36,10 +37,46 @@ export const Route = createRootRoute({
         content: "width=device-width, initial-scale=1",
       },
       {
-        title: "TanStack Start Starter",
+        title: "eve0415",
+      },
+      {
+        name: "description",
+        content: "eve0415 - エンジニア",
+      },
+      {
+        name: "theme-color",
+        content: "#0a0a0a",
+      },
+      {
+        property: "og:title",
+        content: "eve0415",
+      },
+      {
+        property: "og:description",
+        content: "eve0415 - エンジニア",
+      },
+      {
+        property: "og:type",
+        content: "website",
+      },
+      {
+        property: "og:url",
+        content: "https://eve0415.net",
+      },
+      {
+        name: "twitter:card",
+        content: "summary_large_image",
+      },
+      {
+        name: "twitter:site",
+        content: "@eveevekun",
       },
     ],
-    links: [{ rel: "stylesheet", href: rootCss }],
+    links: [
+      { rel: "stylesheet", href: rootCss },
+      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
+      { rel: "canonical", href: "https://eve0415.net" },
+    ],
   }),
   component: RootComponent,
 });

@@ -135,12 +135,12 @@ obj.field = newValue; // Too late!
 If something breaks with React Compiler:
 
 1. Add `"use no memo"` directive to isolate the issue:
-    ```tsx
-    function ProblematicComponent() {
-      "use no memo";
-      // Component code
-    }
-    ```
+   ```tsx
+   function ProblematicComponent() {
+     "use no memo";
+     // Component code
+   }
+   ```
 2. If issue disappears → likely a Rules of React violation
 3. Remove manual memoization and test again
 4. Check ESLint for violations before reporting compiler bugs

@@ -11,12 +11,7 @@
     "jsx-a11y",
     "vitest"
   ],
-  "ignorePatterns": [
-    ".wrangler",
-    "dist",
-    "src/routeTree.gen.ts",
-    "worker-configuration.d.ts"
-  ],
+  "ignorePatterns": [".wrangler", "dist", "src/routeTree.gen.ts", "worker-configuration.d.ts"],
   "settings": {
     "vitest": {
       "typecheck": true

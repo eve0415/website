@@ -3,7 +3,7 @@
     "moduleResolution": "Bundler",
     "module": "esnext",
     "target": "esnext",
-    "lib": ["ESNext"],
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["./worker-configuration.d.ts", "vite/client"],
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,

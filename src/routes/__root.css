@@ -1,1 +1,285 @@
 @import "tailwindcss";
+@import "@fontsource-variable/jetbrains-mono";
+
+/* ============================================
+   eve0415.net Design System
+   ============================================ */
+
+/* Design Tokens - CSS Custom Properties */
+@theme {
+  /* Color System - Dark atmospheric base, evolving */
+  --color-bg-primary: #0a0a0a;
+  --color-bg-secondary: #111111;
+  --color-bg-tertiary: #1a1a1a;
+  --color-bg-elevated: #222222;
+
+  /* Text Colors */
+  --color-text-primary: #e5e5e5;
+  --color-text-secondary: #a3a3a3;
+  --color-text-muted: #525252;
+  --color-text-accent: #00ff88;
+
+  /* Accent Colors - Terminal/Cyber inspired */
+  --color-accent-primary: #00ff88;
+  --color-accent-secondary: #00d4ff;
+  --color-accent-tertiary: #ff6b35;
+  --color-accent-glow: #00ff8840;
+
+  /* Border Colors */
+  --color-border-subtle: #262626;
+  --color-border-default: #404040;
+  --color-border-accent: #00ff8860;
+
+  /* Typography - JetBrains Mono as primary */
+  --font-mono: "JetBrains Mono Variable", "JetBrains Mono", ui-monospace, monospace;
+
+  /* Font Sizes - Using clamp for fluid typography */
+  --text-xs: clamp(0.625rem, 0.5vw + 0.5rem, 0.75rem);
+  --text-sm: clamp(0.75rem, 0.5vw + 0.625rem, 0.875rem);
+  --text-base: clamp(0.875rem, 0.5vw + 0.75rem, 1rem);
+  --text-lg: clamp(1rem, 0.75vw + 0.875rem, 1.25rem);
+  --text-xl: clamp(1.25rem, 1vw + 1rem, 1.5rem);
+  --text-2xl: clamp(1.5rem, 1.5vw + 1.125rem, 2rem);
+  --text-3xl: clamp(1.875rem, 2vw + 1.25rem, 2.5rem);
+  --text-4xl: clamp(2.25rem, 3vw + 1.5rem, 3.5rem);
+  --text-5xl: clamp(3rem, 4vw + 2rem, 5rem);
+
+  /* Spacing Scale */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-24: 6rem;
+  --space-32: 8rem;
+
+  /* Transitions */
+  --duration-fast: 150ms;
+  --duration-normal: 300ms;
+  --duration-slow: 500ms;
+  --duration-slower: 800ms;
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+
+  /* Z-Index Scale */
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-modal: 300;
+  --z-popover: 400;
+  --z-tooltip: 500;
+  --z-terminal: 900;
+  --z-easter-egg: 1000;
+}
+
+/* Base Styles */
+html {
+  font-family: var(--font-mono);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100dvh;
+  overflow-x: hidden;
+}
+
+/* Selection styling */
+::selection {
+  background-color: var(--color-accent-primary);
+  color: var(--color-bg-primary);
+}
+
+/* Focus visible for accessibility */
+:focus-visible {
+  outline: 2px solid var(--color-accent-primary);
+  outline-offset: 2px;
+}
+
+/* Scrollbar styling - subtle dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-bg-secondary);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-border-default);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
+
+/* ============================================
+   Animation Keyframes
+   ============================================ */
+
+/* Terminal cursor blink */
+@keyframes blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+
+/* Subtle glow pulse */
+@keyframes glow-pulse {
+  0%,
+  100% {
+    filter: drop-shadow(0 0 4px var(--color-accent-glow));
+  }
+  50% {
+    filter: drop-shadow(0 0 12px var(--color-accent-glow));
+  }
+}
+
+/* Path draw animation for SVG */
+@keyframes draw-path {
+  from {
+    stroke-dashoffset: var(--path-length, 1000);
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* Fade in with scale */
+@keyframes fade-in-scale {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Fade in up */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Glitch effect */
+@keyframes glitch {
+  0%,
+  100% {
+    transform: translate(0);
+  }
+  20% {
+    transform: translate(-2px, 2px);
+  }
+  40% {
+    transform: translate(2px, -2px);
+  }
+  60% {
+    transform: translate(-1px, -1px);
+  }
+  80% {
+    transform: translate(1px, 1px);
+  }
+}
+
+/* Subtle float */
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/* Scan line effect */
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100vh);
+  }
+}
+
+/* ============================================
+   Utility Classes
+   ============================================ */
+
+/* Animation utilities */
+.animate-blink {
+  animation: blink 1s step-end infinite;
+}
+
+.animate-glow-pulse {
+  animation: glow-pulse 2s ease-in-out infinite;
+}
+
+.animate-fade-in-scale {
+  animation: fade-in-scale var(--duration-normal) var(--ease-out-expo) forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up var(--duration-normal) var(--ease-out-expo) forwards;
+}
+
+.animate-glitch {
+  animation: glitch 0.3s ease-in-out;
+}
+
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Text gradient utility */
+.text-gradient {
+  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+/* Glow effects */
+.glow-accent {
+  filter: drop-shadow(0 0 8px var(--color-accent-glow));
+}
+
+.glow-text {
+  text-shadow:
+    0 0 20px var(--color-accent-glow),
+    0 0 40px var(--color-accent-glow);
+}
+
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}

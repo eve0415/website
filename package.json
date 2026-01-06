@@ -6,6 +6,9 @@
     "generate": "wrangler types",
     "lint": "biome check --write --unsafe && oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously && oxfmt"
   },
+  "dependencies": {
+    "@fontsource-variable/jetbrains-mono": "^5.2.8"
+  },
   "devDependencies": {
     "@biomejs/biome": "^2.3.10",
     "@browser-echo/vite": "^1.1.0",
