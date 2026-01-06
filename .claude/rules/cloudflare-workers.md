@@ -5,6 +5,7 @@ This project uses TanStack Start SSR on Cloudflare Workers edge runtime.
 ## CRITICAL: Execution Time Limits
 
 **WARNING**: Workers have strict CPU time limits:
+
 - Free tier: 50ms CPU time
 - Paid tier: up to 30 seconds
 
@@ -20,7 +21,7 @@ const data = heavyComputation(largeDataset);
 ```tsx
 // Stream SSR response instead of buffering
 return new Response(stream, {
-  headers: { 'Content-Type': 'text/html' },
+  headers: { "Content-Type": "text/html" },
 });
 ```
 
@@ -46,7 +47,7 @@ export default defineEventHandler((event) => {
 
 ```tsx
 // In loader - expose only PUBLIC values
-export const Route = createFileRoute('/')({
+export const Route = createFileRoute("/")({
   loader: async ({ context }) => {
     return {
       publicApiUrl: context.env.PUBLIC_API_URL,
@@ -59,11 +60,13 @@ export const Route = createFileRoute('/')({
 ## Runtime Constraints
 
 **DON'T**: Use Node.js-specific APIs
+
 - `fs`, `path`, `child_process` - not available
 - `Buffer` - use `Uint8Array` instead
 - `setInterval` for long polling - use scheduled workers
 
 **DO**: Use Web Standard APIs
+
 - `fetch`, `Request`, `Response`
 - `crypto.subtle` for cryptography
 - `TextEncoder`/`TextDecoder`

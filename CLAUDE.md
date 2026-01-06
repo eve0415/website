@@ -53,11 +53,13 @@ This is strictly enforced. User-facing strings must be Japanese. Technical conte
 ## Rules Philosophy
 
 Rules in `.claude/rules/` focus on:
+
 - Runtime constraints that cause failures
 - Framework gotchas that cost debugging time
 - Project-specific integration patterns
 
 Rules do NOT cover:
+
 - Code style (use oxlint/oxfmt)
 - React best practices (use `/rules-of-react` skill)
 - Generic programming guidance

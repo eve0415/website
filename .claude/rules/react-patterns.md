@@ -11,7 +11,7 @@ This rule covers syntax patterns NOT enforced by oxlint or the `/rules-of-react`
 **DO**: Use FC type with arrow functions
 
 ```tsx
-import type { FC } from 'react';
+import type { FC } from "react";
 
 const MyComponent: FC = () => {
   return <div />;
@@ -22,10 +22,14 @@ const MyComponent: FC = () => {
 
 ```tsx
 // Wrong - function declaration
-function MyComponent() { return <div />; }
+function MyComponent() {
+  return <div />;
+}
 
 // Wrong - no FC type
-const MyComponent = () => { return <div />; };
+const MyComponent = () => {
+  return <div />;
+};
 ```
 
 **WHY**: FC provides type-safe props and consistent signatures. Arrow functions with explicit FC type are the project standard.
@@ -55,6 +59,7 @@ export default function MyComponent() {}
 ---
 
 **Note**: This rule does NOT cover:
+
 - Component purity (see `/rules-of-react` skill)
 - Hook rules (see `/rules-of-react` skill)
 - State management (see `/rules-of-react` skill)

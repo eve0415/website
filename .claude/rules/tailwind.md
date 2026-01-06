@@ -57,9 +57,7 @@ Applies when using Tailwind CSS 4 with custom design system.
 
 ```tsx
 // WRONG - breaks single source of truth
-const Component = () => (
-  <style>{`:root { --my-color: red; }`}</style>
-);
+const Component = () => <style>{`:root { --my-color: red; }`}</style>;
 ```
 
 ## Why Single File for Tokens

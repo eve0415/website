@@ -47,7 +47,7 @@ src/routes/
 
 ```tsx
 // src/routes/projects/$projectId.tsx
-export const Route = createFileRoute('/projects/$projectId')({
+export const Route = createFileRoute("/projects/$projectId")({
   component: ProjectPage,
   loader: async ({ params }) => {
     return fetchProject(params.projectId);
@@ -72,7 +72,7 @@ src/routes/
 **DO**: Always export Route constant with trailing slash in path
 
 ```tsx
-export const Route = createFileRoute('/projects/')({
+export const Route = createFileRoute("/projects/")({
   component: ProjectsPage,
 });
 ```
@@ -82,12 +82,12 @@ export const Route = createFileRoute('/projects/')({
 **DO**: Handle errors in loaders, don't let them propagate silently
 
 ```tsx
-export const Route = createFileRoute('/projects/')({
+export const Route = createFileRoute("/projects/")({
   loader: async () => {
     try {
       return await fetchProjects();
     } catch (error) {
-      throw new Error('Failed to load projects');
+      throw new Error("Failed to load projects");
     }
   },
   errorComponent: ({ error }) => <div>Error: {error.message}</div>,
