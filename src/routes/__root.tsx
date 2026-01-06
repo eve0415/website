@@ -1,5 +1,7 @@
 import type { FC, PropsWithChildren } from "react";
 
+import { TanStackDevtools } from "@tanstack/react-devtools";
+import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
 
 import rootCss from "./__root.css?url";
@@ -19,14 +21,26 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
         <HeadContent />
       </head>
       <body className="min-h-dvh bg-bg-primary text-text-primary">
-        {children}
+        <main>{children}</main>
+
         <Scripts />
+
+        <TanStackDevtools
+          plugins={[
+            {
+              name: "TanStack Router",
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+            // formDevtoolsPlugin(),
+          ]}
+        />
       </body>
     </html>
   );
 };
 
 export const Route = createRootRoute({
+  component: RootComponent,
   head: () => ({
     meta: [
       {
@@ -78,5 +92,4 @@ export const Route = createRootRoute({
       { rel: "canonical", href: "https://eve0415.net" },
     ],
   }),
-  component: RootComponent,
 });
