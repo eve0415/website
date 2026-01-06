@@ -10,12 +10,16 @@
 
   "route": "eve0415.net",
 
-  "main": "@tanstack/react-start/server-entry",
+  "main": "src/server.ts",
   "assets": { "directory": "./dist/client" },
 
   "observability": {
     "enabled": true,
     "traces": { "enabled": true }
+  },
+
+  "triggers": {
+    "crons": ["0 * * * *"]
   },
 
   "kv_namespaces": [

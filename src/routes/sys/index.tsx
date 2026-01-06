@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { fetchGitHubStats, getRelativeTimeJapanese } from "./-utils/github-api";
+import { getGitHubStats, getRelativeTimeJapanese } from "./-utils/github-api";
 import CodeRadar from "./-components/CodeRadar/CodeRadar";
 import StatsPanel from "./-components/StatsPanel/StatsPanel";
 import LanguageStack from "./-components/LanguageStack/LanguageStack";
@@ -64,5 +64,5 @@ const SysPage: FC = () => {
 
 export const Route = createFileRoute("/sys/")({
   component: SysPage,
-  loader: () => fetchGitHubStats(),
+  loader: () => getGitHubStats(),
 });

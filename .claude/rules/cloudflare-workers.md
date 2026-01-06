@@ -22,7 +22,7 @@ const secret = env.GITHUB_PAT;
 import { env } from "cloudflare:workers";
 
 const ClientComponent = () => {
-  const data = env.MY_KV;  // ❌ Runtime error
+  const data = env.MY_KV; // ❌ Runtime error
 };
 ```
 
@@ -50,7 +50,7 @@ export const fetchData = createServerFn().handler(async () => {
 // index.tsx
 export const Route = createFileRoute("/my-route/")({
   component: MyPage,
-  loader: () => fetchData(),  // No context param needed
+  loader: () => fetchData(), // No context param needed
 });
 ```
 
@@ -64,7 +64,7 @@ const cached = await kv.get<MyData>("cache-key", "json");
 
 // Write with TTL (seconds)
 await kv.put("cache-key", JSON.stringify(data), {
-  expirationTtl: 3600,  // 1 hour
+  expirationTtl: 3600, // 1 hour
 });
 
 // Check existence before expensive operations
@@ -91,11 +91,13 @@ Access same as other bindings: `env.GITHUB_PAT`
 **CPU time**: 30 seconds max (paid tier)
 
 **DON'T**: Node.js-specific APIs
+
 - `fs`, `path`, `child_process` - not available
 - `Buffer` - use `Uint8Array`
 - `setInterval` for polling - use scheduled workers
 
 **DO**: Web Standard APIs
+
 - `fetch`, `Request`, `Response`
 - `crypto.subtle` for cryptography
 - `TextEncoder`/`TextDecoder`

@@ -1,14 +1,25 @@
 import { createServerFn } from "@tanstack/react-start";
+import { Octokit } from "@octokit/core";
+import { throttling } from "@octokit/plugin-throttling";
+import { retry } from "@octokit/plugin-retry";
 import { env } from "cloudflare:workers";
 
-// Cache TTL: 1 hour
-const CACHE_TTL_SECONDS = 60 * 60;
+import type {
+  ContributionLevel,
+  GetGitHubStatsQuery,
+  GetGitHubStatsQueryVariables,
+} from "#generated/github-graphql";
+
+// Cache key for KV storage
 const CACHE_KEY = "github_stats_eve0415";
 
 // GitHub username
 const GITHUB_USERNAME = "eve0415";
 
-// Types for GitHub API responses
+// Create Octokit with plugins
+const MyOctokit = Octokit.plugin(throttling, retry);
+
+// Types for GitHub stats
 export interface GitHubStats {
   user: {
     login: string;
@@ -42,272 +53,233 @@ export interface LanguageStat {
   color: string;
 }
 
-interface GitHubUserResponse {
-  login: string;
-  public_repos: number;
-  followers: number;
-  following: number;
-  owned_private_repos?: number;
-  total_private_repos?: number;
-}
+// Static fallback data when KV is empty
+const FALLBACK_STATS: GitHubStats = {
+  user: {
+    login: GITHUB_USERNAME,
+    publicRepos: 0,
+    privateRepos: 0,
+    totalRepos: 0,
+    followers: 0,
+    following: 0,
+  },
+  contributions: {
+    totalCommits: 0,
+    totalPRs: 0,
+    totalIssues: 0,
+    currentStreak: 0,
+    longestStreak: 0,
+    contributionCalendar: [],
+  },
+  languages: [],
+  cachedAt: "未取得",
+};
 
-interface GitHubRepoResponse {
-  language: string | null;
-  fork: boolean;
-  size: number;
-}
-
-interface GitHubGraphQLResponse {
-  data: {
-    user: {
-      contributionsCollection: {
-        totalCommitContributions: number;
-        totalPullRequestContributions: number;
-        totalIssueContributions: number;
-        contributionCalendar: {
-          totalContributions: number;
-          weeks: Array<{
-            contributionDays: Array<{
-              date: string;
-              contributionCount: number;
-              contributionLevel: string;
-            }>;
-          }>;
-        };
-      };
-    };
-  };
-}
-
-// Server function to fetch GitHub stats
-export const fetchGitHubStats = createServerFn().handler(async (): Promise<GitHubStats> => {
-  const kv = env.GITHUB_STATS_CACHE;
-  const pat = env.GITHUB_PAT;
-
-  // Check cache first
-  const cached = await kv.get<GitHubStats>(CACHE_KEY, "json");
-  if (cached) {
-    return cached;
-  }
-
-  // Fetch fresh data
-  const stats = await fetchStats(pat);
-
-  // Cache the result
-  await kv.put(CACHE_KEY, JSON.stringify(stats), {
-    expirationTtl: CACHE_TTL_SECONDS,
-  });
-
-  return stats;
-});
-
-async function fetchStats(pat: string): Promise<GitHubStats> {
-  const headers = {
-    Authorization: `Bearer ${pat}`,
-    Accept: "application/vnd.github+json",
-    "X-GitHub-Api-Version": "2022-11-28",
-    "User-Agent": "eve0415-website",
-  };
-
-  // Fetch user data (includes private repo count when authenticated)
-  const userResponse = await fetch("https://api.github.com/user", { headers });
-  if (!userResponse.ok) {
-    throw new Error(`GitHub API error: ${userResponse.status}`);
-  }
-  const userData = (await userResponse.json()) as GitHubUserResponse;
-
-  // Fetch repos for language stats (paginated)
-  const repos = await fetchAllRepos(headers);
-
-  // Fetch contribution data via GraphQL
-  const contributions = await fetchContributions(pat);
-
-  // Calculate language stats
-  const languages = calculateLanguageStats(repos);
-
-  // Calculate streaks from contribution calendar
-  const { currentStreak, longestStreak } = calculateStreaks(
-    contributions.contributionCalendar.weeks.flatMap((w) =>
-      w.contributionDays.map((d) => ({
-        date: d.date,
-        count: d.contributionCount,
-      })),
-    ),
-  );
-
-  const stats: GitHubStats = {
-    user: {
-      login: userData.login,
-      publicRepos: userData.public_repos,
-      privateRepos: userData.total_private_repos ?? userData.owned_private_repos ?? 0,
-      totalRepos:
-        userData.public_repos + (userData.total_private_repos ?? userData.owned_private_repos ?? 0),
-      followers: userData.followers,
-      following: userData.following,
-    },
-    contributions: {
-      totalCommits: contributions.totalCommitContributions,
-      totalPRs: contributions.totalPullRequestContributions,
-      totalIssues: contributions.totalIssueContributions,
-      currentStreak,
-      longestStreak,
-      contributionCalendar: contributions.contributionCalendar.weeks.flatMap((w) =>
-        w.contributionDays.map((d) => ({
-          date: d.date,
-          count: d.contributionCount,
-          level: levelFromString(d.contributionLevel),
-        })),
-      ),
-    },
-    languages,
-    cachedAt: new Date().toISOString(),
-  };
-
-  return stats;
-}
-
-async function fetchAllRepos(headers: Record<string, string>): Promise<GitHubRepoResponse[]> {
-  const repos: GitHubRepoResponse[] = [];
-  let page = 1;
-  const perPage = 100;
-
-  while (true) {
-    const response = await fetch(
-      `https://api.github.com/user/repos?per_page=${perPage}&page=${page}&affiliation=owner`,
-      { headers },
-    );
-
-    if (!response.ok) break;
-
-    const pageRepos = (await response.json()) as GitHubRepoResponse[];
-    repos.push(...pageRepos);
-
-    if (pageRepos.length < perPage) break;
-    page++;
-  }
-
-  return repos;
-}
-
-async function fetchContributions(
-  pat: string,
-): Promise<GitHubGraphQLResponse["data"]["user"]["contributionsCollection"]> {
-  const query = `
-    query {
-      user(login: "${GITHUB_USERNAME}") {
-        contributionsCollection {
-          totalCommitContributions
-          totalPullRequestContributions
-          totalIssueContributions
-          contributionCalendar {
-            totalContributions
-            weeks {
-              contributionDays {
-                date
-                contributionCount
-                contributionLevel
-              }
+// GraphQL query string
+const GET_GITHUB_STATS_QUERY = /* GraphQL */ `
+  query GetGitHubStats($cursor: String) {
+    viewer {
+      login
+      publicRepos: repositories(privacy: PUBLIC) {
+        totalCount
+      }
+      privateRepos: repositories(privacy: PRIVATE) {
+        totalCount
+      }
+      followers {
+        totalCount
+      }
+      following {
+        totalCount
+      }
+      repositories(
+        first: 100
+        ownerAffiliations: OWNER
+        orderBy: { field: PUSHED_AT, direction: DESC }
+        after: $cursor
+      ) {
+        totalCount
+        pageInfo {
+          hasNextPage
+          endCursor
+        }
+        nodes {
+          name
+          isFork
+          diskUsage
+        }
+      }
+      contributionsCollection {
+        totalCommitContributions
+        totalPullRequestContributions
+        totalIssueContributions
+        contributionCalendar {
+          weeks {
+            contributionDays {
+              date
+              contributionCount
+              contributionLevel
             }
           }
         }
       }
     }
-  `;
+  }
+`;
 
-  const response = await fetch("https://api.github.com/graphql", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${pat}`,
-      "Content-Type": "application/json",
-      "User-Agent": "eve0415-website",
+// Route handler: Read-only from KV
+export const getGitHubStats = createServerFn().handler(async (): Promise<GitHubStats> => {
+  const kv = env.GITHUB_STATS_CACHE;
+  const cached = await kv.get<GitHubStats>(CACHE_KEY, "json");
+  return cached ?? FALLBACK_STATS;
+});
+
+// Cron handler: Fetch from GitHub and store in KV
+export async function refreshGitHubStats(workerEnv: Env): Promise<void> {
+  const pat = workerEnv.GITHUB_PAT;
+  const kv = workerEnv.GITHUB_STATS_CACHE;
+
+  // Create Octokit instance with plugins
+  const octokit = new MyOctokit({
+    auth: pat,
+    throttle: {
+      onRateLimit: (
+        retryAfter: number,
+        options: { method: string; url: string },
+        _octokit: Octokit,
+        retryCount: number,
+      ) => {
+        console.warn(
+          `Rate limit hit for ${options.method} ${options.url}. Retry ${retryCount + 1} after ${retryAfter}s`,
+        );
+        return retryCount < 3;
+      },
+      onSecondaryRateLimit: (retryAfter: number, options: { method: string; url: string }) => {
+        console.warn(
+          `Secondary rate limit hit for ${options.method} ${options.url}. Waiting ${retryAfter}s`,
+        );
+        return true;
+      },
     },
-    body: JSON.stringify({ query }),
+    retry: {
+      doNotRetry: ["429"],
+    },
   });
 
-  if (!response.ok) {
-    throw new Error(`GitHub GraphQL error: ${response.status}`);
-  }
+  // Fetch all data from GitHub
+  const stats = await fetchAllStats(octokit);
 
-  const data = (await response.json()) as GitHubGraphQLResponse;
-  return data.data.user.contributionsCollection;
+  // Store in KV
+  await kv.put(CACHE_KEY, JSON.stringify(stats));
 }
 
-function calculateLanguageStats(repos: GitHubRepoResponse[]): LanguageStat[] {
-  const languageCounts: Record<string, number> = {};
-  let totalSize = 0;
+async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<GitHubStats> {
+  // Fetch GraphQL data with pagination for repos
+  const allRepos: Array<{ name: string; isFork: boolean; diskUsage?: number | null }> = [];
+  let cursor: string | null = null;
+  let graphqlData: GetGitHubStatsQuery | null = null;
 
-  for (const repo of repos) {
-    if (repo.language && !repo.fork) {
-      languageCounts[repo.language] = (languageCounts[repo.language] ?? 0) + repo.size;
-      totalSize += repo.size;
+  do {
+    const response: GetGitHubStatsQuery = await octokit.graphql<GetGitHubStatsQuery>(
+      GET_GITHUB_STATS_QUERY,
+      { cursor } satisfies GetGitHubStatsQueryVariables,
+    );
+
+    if (!graphqlData) {
+      graphqlData = response;
     }
-  }
 
-  if (totalSize === 0) return [];
-
-  const sorted = Object.entries(languageCounts)
-    .map(([name, size]) => ({
-      name,
-      percentage: (size / totalSize) * 100,
-      color: getLanguageColor(name),
-    }))
-    .sort((a, b) => b.percentage - a.percentage)
-    .slice(0, 6);
-
-  return sorted;
-}
-
-function calculateStreaks(days: Array<{ date: string; count: number }>): {
-  currentStreak: number;
-  longestStreak: number;
-} {
-  let currentStreak = 0;
-  let longestStreak = 0;
-  let tempStreak = 0;
-
-  // Sort by date descending (most recent first)
-  const sortedDays = [...days].sort((a, b) => b.date.localeCompare(a.date));
-
-  // Calculate current streak (from today backwards)
-  const todayStr = new Date().toISOString().split("T")[0] ?? "";
-  let checkingCurrent = true;
-
-  for (const day of sortedDays) {
-    if (day.count > 0) {
-      if (checkingCurrent) {
-        // Only count current streak if it includes today or yesterday
-        const dayDate = new Date(day.date);
-        const todayDate = new Date(todayStr);
-        const diffDays = Math.floor(
-          (todayDate.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24),
-        );
-
-        if (diffDays <= 1) {
-          currentStreak++;
-        } else {
-          checkingCurrent = false;
-        }
+    const repos = response.viewer.repositories.nodes ?? [];
+    for (const repo of repos) {
+      if (repo) {
+        allRepos.push(repo);
       }
-    } else {
-      checkingCurrent = false;
+    }
+
+    cursor = response.viewer.repositories.pageInfo.hasNextPage
+      ? (response.viewer.repositories.pageInfo.endCursor ?? null)
+      : null;
+  } while (cursor);
+
+  if (!graphqlData) {
+    throw new Error("Failed to fetch GitHub stats");
+  }
+
+  // Fetch language data for non-fork repos via REST (parallel)
+  const nonForkRepos = allRepos.filter((repo) => !repo.isFork);
+  const languagePromises = nonForkRepos.map((repo) =>
+    octokit
+      .request("GET /repos/{owner}/{repo}/languages", {
+        owner: GITHUB_USERNAME,
+        repo: repo.name,
+        headers: {
+          "X-GitHub-Api-Version": "2022-11-28",
+        },
+      })
+      .catch(() => ({ data: {} })),
+  );
+  const languageResponses = await Promise.all(languagePromises);
+
+  // Aggregate language bytes
+  const languageBytes: Record<string, number> = {};
+  for (const response of languageResponses) {
+    const languages = response.data as Record<string, number>;
+    for (const [lang, bytes] of Object.entries(languages)) {
+      languageBytes[lang] = (languageBytes[lang] ?? 0) + bytes;
     }
   }
 
-  // Calculate longest streak
-  const sortedAsc = [...days].sort((a, b) => a.date.localeCompare(b.date));
-  for (const day of sortedAsc) {
-    if (day.count > 0) {
-      tempStreak++;
-      longestStreak = Math.max(longestStreak, tempStreak);
-    } else {
-      tempStreak = 0;
-    }
-  }
+  // Calculate language percentages
+  const totalBytes = Object.values(languageBytes).reduce((a, b) => a + b, 0);
+  const languages: LanguageStat[] =
+    totalBytes > 0
+      ? Object.entries(languageBytes)
+          .map(([name, bytes]) => ({
+            name,
+            percentage: (bytes / totalBytes) * 100,
+            color: getLanguageColor(name),
+          }))
+          .sort((a, b) => b.percentage - a.percentage)
+          .slice(0, 6)
+      : [];
 
-  return { currentStreak, longestStreak };
+  // Process contribution calendar
+  const contributionDays =
+    graphqlData.viewer.contributionsCollection.contributionCalendar.weeks.flatMap((week) =>
+      week.contributionDays.map((day) => ({
+        date: day.date,
+        count: day.contributionCount,
+        level: levelFromContributionLevel(day.contributionLevel),
+      })),
+    );
+
+  // Calculate streaks using JST
+  const { currentStreak, longestStreak } = calculateStreaksJST(contributionDays);
+
+  return {
+    user: {
+      login: graphqlData.viewer.login,
+      publicRepos: graphqlData.viewer.publicRepos.totalCount,
+      privateRepos: graphqlData.viewer.privateRepos.totalCount,
+      totalRepos:
+        graphqlData.viewer.publicRepos.totalCount + graphqlData.viewer.privateRepos.totalCount,
+      followers: graphqlData.viewer.followers.totalCount,
+      following: graphqlData.viewer.following.totalCount,
+    },
+    contributions: {
+      totalCommits: graphqlData.viewer.contributionsCollection.totalCommitContributions,
+      totalPRs: graphqlData.viewer.contributionsCollection.totalPullRequestContributions,
+      totalIssues: graphqlData.viewer.contributionsCollection.totalIssueContributions,
+      currentStreak,
+      longestStreak,
+      contributionCalendar: contributionDays,
+    },
+    languages,
+    cachedAt: new Date().toISOString(),
+  };
 }
 
-function levelFromString(level: string): 0 | 1 | 2 | 3 | 4 {
+function levelFromContributionLevel(level: ContributionLevel): 0 | 1 | 2 | 3 | 4 {
   switch (level) {
     case "NONE":
       return 0;
@@ -324,8 +296,105 @@ function levelFromString(level: string): 0 | 1 | 2 | 3 | 4 {
   }
 }
 
+function calculateStreaksJST(days: Array<{ date: string; count: number }>): {
+  currentStreak: number;
+  longestStreak: number;
+} {
+  if (days.length === 0) {
+    return { currentStreak: 0, longestStreak: 0 };
+  }
+
+  // Get today's date in JST (UTC+9)
+  const now = new Date();
+  const jstOffset = 9 * 60 * 60 * 1000;
+  const nowJST = new Date(now.getTime() + jstOffset);
+  const todayJST = nowJST.toISOString().split("T")[0] ?? "";
+  const yesterdayJST =
+    new Date(nowJST.getTime() - 24 * 60 * 60 * 1000).toISOString().split("T")[0] ?? "";
+
+  // Sort by date ascending
+  const sortedDays = [...days].sort((a, b) => a.date.localeCompare(b.date));
+
+  // Calculate longest streak
+  let longestStreak = 0;
+  let tempStreak = 0;
+  let prevDate: string | null = null;
+
+  for (const day of sortedDays) {
+    if (day.count > 0) {
+      if (prevDate === null) {
+        tempStreak = 1;
+      } else {
+        // Check if this day is consecutive to previous
+        const prev = new Date(prevDate);
+        const curr = new Date(day.date);
+        const diffDays = Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
+
+        if (diffDays === 1) {
+          tempStreak++;
+        } else {
+          tempStreak = 1;
+        }
+      }
+      longestStreak = Math.max(longestStreak, tempStreak);
+      prevDate = day.date;
+    } else {
+      tempStreak = 0;
+      prevDate = null;
+    }
+  }
+
+  // Calculate current streak (from today or yesterday backwards)
+  let currentStreak = 0;
+  const sortedDesc = [...days].sort((a, b) => b.date.localeCompare(a.date));
+
+  // Find the starting point for current streak
+  let streakStarted = false;
+  let expectedDate = todayJST;
+
+  for (const day of sortedDesc) {
+    if (!streakStarted) {
+      // Looking for today or yesterday to start the streak
+      if (day.date === todayJST || day.date === yesterdayJST) {
+        if (day.count > 0) {
+          streakStarted = true;
+          currentStreak = 1;
+          expectedDate = day.date;
+        } else if (day.date === todayJST) {
+          // Today has no contributions, check yesterday
+          continue;
+        } else {
+          // Yesterday has no contributions, no current streak
+          break;
+        }
+      } else if (day.date < yesterdayJST) {
+        // Past yesterday with no contributions found, no current streak
+        break;
+      }
+    } else {
+      // Continue checking streak backwards
+      const expected = new Date(expectedDate);
+      expected.setDate(expected.getDate() - 1);
+      const expectedStr = expected.toISOString().split("T")[0] ?? "";
+
+      if (day.date === expectedStr) {
+        if (day.count > 0) {
+          currentStreak++;
+          expectedDate = day.date;
+        } else {
+          break;
+        }
+      } else if (day.date < expectedStr) {
+        // Skipped a day, streak ends
+        break;
+      }
+    }
+  }
+
+  return { currentStreak, longestStreak };
+}
+
 function getLanguageColor(language: string): string {
-  // Common language colors from GitHub
   const colors: Record<string, string> = {
     TypeScript: "#3178c6",
     JavaScript: "#f1e05a",
@@ -345,6 +414,10 @@ function getLanguageColor(language: string): string {
     CSS: "#563d7c",
     Vue: "#41b883",
     Svelte: "#ff3e00",
+    SCSS: "#c6538c",
+    Lua: "#000080",
+    Zig: "#ec915c",
+    Nix: "#7e7eff",
   };
 
   return colors[language] ?? "#8b949e";
@@ -352,6 +425,10 @@ function getLanguageColor(language: string): string {
 
 // Get relative time string in Japanese
 export function getRelativeTimeJapanese(isoDate: string): string {
+  if (isoDate === "未取得") {
+    return isoDate;
+  }
+
   const date = new Date(isoDate);
   const now = new Date();
   const diffMs = now.getTime() - date.getTime();
