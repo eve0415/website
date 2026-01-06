@@ -32,7 +32,7 @@ src/routes/
 ```
 src/routes/
 ├── index.tsx
-├── -_index/              # Colocated with index route, ignored by router
+├── -index/              # Colocated with index route, ignored by router
 │   ├── Background/       # Component directory with colocated hooks
 │   │   ├── Background.tsx
 │   │   └── useMousePosition.ts

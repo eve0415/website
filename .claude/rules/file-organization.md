@@ -17,7 +17,7 @@ The root `index.tsx` has no parent directory, so colocated files use a sibling p
 ```
 src/routes/
 ├── index.tsx           # / route
-├── -_index/            # Colocated (legacy naming, kept for compatibility)
+├── -index/            # Colocated (legacy naming, kept for compatibility)
 │   ├── Background/
 │   │   ├── Background.tsx
 │   │   └── useMousePosition.ts
@@ -59,7 +59,7 @@ src/routes/
 ## Prefix Convention
 
 - Use single dash `-` prefix for non-route directories
-- Exception: `-_index/` kept as legacy (do not rename)
+- Exception: `-index/` kept as legacy (do not rename)
 - Examples: `-components/`, `-utils/`, `-hooks/`
 
 ## Rules

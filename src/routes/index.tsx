@@ -3,12 +3,12 @@ import type { FC } from "react";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { useKonamiCode } from "./-_index/useKonamiCode";
-import { printConsoleArt } from "./-_index/console-art";
+import { useKonamiCode } from "./-index/useKonamiCode";
+import { printConsoleArt } from "./-index/console-art";
 
-import Background from "./-_index/Background/Background";
-import Logo from "./-_index/Logo";
-import TerminalText from "./-_index/TerminalText";
+import Background from "./-index/Background/Background";
+import Logo from "./-index/Logo";
+import TerminalText from "./-index/TerminalText";
 
 const IndexPage: FC = () => {
   const [showTagline, setShowTagline] = useState(false);
