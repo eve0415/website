@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "types": ["vitest/config", "@vitest/browser-playwright"],
+    "noEmit": false
+  },
+  "include": ["./.storybook", "./src/**/*.stories.tsx", "./src/**/*.test.tsx", "./src/**/*.test.ts"]
+}

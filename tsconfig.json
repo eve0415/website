@@ -1,4 +1,5 @@
 {
+  "references": [{ "path": "./tsconfig.test.json" }],
   "compilerOptions": {
     "moduleResolution": "Bundler",
     "module": "esnext",
@@ -21,5 +22,6 @@
     "moduleDetection": "force",
     "skipLibCheck": true,
     "noEmit": true
-  }
+  },
+  "exclude": ["./src/**/*.stories.tsx", "./src/**/*.test.tsx", "./src/**/*.test.ts"]
 }

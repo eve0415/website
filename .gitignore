@@ -21,3 +21,7 @@ dist/
 
 # graphql
 src/generated/
+
+# storybook
+*storybook.log
+storybook-static/

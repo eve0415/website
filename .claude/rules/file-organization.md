@@ -92,6 +92,7 @@ Extract all React components to separate files.
 **Exception**: Route-bound components (passed to `createFileRoute`, `createRootRoute`, etc.) stay in route files.
 
 **Pattern**: `ComponentName/ComponentName.tsx`
+
 - Tests: `ComponentName/ComponentName.test.tsx`
 - Stories: `ComponentName/ComponentName.stories.tsx`
 - Hooks: `ComponentName/useHookName.ts` (if single-consumer)
@@ -99,6 +100,7 @@ Extract all React components to separate files.
 **Interfaces**: Live with the component that defines the visual representation.
 
 **Data/Config**:
+
 - Single-consumer: stays with consuming component or route
 - Multi-consumer: dedicated `-config/` or `-data/` file at route level
 

@@ -5,7 +5,7 @@
     "dist",
     "worker-configuration.d.ts",
     "src/routeTree.gen.ts",
-    "src/generated/*"
+    "src/generated/*",
   ],
   "arrowParens": "avoid",
   "singleQuote": true,
