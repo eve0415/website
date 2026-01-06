@@ -71,10 +71,10 @@ const IndexPage: FC = () => {
 
       {/* Konami code secret overlay */}
       {konamiActivated && (
-        <div className='pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-bg-primary/80'>
+        <div className='pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-background/80'>
           <div className='animate-fade-in-scale text-center'>
-            <span className='block font-mono text-accent-primary text-xl'>SECRET_UNLOCKED</span>
-            <span className='mt-2 block text-sm text-text-muted'>// 何かを見つけた...</span>
+            <span className='block font-mono text-neon text-xl'>SECRET_UNLOCKED</span>
+            <span className='mt-2 block text-sm text-subtle-foreground'>// 何かを見つけた...</span>
           </div>
         </div>
       )}
@@ -82,7 +82,7 @@ const IndexPage: FC = () => {
       {/* Central content */}
       <div className='flex flex-col items-center gap-8'>
         {/* Logo */}
-        <div className='w-48 text-text-primary md:w-64 lg:w-80'>
+        <div className='w-48 text-foreground md:w-64 lg:w-80'>
           <Logo animate />
         </div>
 
@@ -93,38 +93,38 @@ const IndexPage: FC = () => {
 
         {/* Tagline */}
         {showTagline && (
-          <p className='animate-fade-in-up text-center text-text-secondary'>
+          <p className='animate-fade-in-up text-center text-muted-foreground'>
             <TerminalText text='エンジニア' delay={0} speed={60} />
           </p>
         )}
 
         {/* Navigation prompt */}
         {showNav && (
-          <nav className='mt-12 flex animate-fade-in-up flex-col items-center gap-6 text-sm text-text-muted'>
+          <nav className='mt-12 flex animate-fade-in-up flex-col items-center gap-6 text-sm text-subtle-foreground'>
             <span className='font-mono text-xs tracking-wider'>// 探索を始める</span>
             <div className='flex gap-6'>
-              <Link to='/projects' className='group relative px-2 py-1 text-text-secondary transition-colors hover:text-accent-primary'>
+              <Link to='/projects' className='group relative px-2 py-1 text-muted-foreground transition-colors hover:text-neon'>
                 <span className='font-mono'>[Projects]</span>
-                <span className='absolute -bottom-1 left-0 h-px w-0 bg-accent-primary transition-all duration-normal group-hover:w-full' />
+                <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
               </Link>
-              <Link to='/skills' className='group relative px-2 py-1 text-text-secondary transition-colors hover:text-accent-primary'>
+              <Link to='/skills' className='group relative px-2 py-1 text-muted-foreground transition-colors hover:text-neon'>
                 <span className='font-mono'>[Skills]</span>
-                <span className='absolute -bottom-1 left-0 h-px w-0 bg-accent-primary transition-all duration-normal group-hover:w-full' />
+                <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
               </Link>
-              <Link to='/link' className='group relative px-2 py-1 text-text-secondary transition-colors hover:text-accent-primary'>
+              <Link to='/link' className='group relative px-2 py-1 text-muted-foreground transition-colors hover:text-neon'>
                 <span className='font-mono'>[Link]</span>
-                <span className='absolute -bottom-1 left-0 h-px w-0 bg-accent-primary transition-all duration-normal group-hover:w-full' />
+                <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
               </Link>
-              <Link to='/sys' className='group relative px-2 py-1 text-text-secondary transition-colors hover:text-accent-primary'>
+              <Link to='/sys' className='group relative px-2 py-1 text-muted-foreground transition-colors hover:text-neon'>
                 <span className='font-mono'>[Sys]</span>
-                <span className='absolute -bottom-1 left-0 h-px w-0 bg-accent-primary transition-all duration-normal group-hover:w-full' />
+                <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
               </Link>
             </div>
-            <div className='mt-4 flex items-center gap-2 text-text-muted text-xs opacity-50'>
-              <kbd className='rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px]'>1</kbd>
-              <kbd className='rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px]'>2</kbd>
-              <kbd className='rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px]'>3</kbd>
-              <kbd className='rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
+            <div className='mt-4 flex items-center gap-2 text-subtle-foreground text-xs opacity-50'>
+              <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>1</kbd>
+              <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>2</kbd>
+              <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>3</kbd>
+              <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
               <span className='ml-1'>でジャンプ</span>
             </div>
           </nav>
@@ -132,13 +132,13 @@ const IndexPage: FC = () => {
       </div>
 
       {/* Footer coordinates - playful terminal element */}
-      <div className='absolute bottom-6 left-6 text-text-muted text-xs'>
+      <div className='absolute bottom-6 left-6 text-subtle-foreground text-xs'>
         <span className='opacity-50'>位置: </span>
         <span>35.6762°N, 139.6503°E</span>
       </div>
 
       {/* Version indicator */}
-      <div className='absolute right-6 bottom-6 text-text-muted text-xs'>
+      <div className='absolute right-6 bottom-6 text-subtle-foreground text-xs'>
         <span className='opacity-50'>v</span>
         <span>4.0.0</span>
       </div>

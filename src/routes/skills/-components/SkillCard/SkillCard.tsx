@@ -21,26 +21,26 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
   }, [index]);
 
   const colorClasses = {
-    'accent-primary': {
-      border: 'hover:border-accent-primary/50',
-      text: 'group-hover:text-accent-primary',
-      bg: 'bg-accent-primary/10',
-      textColor: 'text-accent-primary',
-      bar: 'bg-accent-primary/30',
+    neon: {
+      border: 'hover:border-neon/50',
+      text: 'group-hover:text-neon',
+      bg: 'bg-neon/10',
+      textColor: 'text-neon',
+      bar: 'bg-neon/30',
     },
-    'accent-secondary': {
-      border: 'hover:border-accent-secondary/50',
-      text: 'group-hover:text-accent-secondary',
-      bg: 'bg-accent-secondary/10',
-      textColor: 'text-accent-secondary',
-      bar: 'bg-accent-secondary/30',
+    cyan: {
+      border: 'hover:border-cyan/50',
+      text: 'group-hover:text-cyan',
+      bg: 'bg-cyan/10',
+      textColor: 'text-cyan',
+      bar: 'bg-cyan/30',
     },
-    'accent-tertiary': {
-      border: 'hover:border-accent-tertiary/50',
-      text: 'group-hover:text-accent-tertiary',
-      bg: 'bg-accent-tertiary/10',
-      textColor: 'text-accent-tertiary',
-      bar: 'bg-accent-tertiary/30',
+    orange: {
+      border: 'hover:border-orange/50',
+      text: 'group-hover:text-orange',
+      bg: 'bg-orange/10',
+      textColor: 'text-orange',
+      bar: 'bg-orange/30',
     },
   };
 
@@ -48,7 +48,7 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
 
   return (
     <div
-      className={`group relative cursor-default rounded-lg border border-border-subtle bg-bg-secondary p-4 transition-all duration-normal ${colors.border} hover:shadow-lg ${
+      className={`group relative cursor-default rounded-lg border border-line bg-surface p-4 transition-all duration-normal ${colors.border} hover:shadow-lg ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
       onMouseEnter={() => setIsHovered(true)}
@@ -64,10 +64,10 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
 
       <div className='relative'>
         <div className='flex items-start justify-between gap-2'>
-          <h3 className={`font-bold font-mono text-text-primary ${colors.text}`}>{skill.name}</h3>
+          <h3 className={`font-bold font-mono text-foreground ${colors.text}`}>{skill.name}</h3>
           <span className={`rounded-full ${colors.bg} px-2 py-0.5 font-mono ${colors.textColor} text-xs`}>{config.label}</span>
         </div>
-        {skill.description && <p className='mt-2 line-clamp-2 text-sm text-text-muted'>{skill.description}</p>}
+        {skill.description && <p className='mt-2 line-clamp-2 text-sm text-subtle-foreground'>{skill.description}</p>}
       </div>
     </div>
   );

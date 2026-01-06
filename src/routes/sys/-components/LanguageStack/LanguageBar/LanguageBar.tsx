@@ -67,16 +67,16 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate }) => {
     >
       <div className='flex items-center gap-2'>
         {/* Tree structure */}
-        <span className='text-text-muted'>├──</span>
+        <span className='text-subtle-foreground'>├──</span>
 
         {/* Language name */}
-        <span className='w-24 truncate text-text-secondary'>{language.name}</span>
+        <span className='w-24 truncate text-muted-foreground'>{language.name}</span>
 
         {/* Progress bar */}
         <span style={{ color: language.color }}>{bar}</span>
 
         {/* Percentage */}
-        <span className='w-16 text-right text-text-muted'>{progress.toFixed(1)}%</span>
+        <span className='w-16 text-right text-subtle-foreground'>{progress.toFixed(1)}%</span>
       </div>
     </div>
   );

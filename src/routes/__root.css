@@ -7,28 +7,28 @@
 
 /* Design Tokens - CSS Custom Properties */
 @theme {
-  /* Color System - Dark atmospheric base, evolving */
-  --color-bg-primary: #0a0a0a;
-  --color-bg-secondary: #111111;
-  --color-bg-tertiary: #1a1a1a;
-  --color-bg-elevated: #222222;
+  /* Color System - Dark atmospheric base */
+  --color-background: #0a0a0a;
+  --color-surface: #111111;
+  --color-muted: #1a1a1a;
+  --color-elevated: #222222;
 
   /* Text Colors */
-  --color-text-primary: #e5e5e5;
-  --color-text-secondary: #a3a3a3;
-  --color-text-muted: #525252;
-  --color-text-accent: #00ff88;
+  --color-foreground: #e5e5e5;
+  --color-muted-foreground: #a3a3a3;
+  --color-subtle-foreground: #525252;
+  --color-neon-foreground: #00ff88;
 
   /* Accent Colors - Terminal/Cyber inspired */
-  --color-accent-primary: #00ff88;
-  --color-accent-secondary: #00d4ff;
-  --color-accent-tertiary: #ff6b35;
-  --color-accent-glow: #00ff8840;
+  --color-neon: #00ff88;
+  --color-cyan: #00d4ff;
+  --color-orange: #ff6b35;
+  --color-glow: #00ff8840;
 
   /* Border Colors */
-  --color-border-subtle: #262626;
-  --color-border-default: #404040;
-  --color-border-accent: #00ff8860;
+  --color-line: #262626;
+  --color-input: #404040;
+  --color-line-glow: #00ff8860;
 
   /* Typography - JetBrains Mono as primary */
   --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
@@ -43,18 +43,6 @@
   --text-3xl: clamp(1.875rem, 2vw + 1.25rem, 2.5rem);
   --text-4xl: clamp(2.25rem, 3vw + 1.5rem, 3.5rem);
   --text-5xl: clamp(3rem, 4vw + 2rem, 5rem);
-
-  /* Spacing Scale */
-  --space-1: 0.25rem;
-  --space-2: 0.5rem;
-  --space-3: 0.75rem;
-  --space-4: 1rem;
-  --space-6: 1.5rem;
-  --space-8: 2rem;
-  --space-12: 3rem;
-  --space-16: 4rem;
-  --space-24: 6rem;
-  --space-32: 8rem;
 
   /* Transitions */
   --duration-fast: 150ms;
@@ -79,8 +67,8 @@
 /* Base Styles */
 html {
   font-family: var(--font-mono);
-  background-color: var(--color-bg-primary);
-  color: var(--color-text-primary);
+  background-color: var(--color-background);
+  color: var(--color-foreground);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
@@ -94,13 +82,13 @@ body {
 
 /* Selection styling */
 ::selection {
-  background-color: var(--color-accent-primary);
-  color: var(--color-bg-primary);
+  background-color: var(--color-neon);
+  color: var(--color-background);
 }
 
 /* Focus visible for accessibility */
 :focus-visible {
-  outline: 2px solid var(--color-accent-primary);
+  outline: 2px solid var(--color-neon);
   outline-offset: 2px;
 }
 
@@ -111,16 +99,16 @@ body {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--color-bg-secondary);
+  background: var(--color-surface);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--color-border-default);
+  background: var(--color-input);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-text-muted);
+  background: var(--color-subtle-foreground);
 }
 
 /* ============================================
@@ -143,10 +131,10 @@ body {
 @keyframes glow-pulse {
   0%,
   100% {
-    filter: drop-shadow(0 0 4px var(--color-accent-glow));
+    filter: drop-shadow(0 0 4px var(--color-glow));
   }
   50% {
-    filter: drop-shadow(0 0 12px var(--color-accent-glow));
+    filter: drop-shadow(0 0 12px var(--color-glow));
   }
 }
 
@@ -256,7 +244,7 @@ body {
 
 /* Text gradient utility */
 .text-gradient {
-  background: linear-gradient(135deg, var(--color-accent-primary), var(--color-accent-secondary));
+  background: linear-gradient(135deg, var(--color-neon), var(--color-cyan));
   background-clip: text;
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
@@ -264,13 +252,13 @@ body {
 
 /* Glow effects */
 .glow-accent {
-  filter: drop-shadow(0 0 8px var(--color-accent-glow));
+  filter: drop-shadow(0 0 8px var(--color-glow));
 }
 
 .glow-text {
   text-shadow:
-    0 0 20px var(--color-accent-glow),
-    0 0 40px var(--color-accent-glow);
+    0 0 20px var(--color-glow),
+    0 0 40px var(--color-glow);
 }
 
 /* Reduced motion preference */

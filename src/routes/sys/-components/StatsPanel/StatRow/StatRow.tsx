@@ -19,17 +19,17 @@ const StatRow: FC<StatRowProps> = ({ label, value, suffix = '', delay, animate, 
   });
 
   const colorClass = {
-    primary: 'text-accent-primary',
-    secondary: 'text-accent-secondary',
-    tertiary: 'text-accent-tertiary',
+    primary: 'text-neon',
+    secondary: 'text-cyan',
+    tertiary: 'text-orange',
   }[color];
 
   return (
-    <div className='flex items-baseline justify-between border-border-subtle border-b py-2 last:border-b-0'>
-      <span className='font-mono text-sm text-text-muted uppercase tracking-wider'>{label}</span>
+    <div className='flex items-baseline justify-between border-line border-b py-2 last:border-b-0'>
+      <span className='font-mono text-sm text-subtle-foreground uppercase tracking-wider'>{label}</span>
       <span className={`font-mono text-lg ${colorClass}`}>
         {displayValue}
-        {suffix && <span className='ml-1 text-text-muted text-xs'>{suffix}</span>}
+        {suffix && <span className='ml-1 text-subtle-foreground text-xs'>{suffix}</span>}
       </span>
     </div>
   );

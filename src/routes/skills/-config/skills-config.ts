@@ -110,7 +110,7 @@ export const categoryIcons: Record<string, string> = {
 };
 
 export const levelConfig = {
-  expert: { color: 'accent-primary', label: 'Expert', progress: 100 },
-  proficient: { color: 'accent-secondary', label: 'Proficient', progress: 70 },
-  learning: { color: 'accent-tertiary', label: 'Learning', progress: 35 },
+  expert: { color: 'neon', label: 'Expert', progress: 100 },
+  proficient: { color: 'cyan', label: 'Proficient', progress: 70 },
+  learning: { color: 'orange', label: 'Learning', progress: 35 },
 };

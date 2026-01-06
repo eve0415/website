@@ -23,7 +23,7 @@ const CurrentTime: FC = () => {
     return () => clearInterval(interval);
   }, []);
 
-  return <span className='font-mono text-accent-primary tabular-nums'>{time || '--:--:--'}</span>;
+  return <span className='font-mono text-neon tabular-nums'>{time || '--:--:--'}</span>;
 };
 
 export default CurrentTime;

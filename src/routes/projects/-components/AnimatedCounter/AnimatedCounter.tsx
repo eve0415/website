@@ -43,7 +43,7 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
   }, [end, duration, hasAnimated]);
 
   return (
-    <span data-counter={end} className='font-mono text-3xl text-accent-primary'>
+    <span data-counter={end} className='font-mono text-3xl text-neon'>
       {count}
       {suffix}
     </span>

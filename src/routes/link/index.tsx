@@ -20,7 +20,7 @@ const socialLinks: SocialLink[] = [
     url: 'https://twitter.com/eveevekun',
     handle: '@eveevekun',
     icon: 'X',
-    color: 'hover:border-text-secondary/50',
+    color: 'hover:border-muted-foreground/50',
   },
   {
     name: 'Bluesky',
@@ -61,18 +61,18 @@ const LinkPage: FC = () => {
     <main className='min-h-dvh px-6 py-24 md:px-12'>
       {/* Header */}
       <header className='mb-16'>
-        <Link to='/' className='group mb-8 inline-flex items-center gap-2 text-sm text-text-muted transition-colors hover:text-accent-primary'>
+        <Link to='/' className='group mb-8 inline-flex items-center gap-2 text-sm text-subtle-foreground transition-colors hover:text-neon'>
           <span className='transition-transform group-hover:-translate-x-1'>←</span>
           <span>Index</span>
         </Link>
         <h1 className='animate-fade-in-up font-bold text-4xl tracking-tight md:text-5xl'>Link</h1>
-        <p className='mt-4 text-text-secondary'>連絡先 / SNS</p>
+        <p className='mt-4 text-muted-foreground'>連絡先 / SNS</p>
       </header>
 
       <div className='grid gap-16 lg:grid-cols-2'>
         {/* Social Links */}
         <section>
-          <h2 className='mb-8 font-mono text-sm text-text-muted uppercase tracking-wider'>// Social</h2>
+          <h2 className='mb-8 font-mono text-sm text-subtle-foreground uppercase tracking-wider'>// Social</h2>
           <div className='grid gap-4'>
             {socialLinks.map((link, index) => (
               <SocialLinkCard key={link.name} link={link} index={index} />
@@ -80,12 +80,12 @@ const LinkPage: FC = () => {
           </div>
 
           {/* Direct email */}
-          <div className='mt-8 rounded-lg border border-border-subtle border-dashed bg-bg-secondary/50 p-4'>
+          <div className='mt-8 rounded-lg border border-line border-dashed bg-surface/50 p-4'>
             <div className='flex items-center gap-3'>
-              <span className='flex size-10 items-center justify-center rounded-lg bg-bg-tertiary font-mono text-sm text-text-muted'>@</span>
+              <span className='flex size-10 items-center justify-center rounded-lg bg-muted font-mono text-sm text-subtle-foreground'>@</span>
               <div>
-                <span className='block text-sm text-text-muted'>直接メール</span>
-                <a href='mailto:eve@eve0415.net' className='font-mono text-text-secondary transition-colors hover:text-accent-primary'>
+                <span className='block text-sm text-subtle-foreground'>直接メール</span>
+                <a href='mailto:eve@eve0415.net' className='font-mono text-muted-foreground transition-colors hover:text-neon'>
                   eve@eve0415.net
                 </a>
               </div>
@@ -95,10 +95,10 @@ const LinkPage: FC = () => {
 
         {/* Contact Form */}
         <section>
-          <h2 className='mb-8 font-mono text-sm text-text-muted uppercase tracking-wider'>// Contact</h2>
+          <h2 className='mb-8 font-mono text-sm text-subtle-foreground uppercase tracking-wider'>// Contact</h2>
           <form onSubmit={handleSubmit} className='space-y-6'>
             <div className='group'>
-              <label htmlFor='name' className='mb-2 block text-sm text-text-secondary transition-colors group-focus-within:text-accent-primary'>
+              <label htmlFor='name' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
                 お名前
               </label>
               <input
@@ -107,13 +107,13 @@ const LinkPage: FC = () => {
                 required
                 value={formData.name}
                 onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className='w-full rounded-lg border border-border-subtle bg-bg-secondary px-4 py-3 text-text-primary transition-all duration-fast placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-1 focus:ring-accent-primary'
+                className='w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
                 placeholder='山田太郎'
                 disabled={formState === 'submitting'}
               />
             </div>
             <div className='group'>
-              <label htmlFor='email' className='mb-2 block text-sm text-text-secondary transition-colors group-focus-within:text-accent-primary'>
+              <label htmlFor='email' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
                 メールアドレス
               </label>
               <input
@@ -122,13 +122,13 @@ const LinkPage: FC = () => {
                 required
                 value={formData.email}
                 onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className='w-full rounded-lg border border-border-subtle bg-bg-secondary px-4 py-3 text-text-primary transition-all duration-fast placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-1 focus:ring-accent-primary'
+                className='w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
                 placeholder='you@example.com'
                 disabled={formState === 'submitting'}
               />
             </div>
             <div className='group'>
-              <label htmlFor='message' className='mb-2 block text-sm text-text-secondary transition-colors group-focus-within:text-accent-primary'>
+              <label htmlFor='message' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
                 メッセージ
               </label>
               <textarea
@@ -137,7 +137,7 @@ const LinkPage: FC = () => {
                 rows={5}
                 value={formData.message}
                 onChange={e => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                className='w-full resize-none rounded-lg border border-border-subtle bg-bg-secondary px-4 py-3 text-text-primary transition-all duration-fast placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:ring-1 focus:ring-accent-primary'
+                className='w-full resize-none rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
                 placeholder='ご用件をお書きください...'
                 disabled={formState === 'submitting'}
               />
@@ -146,15 +146,13 @@ const LinkPage: FC = () => {
               type='submit'
               disabled={formState === 'submitting' || formState === 'success'}
               className={`group relative w-full overflow-hidden rounded-lg px-6 py-3 font-medium transition-all duration-fast ${
-                formState === 'success'
-                  ? 'bg-accent-primary/20 text-accent-primary'
-                  : 'bg-accent-primary text-bg-primary hover:shadow-accent-glow/20 hover:shadow-lg'
+                formState === 'success' ? 'bg-neon/20 text-neon' : 'bg-neon text-background hover:shadow-glow/20 hover:shadow-lg'
               } disabled:cursor-not-allowed disabled:opacity-50`}
             >
               <span className='relative z-10'>
                 {formState === 'submitting' ? (
                   <span className='flex items-center justify-center gap-2'>
-                    <span className='size-4 animate-spin rounded-full border-2 border-bg-primary border-t-transparent' />
+                    <span className='size-4 animate-spin rounded-full border-2 border-background border-t-transparent' />
                     送信中...
                   </span>
                 ) : formState === 'success' ? (
@@ -164,26 +162,22 @@ const LinkPage: FC = () => {
                 )}
               </span>
             </button>
-            {formState === 'success' && (
-              <p className='animate-fade-in-up text-center text-accent-primary text-sm'>メッセージが送信されました。ありがとうございます！</p>
-            )}
-            {formState === 'error' && (
-              <p className='animate-fade-in-up text-center text-accent-tertiary text-sm'>エラーが発生しました。もう一度お試しください。</p>
-            )}
+            {formState === 'success' && <p className='animate-fade-in-up text-center text-neon text-sm'>メッセージが送信されました。ありがとうございます！</p>}
+            {formState === 'error' && <p className='animate-fade-in-up text-center text-orange text-sm'>エラーが発生しました。もう一度お試しください。</p>}
           </form>
         </section>
       </div>
 
       {/* Location / Time */}
-      <section className='mt-24 border-border-subtle border-t pt-12'>
-        <div className='flex flex-wrap gap-8 text-sm text-text-muted md:gap-12'>
+      <section className='mt-24 border-line border-t pt-12'>
+        <div className='flex flex-wrap gap-8 text-sm text-subtle-foreground md:gap-12'>
           <div>
             <span className='block font-mono text-xs uppercase tracking-wider'>Location</span>
-            <span className='mt-1 block text-text-secondary'>Tokyo, Japan</span>
+            <span className='mt-1 block text-muted-foreground'>Tokyo, Japan</span>
           </div>
           <div>
             <span className='block font-mono text-xs uppercase tracking-wider'>Timezone</span>
-            <span className='mt-1 block text-text-secondary'>UTC+9 (JST)</span>
+            <span className='mt-1 block text-muted-foreground'>UTC+9 (JST)</span>
           </div>
           <div>
             <span className='block font-mono text-xs uppercase tracking-wider'>Current Time</span>
@@ -193,10 +187,10 @@ const LinkPage: FC = () => {
           </div>
           <div>
             <span className='block font-mono text-xs uppercase tracking-wider'>Status</span>
-            <span className='mt-1 flex items-center gap-2 text-text-secondary'>
+            <span className='mt-1 flex items-center gap-2 text-muted-foreground'>
               <span className='relative flex size-2'>
-                <span className='absolute inline-flex size-full animate-ping rounded-full bg-accent-primary opacity-75' />
-                <span className='relative inline-flex size-2 rounded-full bg-accent-primary' />
+                <span className='absolute inline-flex size-full animate-ping rounded-full bg-neon opacity-75' />
+                <span className='relative inline-flex size-2 rounded-full bg-neon' />
               </span>
               Available
             </span>
@@ -206,7 +200,7 @@ const LinkPage: FC = () => {
 
       {/* Navigation hint */}
       <div className='mt-16 flex justify-center'>
-        <Link to='/skills' className='group flex items-center gap-2 text-sm text-text-muted transition-colors hover:text-accent-primary'>
+        <Link to='/skills' className='group flex items-center gap-2 text-sm text-subtle-foreground transition-colors hover:text-neon'>
           <span className='transition-transform group-hover:-translate-x-1'>←</span>
           <span>Skills Matrix</span>
         </Link>

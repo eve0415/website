@@ -12,7 +12,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
       <head>
         <HeadContent />
       </head>
-      <body className='min-h-dvh bg-bg-primary text-text-primary'>
+      <body className='min-h-dvh bg-background text-foreground'>
         <main>{children}</main>
 
         <Scripts />

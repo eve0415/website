@@ -17,14 +17,14 @@ const SysPage: FC = () => {
   };
 
   return (
-    <main className='relative min-h-dvh bg-bg-primary px-4 py-8 md:px-8 lg:px-16'>
+    <main className='relative min-h-dvh bg-background px-4 py-8 md:px-8 lg:px-16'>
       {/* Terminal header */}
       <header className='mb-8 flex flex-col gap-2 md:flex-row md:items-center md:justify-between'>
-        <h1 className='font-mono text-accent-primary text-lg md:text-xl'>
-          <span className='text-text-muted'>&gt; </span>
+        <h1 className='font-mono text-lg text-neon md:text-xl'>
+          <span className='text-subtle-foreground'>&gt; </span>
           sys.diagnostic --user=eve0415
         </h1>
-        <div className='font-mono text-text-muted text-xs'>
+        <div className='font-mono text-subtle-foreground text-xs'>
           <span className='opacity-70'>最終更新: </span>
           <span>{getRelativeTimeJapanese(stats.cachedAt)}</span>
         </div>
@@ -49,8 +49,8 @@ const SysPage: FC = () => {
       </section>
 
       {/* Footer with keyboard hint */}
-      <footer className='mt-16 flex items-center justify-center gap-2 text-text-muted text-xs opacity-50'>
-        <kbd className='rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
+      <footer className='mt-16 flex items-center justify-center gap-2 text-subtle-foreground text-xs opacity-50'>
+        <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
         <span>で戻る</span>
       </footer>
     </main>

@@ -26,7 +26,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index }) => {
   }, [index]);
 
   const baseClasses =
-    'group rounded-lg border border-border-subtle bg-bg-secondary p-6 transition-all duration-normal hover:border-accent-primary/30 hover:shadow-accent-glow/10 hover:shadow-lg';
+    'group rounded-lg border border-line bg-surface p-6 transition-all duration-normal hover:border-neon/30 hover:shadow-glow/10 hover:shadow-lg';
   const visibilityClasses = isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0';
   const featuredClasses = project.featured ? 'col-span-full md:p-8' : '';
 
@@ -34,22 +34,19 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index }) => {
     <article className={`${baseClasses} ${visibilityClasses} ${featuredClasses} transition-all duration-normal`}>
       <div className={project.featured ? 'flex flex-col gap-4 md:flex-row md:items-start md:justify-between' : ''}>
         <div>
-          <h2 className={`font-bold text-text-primary group-hover:text-accent-primary ${project.featured ? 'text-2xl' : 'text-xl'}`}>{project.title}</h2>
-          <p className={`mt-2 text-text-secondary ${project.featured ? '' : 'text-sm'}`}>{project.description}</p>
+          <h2 className={`font-bold text-foreground group-hover:text-neon ${project.featured ? 'text-2xl' : 'text-xl'}`}>{project.title}</h2>
+          <p className={`mt-2 text-muted-foreground ${project.featured ? '' : 'text-sm'}`}>{project.description}</p>
         </div>
         {project.highlight && (
           <div className='flex flex-col items-end gap-1'>
-            <span className='rounded-full bg-accent-primary/10 px-3 py-1 font-mono text-accent-primary text-sm'>{project.highlight}</span>
-            {project.highlightSub && <span className='text-text-muted text-xs'>{project.highlightSub}</span>}
+            <span className='rounded-full bg-neon/10 px-3 py-1 font-mono text-neon text-sm'>{project.highlight}</span>
+            {project.highlightSub && <span className='text-subtle-foreground text-xs'>{project.highlightSub}</span>}
           </div>
         )}
       </div>
       <div className='mt-4 flex flex-wrap gap-2'>
         {project.tags.map(tag => (
-          <span
-            key={tag}
-            className='rounded-md border border-border-subtle px-2 py-1 text-text-muted text-xs transition-colors group-hover:border-border-default'
-          >
+          <span key={tag} className='rounded-md border border-line px-2 py-1 text-subtle-foreground text-xs transition-colors group-hover:border-input'>
             {tag}
           </span>
         ))}
@@ -61,7 +58,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index }) => {
             href={link.url}
             target='_blank'
             rel='noopener noreferrer'
-            className='group/link relative text-sm text-text-secondary transition-colors hover:text-accent-primary'
+            className='group/link relative text-muted-foreground text-sm transition-colors hover:text-neon'
           >
             {link.label}
             <span className='ml-1 inline-block transition-transform group-hover/link:translate-x-0.5'>→</span>

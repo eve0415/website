@@ -83,9 +83,9 @@ const SkillsVisualization: FC = () => {
 
         // Node
         const colors: Record<string, string> = {
-          'accent-primary': '#00ff88',
-          'accent-secondary': '#00d4ff',
-          'accent-tertiary': '#ff6b35',
+          neon: '#00ff88',
+          cyan: '#00d4ff',
+          orange: '#ff6b35',
         };
         ctx.fillStyle = colors[config.color] || '#00ff88';
         ctx.beginPath();
@@ -113,18 +113,18 @@ const SkillsVisualization: FC = () => {
   }, []);
 
   return (
-    <div className='relative h-100 rounded-lg border border-border-subtle bg-bg-secondary/30'>
+    <div className='relative h-100 rounded-lg border border-line bg-surface/30'>
       <canvas ref={canvasRef} className='size-full' />
       {/* Legend overlay */}
       <div className='pointer-events-none absolute bottom-4 left-4 flex flex-wrap gap-3'>
         {Object.entries(levelConfig).map(([level, config]) => {
           const colors: Record<string, string> = {
-            'accent-primary': 'bg-accent-primary',
-            'accent-secondary': 'bg-accent-secondary',
-            'accent-tertiary': 'bg-accent-tertiary',
+            neon: 'bg-neon',
+            cyan: 'bg-cyan',
+            orange: 'bg-orange',
           };
           return (
-            <span key={level} className='flex items-center gap-1.5 text-text-muted text-xs'>
+            <span key={level} className='flex items-center gap-1.5 text-subtle-foreground text-xs'>
               <span className={`size-2 rounded-full ${colors[config.color]}`} />
               <span>{config.label}</span>
             </span>
