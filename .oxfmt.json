@@ -5,12 +5,13 @@
     "dist",
     "worker-configuration.d.ts",
     "src/routeTree.gen.ts",
-    "src/generated/*",
+    "src/generated/*"
   ],
   "arrowParens": "avoid",
   "singleQuote": true,
   "jsxSingleQuote": true,
   "printWidth": 160,
+  "experimentalTailwindcss": {},
   "experimentalSortImports": {
     "order": "asc",
     "groups": [

@@ -23,7 +23,6 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
               name: "TanStack Router",
               render: <TanStackRouterDevtoolsPanel />,
             },
-            // formDevtoolsPlugin(),
           ]}
         />
       </body>
