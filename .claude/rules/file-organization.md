@@ -1,39 +1,50 @@
 # File Organization
 
-## Route-Colocated Structure
+## Colocation Philosophy
 
-Components, hooks, and utilities live alongside the routes that use them.
+Code lives as close as possible to where it's used. This means:
+
+1. **Component-level colocation**: If a hook/utility is used by only one component, it lives in that component's directory
+2. **Route-level colocation**: If used by multiple components in one route but not others, it lives at the route level
+3. **Shared directories**: Only create `src/hooks/`, `src/lib/`, `src/components/` when code is genuinely used by multiple routes
+
+## Structure
 
 ```
 src/routes/
 ├── __root.tsx              # Root layout
 ├── __root.css              # Global CSS + design tokens
 ├── index.tsx               # / route
-├── -shared/                # Shared across ALL routes
-│   ├── -hooks/
-│   │   ├── useKonamiCode.ts
-│   │   └── useMousePosition.ts
-│   └── -lib/
-│       └── console-art.ts
+├── -_index/                # Colocated with index route
+│   ├── Background/         # Component with its own hooks
+│   │   ├── Background.tsx
+│   │   ├── useMousePosition.ts
+│   │   └── useReducedMotion.ts
+│   ├── Logo.tsx            # Self-contained (no directory)
+│   ├── TerminalText.tsx    # Self-contained (no directory)
+│   ├── useKonamiCode.ts    # Route-level hook
+│   └── console-art.ts      # Route-level utility
 ├── projects/
-│   ├── index.tsx           # /projects route
-│   └── -components/        # Used ONLY by projects route
-│       └── ProjectCard.tsx
-└── skills/
-    ├── index.tsx
-    └── -components/
+│   └── index.tsx
+├── skills/
+│   └── index.tsx
+└── link/
+    └── index.tsx
 ```
 
 ## Rules
 
-1. **Route-specific code**: Lives in `-components/`, `-hooks/`, `-lib/` under that route
-2. **Shared code**: Lives in `routes/-shared/`
-3. **Global CSS**: Only in `__root.css`
-4. **No separate CSS files**: Tailwind classes only for components
+1. **Single-consumer code**: Lives next to its consumer, not in shared directories
+2. **Component directories**: Create `ComponentName/ComponentName.tsx` when component has dedicated hooks/utilities/tests
+3. **Self-contained components**: Keep as flat files (no directory) when no colocated files needed
+4. **No barrel files**: Avoid `index.ts` re-exports (adds bundle overhead per Vite docs)
+5. **No preemptive directories**: Don't create empty placeholder directories
+6. **Global CSS**: Only in `__root.css`
 
 ## Naming
 
-- **Directories**: kebab-case with `-` prefix for non-routes
-- **Components**: PascalCase (`ProjectCard.tsx`)
-- **Hooks**: camelCase with `use` prefix (`useKonamiCode.ts`)
+- **Component directories**: PascalCase (`Background/`)
+- **Component files**: PascalCase, same as directory (`Background/Background.tsx`)
+- **Hooks**: camelCase with `use` prefix (`useMousePosition.ts`)
 - **Utilities**: camelCase (`console-art.ts`)
+- **Non-route directories**: `-` prefix (`-_index/`)

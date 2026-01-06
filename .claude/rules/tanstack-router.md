@@ -31,12 +31,15 @@ src/routes/
 
 ```
 src/routes/
-├── -shared/              # Ignored by router
-│   ├── -hooks/
-│   └── -lib/
+├── index.tsx
+├── -_index/              # Colocated with index route, ignored by router
+│   ├── Background/       # Component directory with colocated hooks
+│   │   ├── Background.tsx
+│   │   └── useMousePosition.ts
+│   └── Logo.tsx          # Self-contained component
 ├── projects/
 │   ├── index.tsx
-│   └── -components/      # Project-specific, not a route
+│   └── -components/      # Route-specific, not a route
 ```
 
 **WHY**: TanStack Router auto-generates routes from file structure. Files in `-` prefixed directories are invisible to the router.

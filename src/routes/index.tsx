@@ -3,10 +3,10 @@ import type { FC } from "react";
 import { Link, createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
-import { useKonamiCode } from "./-shared/-hooks/useKonamiCode";
-import { printConsoleArt } from "./-shared/-lib/console-art";
+import { useKonamiCode } from "./-_index/useKonamiCode";
+import { printConsoleArt } from "./-_index/console-art";
 
-import Background from "./-_index/Background";
+import Background from "./-_index/Background/Background";
 import Logo from "./-_index/Logo";
 import TerminalText from "./-_index/TerminalText";
 

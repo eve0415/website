@@ -300,7 +300,7 @@ const SkillsVisualization: FC = () => {
   }, []);
 
   return (
-    <div className="relative h-[400px] rounded-lg border border-border-subtle bg-bg-secondary/30">
+    <div className="relative h-100 rounded-lg border border-border-subtle bg-bg-secondary/30">
       <canvas ref={canvasRef} className="size-full" />
       {/* Legend overlay */}
       <div className="pointer-events-none absolute bottom-4 left-4 flex flex-wrap gap-3">

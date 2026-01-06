@@ -2,8 +2,8 @@ import type { FC } from "react";
 
 import { useEffect, useRef } from "react";
 
-import { useMousePosition } from "../-shared/-hooks/useMousePosition";
-import { useReducedMotion } from "../-shared/-hooks/useReducedMotion";
+import { useMousePosition } from "./useMousePosition";
+import { useReducedMotion } from "./useReducedMotion";
 
 const Background: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
