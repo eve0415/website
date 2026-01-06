@@ -114,8 +114,8 @@ importers:
         specifier: ^7.0.1
         version: 7.0.1(eslint@9.39.2(jiti@2.6.1))
       oxfmt:
-        specifier: ^0.22.0
-        version: 0.22.0
+        specifier: ^0.23.0
+        version: 0.23.0
       oxlint:
         specifier: ^1.37.0
         version: 1.38.0(oxlint-tsgolint@0.10.1)
@@ -1491,43 +1491,43 @@ packages:
   '@oxc-project/types@0.103.0':
     resolution: {integrity: sha512-bkiYX5kaXWwUessFRSoXFkGIQTmc6dLGdxuRTrC+h8PSnIdZyuXHHlLAeTmOue5Br/a0/a7dHH0Gca6eXn9MKg==}
 
-  '@oxfmt/darwin-arm64@0.22.0':
-    resolution: {integrity: sha512-dhz2m2uLrHT3MwM+LAdvr97EojJZTwaZ6BuMTRftJzqa9dHYDG/MtSBuDD2DpGpZ0SM2iVwni2wCzCYGKTojbA==}
+  '@oxfmt/darwin-arm64@0.23.0':
+    resolution: {integrity: sha512-shGng2EjBspvuqtFtcjcKf0WoZ9QCdL8iLYgdOoKSiSQ9pPyLJ4jQf62yhm4b2PpZNVcV/20gV6d8SyKzg6SZQ==}
     cpu: [arm64]
     os: [darwin]
 
-  '@oxfmt/darwin-x64@0.22.0':
-    resolution: {integrity: sha512-VykUbibvqSOG5YIFUMpHtZVrY1YKDl9Il2SvFemUfR5Ac1t1BFZOnazYe98jtZGFY4sEdEORs0ImBARnyMX/hw==}
+  '@oxfmt/darwin-x64@0.23.0':
+    resolution: {integrity: sha512-DxQ7Hm7B+6JiIkiRU3CSJmM15nTJDDezyaAv+x9NN8BfU0C49O8JuZIFu1Lr9AKEPV+ECIYM2X4HU0xm6IdiMQ==}
     cpu: [x64]
     os: [darwin]
 
-  '@oxfmt/linux-arm64-gnu@0.22.0':
-    resolution: {integrity: sha512-y0MBha/K34TztYAZUn6KQE9xLPLNHqRpOdzRp96fhkbrQTeEXo+jF+8+aV8VnqjG0y7p+IQN4ATxNSstSPO9sA==}
+  '@oxfmt/linux-arm64-gnu@0.23.0':
+    resolution: {integrity: sha512-7qTXPpENi45sEKsaYFit4VRywPVkX+ZJc5JVA17KW1coJ/SLUuRAdLjRipU+QTZsr1TF93HCmGFSlUjB7lmEVQ==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxfmt/linux-arm64-musl@0.22.0':
-    resolution: {integrity: sha512-8a0p2UEmavB+moQ7ID17i+dE7N2xng6lPU8vrrNnnwKde0YpGHdW6hmuH4mS+rrltvs0fjyGRSvCnD2Qm9IAcA==}
+  '@oxfmt/linux-arm64-musl@0.23.0':
+    resolution: {integrity: sha512-qkFXbf+K01B++j69o9mLvvyfhmmL4+qX7hGPA2PRDkE5xxuUTWdqboQQc1FgGI0teUlIYYyxjamq9UztL2A7NA==}
     cpu: [arm64]
     os: [linux]
 
-  '@oxfmt/linux-x64-gnu@0.22.0':
-    resolution: {integrity: sha512-ZA1lS6MLvtGfD9AaDylCSTTiOWVQs1eIl9uqsGYs+Zr8p0mI7QRIRA6juWk9FXn1hHfmYBdBgWu2GdIW0YFCFA==}
+  '@oxfmt/linux-x64-gnu@0.23.0':
+    resolution: {integrity: sha512-J7Q13Ujyn8IgjHD96urA377GOy8HerxC13OrEyYaM8iwH3gc/EoboK9AKu0bxp9qai4btPFDhnkRnpCwJE9pAw==}
     cpu: [x64]
     os: [linux]
 
-  '@oxfmt/linux-x64-musl@0.22.0':
-    resolution: {integrity: sha512-J5zFB8T5yk6Jx63rdKuXfcPqR1cAp12nO5/NJfGITH00AML2Yj9JM4dRnmssJomYHKa8dNSr40l6OdxRZN88CQ==}
+  '@oxfmt/linux-x64-musl@0.23.0':
+    resolution: {integrity: sha512-3gb25Zk2/y4An8fi399KdpLkDYFTJEB5Nq/sSHmeXG0pZlR/jnKoXEFHsjU+9nqF2wsuZ+tmkoi/swcaGG8+Qg==}
     cpu: [x64]
     os: [linux]
 
-  '@oxfmt/win32-arm64@0.22.0':
-    resolution: {integrity: sha512-XYxyIiOf3HqlfETLFKqCHYL88mhw+Ka25vDVgmlcghbJv9BPoVzquZW7P4i0T3D5GWp4LHhZHmMo8BuK8PP5BA==}
+  '@oxfmt/win32-arm64@0.23.0':
+    resolution: {integrity: sha512-JKfRP2ENWwRZ73rMZFyChvRi/+oDEW+3obp1XIwecot8gvDHgGZ4nX3hTp4VPiBFL89JORMpWSKzJvjRDucJIw==}
     cpu: [arm64]
     os: [win32]
 
-  '@oxfmt/win32-x64@0.22.0':
-    resolution: {integrity: sha512-/shfU+wwlXcKP2NkZt+kYCSVom2EEu8MwbENlYCak6LtPPrN5xAQhHuOSFByjDzTBApdQugch0j0ZB/4Wyaljg==}
+  '@oxfmt/win32-x64@0.23.0':
+    resolution: {integrity: sha512-vgqtYK1X1n/KexCNQKWXao3hyOnmWuCzk2sQyCSpkLhjSNIDPm7dmnEkvOXhf1t0O5RjCwHpk2VB6Fuaq3GULg==}
     cpu: [x64]
     os: [win32]
 
@@ -3612,8 +3612,8 @@ packages:
     resolution: {integrity: sha512-6IpQ7mKUxRcZNLIObR0hz7lxsapSSIYNZJwXPGeF0mTVqGKFIXj1DQcMoT22S3ROcLyY/rz0PWaWZ9ayWmad9g==}
     engines: {node: '>= 0.8.0'}
 
-  oxfmt@0.22.0:
-    resolution: {integrity: sha512-Z7JM5yv4KaDz5kT21MxRAvtYo5Eu9Ti/XY1JYShSOlaH859XSn4UaS3wlZKyz4Mpbo8ISkxhU75UY5yp+OQUyA==}
+  oxfmt@0.23.0:
+    resolution: {integrity: sha512-dh4rlNBua93aVf2ZaDecbQxVLMnUUTvDi1K1fdvBdontQeEf6K22Z1KQg5QKl2D9aNFeFph+wOVwcjjYUIO6Mw==}
     engines: {node: ^20.19.0 || >=22.12.0}
     hasBin: true
 
@@ -5892,28 +5892,28 @@ snapshots:
 
   '@oxc-project/types@0.103.0': {}
 
-  '@oxfmt/darwin-arm64@0.22.0':
+  '@oxfmt/darwin-arm64@0.23.0':
     optional: true
 
-  '@oxfmt/darwin-x64@0.22.0':
+  '@oxfmt/darwin-x64@0.23.0':
     optional: true
 
-  '@oxfmt/linux-arm64-gnu@0.22.0':
+  '@oxfmt/linux-arm64-gnu@0.23.0':
     optional: true
 
-  '@oxfmt/linux-arm64-musl@0.22.0':
+  '@oxfmt/linux-arm64-musl@0.23.0':
     optional: true
 
-  '@oxfmt/linux-x64-gnu@0.22.0':
+  '@oxfmt/linux-x64-gnu@0.23.0':
     optional: true
 
-  '@oxfmt/linux-x64-musl@0.22.0':
+  '@oxfmt/linux-x64-musl@0.23.0':
     optional: true
 
-  '@oxfmt/win32-arm64@0.22.0':
+  '@oxfmt/win32-arm64@0.23.0':
     optional: true
 
-  '@oxfmt/win32-x64@0.22.0':
+  '@oxfmt/win32-x64@0.23.0':
     optional: true
 
   '@oxlint-tsgolint/darwin-arm64@0.10.1':
@@ -7016,14 +7016,14 @@ snapshots:
   camel-case@4.1.2:
     dependencies:
       pascal-case: 3.1.2
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   caniuse-lite@1.0.30001762: {}
 
   capital-case@1.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
       upper-case-first: 2.0.2
 
   chai@5.3.3:
@@ -7069,7 +7069,7 @@ snapshots:
       path-case: 3.0.4
       sentence-case: 3.0.4
       snake-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   chardet@2.1.1: {}
 
@@ -7158,7 +7158,7 @@ snapshots:
   constant-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
       upper-case: 2.0.2
 
   convert-source-map@2.0.0: {}
@@ -7285,7 +7285,7 @@ snapshots:
   dot-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   dset@3.1.4: {}
 
@@ -7671,7 +7671,7 @@ snapshots:
   header-case@2.0.4:
     dependencies:
       capital-case: 1.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   hermes-estree@0.25.1: {}
 
@@ -7752,7 +7752,7 @@ snapshots:
 
   is-lower-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   is-number@7.0.0: {}
 
@@ -7768,7 +7768,7 @@ snapshots:
 
   is-upper-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   is-windows@1.0.2: {}
 
@@ -7963,11 +7963,11 @@ snapshots:
 
   lower-case-first@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   lower-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   lru-cache@11.2.4: {}
 
@@ -8075,7 +8075,7 @@ snapshots:
   no-case@3.0.4:
     dependencies:
       lower-case: 2.0.2
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   node-domexception@1.0.0: {}
 
@@ -8129,18 +8129,18 @@ snapshots:
       type-check: 0.4.0
       word-wrap: 1.2.5
 
-  oxfmt@0.22.0:
+  oxfmt@0.23.0:
     dependencies:
       tinypool: 2.0.0
     optionalDependencies:
-      '@oxfmt/darwin-arm64': 0.22.0
-      '@oxfmt/darwin-x64': 0.22.0
-      '@oxfmt/linux-arm64-gnu': 0.22.0
-      '@oxfmt/linux-arm64-musl': 0.22.0
-      '@oxfmt/linux-x64-gnu': 0.22.0
-      '@oxfmt/linux-x64-musl': 0.22.0
-      '@oxfmt/win32-arm64': 0.22.0
-      '@oxfmt/win32-x64': 0.22.0
+      '@oxfmt/darwin-arm64': 0.23.0
+      '@oxfmt/darwin-x64': 0.23.0
+      '@oxfmt/linux-arm64-gnu': 0.23.0
+      '@oxfmt/linux-arm64-musl': 0.23.0
+      '@oxfmt/linux-x64-gnu': 0.23.0
+      '@oxfmt/linux-x64-musl': 0.23.0
+      '@oxfmt/win32-arm64': 0.23.0
+      '@oxfmt/win32-x64': 0.23.0
 
   oxlint-tsgolint@0.10.1:
     optionalDependencies:
@@ -8176,7 +8176,7 @@ snapshots:
   param-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   parent-module@1.0.1:
     dependencies:
@@ -8211,12 +8211,12 @@ snapshots:
   pascal-case@3.1.2:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   path-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   path-exists@4.0.0: {}
 
@@ -8409,7 +8409,7 @@ snapshots:
   sentence-case@3.0.4:
     dependencies:
       no-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
       upper-case-first: 2.0.2
 
   seroval-plugins@1.3.3(seroval@1.3.2):
@@ -8486,7 +8486,7 @@ snapshots:
   snake-case@3.0.4:
     dependencies:
       dot-case: 3.0.4
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   solid-js@1.9.10:
     dependencies:
@@ -8502,7 +8502,7 @@ snapshots:
 
   sponge-case@1.0.1:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   sqids@0.3.0: {}
 
@@ -8590,7 +8590,7 @@ snapshots:
 
   swap-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   sync-fetch@0.6.0-2:
     dependencies:
@@ -8627,7 +8627,7 @@ snapshots:
 
   title-case@3.0.3:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   tmcp@1.19.0(typescript@5.9.3):
     dependencies:
@@ -8717,11 +8717,11 @@ snapshots:
 
   upper-case-first@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   upper-case@2.0.2:
     dependencies:
-      tslib: 2.6.3
+      tslib: 2.8.1
 
   uri-js@4.4.1:
     dependencies:
