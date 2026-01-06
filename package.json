@@ -24,7 +24,6 @@
     "@typescript/native-preview": "7.0.0-dev.20260105.1",
     "@vitejs/plugin-react": "^5.1.2",
     "babel-plugin-react-compiler": "^1.0.0",
-    "eslint-plugin-oxlint": "^1.37.0",
     "eslint-plugin-react-hooks": "^7.0.1",
     "oxfmt": "^0.22.0",
     "oxlint": "^1.37.0",
