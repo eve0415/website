@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { useEffect, useRef } from "react";
 
 import { useMousePosition } from "./useMousePosition";
-import { useReducedMotion } from "./useReducedMotion";
+import { useReducedMotion } from "#hooks/useReducedMotion";
 
 const Background: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);

@@ -1,5 +1,12 @@
 {
   "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*",
+      "./src/*.ts",
+      "./src/*.tsx"
+    ]
+  },
   "scripts": {
     "dev": "vite dev --host",
     "build": "vite build",

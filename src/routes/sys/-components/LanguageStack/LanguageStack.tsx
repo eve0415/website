@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { LanguageStat } from "../github-api";
+import type { LanguageStat } from "../../-utils/github-api";
 
 import { useEffect, useRef, useState } from "react";
 

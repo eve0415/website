@@ -3,10 +3,10 @@ import type { FC } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { fetchGitHubStats, getRelativeTimeJapanese } from "../-_sys/github-api";
-import CodeRadar from "../-_sys/CodeRadar/CodeRadar";
-import StatsPanel from "../-_sys/StatsPanel/StatsPanel";
-import LanguageStack from "../-_sys/LanguageStack/LanguageStack";
+import { fetchGitHubStats, getRelativeTimeJapanese } from "./-utils/github-api";
+import CodeRadar from "./-components/CodeRadar/CodeRadar";
+import StatsPanel from "./-components/StatsPanel/StatsPanel";
+import LanguageStack from "./-components/LanguageStack/LanguageStack";
 
 const SysPage: FC = () => {
   const stats = Route.useLoaderData();

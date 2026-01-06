@@ -1,5 +1,5 @@
 import type { FC } from "react";
-import type { GitHubStats } from "../github-api";
+import type { GitHubStats } from "../../-utils/github-api";
 
 import { useDecryptNumber } from "./useDecryptAnimation";
 

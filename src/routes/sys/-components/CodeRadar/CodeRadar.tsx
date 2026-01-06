@@ -1,9 +1,9 @@
 import type { FC } from "react";
-import type { ContributionDay } from "../github-api";
+import type { ContributionDay } from "../../-utils/github-api";
 
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { useReducedMotion } from "../../-_index/Background/useReducedMotion";
+import { useReducedMotion } from "#hooks/useReducedMotion";
 
 // Colors from design system - moved outside component to prevent recreation
 const COLORS = {
