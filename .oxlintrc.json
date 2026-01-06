@@ -15,7 +15,13 @@
     { "name": "react-compiler", "specifier": "eslint-plugin-react-hooks" },
     "@tanstack/eslint-plugin-router"
   ],
-  "ignorePatterns": [".wrangler", "dist", "src/routeTree.gen.ts", "worker-configuration.d.ts"],
+  "ignorePatterns": [
+    ".wrangler",
+    "dist",
+    "worker-configuration.d.ts",
+    "src/routeTree.gen.ts",
+    "src/generated/*"
+  ],
   "settings": {
     "vitest": {
       "typecheck": true

@@ -7,7 +7,7 @@
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "postCreateCommand": "git config --local core.ignorecase false",
-  "postStartCommand": "npm install -g @openai/codex @google/gemini-cli && pnpm install --frozen-lockfile && pnpm playwright install --with-deps",
+  "postStartCommand": "npm install -g @openai/codex @google/gemini-cli && pnpm install --frozen-lockfile && pnpm generate && pnpm playwright install --with-deps",
   "containerEnv": {
     "TZ": "Asia/Tokyo"
   },
@@ -21,7 +21,6 @@
       "extensions": [
         "EditorConfig.EditorConfig",
         "oxc.oxc-vscode",
-        "dbaeumer.vscode-eslint",
         "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "ms-azuretools.vscode-docker",
@@ -33,7 +32,9 @@
         "Anthropic.claude-code",
         "openai.chatgpt",
         "google.gemini-cli-vscode-ide-companion",
-        "TypeScriptTeam.native-preview"
+        "TypeScriptTeam.native-preview",
+        "capaj.graphql-codegen-vscode",
+        "GraphQL.vscode-graphql"
       ],
       "settings": {
         "diffEditor.diffAlgorithm": "advanced",
@@ -68,16 +69,17 @@
         "files.eol": "\n",
         "files.readonlyInclude": {
           "pnpm-lock.yaml": true,
-          "**/worker-configuration.d.ts": true,
-          "**/routeTree.gen.ts": true
+          "worker-configuration.d.ts": true,
+          "src/routeTree.gen.ts": true,
+          "src/generated/*": true
         },
         "files.trimFinalNewlines": true,
         "files.trimTrailingWhitespace": true,
         "files.watcherExclude": {
-          "**/.wrangler": true,
-          "**/worker-configuration.d.ts": true,
-          "**/routeTree.gen.ts": true,
-          "**/dist": true
+          ".wrangler": true,
+          "worker-configuration.d.ts": true,
+          "src/routeTree.gen.ts": true,
+          "dist": true
         },
         "javascript.updateImportsOnPaste.enabled": true,
         "oxc.fixKind": "all",
@@ -85,11 +87,10 @@
         "oxc.unusedDisableDirectives": "deny",
         "search.exclude": {
           "pnpm-lock.yaml": true,
-          "**/.wrangler": true,
-          "**/worker-configuration.d.ts": true,
-          "**/routeTree.gen.ts": true,
-          "**/.tanstack": true,
-          "**/dist": true
+          ".wrangler": true,
+          "worker-configuration.d.ts": true,
+          "src/routeTree.gen.ts": true,
+          "dist": true
         },
         "tailwindCSS.classAttributes": ["className", ".*Styles"],
         "tailwindCSS.experimental.classRegex": [
