@@ -54,6 +54,9 @@ const IndexPage: FC = () => {
         case "3":
           void navigate({ to: "/link" });
           break;
+        case "4":
+          void navigate({ to: "/sys" });
+          break;
       }
     };
 
@@ -122,6 +125,13 @@ const IndexPage: FC = () => {
                 <span className="font-mono">[Link]</span>
                 <span className="absolute -bottom-1 left-0 h-px w-0 bg-accent-primary transition-all duration-normal group-hover:w-full" />
               </Link>
+              <Link
+                to="/sys"
+                className="group relative px-2 py-1 text-text-secondary transition-colors hover:text-accent-primary"
+              >
+                <span className="font-mono">[Sys]</span>
+                <span className="absolute -bottom-1 left-0 h-px w-0 bg-accent-primary transition-all duration-normal group-hover:w-full" />
+              </Link>
             </div>
             <div className="mt-4 flex items-center gap-2 text-text-muted text-xs opacity-50">
               <kbd className="rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px]">
@@ -132,6 +142,9 @@ const IndexPage: FC = () => {
               </kbd>
               <kbd className="rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px]">
                 3
+              </kbd>
+              <kbd className="rounded border border-border-subtle px-1.5 py-0.5 font-mono text-[10px]">
+                4
               </kbd>
               <span className="ml-1">でジャンプ</span>
             </div>
