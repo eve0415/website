@@ -44,7 +44,7 @@ const Logo: FC<Props> = ({ className = '', animate = true }) => {
   });
 
   return (
-    <svg viewBox='0 0 1000 1000' className={`${className} transition-transform duration-slow hover:scale-105`} aria-label='eve0415 ロゴ'>
+    <svg viewBox='0 0 1000 1000' className={`${className} transition-transform duration-slow hover:scale-105`} role='img' aria-label='eve0415 ロゴ'>
       {/* Main diagonal elements */}
       <g className={animate ? 'animate-fade-in-scale' : ''}>
         <path
