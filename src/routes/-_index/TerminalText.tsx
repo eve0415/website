@@ -1,6 +1,6 @@
 import type { FC } from "react";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface Props {
   text: string;
@@ -14,14 +14,16 @@ const TerminalText: FC<Props> = ({ text, delay = 0, speed = 50, className = "", 
   const [displayedText, setDisplayedText] = useState("");
   const [isComplete, setIsComplete] = useState(false);
 
-  useEffect(() => {
-    const delayTimer = setTimeout(() => {
-      let currentIndex = 0;
+  const currentIndexRef = useRef(0);
 
+  useEffect(() => {
+    currentIndexRef.current = 0;
+
+    const delayTimer = setTimeout(() => {
       const typeInterval = setInterval(() => {
-        if (currentIndex < text.length) {
-          setDisplayedText(text.slice(0, currentIndex + 1));
-          currentIndex++;
+        if (currentIndexRef.current < text.length) {
+          setDisplayedText(text.slice(0, currentIndexRef.current + 1));
+          currentIndexRef.current += 1;
         } else {
           clearInterval(typeInterval);
           setIsComplete(true);
