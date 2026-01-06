@@ -41,3 +41,23 @@ pnpm generate     # Generate Cloudflare Worker types
 
 - Node.js 24.12.x (see `.node-version`)
 - pnpm 10.x package manager
+
+## Language Requirements
+
+- **UI Text**: Japanese only (html lang="ja")
+- **Code/Comments**: English only
+- **Variable/Function Names**: English only
+
+This is strictly enforced. User-facing strings must be Japanese. Technical content must be English.
+
+## Rules Philosophy
+
+Rules in `.claude/rules/` focus on:
+- Runtime constraints that cause failures
+- Framework gotchas that cost debugging time
+- Project-specific integration patterns
+
+Rules do NOT cover:
+- Code style (use oxlint/oxfmt)
+- React best practices (use `/rules-of-react` skill)
+- Generic programming guidance
