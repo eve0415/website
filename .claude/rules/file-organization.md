@@ -36,17 +36,40 @@ src/routes/
 │   ├── -components/        # Colocated components
 │   │   ├── CodeRadar/
 │   │   │   └── CodeRadar.tsx
-│   │   └── StatsPanel/
-│   │       ├── StatsPanel.tsx
-│   │       └── useDecryptAnimation.ts
-│   └── -utils/             # Route-level utilities
-│       └── github-api.ts
-├── projects/
-│   └── index.tsx
+│   │   ├── StatsPanel/
+│   │   │   ├── StatsPanel.tsx
+│   │   │   ├── StatRow/
+│   │   │   │   └── StatRow.tsx
+│   │   │   └── useDecryptAnimation.ts
+│   │   └── LanguageStack/
+│   │       ├── LanguageStack.tsx
+│   │       └── LanguageBar/
+│   │           └── LanguageBar.tsx
+│   └── -utils/
+│       └── github-stats.ts
 ├── skills/
-│   └── index.tsx
+│   ├── index.tsx
+│   ├── -components/
+│   │   ├── SkillCard/
+│   │   │   └── SkillCard.tsx
+│   │   └── SkillsVisualization/
+│   │       └── SkillsVisualization.tsx
+│   └── -config/
+│       └── skills-config.ts
+├── projects/
+│   ├── index.tsx
+│   └── -components/
+│       ├── AnimatedCounter/
+│       │   └── AnimatedCounter.tsx
+│       └── ProjectCard/
+│           └── ProjectCard.tsx
 └── link/
-    └── index.tsx
+    ├── index.tsx
+    └── -components/
+        ├── SocialLinkCard/
+        │   └── SocialLinkCard.tsx
+        └── CurrentTime/
+            └── CurrentTime.tsx
 ```
 
 **CRITICAL**: Do NOT create `-_routename/` as a sibling at the `routes/` level. That pattern only applies to the root route because it has no parent directory.
@@ -61,6 +84,23 @@ src/routes/
 - Use single dash `-` prefix for non-route directories
 - Exception: `-index/` kept as legacy (do not rename)
 - Examples: `-components/`, `-utils/`, `-hooks/`
+
+## Component File Rule
+
+Extract all React components to separate files.
+
+**Exception**: Route-bound components (passed to `createFileRoute`, `createRootRoute`, etc.) stay in route files.
+
+**Pattern**: `ComponentName/ComponentName.tsx`
+- Tests: `ComponentName/ComponentName.test.tsx`
+- Stories: `ComponentName/ComponentName.stories.tsx`
+- Hooks: `ComponentName/useHookName.ts` (if single-consumer)
+
+**Interfaces**: Live with the component that defines the visual representation.
+
+**Data/Config**:
+- Single-consumer: stays with consuming component or route
+- Multi-consumer: dedicated `-config/` or `-data/` file at route level
 
 ## Rules
 

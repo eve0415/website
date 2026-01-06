@@ -212,9 +212,6 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
       .request("GET /repos/{owner}/{repo}/languages", {
         owner: GITHUB_USERNAME,
         repo: repo.name,
-        headers: {
-          "X-GitHub-Api-Version": "2022-11-28",
-        },
       })
       .catch(() => ({ data: {} })),
   );

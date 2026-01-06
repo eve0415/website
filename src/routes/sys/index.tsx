@@ -3,7 +3,7 @@ import type { FC } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useState } from "react";
 
-import { getGitHubStats, getRelativeTimeJapanese } from "./-utils/github-api";
+import { getGitHubStats, getRelativeTimeJapanese } from "./-utils/github-stats";
 import CodeRadar from "./-components/CodeRadar/CodeRadar";
 import StatsPanel from "./-components/StatsPanel/StatsPanel";
 import LanguageStack from "./-components/LanguageStack/LanguageStack";

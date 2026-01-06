@@ -1,6 +1,6 @@
 import handler from "@tanstack/react-start/server-entry";
 
-import { refreshGitHubStats } from "./routes/sys/-utils/github-api";
+import { refreshGitHubStats } from "./routes/sys/-utils/github-stats";
 
 export default {
   fetch: (request) => handler.fetch(request),

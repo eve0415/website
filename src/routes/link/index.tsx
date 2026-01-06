@@ -1,15 +1,11 @@
 import type { FC, FormEvent } from "react";
+import type { SocialLink } from "./-components/SocialLinkCard/SocialLinkCard";
 
 import { Link, createFileRoute } from "@tanstack/react-router";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
-interface SocialLink {
-  name: string;
-  url: string;
-  handle: string;
-  icon: string;
-  color: string;
-}
+import CurrentTime from "./-components/CurrentTime/CurrentTime";
+import SocialLinkCard from "./-components/SocialLinkCard/SocialLinkCard";
 
 const socialLinks: SocialLink[] = [
   {
@@ -41,63 +37,6 @@ const socialLinks: SocialLink[] = [
     color: "hover:border-[#5865F2]/50",
   },
 ];
-
-const SocialLinkCard: FC<{ link: SocialLink; index: number }> = ({ link, index }) => {
-  const [isVisible, setIsVisible] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), index * 100);
-    return () => clearTimeout(timer);
-  }, [index]);
-
-  return (
-    <a
-      href={link.url}
-      target={link.url !== "#" ? "_blank" : undefined}
-      rel={link.url !== "#" ? "noopener noreferrer" : undefined}
-      className={`group flex items-center gap-4 rounded-lg border border-border-subtle bg-bg-secondary p-4 transition-all duration-normal ${link.color} hover:shadow-lg ${
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
-      }`}
-    >
-      <span className="flex size-12 items-center justify-center rounded-lg bg-bg-tertiary font-mono text-sm text-text-muted transition-colors group-hover:bg-accent-primary/10 group-hover:text-accent-primary">
-        {link.icon}
-      </span>
-      <div>
-        <span className="block font-medium text-text-primary group-hover:text-accent-primary">
-          {link.name}
-        </span>
-        <span className="font-mono text-sm text-text-muted">{link.handle}</span>
-      </div>
-      <span className="ml-auto text-text-muted transition-transform group-hover:translate-x-1">
-        →
-      </span>
-    </a>
-  );
-};
-
-const CurrentTime: FC = () => {
-  const [time, setTime] = useState<string>("");
-
-  useEffect(() => {
-    const updateTime = () => {
-      const now = new Date();
-      const jstTime = new Intl.DateTimeFormat("ja-JP", {
-        timeZone: "Asia/Tokyo",
-        hour: "2-digit",
-        minute: "2-digit",
-        second: "2-digit",
-        hour12: false,
-      }).format(now);
-      setTime(jstTime);
-    };
-
-    updateTime();
-    const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  return <span className="font-mono text-accent-primary tabular-nums">{time || "--:--:--"}</span>;
-};
 
 const LinkPage: FC = () => {
   const [formState, setFormState] = useState<"idle" | "submitting" | "success" | "error">("idle");

@@ -2,17 +2,9 @@ import type { FC, PropsWithChildren } from "react";
 
 import { TanStackDevtools } from "@tanstack/react-devtools";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { HeadContent, Outlet, Scripts, createRootRoute } from "@tanstack/react-router";
+import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
 
 import rootCss from "./__root.css?url";
-
-function RootComponent() {
-  return (
-    <RootDocument>
-      <Outlet />
-    </RootDocument>
-  );
-}
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -40,7 +32,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
 };
 
 export const Route = createRootRoute({
-  component: RootComponent,
+  shellComponent: ({ children }) => <RootDocument>{children}</RootDocument>,
   head: () => ({
     meta: [
       {
