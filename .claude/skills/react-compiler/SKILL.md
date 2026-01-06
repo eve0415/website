@@ -22,7 +22,11 @@ Same inputs must produce same output.
 const Greeting = ({ name }: Props) => <h1>Hello, {name}</h1>;
 
 // ❌ DON'T: Non-deterministic output
-const Greeting = ({ name }: Props) => <h1>Hello, {name} at {Date.now()}</h1>;
+const Greeting = ({ name }: Props) => (
+  <h1>
+    Hello, {name} at {Date.now()}
+  </h1>
+);
 ```
 
 ### 2. Side Effects Outside Render
@@ -33,14 +37,14 @@ Never run side effects during render.
 // ✅ DO
 const Component = () => {
   useEffect(() => {
-    fetch('/api/data');
+    fetch("/api/data");
   }, []);
   return <div>...</div>;
 };
 
 // ❌ DON'T
 const Component = () => {
-  fetch('/api/data'); // Runs every render!
+  fetch("/api/data"); // Runs every render!
   return <div>...</div>;
 };
 ```
@@ -67,7 +71,7 @@ Never call hooks conditionally or in loops.
 // ✅ DO
 const Component = () => {
   const [count, setCount] = useState(0);
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
   if (count > 0) return <div>{name}</div>;
   return null;
 };
@@ -103,10 +107,10 @@ Always use JSX syntax.
 
 ```tsx
 // ✅ DO
-<MyComponent prop={value} />
+<MyComponent prop={value} />;
 
 // ❌ DON'T
-MyComponent({ prop: value })
+MyComponent({ prop: value });
 ```
 
 ### 7. Don't Mutate After JSX Creation
