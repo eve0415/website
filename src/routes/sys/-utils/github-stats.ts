@@ -1,20 +1,16 @@
-import { createServerFn } from "@tanstack/react-start";
-import { Octokit } from "@octokit/core";
-import { throttling } from "@octokit/plugin-throttling";
-import { retry } from "@octokit/plugin-retry";
-import { env } from "cloudflare:workers";
+import type { ContributionLevel, GetGitHubStatsQuery, GetGitHubStatsQueryVariables } from '#generated/github-graphql';
 
-import type {
-  ContributionLevel,
-  GetGitHubStatsQuery,
-  GetGitHubStatsQueryVariables,
-} from "#generated/github-graphql";
+import { Octokit } from '@octokit/core';
+import { retry } from '@octokit/plugin-retry';
+import { throttling } from '@octokit/plugin-throttling';
+import { createServerFn } from '@tanstack/react-start';
+import { env } from 'cloudflare:workers';
 
 // Cache key for KV storage
-const CACHE_KEY = "github_stats_eve0415";
+const CACHE_KEY = 'github_stats_eve0415';
 
 // GitHub username
-const GITHUB_USERNAME = "eve0415";
+const GITHUB_USERNAME = 'eve0415';
 
 // Create Octokit with plugins
 const MyOctokit = Octokit.plugin(throttling, retry);
@@ -72,7 +68,7 @@ const FALLBACK_STATS: GitHubStats = {
     contributionCalendar: [],
   },
   languages: [],
-  cachedAt: "未取得",
+  cachedAt: '未取得',
 };
 
 // GraphQL query string
@@ -130,7 +126,7 @@ const GET_GITHUB_STATS_QUERY = /* GraphQL */ `
 // Route handler: Read-only from KV
 export const getGitHubStats = createServerFn().handler(async (): Promise<GitHubStats> => {
   const kv = env.GITHUB_STATS_CACHE;
-  const cached = await kv.get<GitHubStats>(CACHE_KEY, "json");
+  const cached = await kv.get<GitHubStats>(CACHE_KEY, 'json');
   return cached ?? FALLBACK_STATS;
 });
 
@@ -143,26 +139,17 @@ export async function refreshGitHubStats(workerEnv: Env): Promise<void> {
   const octokit = new MyOctokit({
     auth: pat,
     throttle: {
-      onRateLimit: (
-        retryAfter: number,
-        options: { method: string; url: string },
-        _octokit: Octokit,
-        retryCount: number,
-      ) => {
-        console.warn(
-          `Rate limit hit for ${options.method} ${options.url}. Retry ${retryCount + 1} after ${retryAfter}s`,
-        );
+      onRateLimit: (retryAfter: number, options: { method: string; url: string }, _octokit: Octokit, retryCount: number) => {
+        console.warn(`Rate limit hit for ${options.method} ${options.url}. Retry ${retryCount + 1} after ${retryAfter}s`);
         return retryCount < 3;
       },
       onSecondaryRateLimit: (retryAfter: number, options: { method: string; url: string }) => {
-        console.warn(
-          `Secondary rate limit hit for ${options.method} ${options.url}. Waiting ${retryAfter}s`,
-        );
+        console.warn(`Secondary rate limit hit for ${options.method} ${options.url}. Waiting ${retryAfter}s`);
         return true;
       },
     },
     retry: {
-      doNotRetry: ["429"],
+      doNotRetry: ['429'],
     },
   });
 
@@ -180,10 +167,7 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
   let graphqlData: GetGitHubStatsQuery | null = null;
 
   do {
-    const response: GetGitHubStatsQuery = await octokit.graphql<GetGitHubStatsQuery>(
-      GET_GITHUB_STATS_QUERY,
-      { cursor } satisfies GetGitHubStatsQueryVariables,
-    );
+    const response: GetGitHubStatsQuery = await octokit.graphql<GetGitHubStatsQuery>(GET_GITHUB_STATS_QUERY, { cursor } satisfies GetGitHubStatsQueryVariables);
 
     if (!graphqlData) {
       graphqlData = response;
@@ -196,20 +180,18 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
       }
     }
 
-    cursor = response.viewer.repositories.pageInfo.hasNextPage
-      ? (response.viewer.repositories.pageInfo.endCursor ?? null)
-      : null;
+    cursor = response.viewer.repositories.pageInfo.hasNextPage ? (response.viewer.repositories.pageInfo.endCursor ?? null) : null;
   } while (cursor);
 
   if (!graphqlData) {
-    throw new Error("Failed to fetch GitHub stats");
+    throw new Error('Failed to fetch GitHub stats');
   }
 
   // Fetch language data for non-fork repos via REST (parallel)
-  const nonForkRepos = allRepos.filter((repo) => !repo.isFork);
-  const languagePromises = nonForkRepos.map((repo) =>
+  const nonForkRepos = allRepos.filter(repo => !repo.isFork);
+  const languagePromises = nonForkRepos.map(repo =>
     octokit
-      .request("GET /repos/{owner}/{repo}/languages", {
+      .request('GET /repos/{owner}/{repo}/languages', {
         owner: GITHUB_USERNAME,
         repo: repo.name,
       })
@@ -241,14 +223,13 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
       : [];
 
   // Process contribution calendar
-  const contributionDays =
-    graphqlData.viewer.contributionsCollection.contributionCalendar.weeks.flatMap((week) =>
-      week.contributionDays.map((day) => ({
-        date: day.date,
-        count: day.contributionCount,
-        level: levelFromContributionLevel(day.contributionLevel),
-      })),
-    );
+  const contributionDays = graphqlData.viewer.contributionsCollection.contributionCalendar.weeks.flatMap(week =>
+    week.contributionDays.map(day => ({
+      date: day.date,
+      count: day.contributionCount,
+      level: levelFromContributionLevel(day.contributionLevel),
+    })),
+  );
 
   // Calculate streaks using JST
   const { currentStreak, longestStreak } = calculateStreaksJST(contributionDays);
@@ -258,8 +239,7 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
       login: graphqlData.viewer.login,
       publicRepos: graphqlData.viewer.publicRepos.totalCount,
       privateRepos: graphqlData.viewer.privateRepos.totalCount,
-      totalRepos:
-        graphqlData.viewer.publicRepos.totalCount + graphqlData.viewer.privateRepos.totalCount,
+      totalRepos: graphqlData.viewer.publicRepos.totalCount + graphqlData.viewer.privateRepos.totalCount,
       followers: graphqlData.viewer.followers.totalCount,
       following: graphqlData.viewer.following.totalCount,
     },
@@ -278,15 +258,15 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
 
 function levelFromContributionLevel(level: ContributionLevel): 0 | 1 | 2 | 3 | 4 {
   switch (level) {
-    case "NONE":
+    case 'NONE':
       return 0;
-    case "FIRST_QUARTILE":
+    case 'FIRST_QUARTILE':
       return 1;
-    case "SECOND_QUARTILE":
+    case 'SECOND_QUARTILE':
       return 2;
-    case "THIRD_QUARTILE":
+    case 'THIRD_QUARTILE':
       return 3;
-    case "FOURTH_QUARTILE":
+    case 'FOURTH_QUARTILE':
       return 4;
     default:
       return 0;
@@ -305,9 +285,8 @@ function calculateStreaksJST(days: Array<{ date: string; count: number }>): {
   const now = new Date();
   const jstOffset = 9 * 60 * 60 * 1000;
   const nowJST = new Date(now.getTime() + jstOffset);
-  const todayJST = nowJST.toISOString().split("T")[0] ?? "";
-  const yesterdayJST =
-    new Date(nowJST.getTime() - 24 * 60 * 60 * 1000).toISOString().split("T")[0] ?? "";
+  const todayJST = nowJST.toISOString().split('T')[0] ?? '';
+  const yesterdayJST = new Date(nowJST.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0] ?? '';
 
   // Sort by date ascending
   const sortedDays = [...days].sort((a, b) => a.date.localeCompare(b.date));
@@ -372,7 +351,7 @@ function calculateStreaksJST(days: Array<{ date: string; count: number }>): {
       // Continue checking streak backwards
       const expected = new Date(expectedDate);
       expected.setDate(expected.getDate() - 1);
-      const expectedStr = expected.toISOString().split("T")[0] ?? "";
+      const expectedStr = expected.toISOString().split('T')[0] ?? '';
 
       if (day.date === expectedStr) {
         if (day.count > 0) {
@@ -393,36 +372,36 @@ function calculateStreaksJST(days: Array<{ date: string; count: number }>): {
 
 function getLanguageColor(language: string): string {
   const colors: Record<string, string> = {
-    TypeScript: "#3178c6",
-    JavaScript: "#f1e05a",
-    Python: "#3572A5",
-    Rust: "#dea584",
-    Go: "#00ADD8",
-    Java: "#b07219",
-    "C++": "#f34b7d",
-    C: "#555555",
-    Ruby: "#701516",
-    PHP: "#4F5D95",
-    Swift: "#F05138",
-    Kotlin: "#A97BFF",
-    Dart: "#00B4AB",
-    Shell: "#89e051",
-    HTML: "#e34c26",
-    CSS: "#563d7c",
-    Vue: "#41b883",
-    Svelte: "#ff3e00",
-    SCSS: "#c6538c",
-    Lua: "#000080",
-    Zig: "#ec915c",
-    Nix: "#7e7eff",
+    TypeScript: '#3178c6',
+    JavaScript: '#f1e05a',
+    Python: '#3572A5',
+    Rust: '#dea584',
+    Go: '#00ADD8',
+    Java: '#b07219',
+    'C++': '#f34b7d',
+    C: '#555555',
+    Ruby: '#701516',
+    PHP: '#4F5D95',
+    Swift: '#F05138',
+    Kotlin: '#A97BFF',
+    Dart: '#00B4AB',
+    Shell: '#89e051',
+    HTML: '#e34c26',
+    CSS: '#563d7c',
+    Vue: '#41b883',
+    Svelte: '#ff3e00',
+    SCSS: '#c6538c',
+    Lua: '#000080',
+    Zig: '#ec915c',
+    Nix: '#7e7eff',
   };
 
-  return colors[language] ?? "#8b949e";
+  return colors[language] ?? '#8b949e';
 }
 
 // Get relative time string in Japanese
 export function getRelativeTimeJapanese(isoDate: string): string {
-  if (isoDate === "未取得") {
+  if (isoDate === '未取得') {
     return isoDate;
   }
 
@@ -433,10 +412,10 @@ export function getRelativeTimeJapanese(isoDate: string): string {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
 
-  if (diffMinutes < 1) return "たった今";
+  if (diffMinutes < 1) return 'たった今';
   if (diffMinutes < 60) return `${diffMinutes}分前`;
   if (diffHours < 24) return `${diffHours}時間前`;
   if (diffDays < 7) return `${diffDays}日前`;
 
-  return date.toLocaleDateString("ja-JP");
+  return date.toLocaleDateString('ja-JP');
 }

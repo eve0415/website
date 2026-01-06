@@ -1,5 +1,5 @@
 ---
-paths: "**/*.tsx"
+paths: '**/*.tsx'
 ---
 
 # React Component Syntax
@@ -11,7 +11,7 @@ This rule covers syntax patterns NOT enforced by oxlint or the `/rules-of-react`
 **DO**: Use FC type with arrow functions
 
 ```tsx
-import type { FC } from "react";
+import type { FC } from 'react';
 
 const MyComponent: FC = () => {
   return <div />;

@@ -1,6 +1,6 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 interface Props {
   text: string;
@@ -10,8 +10,8 @@ interface Props {
   onComplete?: () => void;
 }
 
-const TerminalText: FC<Props> = ({ text, delay = 0, speed = 50, className = "", onComplete }) => {
-  const [displayedText, setDisplayedText] = useState("");
+const TerminalText: FC<Props> = ({ text, delay = 0, speed = 50, className = '', onComplete }) => {
+  const [displayedText, setDisplayedText] = useState('');
   const [isComplete, setIsComplete] = useState(false);
 
   const currentIndexRef = useRef(0);
@@ -40,9 +40,7 @@ const TerminalText: FC<Props> = ({ text, delay = 0, speed = 50, className = "", 
   return (
     <span className={`inline-block ${className}`}>
       {displayedText}
-      {!isComplete && (
-        <span className="ml-0.5 inline-block h-[1em] w-[0.5em] animate-blink bg-accent-primary" />
-      )}
+      {!isComplete && <span className='ml-0.5 inline-block h-[1em] w-[0.5em] animate-blink bg-accent-primary' />}
     </span>
   );
 };

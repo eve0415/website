@@ -13,12 +13,7 @@ query GetGitHubStats($cursor: String) {
     following {
       totalCount
     }
-    repositories(
-      first: 100
-      ownerAffiliations: OWNER
-      orderBy: { field: PUSHED_AT, direction: DESC }
-      after: $cursor
-    ) {
+    repositories(first: 100, ownerAffiliations: OWNER, orderBy: { field: PUSHED_AT, direction: DESC }, after: $cursor) {
       totalCount
       pageInfo {
         hasNextPage

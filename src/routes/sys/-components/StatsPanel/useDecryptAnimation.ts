@@ -1,6 +1,6 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-const CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*";
+const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
 
 interface UseDecryptAnimationOptions {
   duration?: number;
@@ -8,17 +8,12 @@ interface UseDecryptAnimationOptions {
   enabled?: boolean;
 }
 
-export function useDecryptAnimation(
-  finalValue: string | number,
-  options: UseDecryptAnimationOptions = {},
-): string {
+export function useDecryptAnimation(finalValue: string | number, options: UseDecryptAnimationOptions = {}): string {
   const { duration = 1500, delay = 0, enabled = true } = options;
   const finalStr = String(finalValue);
 
   // Initialize with final value if not enabled, otherwise show encrypted
-  const [displayValue, setDisplayValue] = useState<string>(() =>
-    enabled ? "[ENCRYPTED]" : finalStr,
-  );
+  const [displayValue, setDisplayValue] = useState<string>(() => (enabled ? '[ENCRYPTED]' : finalStr));
   const hasAnimatedRef = useRef(false);
 
   useEffect(() => {
@@ -39,7 +34,7 @@ export function useDecryptAnimation(
         // Characters "lock in" from left to right
         const lockedChars = Math.floor(progress * totalLength);
 
-        let result = "";
+        let result = '';
         for (let i = 0; i < totalLength; i++) {
           if (i < lockedChars) {
             // This character is "decrypted"

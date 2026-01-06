@@ -37,14 +37,14 @@ Never run side effects during render.
 // ✅ DO
 const Component = () => {
   useEffect(() => {
-    fetch("/api/data");
+    fetch('/api/data');
   }, []);
   return <div>...</div>;
 };
 
 // ❌ DON'T
 const Component = () => {
-  fetch("/api/data"); // Runs every render!
+  fetch('/api/data'); // Runs every render!
   return <div>...</div>;
 };
 ```
@@ -71,7 +71,7 @@ Never call hooks conditionally or in loops.
 // ✅ DO
 const Component = () => {
   const [count, setCount] = useState(0);
-  const [name, setName] = useState("");
+  const [name, setName] = useState('');
   if (count > 0) return <div>{name}</div>;
   return null;
 };
@@ -141,7 +141,7 @@ If something breaks with React Compiler:
 1. Add `"use no memo"` directive to isolate the issue:
    ```tsx
    function ProblematicComponent() {
-     "use no memo";
+     'use no memo';
      // Component code
    }
    ```

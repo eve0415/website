@@ -1,17 +1,6 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from 'react';
 
-const KONAMI_CODE = [
-  "ArrowUp",
-  "ArrowUp",
-  "ArrowDown",
-  "ArrowDown",
-  "ArrowLeft",
-  "ArrowRight",
-  "ArrowLeft",
-  "ArrowRight",
-  "KeyB",
-  "KeyA",
-];
+const KONAMI_CODE = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'KeyB', 'KeyA'];
 
 export const useKonamiCode = (onActivate?: () => void): boolean => {
   const [isActivated, setIsActivated] = useState(false);
@@ -25,10 +14,7 @@ export const useKonamiCode = (onActivate?: () => void): boolean => {
       const newSequence = [...inputSequence, key].slice(-KONAMI_CODE.length);
       setInputSequence(newSequence);
 
-      if (
-        newSequence.length === KONAMI_CODE.length &&
-        newSequence.every((k, i) => k === KONAMI_CODE[i])
-      ) {
+      if (newSequence.length === KONAMI_CODE.length && newSequence.every((k, i) => k === KONAMI_CODE[i])) {
         setIsActivated(true);
         onActivate?.();
       }
@@ -37,8 +23,8 @@ export const useKonamiCode = (onActivate?: () => void): boolean => {
   );
 
   useEffect(() => {
-    window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, [handleKeyDown]);
 
   return isActivated;

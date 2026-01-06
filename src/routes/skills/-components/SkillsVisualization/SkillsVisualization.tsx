@@ -1,8 +1,8 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
-import { levelConfig, skills } from "../../-config/skills-config";
+import { levelConfig, skills } from '../../-config/skills-config';
 
 const SkillsVisualization: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -11,7 +11,7 @@ const SkillsVisualization: FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     const resize = () => {
@@ -20,15 +20,14 @@ const SkillsVisualization: FC = () => {
       ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
     };
     resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener('resize', resize);
 
     // Create nodes for each skill
     const nodes = skills.map((skill, i) => {
       const angle = (i / skills.length) * Math.PI * 2;
       const radiusBase = Math.min(canvas.offsetWidth, canvas.offsetHeight) * 0.35;
-      const categoryOffset =
-        skill.category === "language" ? 0 : skill.category === "infrastructure" ? 0.1 : 0.2;
-      const levelOffset = skill.level === "expert" ? 0 : skill.level === "proficient" ? 0.15 : 0.3;
+      const categoryOffset = skill.category === 'language' ? 0 : skill.category === 'infrastructure' ? 0.1 : 0.2;
+      const levelOffset = skill.level === 'expert' ? 0 : skill.level === 'proficient' ? 0.15 : 0.3;
       const radius = radiusBase * (0.8 + categoryOffset - levelOffset);
 
       return {
@@ -52,7 +51,7 @@ const SkillsVisualization: FC = () => {
       time += 0.01;
 
       // Draw connections between same-category skills
-      ctx.strokeStyle = "rgba(64, 64, 64, 0.2)";
+      ctx.strokeStyle = 'rgba(64, 64, 64, 0.2)';
       ctx.lineWidth = 1;
 
       for (let i = 0; i < nodes.length; i++) {
@@ -80,25 +79,24 @@ const SkillsVisualization: FC = () => {
         const floatY = Math.cos(time + node.y * 0.01) * 2;
 
         const config = levelConfig[node.skill.level];
-        const baseRadius =
-          node.skill.level === "expert" ? 8 : node.skill.level === "proficient" ? 6 : 4;
+        const baseRadius = node.skill.level === 'expert' ? 8 : node.skill.level === 'proficient' ? 6 : 4;
 
         // Node
         const colors: Record<string, string> = {
-          "accent-primary": "#00ff88",
-          "accent-secondary": "#00d4ff",
-          "accent-tertiary": "#ff6b35",
+          'accent-primary': '#00ff88',
+          'accent-secondary': '#00d4ff',
+          'accent-tertiary': '#ff6b35',
         };
-        ctx.fillStyle = colors[config.color] || "#00ff88";
+        ctx.fillStyle = colors[config.color] || '#00ff88';
         ctx.beginPath();
         ctx.arc(node.x + floatX, node.y + floatY, baseRadius, 0, Math.PI * 2);
         ctx.fill();
 
         // Label for expert skills
-        if (node.skill.level === "expert") {
-          ctx.fillStyle = "rgba(255, 255, 255, 0.5)";
-          ctx.font = "10px JetBrains Mono, monospace";
-          ctx.textAlign = "center";
+        if (node.skill.level === 'expert') {
+          ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+          ctx.font = '10px JetBrains Mono, monospace';
+          ctx.textAlign = 'center';
           ctx.fillText(node.skill.name, node.x + floatX, node.y + floatY + 18);
         }
       }
@@ -109,24 +107,24 @@ const SkillsVisualization: FC = () => {
     draw();
 
     return () => {
-      window.removeEventListener("resize", resize);
+      window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationId);
     };
   }, []);
 
   return (
-    <div className="relative h-100 rounded-lg border border-border-subtle bg-bg-secondary/30">
-      <canvas ref={canvasRef} className="size-full" />
+    <div className='relative h-100 rounded-lg border border-border-subtle bg-bg-secondary/30'>
+      <canvas ref={canvasRef} className='size-full' />
       {/* Legend overlay */}
-      <div className="pointer-events-none absolute bottom-4 left-4 flex flex-wrap gap-3">
+      <div className='pointer-events-none absolute bottom-4 left-4 flex flex-wrap gap-3'>
         {Object.entries(levelConfig).map(([level, config]) => {
           const colors: Record<string, string> = {
-            "accent-primary": "bg-accent-primary",
-            "accent-secondary": "bg-accent-secondary",
-            "accent-tertiary": "bg-accent-tertiary",
+            'accent-primary': 'bg-accent-primary',
+            'accent-secondary': 'bg-accent-secondary',
+            'accent-tertiary': 'bg-accent-tertiary',
           };
           return (
-            <span key={level} className="flex items-center gap-1.5 text-text-muted text-xs">
+            <span key={level} className='flex items-center gap-1.5 text-text-muted text-xs'>
               <span className={`size-2 rounded-full ${colors[config.color]}`} />
               <span>{config.label}</span>
             </span>

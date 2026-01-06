@@ -1,18 +1,18 @@
-import type { FC, PropsWithChildren } from "react";
+import type { FC, PropsWithChildren } from 'react';
 
-import { TanStackDevtools } from "@tanstack/react-devtools";
-import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
-import { HeadContent, Scripts, createRootRoute } from "@tanstack/react-router";
+import { TanStackDevtools } from '@tanstack/react-devtools';
+import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
+import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
-import rootCss from "./__root.css?url";
+import rootCss from './__root.css?url';
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   return (
-    <html lang="ja">
+    <html lang='ja'>
       <head>
         <HeadContent />
       </head>
-      <body className="min-h-dvh bg-bg-primary text-text-primary">
+      <body className='min-h-dvh bg-bg-primary text-text-primary'>
         <main>{children}</main>
 
         <Scripts />
@@ -20,7 +20,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
         <TanStackDevtools
           plugins={[
             {
-              name: "TanStack Router",
+              name: 'TanStack Router',
               render: <TanStackRouterDevtoolsPanel />,
             },
           ]}
@@ -35,52 +35,52 @@ export const Route = createRootRoute({
   head: () => ({
     meta: [
       {
-        charSet: "utf-8",
+        charSet: 'utf-8',
       },
       {
-        name: "viewport",
-        content: "width=device-width, initial-scale=1",
+        name: 'viewport',
+        content: 'width=device-width, initial-scale=1',
       },
       {
-        title: "eve0415",
+        title: 'eve0415',
       },
       {
-        name: "description",
-        content: "eve0415 - エンジニア",
+        name: 'description',
+        content: 'eve0415 - エンジニア',
       },
       {
-        name: "theme-color",
-        content: "#0a0a0a",
+        name: 'theme-color',
+        content: '#0a0a0a',
       },
       {
-        property: "og:title",
-        content: "eve0415",
+        property: 'og:title',
+        content: 'eve0415',
       },
       {
-        property: "og:description",
-        content: "eve0415 - エンジニア",
+        property: 'og:description',
+        content: 'eve0415 - エンジニア',
       },
       {
-        property: "og:type",
-        content: "website",
+        property: 'og:type',
+        content: 'website',
       },
       {
-        property: "og:url",
-        content: "https://eve0415.net",
+        property: 'og:url',
+        content: 'https://eve0415.net',
       },
       {
-        name: "twitter:card",
-        content: "summary_large_image",
+        name: 'twitter:card',
+        content: 'summary_large_image',
       },
       {
-        name: "twitter:site",
-        content: "@eveevekun",
+        name: 'twitter:site',
+        content: '@eveevekun',
       },
     ],
     links: [
-      { rel: "stylesheet", href: rootCss },
-      { rel: "icon", type: "image/svg+xml", href: "/favicon.svg" },
-      { rel: "canonical", href: "https://eve0415.net" },
+      { rel: 'stylesheet', href: rootCss },
+      { rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' },
+      { rel: 'canonical', href: 'https://eve0415.net' },
     ],
   }),
 });

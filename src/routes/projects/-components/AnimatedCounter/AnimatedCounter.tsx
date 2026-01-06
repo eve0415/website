@@ -1,6 +1,6 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 interface AnimatedCounterProps {
   end: number;
@@ -8,7 +8,7 @@ interface AnimatedCounterProps {
   suffix?: string;
 }
 
-const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffix = "" }) => {
+const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffix = '' }) => {
   const [count, setCount] = useState(0);
   const [hasAnimated, setHasAnimated] = useState(false);
 
@@ -16,7 +16,7 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
     if (hasAnimated) return;
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         if (entries[0]?.isIntersecting) {
           setHasAnimated(true);
           const startTime = Date.now();
@@ -43,7 +43,7 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
   }, [end, duration, hasAnimated]);
 
   return (
-    <span data-counter={end} className="font-mono text-3xl text-accent-primary">
+    <span data-counter={end} className='font-mono text-3xl text-accent-primary'>
       {count}
       {suffix}
     </span>

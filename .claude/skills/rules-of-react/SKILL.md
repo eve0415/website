@@ -74,14 +74,14 @@ Only mutate values created within the same render.
 // Bad: Mutating external array
 const items = [];
 function FriendList({ friends }) {
-  friends.forEach((f) => items.push(<Friend key={f.id} friend={f} />));
+  friends.forEach(f => items.push(<Friend key={f.id} friend={f} />));
   return <section>{items}</section>;
 }
 
 // Good: Create local array
 function FriendList({ friends }) {
   const items = [];
-  friends.forEach((f) => items.push(<Friend key={f.id} friend={f} />));
+  friends.forEach(f => items.push(<Friend key={f.id} friend={f} />));
   return <section>{items}</section>;
 }
 ```
@@ -147,9 +147,9 @@ Don't mutate values after using them in JSX.
 ```tsx
 // Bad: Mutating after JSX
 function Page({ color }) {
-  const styles = { color, size: "large" };
+  const styles = { color, size: 'large' };
   const header = <Header styles={styles} />;
-  styles.size = "small"; // Already used in JSX!
+  styles.size = 'small'; // Already used in JSX!
   const footer = <Footer styles={styles} />;
   return (
     <>
@@ -162,8 +162,8 @@ function Page({ color }) {
 
 // Good: Create separate values
 function Page({ color }) {
-  const headerStyles = { color, size: "large" };
-  const footerStyles = { color, size: "small" };
+  const headerStyles = { color, size: 'large' };
+  const footerStyles = { color, size: 'small' };
   return (
     <>
       <Header styles={headerStyles} />
@@ -306,7 +306,7 @@ Hooks can only be called from:
 // Good: In function component
 function Counter() {
   const [count, setCount] = useState(0);
-  return <button onClick={() => setCount((c) => c + 1)}>{count}</button>;
+  return <button onClick={() => setCount(c => c + 1)}>{count}</button>;
 }
 
 // Good: In custom hook
@@ -315,8 +315,8 @@ function useWindowWidth() {
 
   useEffect(() => {
     const handler = () => setWidth(window.innerWidth);
-    window.addEventListener("resize", handler);
-    return () => window.removeEventListener("resize", handler);
+    window.addEventListener('resize', handler);
+    return () => window.removeEventListener('resize', handler);
   }, []);
 
   return width;
@@ -324,7 +324,7 @@ function useWindowWidth() {
 
 // Bad: In regular function
 function getOnlineStatus() {
-  const [status] = useState("online"); // Not a component or hook!
+  const [status] = useState('online'); // Not a component or hook!
   return status;
 }
 ```
@@ -359,12 +359,12 @@ Use stable, unique identifiers for list keys.
 
 // Bad: Generating random keys
 {
-  items.map((item) => <Item key={Math.random()} data={item} />);
+  items.map(item => <Item key={Math.random()} data={item} />);
 }
 
 // Good: Using stable ID from data
 {
-  items.map((item) => <Item key={item.id} data={item} />);
+  items.map(item => <Item key={item.id} data={item} />);
 }
 ```
 
@@ -386,9 +386,9 @@ function handleClick() {
 
 // Good: Use updater function for sequential updates
 function handleClick() {
-  setCount((c) => c + 1);
-  setCount((c) => c + 1);
-  setCount((c) => c + 1);
+  setCount(c => c + 1);
+  setCount(c => c + 1);
+  setCount(c => c + 1);
   // Result: count increases by 3
 }
 ```
@@ -402,22 +402,22 @@ Don't store values that can be calculated from existing state or props.
 ```tsx
 // Bad: Redundant fullName state
 function Form() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
 
   function handleFirstNameChange(e) {
     setFirstName(e.target.value);
-    setFullName(e.target.value + " " + lastName); // Easy to forget!
+    setFullName(e.target.value + ' ' + lastName); // Easy to forget!
   }
 }
 
 // Good: Calculate during render
 function Form() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
-  const fullName = firstName + " " + lastName; // Always in sync
+  const fullName = firstName + ' ' + lastName; // Always in sync
 
   function handleFirstNameChange(e) {
     setFirstName(e.target.value);
@@ -432,21 +432,21 @@ Effects are for synchronizing with external systems, not for transforming data o
 ```tsx
 // Bad: Using Effect for derived data
 function Form() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
-  const [fullName, setFullName] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
 
   useEffect(() => {
-    setFullName(firstName + " " + lastName);
+    setFullName(firstName + ' ' + lastName);
   }, [firstName, lastName]);
 }
 
 // Good: Calculate during render
 function Form() {
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
-  const fullName = firstName + " " + lastName;
+  const fullName = firstName + ' ' + lastName;
 }
 
 // Bad: Using Effect for event handling

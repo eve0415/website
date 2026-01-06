@@ -1,9 +1,10 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from 'react';
 
-import { useMousePosition } from "./useMousePosition";
-import { useReducedMotion } from "#hooks/useReducedMotion";
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
+import { useMousePosition } from './useMousePosition';
 
 const Background: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -14,7 +15,7 @@ const Background: FC = () => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     // Set canvas size
@@ -23,7 +24,7 @@ const Background: FC = () => {
       canvas.height = window.innerHeight;
     };
     resize();
-    window.addEventListener("resize", resize);
+    window.addEventListener('resize', resize);
 
     // Grid settings
     const gridSize = 50;
@@ -37,7 +38,7 @@ const Background: FC = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
       // Draw subtle grid dots
-      ctx.fillStyle = "rgba(64, 64, 64, 0.3)";
+      ctx.fillStyle = 'rgba(64, 64, 64, 0.3)';
 
       for (let x = 0; x < canvas.width; x += gridSize) {
         for (let y = 0; y < canvas.height; y += gridSize) {
@@ -71,18 +72,12 @@ const Background: FC = () => {
     draw();
 
     return () => {
-      window.removeEventListener("resize", resize);
+      window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationId);
     };
   }, [mousePosition.x, mousePosition.y, reducedMotion]);
 
-  return (
-    <canvas
-      ref={canvasRef}
-      className="pointer-events-none fixed inset-0 -z-10"
-      aria-hidden="true"
-    />
-  );
+  return <canvas ref={canvasRef} className='pointer-events-none fixed inset-0 -z-10' aria-hidden='true' />;
 };
 
 export default Background;

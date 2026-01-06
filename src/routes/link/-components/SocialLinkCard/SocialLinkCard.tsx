@@ -1,6 +1,6 @@
-import type { FC } from "react";
+import type { FC } from 'react';
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react';
 
 export interface SocialLink {
   name: string;
@@ -26,24 +26,20 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
   return (
     <a
       href={link.url}
-      target={link.url !== "#" ? "_blank" : undefined}
-      rel={link.url !== "#" ? "noopener noreferrer" : undefined}
+      target={link.url !== '#' ? '_blank' : undefined}
+      rel={link.url !== '#' ? 'noopener noreferrer' : undefined}
       className={`group flex items-center gap-4 rounded-lg border border-border-subtle bg-bg-secondary p-4 transition-all duration-normal ${link.color} hover:shadow-lg ${
-        isVisible ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"
+        isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
     >
-      <span className="flex size-12 items-center justify-center rounded-lg bg-bg-tertiary font-mono text-sm text-text-muted transition-colors group-hover:bg-accent-primary/10 group-hover:text-accent-primary">
+      <span className='flex size-12 items-center justify-center rounded-lg bg-bg-tertiary font-mono text-sm text-text-muted transition-colors group-hover:bg-accent-primary/10 group-hover:text-accent-primary'>
         {link.icon}
       </span>
       <div>
-        <span className="block font-medium text-text-primary group-hover:text-accent-primary">
-          {link.name}
-        </span>
-        <span className="font-mono text-sm text-text-muted">{link.handle}</span>
+        <span className='block font-medium text-text-primary group-hover:text-accent-primary'>{link.name}</span>
+        <span className='font-mono text-sm text-text-muted'>{link.handle}</span>
       </div>
-      <span className="ml-auto text-text-muted transition-transform group-hover:translate-x-1">
-        →
-      </span>
+      <span className='ml-auto text-text-muted transition-transform group-hover:translate-x-1'>→</span>
     </a>
   );
 };

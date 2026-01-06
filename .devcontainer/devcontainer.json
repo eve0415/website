@@ -158,15 +158,7 @@
           "playwright": {
             "type": "stdio",
             "command": "pnpx",
-            "args": [
-              "@playwright/mcp",
-              "--headless",
-              "--save-session",
-              "--browser",
-              "chromium",
-              "--isolated",
-              "--no-sandbox"
-            ]
+            "args": ["@playwright/mcp", "--headless", "--save-session", "--browser", "chromium", "--isolated", "--no-sandbox"]
           },
           "github": {
             "type": "http",

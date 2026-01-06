@@ -1,26 +1,26 @@
-import type { FC } from "react";
-import type { ContributionDay } from "../../-utils/github-stats";
+import type { ContributionDay } from '../../-utils/github-stats';
+import type { FC } from 'react';
 
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from 'react';
 
-import { useReducedMotion } from "#hooks/useReducedMotion";
+import { useReducedMotion } from '#hooks/useReducedMotion';
 
 // Colors from design system - moved outside component to prevent recreation
 const COLORS = {
-  bg: "#0a0a0a",
-  gridLine: "rgba(255, 255, 255, 0.03)",
-  scanLine: "#00ff88",
-  scanGlow: "rgba(0, 255, 136, 0.3)",
-  level0: "rgba(255, 255, 255, 0.02)",
-  level1: "rgba(0, 255, 136, 0.2)",
-  level2: "rgba(0, 255, 136, 0.4)",
-  level3: "rgba(0, 255, 136, 0.6)",
-  level4: "rgba(0, 255, 136, 0.9)",
-  center: "#00ff88",
-  text: "rgba(255, 255, 255, 0.5)",
+  bg: '#0a0a0a',
+  gridLine: 'rgba(255, 255, 255, 0.03)',
+  scanLine: '#00ff88',
+  scanGlow: 'rgba(0, 255, 136, 0.3)',
+  level0: 'rgba(255, 255, 255, 0.02)',
+  level1: 'rgba(0, 255, 136, 0.2)',
+  level2: 'rgba(0, 255, 136, 0.4)',
+  level3: 'rgba(0, 255, 136, 0.6)',
+  level4: 'rgba(0, 255, 136, 0.9)',
+  center: '#00ff88',
+  text: 'rgba(255, 255, 255, 0.5)',
 } as const;
 
-const DAY_LABELS = ["日", "月", "火", "水", "木", "金", "土"] as const;
+const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'] as const;
 
 function getLevelColor(level: 0 | 1 | 2 | 3 | 4): string {
   switch (level) {
@@ -47,9 +47,7 @@ interface CodeRadarProps {
 const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
-  const [bootPhase, setBootPhase] = useState<"booting" | "idle">(
-    prefersReducedMotion ? "idle" : "booting",
-  );
+  const [bootPhase, setBootPhase] = useState<'booting' | 'idle'>(prefersReducedMotion ? 'idle' : 'booting');
   const bootProgressRef = useRef(0);
   const animationRef = useRef<number>(0);
 
@@ -82,7 +80,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         const ringRadius = innerRadius + ringWidth * (weekIndex + 0.5);
 
         // During boot, only show rings up to boot progress
-        if (bootPhase === "booting" && weekIndex > bootProgressRef.current * 52) {
+        if (bootPhase === 'booting' && weekIndex > bootProgressRef.current * 52) {
           continue;
         }
 
@@ -117,26 +115,18 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
       for (let i = 0; i < 7; i++) {
         const angle = (i / 7) * Math.PI * 2 - Math.PI / 2;
         ctx.beginPath();
-        ctx.moveTo(
-          centerX + Math.cos(angle) * innerRadius,
-          centerY + Math.sin(angle) * innerRadius,
-        );
+        ctx.moveTo(centerX + Math.cos(angle) * innerRadius, centerY + Math.sin(angle) * innerRadius);
         ctx.lineTo(centerX + Math.cos(angle) * maxRadius, centerY + Math.sin(angle) * maxRadius);
         ctx.stroke();
       }
 
       // Draw scanning line during boot or subtle pulse during idle
-      if (bootPhase === "booting") {
+      if (bootPhase === 'booting') {
         const scanAngle = bootProgressRef.current * Math.PI * 2 - Math.PI / 2;
 
         // Scan line glow
-        const gradient = ctx.createLinearGradient(
-          centerX,
-          centerY,
-          centerX + Math.cos(scanAngle) * maxRadius,
-          centerY + Math.sin(scanAngle) * maxRadius,
-        );
-        gradient.addColorStop(0, "transparent");
+        const gradient = ctx.createLinearGradient(centerX, centerY, centerX + Math.cos(scanAngle) * maxRadius, centerY + Math.sin(scanAngle) * maxRadius);
+        gradient.addColorStop(0, 'transparent');
         gradient.addColorStop(0.5, COLORS.scanGlow);
         gradient.addColorStop(1, COLORS.scanLine);
 
@@ -144,10 +134,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         ctx.lineWidth = 2;
         ctx.beginPath();
         ctx.moveTo(centerX, centerY);
-        ctx.lineTo(
-          centerX + Math.cos(scanAngle) * maxRadius,
-          centerY + Math.sin(scanAngle) * maxRadius,
-        );
+        ctx.lineTo(centerX + Math.cos(scanAngle) * maxRadius, centerY + Math.sin(scanAngle) * maxRadius);
         ctx.stroke();
 
         // Scan arc glow
@@ -175,16 +162,9 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
       ctx.fill();
 
       // Center glow
-      const centerGradient = ctx.createRadialGradient(
-        centerX,
-        centerY,
-        0,
-        centerX,
-        centerY,
-        innerRadius * 0.8,
-      );
-      centerGradient.addColorStop(0, "rgba(0, 255, 136, 0.15)");
-      centerGradient.addColorStop(1, "transparent");
+      const centerGradient = ctx.createRadialGradient(centerX, centerY, 0, centerX, centerY, innerRadius * 0.8);
+      centerGradient.addColorStop(0, 'rgba(0, 255, 136, 0.15)');
+      centerGradient.addColorStop(1, 'transparent');
       ctx.fillStyle = centerGradient;
       ctx.beginPath();
       ctx.arc(centerX, centerY, innerRadius * 0.8, 0, Math.PI * 2);
@@ -192,9 +172,9 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
 
       // Day labels
       ctx.fillStyle = COLORS.text;
-      ctx.font = "10px JetBrains Mono, monospace";
-      ctx.textAlign = "center";
-      ctx.textBaseline = "middle";
+      ctx.font = '10px JetBrains Mono, monospace';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
 
       for (let i = 0; i < DAY_LABELS.length; i++) {
         const label = DAY_LABELS[i] as string;
@@ -212,7 +192,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext("2d");
+    const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
     // Set canvas size for high DPI
@@ -229,11 +209,11 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
       if (startTime === null) startTime = timestamp;
       const elapsed = timestamp - startTime;
 
-      if (bootPhase === "booting") {
+      if (bootPhase === 'booting') {
         bootProgressRef.current = Math.min(elapsed / bootDuration, 1);
 
         if (bootProgressRef.current >= 1) {
-          setBootPhase("idle");
+          setBootPhase('idle');
           onBootComplete?.();
         }
       }
@@ -262,9 +242,9 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     if (!canvas || prefersReducedMotion) return;
 
     const observer = new IntersectionObserver(
-      (entries) => {
+      entries => {
         const entry = entries[0];
-        if (entry?.isIntersecting && bootPhase === "booting") {
+        if (entry?.isIntersecting && bootPhase === 'booting') {
           // Animation will auto-start via useEffect
         }
       },
@@ -276,26 +256,22 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
   }, [bootPhase, prefersReducedMotion]);
 
   return (
-    <div className="relative w-full max-w-md">
+    <div className='relative w-full max-w-md'>
       {/* ASCII border decoration */}
-      <div className="mb-2 font-mono text-text-muted text-xs">
-        <span className="text-accent-primary">[</span>
+      <div className='mb-2 font-mono text-text-muted text-xs'>
+        <span className='text-accent-primary'>[</span>
         <span>CODE_RADAR</span>
-        <span className="text-accent-primary">]</span>
-        <span className="ml-2 text-text-muted opacity-50">// 52週間の活動</span>
+        <span className='text-accent-primary'>]</span>
+        <span className='ml-2 text-text-muted opacity-50'>// 52週間の活動</span>
       </div>
 
-      <div className="relative aspect-square w-full rounded border border-border-subtle bg-bg-secondary/50">
-        <canvas
-          ref={canvasRef}
-          className="h-full w-full"
-          style={{ width: "100%", height: "100%" }}
-        />
+      <div className='relative aspect-square w-full rounded border border-border-subtle bg-bg-secondary/50'>
+        <canvas ref={canvasRef} className='h-full w-full' style={{ width: '100%', height: '100%' }} />
 
         {/* Boot status overlay */}
-        {bootPhase === "booting" && !prefersReducedMotion && (
-          <div className="pointer-events-none absolute inset-0 flex items-end justify-center pb-4">
-            <span className="animate-pulse font-mono text-accent-primary text-xs">SCANNING...</span>
+        {bootPhase === 'booting' && !prefersReducedMotion && (
+          <div className='pointer-events-none absolute inset-0 flex items-end justify-center pb-4'>
+            <span className='animate-pulse font-mono text-accent-primary text-xs'>SCANNING...</span>
           </div>
         )}
       </div>

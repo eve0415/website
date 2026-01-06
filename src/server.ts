@@ -1,9 +1,9 @@
-import handler from "@tanstack/react-start/server-entry";
+import handler from '@tanstack/react-start/server-entry';
 
-import { refreshGitHubStats } from "./routes/sys/-utils/github-stats";
+import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
 
 export default {
-  fetch: (request) => handler.fetch(request),
+  fetch: request => handler.fetch(request),
   async scheduled(_event, env, ctx): Promise<void> {
     ctx.waitUntil(refreshGitHubStats(env));
   },

@@ -7,7 +7,7 @@ TanStack Start SSR on Cloudflare Workers edge runtime.
 **DO**: Import `env` from cloudflare:workers in server code
 
 ```tsx
-import { env } from "cloudflare:workers";
+import { env } from 'cloudflare:workers';
 
 // Inside createServerFn handler
 const kv = env.GITHUB_STATS_CACHE;
@@ -19,7 +19,7 @@ const secret = env.GITHUB_PAT;
 ```tsx
 // WRONG - will crash at runtime
 // Client components cannot access Cloudflare bindings
-import { env } from "cloudflare:workers";
+import { env } from 'cloudflare:workers';
 
 const ClientComponent = () => {
   const data = env.MY_KV; // ❌ Runtime error
@@ -39,16 +39,16 @@ Server functions encapsulate all env access. Loaders just call them.
 
 ```tsx
 // -utils/my-api.ts
-import { env } from "cloudflare:workers";
-import { createServerFn } from "@tanstack/react-start";
+import { env } from 'cloudflare:workers';
+import { createServerFn } from '@tanstack/react-start';
 
 export const fetchData = createServerFn().handler(async () => {
   const kv = env.MY_CACHE;
-  return await kv.get("key", "json");
+  return await kv.get('key', 'json');
 });
 
 // index.tsx
-export const Route = createFileRoute("/my-route/")({
+export const Route = createFileRoute('/my-route/')({
   component: MyPage,
   loader: () => fetchData(), // No context param needed
 });
@@ -60,17 +60,17 @@ export const Route = createFileRoute("/my-route/")({
 const kv = env.MY_KV_NAMESPACE;
 
 // Read with type
-const cached = await kv.get<MyData>("cache-key", "json");
+const cached = await kv.get<MyData>('cache-key', 'json');
 
 // Write with TTL (seconds)
-await kv.put("cache-key", JSON.stringify(data), {
+await kv.put('cache-key', JSON.stringify(data), {
   expirationTtl: 3600, // 1 hour
 });
 
 // Check existence before expensive operations
 if (!cached) {
   const fresh = await expensiveFetch();
-  await kv.put("cache-key", JSON.stringify(fresh), { expirationTtl: 3600 });
+  await kv.put('cache-key', JSON.stringify(fresh), { expirationTtl: 3600 });
   return fresh;
 }
 return cached;

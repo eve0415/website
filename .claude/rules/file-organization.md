@@ -141,7 +141,7 @@ Use `#` prefix to import from `src/`:
 
 ```tsx
 // Instead of relative paths like ../../../../hooks/useReducedMotion
-import { useReducedMotion } from "#hooks/useReducedMotion";
+import { useReducedMotion } from '#hooks/useReducedMotion';
 ```
 
 Configured in `package.json` (imports) and `tsconfig.json` (paths).

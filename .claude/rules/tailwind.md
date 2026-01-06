@@ -1,5 +1,5 @@
 ---
-paths: "**/*.tsx, **/*.css"
+paths: '**/*.tsx, **/*.css'
 ---
 
 # Tailwind CSS 4 Theming

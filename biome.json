@@ -2,14 +2,7 @@
   "$schema": "node_modules/@biomejs/biome/configuration_schema.json",
   "files": {
     "ignoreUnknown": true,
-    "includes": [
-      "**",
-      "!node_modules",
-      "!.wrangler",
-      "!dist",
-      "!src/routeTree.gen.ts",
-      "!worker-configuration.d.ts"
-    ]
+    "includes": ["**", "!node_modules", "!.wrangler", "!dist", "!src/routeTree.gen.ts", "!worker-configuration.d.ts"]
   },
   "vcs": {
     "enabled": true,

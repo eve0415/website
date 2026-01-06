@@ -1,7 +1,7 @@
-import type { FC } from "react";
-import type { LanguageStat } from "../../../-utils/github-stats";
+import type { LanguageStat } from '../../../-utils/github-stats';
+import type { FC } from 'react';
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
 export interface LanguageBarProps {
   language: LanguageStat;
@@ -58,25 +58,25 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate }) => {
   const filledChars = Math.round((progress / 100) * totalChars);
   const emptyChars = totalChars - filledChars;
 
-  const bar = "█".repeat(filledChars) + "░".repeat(emptyChars);
+  const bar = '█'.repeat(filledChars) + '░'.repeat(emptyChars);
 
   return (
     <div
-      className={`font-mono text-sm transition-opacity duration-normal ${visible ? "opacity-100" : "opacity-0"}`}
+      className={`font-mono text-sm transition-opacity duration-normal ${visible ? 'opacity-100' : 'opacity-0'}`}
       style={{ transitionDelay: `${index * 50}ms` }}
     >
-      <div className="flex items-center gap-2">
+      <div className='flex items-center gap-2'>
         {/* Tree structure */}
-        <span className="text-text-muted">├──</span>
+        <span className='text-text-muted'>├──</span>
 
         {/* Language name */}
-        <span className="w-24 truncate text-text-secondary">{language.name}</span>
+        <span className='w-24 truncate text-text-secondary'>{language.name}</span>
 
         {/* Progress bar */}
         <span style={{ color: language.color }}>{bar}</span>
 
         {/* Percentage */}
-        <span className="w-16 text-right text-text-muted">{progress.toFixed(1)}%</span>
+        <span className='w-16 text-right text-text-muted'>{progress.toFixed(1)}%</span>
       </div>
     </div>
   );
