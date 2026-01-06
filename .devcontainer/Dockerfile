@@ -10,6 +10,8 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   apt-get update && \
   apt-get install -y xdg-utils chromium chromium-driver
 
+RUN echo 'store-dir=/home/node/.local/share/pnpm/store/.pnpm-store' >> /usr/local/etc/npmrc
+
 USER node:node
 
 RUN curl -LsSf https://astral.sh/uv/install.sh | sh
