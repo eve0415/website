@@ -92,7 +92,7 @@ const IndexPage: FC = () => {
         {/* Tagline */}
         {showTagline && (
           <p className="animate-fade-in-up text-center text-text-secondary">
-            <TerminalText text="エンジニア / クラフトマン" delay={0} speed={60} />
+            <TerminalText text="エンジニア" delay={0} speed={60} />
           </p>
         )}
 
