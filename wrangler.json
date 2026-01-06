@@ -16,5 +16,12 @@
   "observability": {
     "enabled": true,
     "traces": { "enabled": true }
-  }
+  },
+
+  "kv_namespaces": [
+    {
+      "binding": "GITHUB_STATS_CACHE",
+      "id": "7c81378ba627479abce566995492eda0"
+    }
+  ]
 }
