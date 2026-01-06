@@ -13,12 +13,11 @@
   "printWidth": 160,
   "experimentalSortImports": {
     "order": "asc",
-    "internalPattern": ["#"],
     "groups": [
       ["type"],
       ["builtin"],
       ["external"],
-      ["internal"],
+      ["subpath", "internal"],
       ["parent"],
       ["sibling"],
       ["index"]
