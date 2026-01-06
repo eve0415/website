@@ -14,3 +14,6 @@ dist/
 
 # mcp
 .playwright-mcp/
+
+# env
+.env
