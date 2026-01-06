@@ -11,6 +11,10 @@
     "jsx-a11y",
     "vitest"
   ],
+  "jsPlugins": [
+    { "name": "react-compiler", "specifier": "eslint-plugin-react-hooks" },
+    "@tanstack/eslint-plugin-router"
+  ],
   "ignorePatterns": [".wrangler", "dist", "src/routeTree.gen.ts", "worker-configuration.d.ts"],
   "settings": {
     "vitest": {
@@ -22,6 +26,34 @@
       "error",
       { "allowSeparatedGroups": true, "ignoreDeclarationSort": true }
     ],
-    "typescript/consistent-type-imports": "error"
+    "typescript/consistent-type-imports": "error",
+    "@tanstack/router/create-route-property-order": "error",
+    "react-compiler/config": "error",
+    "react-compiler/error-boundaries": "error",
+    "react-compiler/component-hook-factories": "error",
+    "react-compiler/gating": "error",
+    "react-compiler/globals": "error",
+    "react-compiler/immutability": "error",
+    "react-compiler/preserve-manual-memoization": "error",
+    "react-compiler/purity": "error",
+    "react-compiler/refs": "error",
+    "react-compiler/set-state-in-effect": "error",
+    "react-compiler/set-state-in-render": "error",
+    "react-compiler/static-components": "error",
+    "react-compiler/unsupported-syntax": "error",
+    "react-compiler/use-memo": "error",
+    "react-compiler/incompatible-library": "error",
+    "react-compiler/automatic-effect-dependencies": "error",
+    "react-compiler/capitalized-calls": "error",
+    "react-compiler/fbt": "error",
+    "react-compiler/fire": "error",
+    "react-compiler/invariant": "error",
+    "react-compiler/hooks": "error",
+    "react-compiler/memoized-effect-dependencies": "error",
+    "react-compiler/no-deriving-state-in-effects": "error",
+    "react-compiler/rule-suppression": "error",
+    "react-compiler/syntax": "error",
+    "react-compiler/todo": "error",
+    "react-compiler/void-use-memo": "error"
   }
 }
