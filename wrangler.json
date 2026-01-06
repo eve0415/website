@@ -10,7 +10,7 @@
 
   "route": "eve0415.net",
 
-  "main": "src/server.ts",
+  "main": "./src/server.ts",
   "assets": { "directory": "./dist/client" },
 
   "observability": {
