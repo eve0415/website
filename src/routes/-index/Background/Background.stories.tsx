@@ -1,5 +1,5 @@
 import preview from '#.storybook/preview';
-import { chromaticModes } from '#.storybook/viewports';
+import { testAllViewports } from '#.storybook/viewports';
 
 import Background from './Background';
 
@@ -8,7 +8,6 @@ const meta = preview.meta({
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
-    chromatic: { modes: chromaticModes },
   },
   decorators: [
     Story => (
@@ -22,4 +21,8 @@ const meta = preview.meta({
   ],
 });
 
-export const Default = meta.story({});
+export const Default = meta.story({
+  play: async ({ canvasElement }) => {
+    await testAllViewports(canvasElement);
+  },
+});

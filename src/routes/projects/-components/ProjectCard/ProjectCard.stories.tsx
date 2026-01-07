@@ -1,7 +1,7 @@
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
-import { chromaticModes } from '#.storybook/viewports';
+import { testAllViewports } from '#.storybook/viewports';
 
 import ProjectCard from './ProjectCard';
 import { basicProject, featuredProject, featuredWithHighlight, minimalProject, projectWithHighlight } from './ProjectCard.fixtures';
@@ -9,7 +9,7 @@ import { basicProject, featuredProject, featuredWithHighlight, minimalProject, p
 const meta = preview.meta({
   component: ProjectCard,
   tags: ['autodocs'],
-  parameters: { layout: 'centered', chromatic: { modes: chromaticModes } },
+  parameters: { layout: 'centered' },
   argTypes: {
     index: { control: 'number' },
   },
@@ -28,6 +28,8 @@ export const Default = meta.story({
     index: 0,
   },
   play: async ({ canvasElement }) => {
+    await testAllViewports(canvasElement);
+
     const canvas = within(canvasElement);
     await expect(canvas.getByText('Sample Project')).toBeInTheDocument();
     await expect(canvas.getByText('TypeScript')).toBeInTheDocument();
@@ -40,6 +42,9 @@ export const Featured = meta.story({
     project: featuredProject,
     index: 0,
   },
+  play: async ({ canvasElement }) => {
+    await testAllViewports(canvasElement);
+  },
 });
 
 export const WithHighlight = meta.story({
@@ -48,6 +53,8 @@ export const WithHighlight = meta.story({
     index: 0,
   },
   play: async ({ canvasElement }) => {
+    await testAllViewports(canvasElement);
+
     const canvas = within(canvasElement);
     await expect(canvas.getByText('10k+')).toBeInTheDocument();
     await expect(canvas.getByText('downloads')).toBeInTheDocument();
@@ -59,12 +66,18 @@ export const FeaturedWithHighlight = meta.story({
     project: featuredWithHighlight,
     index: 0,
   },
+  play: async ({ canvasElement }) => {
+    await testAllViewports(canvasElement);
+  },
 });
 
 export const Minimal = meta.story({
   args: {
     project: minimalProject,
     index: 0,
+  },
+  play: async ({ canvasElement }) => {
+    await testAllViewports(canvasElement);
   },
 });
 
@@ -76,6 +89,9 @@ export const MultipleIndices = meta.story({
       <ProjectCard project={minimalProject} index={2} />
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    await testAllViewports(canvasElement);
+  },
 });
 
 export const FeaturedInGrid = meta.story({
@@ -86,4 +102,7 @@ export const FeaturedInGrid = meta.story({
       <ProjectCard project={projectWithHighlight} index={2} />
     </div>
   ),
+  play: async ({ canvasElement }) => {
+    await testAllViewports(canvasElement);
+  },
 });
