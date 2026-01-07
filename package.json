@@ -54,6 +54,7 @@
     "@vitest/coverage-istanbul": "^4.0.16",
     "babel-plugin-react-compiler": "^1.0.0",
     "eslint-plugin-react-hooks": "^7.0.1",
+    "msw": "^2.12.7",
     "oxfmt": "^0.23.0",
     "oxlint": "^1.38.0",
     "oxlint-tsgolint": "^0.10.1",
@@ -65,6 +66,7 @@
     "vite": "8.0.0-beta.5",
     "vite-plugin-devtools-json": "^1.0.0",
     "vitest": "^4.0.16",
+    "vitest-browser-react": "^2.0.2",
     "wrangler": "^4.54.0"
   },
   "devEngines": {

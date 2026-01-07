@@ -256,7 +256,7 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
   };
 }
 
-function levelFromContributionLevel(level: ContributionLevel): 0 | 1 | 2 | 3 | 4 {
+export function levelFromContributionLevel(level: ContributionLevel): 0 | 1 | 2 | 3 | 4 {
   switch (level) {
     case 'NONE':
       return 0;
@@ -273,7 +273,7 @@ function levelFromContributionLevel(level: ContributionLevel): 0 | 1 | 2 | 3 | 4
   }
 }
 
-function calculateStreaksJST(days: Array<{ date: string; count: number }>): {
+export function calculateStreaksJST(days: Array<{ date: string; count: number }>): {
   currentStreak: number;
   longestStreak: number;
 } {
@@ -370,7 +370,7 @@ function calculateStreaksJST(days: Array<{ date: string; count: number }>): {
   return { currentStreak, longestStreak };
 }
 
-function getLanguageColor(language: string): string {
+export function getLanguageColor(language: string): string {
   const colors: Record<string, string> = {
     TypeScript: '#3178c6',
     JavaScript: '#f1e05a',

@@ -1,5 +1,6 @@
 import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
 import storybookTest from '@storybook/addon-vitest/vitest-plugin';
+import react from '@vitejs/plugin-react';
 import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
@@ -16,8 +17,28 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: ['src/**/*.test.ts'],
-          exclude: ['**/*.stories.tsx'],
           environment: 'node',
+          server: {
+            deps: {
+              // Inline @tanstack packages so that our virtual module plugin can intercept
+              // the #tanstack-start-server-fn-manifest import
+              inline: ['@tanstack/start-server-core', '@tanstack/react-start'],
+            },
+          },
+        },
+      },
+      {
+        extends: true,
+        plugins: [react()],
+        test: {
+          name: 'browser',
+          include: ['src/**/*.browser.test.{ts,tsx}'],
+          browser: {
+            enabled: true,
+            headless: true,
+            provider: playwright({}),
+            instances: [{ browser: 'chromium' }],
+          },
           server: {
             deps: {
               // Inline @tanstack packages so that our virtual module plugin can intercept
