@@ -17,6 +17,7 @@ export default defineConfig({
     tanstackStart({
       router: {
         plugin: { vite: { environmentName: 'ssr' } },
+        routeFileIgnorePattern: '.+\\.(test|browser\\.test|stories)\\.(ts|tsx)',
       },
       sitemap: { host: 'https://eve0415.net' },
     }),
