@@ -1,6 +1,5 @@
 import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
 import storybookTest from '@storybook/addon-vitest/vitest-plugin';
-import react from '@vitejs/plugin-react';
 import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
@@ -9,11 +8,13 @@ export default defineConfig({
     coverage: {
       enabled: true,
       provider: 'istanbul',
+      include: ['src/**/*.ts', 'src/**/*.tsx'],
+      exclude: ['src/routeTree.gen.ts'],
     },
     projects: [
       {
         extends: true,
-        plugins: [cloudflareTest({})],
+        plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' } })],
         test: {
           name: 'unit',
           include: ['src/**/*.test.ts'],
@@ -29,7 +30,6 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [react()],
         test: {
           name: 'browser',
           include: ['src/**/*.browser.test.{ts,tsx}'],
@@ -39,6 +39,7 @@ export default defineConfig({
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
           },
+          setupFiles: ['test/setup.ts'],
           server: {
             deps: {
               // Inline @tanstack packages so that our virtual module plugin can intercept
@@ -50,7 +51,7 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [cloudflareTest({}), storybookTest()],
+        plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' } }), storybookTest()],
         test: {
           name: 'storybook',
           browser: {
