@@ -3,7 +3,7 @@ import handler from '@tanstack/react-start/server-entry';
 import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
 
 export default {
-  fetch: request => handler.fetch(request),
+  fetch: (request, _env, _ctx) => handler.fetch(request),
   async scheduled(_event, env, ctx): Promise<void> {
     ctx.waitUntil(refreshGitHubStats(env));
   },

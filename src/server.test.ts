@@ -22,6 +22,20 @@ describe('server', () => {
     vi.clearAllMocks();
   });
 
+  describe('fetch handler', () => {
+    test('delegates to TanStack handler and does not call refreshGitHubStats', async () => {
+      const request = new Request('https://eve0415.net/') as Request<unknown, IncomingRequestCfProperties>;
+      const ctx = createExecutionContext();
+      const response = await server.fetch(request, env, ctx);
+
+      await waitOnExecutionContext(ctx);
+
+      expect(response).toBeInstanceOf(Response);
+      expect(await response.text()).toBe('OK');
+      expect(refreshGitHubStats).not.toHaveBeenCalled();
+    });
+  });
+
   describe('scheduled handler', () => {
     test('calls refreshGitHubStats with env and ctx.waitUntil receives the promise', async () => {
       const ctrl = createScheduledController({ cron: '0 * * * *', scheduledTime: Date.now() });

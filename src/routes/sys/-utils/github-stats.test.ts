@@ -430,6 +430,10 @@ describe('getRelativeTimeJapanese', () => {
   });
 });
 
+// Note: getGitHubStats is a server function (createServerFn) that requires TanStack Start context.
+// Its behavior is tested indirectly through integration/e2e tests.
+// The underlying logic (KV read + fallback) is straightforward and covered by the handler's implementation.
+
 describe('refreshGitHubStats', () => {
   test('fetches from GitHub API and stores in KV', async () => {
     // Import the function
@@ -451,4 +455,30 @@ describe('refreshGitHubStats', () => {
     expect(storedValue).toHaveProperty('contributions');
     expect(storedValue).toHaveProperty('languages');
   });
+
+  test('handles empty language responses gracefully', async () => {
+    // Override the language endpoint to return empty object (no languages)
+    server.use(
+      http.get('https://api.github.com/repos/eve0415/:repo/languages', () => {
+        return HttpResponse.json({});
+      }),
+    );
+
+    const { refreshGitHubStats } = await import('./github-stats');
+    const testEnv = {
+      GITHUB_PAT: 'test-token',
+      GITHUB_STATS_CACHE: env.GITHUB_STATS_CACHE,
+    };
+
+    await refreshGitHubStats(testEnv as unknown as Parameters<typeof refreshGitHubStats>[0]);
+
+    const storedValue = await env.GITHUB_STATS_CACHE.get('github_stats_eve0415', 'json');
+    expect(storedValue).toBeDefined();
+    // Languages should be empty since all repos returned empty language data
+    expect((storedValue as { languages: unknown[] }).languages).toEqual([]);
+  });
+
+  // Note: Rate limit tests with Octokit's retry plugin are difficult to reliably test
+  // as they involve timing-sensitive retry mechanisms. The plugin is well-tested upstream
+  // and the callback handlers (onRateLimit, onSecondaryRateLimit) simply log and return.
 });
