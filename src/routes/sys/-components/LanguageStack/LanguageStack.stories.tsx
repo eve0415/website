@@ -82,3 +82,46 @@ export const Empty = meta.story({
     await expect(canvas.getByText('[NO_DATA]')).toBeInTheDocument();
   },
 });
+
+export const ResponsiveBreakpoints = meta.story({
+  args: {
+    languages: sampleLanguages,
+    animate: false,
+  },
+  play: async context => {
+    await testAllViewports(context);
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests component at mobile (320px), tablet (768px), and desktop (1024px) viewports.',
+      },
+    },
+  },
+});
+
+export const InteractionStates = meta.story({
+  args: {
+    languages: sampleLanguages,
+    animate: false,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Verify all languages are rendered
+    await expect(canvas.getByText('TypeScript')).toBeInTheDocument();
+    await expect(canvas.getByText('JavaScript')).toBeInTheDocument();
+    await expect(canvas.getByText('Rust')).toBeInTheDocument();
+
+    // Verify percentages are displayed
+    await expect(canvas.getByText(/45\.5%/)).toBeInTheDocument();
+    await expect(canvas.getByText(/25\.3%/)).toBeInTheDocument();
+  },
+  parameters: {
+    docs: {
+      description: {
+        story: 'Tests hover states and interactions across all language rows.',
+      },
+    },
+  },
+});

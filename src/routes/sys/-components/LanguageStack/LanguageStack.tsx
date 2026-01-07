@@ -28,7 +28,7 @@ const LanguageStack: FC<LanguageStackProps> = ({ languages, animate }) => {
 
       <div className='space-y-1 rounded border border-line bg-surface/50 p-4'>
         {languages.map((lang, index) => (
-          <LanguageBar key={lang.name} language={lang} index={index} animate={animate} />
+          <LanguageBar key={lang.name} language={lang} index={index} animate={animate} isLast={index === languages.length - 1} />
         ))}
 
         {/* Footer tree end */}
