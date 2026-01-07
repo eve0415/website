@@ -2,10 +2,18 @@ import type { FC } from 'react';
 
 import { useEffect, useRef } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 import { levelConfig, skills } from '../../-config/skills-config';
 
-const SkillsVisualization: FC = () => {
+interface Props {
+  animate?: boolean;
+}
+
+const SkillsVisualization: FC<Props> = ({ animate = true }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const prefersReducedMotion = useReducedMotion();
+  const shouldAnimate = animate && !prefersReducedMotion;
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -48,7 +56,9 @@ const SkillsVisualization: FC = () => {
 
       ctx.clearRect(0, 0, width, height);
 
-      time += 0.01;
+      if (shouldAnimate) {
+        time += 0.01;
+      }
 
       // Draw connections between same-category skills
       ctx.strokeStyle = 'rgba(64, 64, 64, 0.2)';
@@ -59,10 +69,10 @@ const SkillsVisualization: FC = () => {
           const nodeA = nodes[i];
           const nodeB = nodes[j];
           if (nodeA && nodeB && nodeA.skill.category === nodeB.skill.category) {
-            const floatAX = Math.sin(time + nodeA.x * 0.01) * 2;
-            const floatAY = Math.cos(time + nodeA.y * 0.01) * 2;
-            const floatBX = Math.sin(time + nodeB.x * 0.01) * 2;
-            const floatBY = Math.cos(time + nodeB.y * 0.01) * 2;
+            const floatAX = shouldAnimate ? Math.sin(time + nodeA.x * 0.01) * 2 : 0;
+            const floatAY = shouldAnimate ? Math.cos(time + nodeA.y * 0.01) * 2 : 0;
+            const floatBX = shouldAnimate ? Math.sin(time + nodeB.x * 0.01) * 2 : 0;
+            const floatBY = shouldAnimate ? Math.cos(time + nodeB.y * 0.01) * 2 : 0;
 
             ctx.beginPath();
             ctx.moveTo(nodeA.x + floatAX, nodeA.y + floatAY);
@@ -74,9 +84,9 @@ const SkillsVisualization: FC = () => {
 
       // Draw nodes
       for (const node of nodes) {
-        // Subtle floating animation
-        const floatX = Math.sin(time + node.x * 0.01) * 2;
-        const floatY = Math.cos(time + node.y * 0.01) * 2;
+        // Subtle floating animation (disabled when shouldAnimate is false)
+        const floatX = shouldAnimate ? Math.sin(time + node.x * 0.01) * 2 : 0;
+        const floatY = shouldAnimate ? Math.cos(time + node.y * 0.01) * 2 : 0;
 
         const config = levelConfig[node.skill.level];
         const baseRadius = node.skill.level === 'expert' ? 8 : node.skill.level === 'proficient' ? 6 : 4;
@@ -101,7 +111,9 @@ const SkillsVisualization: FC = () => {
         }
       }
 
-      animationId = requestAnimationFrame(draw);
+      if (shouldAnimate) {
+        animationId = requestAnimationFrame(draw);
+      }
     };
 
     draw();
@@ -110,7 +122,7 @@ const SkillsVisualization: FC = () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationId);
     };
-  }, []);
+  }, [shouldAnimate]);
 
   return (
     <div className='relative h-100 rounded-lg border border-line bg-surface/30'>

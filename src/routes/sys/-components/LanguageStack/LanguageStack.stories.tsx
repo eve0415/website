@@ -1,6 +1,7 @@
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import LanguageStack from './LanguageStack';
 import { emptyLanguages, manyLanguages, sampleLanguages, singleLanguage, twoLanguages } from './LanguageStack.fixtures';
@@ -44,6 +45,9 @@ export const Static = meta.story({
   args: {
     languages: sampleLanguages,
     animate: false,
+  },
+  play: async context => {
+    await testAllViewports(context);
   },
 });
 

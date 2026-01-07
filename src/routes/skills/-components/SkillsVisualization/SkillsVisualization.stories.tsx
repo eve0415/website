@@ -20,8 +20,11 @@ const meta = preview.meta({
   ],
 });
 
-export const Default = meta.story({
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
+export const Default = meta.story({});
+
+export const Static = meta.story({
+  args: { animate: false },
+  play: async context => {
+    await testAllViewports(context);
   },
 });

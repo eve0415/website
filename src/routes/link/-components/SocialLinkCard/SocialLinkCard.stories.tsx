@@ -1,6 +1,7 @@
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import SocialLinkCard from './SocialLinkCard';
 import { discordLink, githubLink, placeholderLink, twitterLink } from './SocialLinkCard.fixtures';
@@ -26,8 +27,10 @@ export const GitHub = meta.story({
     link: githubLink,
     index: 0,
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+  play: async context => {
+    await testAllViewports(context);
+
+    const canvas = within(context.canvasElement);
     await expect(canvas.getByText('GitHub')).toBeInTheDocument();
     await expect(canvas.getByText('@eve0415')).toBeInTheDocument();
     const link = canvas.getByRole('link');

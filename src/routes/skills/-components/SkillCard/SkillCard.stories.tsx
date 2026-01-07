@@ -1,6 +1,7 @@
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import SkillCard from './SkillCard';
 import { domainSkill, expertSkill, infrastructureSkill, learningSkill, proficientSkill, skillWithoutDescription } from './SkillCard.fixtures';
@@ -26,8 +27,10 @@ export const Expert = meta.story({
     skill: expertSkill,
     index: 0,
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+  play: async context => {
+    await testAllViewports(context);
+
+    const canvas = within(context.canvasElement);
     await expect(canvas.getByText('TypeScript')).toBeInTheDocument();
     await expect(canvas.getByText('Expert')).toBeInTheDocument();
   },

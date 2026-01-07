@@ -2,10 +2,16 @@ import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';
 
-const CurrentTime: FC = () => {
-  const [time, setTime] = useState<string>('');
+interface Props {
+  fixedTime?: string;
+}
+
+const CurrentTime: FC<Props> = ({ fixedTime }) => {
+  const [time, setTime] = useState<string>(fixedTime || '');
 
   useEffect(() => {
+    if (fixedTime) return; // Skip interval if fixed time is provided
+
     const updateTime = () => {
       const now = new Date();
       const jstTime = new Intl.DateTimeFormat('ja-JP', {
@@ -21,7 +27,7 @@ const CurrentTime: FC = () => {
     updateTime();
     const interval = setInterval(updateTime, 1000);
     return () => clearInterval(interval);
-  }, []);
+  }, [fixedTime]);
 
   return <span className='font-mono text-neon tabular-nums'>{time || '--:--:--'}</span>;
 };

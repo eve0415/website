@@ -1,6 +1,7 @@
 import { expect, fn, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import TerminalText from './TerminalText';
 
@@ -21,6 +22,19 @@ export const Default = meta.story({
     text: 'Hello, World!',
     speed: 50,
     delay: 0,
+  },
+});
+
+export const Static = meta.story({
+  args: {
+    text: 'Complete text displayed',
+    speed: 0,
+    delay: 0,
+  },
+  play: async context => {
+    // Wait for text to render
+    await new Promise(resolve => setTimeout(resolve, 100));
+    await testAllViewports(context);
   },
 });
 

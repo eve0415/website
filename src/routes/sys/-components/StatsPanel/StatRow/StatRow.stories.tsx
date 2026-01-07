@@ -1,4 +1,5 @@
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import StatRow from './StatRow';
 
@@ -81,6 +82,9 @@ export const Static = meta.story({
     delay: 0,
     animate: false,
     color: 'secondary',
+  },
+  play: async context => {
+    await testAllViewports(context);
   },
 });
 

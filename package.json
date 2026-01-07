@@ -18,7 +18,8 @@
     "generate": "wrangler types && graphql-codegen",
     "lint": "biome check --write --unsafe && oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously && oxfmt",
     "test": "vitest run",
-    "storybook": "storybook dev --port 6006"
+    "test:update": "vitest run --update",
+    "storybook": "(find src -type d -name '__screenshots__' -exec rm -rf {} + 2>/dev/null || true) && storybook dev --port 6006"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.3.11",

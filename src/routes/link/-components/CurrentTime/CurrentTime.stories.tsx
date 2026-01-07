@@ -1,6 +1,7 @@
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import CurrentTime from './CurrentTime';
 
@@ -17,5 +18,12 @@ export const Default = meta.story({
     const timeElement = canvas.getByText(/\d{2}:\d{2}:\d{2}|--:--:--/);
     await expect(timeElement).toBeInTheDocument();
     await expect(timeElement).toHaveClass('font-mono');
+  },
+});
+
+export const Static = meta.story({
+  args: { fixedTime: '12:34:56' },
+  play: async context => {
+    await testAllViewports(context);
   },
 });

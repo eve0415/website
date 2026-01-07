@@ -55,8 +55,8 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate }) => {
 
   // Calculate bar characters (20 chars total)
   const totalChars = 20;
-  const filledChars = Math.round((progress / 100) * totalChars);
-  const emptyChars = totalChars - filledChars;
+  const filledChars = Math.min(totalChars, Math.round((progress / 100) * totalChars));
+  const emptyChars = Math.max(0, totalChars - filledChars);
 
   const bar = '█'.repeat(filledChars) + '░'.repeat(emptyChars);
 

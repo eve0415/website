@@ -1,6 +1,7 @@
 import type { LanguageStat } from '../../../-utils/github-stats';
 
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import LanguageBar from './LanguageBar';
 
@@ -32,6 +33,9 @@ export const Default = meta.story({
     language: mockLanguage,
     index: 0,
     animate: false,
+  },
+  play: async context => {
+    await testAllViewports(context);
   },
 });
 

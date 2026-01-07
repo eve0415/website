@@ -1,6 +1,7 @@
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import StatsPanel from './StatsPanel';
 import { emptyStats, highActivityStats, lowActivityStats, sampleStats } from './StatsPanel.fixtures';
@@ -45,6 +46,9 @@ export const Static = meta.story({
   args: {
     stats: sampleStats,
     animate: false,
+  },
+  play: async context => {
+    await testAllViewports(context);
   },
 });
 

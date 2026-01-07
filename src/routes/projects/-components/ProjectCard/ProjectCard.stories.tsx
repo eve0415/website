@@ -27,10 +27,10 @@ export const Default = meta.story({
     project: basicProject,
     index: 0,
   },
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
+  play: async context => {
+    await testAllViewports(context);
 
-    const canvas = within(canvasElement);
+    const canvas = within(context.canvasElement);
     await expect(canvas.getByText('Sample Project')).toBeInTheDocument();
     await expect(canvas.getByText('TypeScript')).toBeInTheDocument();
     await expect(canvas.getByText('React')).toBeInTheDocument();
@@ -42,9 +42,6 @@ export const Featured = meta.story({
     project: featuredProject,
     index: 0,
   },
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
-  },
 });
 
 export const WithHighlight = meta.story({
@@ -53,8 +50,6 @@ export const WithHighlight = meta.story({
     index: 0,
   },
   play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
-
     const canvas = within(canvasElement);
     await expect(canvas.getByText('10k+')).toBeInTheDocument();
     await expect(canvas.getByText('downloads')).toBeInTheDocument();
@@ -66,18 +61,12 @@ export const FeaturedWithHighlight = meta.story({
     project: featuredWithHighlight,
     index: 0,
   },
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
-  },
 });
 
 export const Minimal = meta.story({
   args: {
     project: minimalProject,
     index: 0,
-  },
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
   },
 });
 
@@ -89,9 +78,6 @@ export const MultipleIndices = meta.story({
       <ProjectCard project={minimalProject} index={2} />
     </div>
   ),
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
-  },
 });
 
 export const FeaturedInGrid = meta.story({
@@ -102,7 +88,4 @@ export const FeaturedInGrid = meta.story({
       <ProjectCard project={projectWithHighlight} index={2} />
     </div>
   ),
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
-  },
 });

@@ -1,6 +1,7 @@
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import Logo from './Logo';
 
@@ -29,8 +30,10 @@ export const Static = meta.story({
   args: {
     animate: false,
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
+  play: async context => {
+    await testAllViewports(context);
+
+    const canvas = within(context.canvasElement);
     const svg = canvas.getByRole('img', { name: 'eve0415 ロゴ' });
     await expect(svg).toBeInTheDocument();
   },

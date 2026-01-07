@@ -1,4 +1,5 @@
 import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
 
 import AnimatedCounter from './AnimatedCounter';
 
@@ -24,6 +25,18 @@ export const Default = meta.story({
   args: {
     end: 100,
     duration: 2000,
+  },
+});
+
+export const Static = meta.story({
+  args: {
+    end: 100,
+    duration: 0,
+  },
+  play: async context => {
+    // Wait for instant render
+    await new Promise(resolve => setTimeout(resolve, 100));
+    await testAllViewports(context);
   },
 });
 

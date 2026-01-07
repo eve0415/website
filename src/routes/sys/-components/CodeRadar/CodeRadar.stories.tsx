@@ -1,7 +1,7 @@
 import { expect, fn, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
-import { testAllViewports } from '#.storybook/viewports';
+import { testAllViewports, withDisabledAnimations } from '#.storybook/viewports';
 
 import CodeRadar from './CodeRadar';
 import { emptyContributions, highActivityContributions, sampleContributions, sparseContributions } from './CodeRadar.fixtures';
@@ -23,8 +23,17 @@ export const Default = meta.story({
   args: {
     contributionCalendar: sampleContributions,
   },
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
+});
+
+export const Static = meta.story({
+  args: {
+    contributionCalendar: sampleContributions,
+  },
+  decorators: [withDisabledAnimations],
+  play: async context => {
+    // Wait for reduced motion to take effect (instant render)
+    await new Promise(resolve => setTimeout(resolve, 100));
+    await testAllViewports(context);
   },
 });
 
@@ -32,26 +41,17 @@ export const EmptyCalendar = meta.story({
   args: {
     contributionCalendar: emptyContributions,
   },
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
-  },
 });
 
 export const SparseActivity = meta.story({
   args: {
     contributionCalendar: sparseContributions,
   },
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
-  },
 });
 
 export const HighActivity = meta.story({
   args: {
     contributionCalendar: highActivityContributions,
-  },
-  play: async ({ canvasElement }) => {
-    await testAllViewports(canvasElement);
   },
 });
 
@@ -61,8 +61,6 @@ export const WithCallback = meta.story({
     onBootComplete: fn(),
   },
   play: async ({ args, canvasElement }) => {
-    await testAllViewports(canvasElement);
-
     const canvas = within(canvasElement);
 
     // Wait for the boot animation to complete
