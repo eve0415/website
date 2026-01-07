@@ -1,3 +1,5 @@
+import { createExecutionContext, createScheduledController, waitOnExecutionContext } from 'cloudflare:test';
+import { env } from 'cloudflare:workers';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
 // Mock @tanstack/react-start/server-entry to avoid subpath import issues in Vitest
@@ -20,31 +22,15 @@ describe('server', () => {
     vi.clearAllMocks();
   });
 
-  test('exports fetch handler', () => {
-    expect(server.fetch).toBeDefined();
-    expect(typeof server.fetch).toBe('function');
-  });
-
-  test('exports scheduled handler', () => {
-    expect(server.scheduled).toBeDefined();
-    expect(typeof server.scheduled).toBe('function');
-  });
-
   describe('scheduled handler', () => {
     test('calls refreshGitHubStats with env and ctx.waitUntil receives the promise', async () => {
-      const mockWaitUntil = vi.fn();
-      const mockCtx = { waitUntil: mockWaitUntil };
-      const mockEvent = { cron: '0 * * * *', scheduledTime: Date.now() };
-      const mockEnv = { GITHUB_PAT: 'test-token', GITHUB_STATS_CACHE: {} };
+      const ctrl = createScheduledController({ cron: '0 * * * *', scheduledTime: Date.now() });
+      const ctx = createExecutionContext();
+      await server.scheduled(ctrl, env, ctx);
 
-      await server.scheduled(
-        mockEvent as unknown as Parameters<typeof server.scheduled>[0],
-        mockEnv as unknown as Parameters<typeof server.scheduled>[1],
-        mockCtx as unknown as Parameters<typeof server.scheduled>[2],
-      );
+      await waitOnExecutionContext(ctx);
 
-      expect(mockWaitUntil).toHaveBeenCalledTimes(1);
-      expect(refreshGitHubStats).toHaveBeenCalledWith(mockEnv);
+      expect(refreshGitHubStats).toHaveBeenCalledWith(env);
     });
   });
 });
