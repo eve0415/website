@@ -11,6 +11,11 @@ export default definePreview({
     viewport: {
       options: INITIAL_VIEWPORTS,
     },
-    a11y: { test: 'todo' },
+    a11y: { test: 'error' },
+  },
+  initialGlobals: {
+    a11y: {
+      manual: false,
+    },
   },
 });
