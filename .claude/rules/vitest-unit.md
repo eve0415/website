@@ -1,5 +1,5 @@
 ---
-paths: "**/*.test.ts"
+paths: '**/*.test.ts'
 ---
 
 # Unit Tests (Node Environment)
@@ -14,11 +14,7 @@ Node environment tests for pure functions, server functions, and utilities.
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
-const server = setupServer(
-  http.post('https://api.github.com/graphql', () =>
-    HttpResponse.json({ data: mockData })
-  )
-);
+const server = setupServer(http.post('https://api.github.com/graphql', () => HttpResponse.json({ data: mockData })));
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -48,12 +44,15 @@ test('reads from KV', async () => {
 ```ts
 import { runWithStartContext } from '@tanstack/start-storage-context';
 
-const result = await runWithStartContext({
-  getRouter: () => ({}) as any,
-  request: new Request('http://localhost/test'),
-  startOptions: {},
-  contextAfterGlobalMiddlewares: {},
-}, () => myServerFn());
+const result = await runWithStartContext(
+  {
+    getRouter: () => ({}) as any,
+    request: new Request('http://localhost/test'),
+    startOptions: {},
+    contextAfterGlobalMiddlewares: {},
+  },
+  () => myServerFn(),
+);
 ```
 
 ## Fake Timers

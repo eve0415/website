@@ -1,5 +1,5 @@
 ---
-paths: "**/*.browser.test.ts,**/*.browser.test.tsx"
+paths: '**/*.browser.test.ts,**/*.browser.test.tsx'
 ---
 
 # Browser Tests (vitest-browser-react)

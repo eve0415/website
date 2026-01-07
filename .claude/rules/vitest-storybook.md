@@ -1,5 +1,5 @@
 ---
-paths: "**/*.stories.tsx"
+paths: '**/*.stories.tsx'
 ---
 
 # Storybook Tests (CSF Next)
@@ -37,11 +37,11 @@ export const Default = meta.story({
 import { setViewport, testAllViewports } from '#.storybook/viewports';
 
 play: async ({ canvasElement }) => {
-  await testAllViewports(canvasElement, async (viewport) => {
+  await testAllViewports(canvasElement, async viewport => {
     const canvas = within(canvasElement);
     await expect(canvas.getByRole('button')).toBeVisible();
   });
-}
+};
 ```
 
 ## Play Function Imports
