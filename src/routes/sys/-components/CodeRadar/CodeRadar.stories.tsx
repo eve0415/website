@@ -1,6 +1,7 @@
 import { expect, fn, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { chromaticModes } from '#.storybook/viewports';
 
 import CodeRadar from './CodeRadar';
 import { emptyContributions, highActivityContributions, sampleContributions, sparseContributions } from './CodeRadar.fixtures';
@@ -8,7 +9,7 @@ import { emptyContributions, highActivityContributions, sampleContributions, spa
 const meta = preview.meta({
   component: CodeRadar,
   tags: ['autodocs'],
-  parameters: { layout: 'centered' },
+  parameters: { layout: 'centered', chromatic: { modes: chromaticModes } },
   decorators: [
     Story => (
       <div className='bg-bg-primary p-8'>

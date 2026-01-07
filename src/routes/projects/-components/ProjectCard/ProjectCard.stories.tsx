@@ -1,6 +1,7 @@
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
+import { chromaticModes } from '#.storybook/viewports';
 
 import ProjectCard from './ProjectCard';
 import { basicProject, featuredProject, featuredWithHighlight, minimalProject, projectWithHighlight } from './ProjectCard.fixtures';
@@ -8,7 +9,7 @@ import { basicProject, featuredProject, featuredWithHighlight, minimalProject, p
 const meta = preview.meta({
   component: ProjectCard,
   tags: ['autodocs'],
-  parameters: { layout: 'centered' },
+  parameters: { layout: 'centered', chromatic: { modes: chromaticModes } },
   argTypes: {
     index: { control: 'number' },
   },

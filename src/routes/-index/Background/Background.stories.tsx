@@ -1,4 +1,5 @@
 import preview from '#.storybook/preview';
+import { chromaticModes } from '#.storybook/viewports';
 
 import Background from './Background';
 
@@ -7,6 +8,7 @@ const meta = preview.meta({
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
+    chromatic: { modes: chromaticModes },
   },
   decorators: [
     Story => (
