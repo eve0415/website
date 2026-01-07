@@ -73,7 +73,7 @@ describe('useReducedMotion', () => {
 
     // Simulate media query change
     mockMediaQuery.matches = true;
-    changeListener!.call(mockMediaQuery, new Event('change') as MediaQueryListEvent);
+    changeListener!.call(mockMediaQuery as MediaQueryList, new Event('change') as MediaQueryListEvent);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('true');
   });

@@ -14,7 +14,12 @@ interface TestComponentProps {
 }
 
 const TestComponent: FC<TestComponentProps> = ({ value, duration, delay, enabled }) => {
-  const displayValue = useDecryptAnimation(value, { duration, delay, enabled });
+  const options = {
+    ...(duration !== undefined && { duration }),
+    ...(delay !== undefined && { delay }),
+    ...(enabled !== undefined && { enabled }),
+  };
+  const displayValue = useDecryptAnimation(value, options);
   return <div data-testid='result'>{displayValue}</div>;
 };
 
@@ -25,7 +30,12 @@ const DefaultOptionsComponent: FC<{ value: string | number }> = ({ value }) => {
 };
 
 const NumberTestComponent: FC<Omit<TestComponentProps, 'value'> & { value: number }> = ({ value, duration, delay, enabled }) => {
-  const displayValue = useDecryptNumber(value, { duration, delay, enabled });
+  const options = {
+    ...(duration !== undefined && { duration }),
+    ...(delay !== undefined && { delay }),
+    ...(enabled !== undefined && { enabled }),
+  };
+  const displayValue = useDecryptNumber(value, options);
   return <div data-testid='result'>{displayValue}</div>;
 };
 

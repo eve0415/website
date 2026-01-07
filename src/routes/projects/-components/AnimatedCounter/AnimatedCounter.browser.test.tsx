@@ -78,7 +78,6 @@ describe('AnimatedCounter', () => {
   test('does not re-animate after first animation', async () => {
     // Create a proper mock IntersectionObserver class
     type Callback = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void;
-    let _savedCallback: Callback | undefined;
     let observedElement: Element | undefined;
     let mockObserverInstance: MockIntersectionObserver | undefined;
 
@@ -90,7 +89,7 @@ describe('AnimatedCounter', () => {
 
       constructor(callback: Callback) {
         this.callback = callback;
-        _savedCallback = callback;
+        // eslint-disable-next-line ts/no-this-alias -- Required for test to access instance
         mockObserverInstance = this;
       }
 

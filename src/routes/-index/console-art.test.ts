@@ -48,7 +48,7 @@ describe('printConsoleArt', () => {
     printConsoleArt();
 
     // Find the log call with the ASCII art
-    const logoCall = consoleSpy.log.mock.calls.find(call => String(call[0]).includes('███████╗'));
+    const logoCall = consoleSpy.log.mock.calls.find((call: string[]) => String(call[0]).includes('███████╗'));
 
     expect(logoCall).toBeDefined();
     expect(logoCall?.[0]).toContain('███████╗');
@@ -93,7 +93,7 @@ describe('printConsoleArt', () => {
     printConsoleArt();
 
     // Count empty string calls for spacing
-    const emptyLineCalls = consoleSpy.log.mock.calls.filter(call => call[0] === '');
+    const emptyLineCalls = consoleSpy.log.mock.calls.filter((call: string[]) => call[0] === '');
     expect(emptyLineCalls.length).toBeGreaterThan(0);
   });
 });

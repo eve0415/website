@@ -1,3 +1,4 @@
+import { env } from 'cloudflare:workers';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
@@ -429,54 +430,25 @@ describe('getRelativeTimeJapanese', () => {
   });
 });
 
-// Helper to create mock KV store
-function createMockKV() {
-  const store = new Map<string, string>();
-  return {
-    get: vi.fn(async (key: string, type?: string) => {
-      const value = store.get(key);
-      if (value === undefined) return null;
-      return type === 'json' ? JSON.parse(value) : value;
-    }),
-    put: vi.fn(async (key: string, value: string) => {
-      store.set(key, value);
-    }),
-    delete: vi.fn(async (key: string) => {
-      store.delete(key);
-    }),
-    _store: store, // For test inspection
-  };
-}
-
-// Note: getGitHubStats tests are skipped because vi.mock() for cloudflare:workers
-// cannot be used inside test functions - it gets hoisted to module scope but
-// references variables that don't exist at that point. The function is tested
-// indirectly via refreshGitHubStats which accepts env as a parameter.
-
 describe('refreshGitHubStats', () => {
   test('fetches from GitHub API and stores in KV', async () => {
-    const mockKV = createMockKV();
-
     // Import the function
     const { refreshGitHubStats } = await import('./github-stats');
 
-    // Create mock env with PAT
-    const mockEnv = {
+    // Create env using real KV binding from cloudflare:workers with test PAT
+    const testEnv = {
       GITHUB_PAT: 'test-token',
-      GITHUB_STATS_CACHE: mockKV,
+      GITHUB_STATS_CACHE: env.GITHUB_STATS_CACHE,
     };
 
     // Call refresh
-    await refreshGitHubStats(mockEnv as unknown as Parameters<typeof refreshGitHubStats>[0]);
+    await refreshGitHubStats(testEnv as unknown as Parameters<typeof refreshGitHubStats>[0]);
 
-    // Check KV was updated
-    expect(mockKV.put).toHaveBeenCalled();
-    const storedValue = mockKV._store.get('github_stats_eve0415');
+    // Check KV was updated by reading from it
+    const storedValue = await env.GITHUB_STATS_CACHE.get('github_stats_eve0415', 'json');
     expect(storedValue).toBeDefined();
-
-    const stored = JSON.parse(storedValue as string);
-    expect(stored).toHaveProperty('user');
-    expect(stored).toHaveProperty('contributions');
-    expect(stored).toHaveProperty('languages');
+    expect(storedValue).toHaveProperty('user');
+    expect(storedValue).toHaveProperty('contributions');
+    expect(storedValue).toHaveProperty('languages');
   });
 });

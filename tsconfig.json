@@ -1,5 +1,5 @@
 {
-  "references": [{ "path": "./tsconfig.node.json" },{ "path": "./tsconfig.cloudflare.json" },{ "path": "./tsconfig.test.json" }],
+  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.cloudflare.json" }, { "path": "./tsconfig.test.json" }],
   "compilerOptions": {
     "moduleResolution": "Bundler",
     "module": "esnext",
@@ -22,5 +22,5 @@
     "moduleDetection": "force",
     "skipLibCheck": true
   },
-  "files": [],
+  "files": []
 }
