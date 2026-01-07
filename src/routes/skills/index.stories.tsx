@@ -107,9 +107,9 @@ export const Default = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByText('Skills Matrix')).toBeInTheDocument();
-    await expect(canvas.getByText('// Frontend')).toBeInTheDocument();
-    await expect(canvas.getByText('// Backend')).toBeInTheDocument();
-    await expect(canvas.getByText('// DevOps')).toBeInTheDocument();
+    await expect(canvas.getByText('言語')).toBeInTheDocument();
+    await expect(canvas.getByText('インフラ')).toBeInTheDocument();
+    await expect(canvas.getByText('ドメイン')).toBeInTheDocument();
     await expect(canvas.getByText('現在学習中')).toBeInTheDocument();
   },
 });

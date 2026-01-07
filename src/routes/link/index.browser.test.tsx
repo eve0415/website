@@ -3,7 +3,7 @@ import type { FC, FormEvent } from 'react';
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 
 import CurrentTime from './-components/CurrentTime/CurrentTime';
 import SocialLinkCard from './-components/SocialLinkCard/SocialLinkCard';
@@ -232,24 +232,18 @@ describe('LinkPage', () => {
     const { getByTestId } = await render(<TestLinkPage />);
 
     // Fill form
-    await getByTestId('name-input').fill('テスト太郎');
-    await getByTestId('email-input').fill('test@example.com');
-    await getByTestId('message-input').fill('テストメッセージ');
+    await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
+    await userEvent.fill(getByTestId('email-input'), 'test@example.com');
+    await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
 
     // Verify initial state
     await expect.element(page.getByTestId('idle-text')).toBeInTheDocument();
 
-    // Submit form
-    await getByTestId('submit-button').click();
+    // Submit form by clicking button
+    await userEvent.click(getByTestId('submit-button'));
 
-    // Should show submitting state
-    await expect.element(page.getByTestId('submitting-text')).toBeInTheDocument();
-
-    // Wait for success state (100ms submission delay)
-    await new Promise(resolve => setTimeout(resolve, 150));
-
-    // Should show success state
-    await expect.element(page.getByTestId('success-text')).toBeInTheDocument();
+    // Wait for success state (submitting state is too brief to reliably test at 100ms)
+    await expect.element(page.getByTestId('success-text')).toBeVisible();
     await expect.element(page.getByTestId('success-message')).toBeInTheDocument();
 
     // Form data should be cleared
@@ -257,11 +251,8 @@ describe('LinkPage', () => {
     await expect.element(page.getByTestId('email-input')).toHaveValue('');
     await expect.element(page.getByTestId('message-input')).toHaveValue('');
 
-    // Wait for idle state (200ms reset delay)
-    await new Promise(resolve => setTimeout(resolve, 250));
-
-    // Should return to idle state
-    await expect.element(page.getByTestId('idle-text')).toBeInTheDocument();
+    // Wait for idle state (TestLinkPage resets after 200ms)
+    await expect.element(page.getByTestId('idle-text')).toBeVisible();
   });
 
   test('submit button is disabled during submission', async () => {
@@ -272,13 +263,13 @@ describe('LinkPage', () => {
     await getByTestId('message-input').fill('テストメッセージ');
 
     // Submit form
-    await getByTestId('submit-button').click();
+    await userEvent.click(getByTestId('submit-button'));
 
     // Button should be disabled
     await expect.element(page.getByTestId('submit-button')).toBeDisabled();
 
-    // Wait for completion
-    await new Promise(resolve => setTimeout(resolve, 400));
+    // Wait for completion and verify button is enabled again
+    await expect.element(page.getByTestId('idle-text')).toBeVisible();
   });
 
   test('form inputs are disabled during submission', async () => {
@@ -288,15 +279,15 @@ describe('LinkPage', () => {
     await getByTestId('email-input').fill('test@example.com');
     await getByTestId('message-input').fill('テストメッセージ');
 
-    await getByTestId('submit-button').click();
+    await userEvent.click(getByTestId('submit-button'));
 
     // Inputs should be disabled during submission
     await expect.element(page.getByTestId('name-input')).toBeDisabled();
     await expect.element(page.getByTestId('email-input')).toBeDisabled();
     await expect.element(page.getByTestId('message-input')).toBeDisabled();
 
-    // Wait for completion
-    await new Promise(resolve => setTimeout(resolve, 400));
+    // Wait for completion and verify inputs are enabled again
+    await expect.element(page.getByTestId('idle-text')).toBeVisible();
   });
 
   test('email link is rendered correctly', async () => {

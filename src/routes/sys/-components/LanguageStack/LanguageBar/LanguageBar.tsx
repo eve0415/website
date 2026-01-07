@@ -1,4 +1,4 @@
-import type { LanguageStat } from '../../../-utils/github-stats';
+import type { LanguageStat } from '../../../-utils/github-stats-utils';
 import type { FC } from 'react';
 
 import { useEffect, useRef, useState } from 'react';

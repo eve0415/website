@@ -1,4 +1,4 @@
-import type { LanguageStat } from '../../-utils/github-stats';
+import type { LanguageStat } from '../../-utils/github-stats-utils';
 
 export const sampleLanguages: LanguageStat[] = [
   { name: 'TypeScript', percentage: 45.5, color: '#3178c6' },

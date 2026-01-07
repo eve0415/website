@@ -1,4 +1,4 @@
-import type { LanguageStat } from '../../../-utils/github-stats';
+import type { LanguageStat } from '../../../-utils/github-stats-utils';
 
 import preview from '#.storybook/preview';
 import { testAllViewports } from '#.storybook/viewports';

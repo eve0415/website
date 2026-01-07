@@ -17,8 +17,8 @@
     "build": "vite build",
     "generate": "wrangler types && graphql-codegen",
     "lint": "biome check --write --unsafe && oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously && oxfmt",
-    "test": "vitest run",
-    "test:update": "vitest run --update",
+    "test": "vitest run --typecheck",
+    "test:update": "vitest run --typecheck --update",
     "storybook": "(find src -type d -name '__screenshots__' -exec rm -rf {} + 2>/dev/null || true) && storybook dev --port 6006"
   },
   "devDependencies": {

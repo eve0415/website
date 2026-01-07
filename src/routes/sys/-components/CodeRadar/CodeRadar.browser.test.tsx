@@ -1,4 +1,4 @@
-import type { ContributionDay } from '../../-utils/github-stats';
+import type { ContributionDay } from '../../-utils/github-stats-utils';
 
 import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';

@@ -1,4 +1,4 @@
-import type { GitHubStats } from '../../-utils/github-stats';
+import type { GitHubStats } from '../../-utils/github-stats-utils';
 
 export const sampleStats: GitHubStats = {
   user: {

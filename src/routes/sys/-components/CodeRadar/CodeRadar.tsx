@@ -1,4 +1,4 @@
-import type { ContributionDay } from '../../-utils/github-stats';
+import type { ContributionDay } from '../../-utils/github-stats-utils';
 import type { FC } from 'react';
 
 import { useCallback, useEffect, useRef, useState } from 'react';

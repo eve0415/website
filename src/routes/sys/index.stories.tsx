@@ -9,7 +9,7 @@ import CodeRadar from './-components/CodeRadar/CodeRadar';
 import LanguageStack from './-components/LanguageStack/LanguageStack';
 import StatsPanel from './-components/StatsPanel/StatsPanel';
 import { sampleStats } from './-components/StatsPanel/StatsPanel.fixtures';
-import { getRelativeTimeJapanese } from './-utils/github-stats';
+import { getRelativeTimeJapanese } from './-utils/github-stats-utils';
 
 // Recreate the SysPage component with injectable stats (for Storybook)
 const SysPageWithStats: FC<{ stats: typeof sampleStats }> = ({ stats }) => {

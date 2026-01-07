@@ -1,4 +1,4 @@
-import type { GitHubStats } from '../../-utils/github-stats';
+import type { GitHubStats } from '../../-utils/github-stats-utils';
 import type { FC } from 'react';
 
 import StatRow from './StatRow/StatRow';

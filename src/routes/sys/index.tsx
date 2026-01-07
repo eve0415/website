@@ -6,7 +6,8 @@ import { useState } from 'react';
 import CodeRadar from './-components/CodeRadar/CodeRadar';
 import LanguageStack from './-components/LanguageStack/LanguageStack';
 import StatsPanel from './-components/StatsPanel/StatsPanel';
-import { getGitHubStats, getRelativeTimeJapanese } from './-utils/github-stats';
+import { getGitHubStats } from './-utils/github-stats';
+import { getRelativeTimeJapanese } from './-utils/github-stats-utils';
 
 const SysPage: FC = () => {
   const stats = Route.useLoaderData();

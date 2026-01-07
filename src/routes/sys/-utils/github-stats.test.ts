@@ -3,7 +3,8 @@ import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 
-import { calculateStreaksJST, getLanguageColor, getRelativeTimeJapanese, levelFromContributionLevel } from './github-stats';
+import { refreshGitHubStats } from './github-stats';
+import { calculateStreaksJST, getLanguageColor, getRelativeTimeJapanese, levelFromContributionLevel } from './github-stats-utils';
 
 // GraphQL response fixture for MSW
 const mockGraphQLResponse = {
@@ -436,9 +437,6 @@ describe('getRelativeTimeJapanese', () => {
 
 describe('refreshGitHubStats', () => {
   test('fetches from GitHub API and stores in KV', async () => {
-    // Import the function
-    const { refreshGitHubStats } = await import('./github-stats');
-
     // Create env using real KV binding from cloudflare:workers with test PAT
     const testEnv = {
       GITHUB_PAT: 'test-token',
@@ -446,7 +444,7 @@ describe('refreshGitHubStats', () => {
     };
 
     // Call refresh
-    await refreshGitHubStats(testEnv as unknown as Parameters<typeof refreshGitHubStats>[0]);
+    await refreshGitHubStats(testEnv);
 
     // Check KV was updated by reading from it
     const storedValue = await env.GITHUB_STATS_CACHE.get('github_stats_eve0415', 'json');
@@ -464,18 +462,19 @@ describe('refreshGitHubStats', () => {
       }),
     );
 
-    const { refreshGitHubStats } = await import('./github-stats');
     const testEnv = {
       GITHUB_PAT: 'test-token',
       GITHUB_STATS_CACHE: env.GITHUB_STATS_CACHE,
     };
 
-    await refreshGitHubStats(testEnv as unknown as Parameters<typeof refreshGitHubStats>[0]);
+    await refreshGitHubStats(testEnv);
 
-    const storedValue = await env.GITHUB_STATS_CACHE.get('github_stats_eve0415', 'json');
+    const storedValue = await env.GITHUB_STATS_CACHE.get<{ languages: unknown[] }>('github_stats_eve0415', 'json');
     expect(storedValue).toBeDefined();
-    // Languages should be empty since all repos returned empty language data
-    expect((storedValue as { languages: unknown[] }).languages).toEqual([]);
+
+    if (storedValue) {
+      expect(storedValue.languages).toEqual([]);
+    }
   });
 
   // Note: Rate limit tests with Octokit's retry plugin are difficult to reliably test

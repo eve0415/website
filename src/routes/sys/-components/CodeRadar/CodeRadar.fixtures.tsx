@@ -1,4 +1,4 @@
-import type { ContributionDay } from '../../-utils/github-stats';
+import type { ContributionDay } from '../../-utils/github-stats-utils';
 
 // Generate sample contribution data for 52 weeks (364 days)
 function generateContributionData(): ContributionDay[] {
