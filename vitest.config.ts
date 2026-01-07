@@ -12,6 +12,23 @@ export default defineConfig({
     projects: [
       {
         extends: true,
+        plugins: [cloudflareTest({})],
+        test: {
+          name: 'unit',
+          include: ['src/**/*.test.ts'],
+          exclude: ['**/*.stories.tsx'],
+          environment: 'node',
+          server: {
+            deps: {
+              // Inline @tanstack packages so that our virtual module plugin can intercept
+              // the #tanstack-start-server-fn-manifest import
+              inline: ['@tanstack/start-server-core', '@tanstack/react-start'],
+            },
+          },
+        },
+      },
+      {
+        extends: true,
         plugins: [cloudflareTest({}), storybookTest()],
         test: {
           name: 'storybook',
