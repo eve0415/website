@@ -18,6 +18,12 @@ const TestComponent: FC<TestComponentProps> = ({ value, duration, delay, enabled
   return <div data-testid='result'>{displayValue}</div>;
 };
 
+// Component that uses default options entirely (line 11 coverage)
+const DefaultOptionsComponent: FC<{ value: string | number }> = ({ value }) => {
+  const displayValue = useDecryptAnimation(value);
+  return <div data-testid='default-result'>{displayValue}</div>;
+};
+
 const NumberTestComponent: FC<Omit<TestComponentProps, 'value'> & { value: number }> = ({ value, duration, delay, enabled }) => {
   const displayValue = useDecryptNumber(value, { duration, delay, enabled });
   return <div data-testid='result'>{displayValue}</div>;
@@ -144,6 +150,19 @@ describe('useDecryptAnimation', () => {
     await new Promise(resolve => setTimeout(resolve, 150));
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('X');
+  });
+
+  test('uses default options when none provided (line 11)', async () => {
+    // This tests the default parameter: options = {}
+    await render(<DefaultOptionsComponent value='DEFAULT' />);
+
+    // Should start with [ENCRYPTED] since enabled defaults to true
+    await expect.element(page.getByTestId('default-result')).toHaveTextContent('[ENCRYPTED]');
+
+    // Wait for default duration (1500ms) + delay (0ms) + buffer
+    await new Promise(resolve => setTimeout(resolve, 1700));
+
+    await expect.element(page.getByTestId('default-result')).toHaveTextContent('DEFAULT');
   });
 });
 

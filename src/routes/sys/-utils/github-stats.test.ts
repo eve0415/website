@@ -1,6 +1,62 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { HttpResponse, http } from 'msw';
+import { setupServer } from 'msw/node';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { calculateStreaksJST, getLanguageColor, getRelativeTimeJapanese, levelFromContributionLevel } from './github-stats';
+
+// GraphQL response fixture for MSW
+const mockGraphQLResponse = {
+  data: {
+    viewer: {
+      login: 'eve0415',
+      publicRepos: { totalCount: 10 },
+      privateRepos: { totalCount: 5 },
+      followers: { totalCount: 100 },
+      following: { totalCount: 50 },
+      repositories: {
+        totalCount: 15,
+        pageInfo: { hasNextPage: false, endCursor: null },
+        nodes: [
+          { name: 'repo1', isFork: false, diskUsage: 1000 },
+          { name: 'repo2', isFork: true, diskUsage: 500 },
+          { name: 'repo3', isFork: false, diskUsage: 2000 },
+        ],
+      },
+      contributionsCollection: {
+        totalCommitContributions: 500,
+        totalPullRequestContributions: 50,
+        totalIssueContributions: 25,
+        contributionCalendar: {
+          weeks: [
+            {
+              contributionDays: [
+                { date: '2024-01-14', contributionCount: 5, contributionLevel: 'THIRD_QUARTILE' },
+                { date: '2024-01-15', contributionCount: 10, contributionLevel: 'FOURTH_QUARTILE' },
+              ],
+            },
+          ],
+        },
+      },
+    },
+  },
+};
+
+// Language response fixtures
+const mockLanguageResponse = { TypeScript: 50000, JavaScript: 30000 };
+
+// MSW server setup
+const server = setupServer(
+  http.post('https://api.github.com/graphql', () => {
+    return HttpResponse.json(mockGraphQLResponse);
+  }),
+  http.get('https://api.github.com/repos/eve0415/:repo/languages', () => {
+    return HttpResponse.json(mockLanguageResponse);
+  }),
+);
+
+beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
 describe('levelFromContributionLevel', () => {
   test('maps NONE to 0', () => {
@@ -246,6 +302,76 @@ describe('calculateStreaksJST', () => {
     const result = calculateStreaksJST(days);
     expect(result.currentStreak).toBe(2);
   });
+
+  // Edge case tests for uncovered lines (312, 348, 365)
+
+  test('handles multi-day gap in longest streak calculation (line 312)', () => {
+    // Tests the case where diffDays > 1, triggering tempStreak = 1
+    vi.setSystemTime(new Date('2024-01-20T12:00:00Z'));
+
+    const days = [
+      { date: '2024-01-20', count: 1 },
+      { date: '2024-01-19', count: 1 },
+      { date: '2024-01-18', count: 1 },
+      // Gap of 3 days (not just 1)
+      { date: '2024-01-14', count: 1 },
+      { date: '2024-01-13', count: 1 },
+      { date: '2024-01-12', count: 1 },
+      { date: '2024-01-11', count: 1 },
+    ];
+
+    const result = calculateStreaksJST(days);
+    expect(result.longestStreak).toBe(4); // The older sequence is longer
+    expect(result.currentStreak).toBe(3);
+  });
+
+  test('breaks when only old data exists past yesterday (line 348)', () => {
+    // Tests the case where day.date < yesterdayJST with no today/yesterday contributions
+    vi.setSystemTime(new Date('2024-01-20T12:00:00Z'));
+
+    // Only old data, nothing for today or yesterday
+    const days = [
+      { date: '2024-01-15', count: 5 },
+      { date: '2024-01-14', count: 3 },
+      { date: '2024-01-13', count: 2 },
+    ];
+
+    const result = calculateStreaksJST(days);
+    expect(result.currentStreak).toBe(0); // No current streak since no recent contributions
+    expect(result.longestStreak).toBe(3);
+  });
+
+  test('breaks current streak when expected date is skipped (line 365)', () => {
+    // Tests the case where during backward traversal, we skip a day
+    vi.setSystemTime(new Date('2024-01-20T12:00:00Z'));
+
+    const days = [
+      { date: '2024-01-20', count: 1 }, // Today
+      { date: '2024-01-19', count: 1 }, // Yesterday
+      // Missing 2024-01-18
+      { date: '2024-01-17', count: 1 }, // This triggers line 365 break
+      { date: '2024-01-16', count: 1 },
+    ];
+
+    const result = calculateStreaksJST(days);
+    expect(result.currentStreak).toBe(2); // Only today and yesterday
+    expect(result.longestStreak).toBe(2);
+  });
+
+  test('handles JST midnight boundary edge case', () => {
+    // 14:59 UTC on Jan 15 = 23:59 JST on Jan 15
+    // 15:01 UTC on Jan 15 = 00:01 JST on Jan 16
+    vi.setSystemTime(new Date('2024-01-15T15:01:00Z'));
+
+    const days = [
+      { date: '2024-01-16', count: 1 }, // This is "today" in JST (just after midnight)
+      { date: '2024-01-15', count: 1 },
+      { date: '2024-01-14', count: 1 },
+    ];
+
+    const result = calculateStreaksJST(days);
+    expect(result.currentStreak).toBe(3);
+  });
 });
 
 describe('getRelativeTimeJapanese', () => {
@@ -300,5 +426,57 @@ describe('getRelativeTimeJapanese', () => {
     expect(result).toMatch(/2024/);
     expect(result).toMatch(/1/);
     expect(result).toMatch(/15/);
+  });
+});
+
+// Helper to create mock KV store
+function createMockKV() {
+  const store = new Map<string, string>();
+  return {
+    get: vi.fn(async (key: string, type?: string) => {
+      const value = store.get(key);
+      if (value === undefined) return null;
+      return type === 'json' ? JSON.parse(value) : value;
+    }),
+    put: vi.fn(async (key: string, value: string) => {
+      store.set(key, value);
+    }),
+    delete: vi.fn(async (key: string) => {
+      store.delete(key);
+    }),
+    _store: store, // For test inspection
+  };
+}
+
+// Note: getGitHubStats tests are skipped because vi.mock() for cloudflare:workers
+// cannot be used inside test functions - it gets hoisted to module scope but
+// references variables that don't exist at that point. The function is tested
+// indirectly via refreshGitHubStats which accepts env as a parameter.
+
+describe('refreshGitHubStats', () => {
+  test('fetches from GitHub API and stores in KV', async () => {
+    const mockKV = createMockKV();
+
+    // Import the function
+    const { refreshGitHubStats } = await import('./github-stats');
+
+    // Create mock env with PAT
+    const mockEnv = {
+      GITHUB_PAT: 'test-token',
+      GITHUB_STATS_CACHE: mockKV,
+    };
+
+    // Call refresh
+    await refreshGitHubStats(mockEnv as unknown as Parameters<typeof refreshGitHubStats>[0]);
+
+    // Check KV was updated
+    expect(mockKV.put).toHaveBeenCalled();
+    const storedValue = mockKV._store.get('github_stats_eve0415');
+    expect(storedValue).toBeDefined();
+
+    const stored = JSON.parse(storedValue as string);
+    expect(stored).toHaveProperty('user');
+    expect(stored).toHaveProperty('contributions');
+    expect(stored).toHaveProperty('languages');
   });
 });

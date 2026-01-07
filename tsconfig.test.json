@@ -2,7 +2,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "types": ["vitest/config", "@vitest/browser-playwright"],
+    "types": ["./worker-configuration.d.ts", "vitest/config", "@vitest/browser-playwright", "@cloudflare/vitest-pool-workers"],
     "noEmit": false
   },
   "include": ["./.storybook", "./src/**/*.stories.tsx", "./src/**/*.test.tsx", "./src/**/*.test.ts"]

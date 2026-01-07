@@ -23,10 +23,12 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
           const animate = () => {
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
-            // Ease out expo
-            const easeProgress = 1 - Math.pow(2, -10 * progress);
-            setCount(Math.floor(end * easeProgress));
-            if (progress < 1) {
+            if (progress >= 1) {
+              setCount(end);
+            } else {
+              // Ease out expo
+              const easeProgress = 1 - Math.pow(2, -10 * progress);
+              setCount(Math.floor(end * easeProgress));
               requestAnimationFrame(animate);
             }
           };
