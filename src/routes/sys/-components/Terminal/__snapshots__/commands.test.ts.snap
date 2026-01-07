@@ -1,0 +1,112 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`executeCommand > clear command > snapshot 1`] = `
+{
+  "type": "clear",
+}
+`;
+
+exports[`executeCommand > exit command > snapshot 1`] = `
+{
+  "needsConfirmation": true,
+  "type": "exit",
+}
+`;
+
+exports[`executeCommand > help command > snapshot 1`] = `
+{
+  "content": <HelpOutput />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > neofetch command > snapshot 1`] = `
+{
+  "content": <NeofetchOutput
+    stats={
+      {
+        "cachedAt": "2024-01-01T00:00:00Z",
+        "contributions": {
+          "contributionCalendar": [
+            {
+              "count": 5,
+              "date": "2024-01-01",
+              "level": 2,
+            },
+            {
+              "count": 10,
+              "date": "2024-01-02",
+              "level": 3,
+            },
+            {
+              "count": 15,
+              "date": "2024-01-03",
+              "level": 4,
+            },
+            {
+              "count": 0,
+              "date": "2024-01-04",
+              "level": 0,
+            },
+            {
+              "count": 3,
+              "date": "2024-01-05",
+              "level": 1,
+            },
+          ],
+          "currentStreak": 7,
+          "longestStreak": 30,
+          "totalCommits": 1337,
+          "totalIssues": 128,
+          "totalPRs": 256,
+        },
+        "languages": [
+          {
+            "color": "#3178c6",
+            "name": "TypeScript",
+            "percentage": 45,
+          },
+          {
+            "color": "#dea584",
+            "name": "Rust",
+            "percentage": 25,
+          },
+          {
+            "color": "#00ADD8",
+            "name": "Go",
+            "percentage": 15,
+          },
+          {
+            "color": "#3572A5",
+            "name": "Python",
+            "percentage": 10,
+          },
+          {
+            "color": "#8b949e",
+            "name": "Other",
+            "percentage": 5,
+          },
+        ],
+        "user": {
+          "followers": 100,
+          "following": 50,
+          "login": "eve0415",
+          "privateRepos": 10,
+          "publicRepos": 42,
+          "totalRepos": 52,
+        },
+      }
+    }
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > whoami command > snapshot 1`] = `
+{
+  "content": <WhoamiOutput
+    login="eve0415"
+  />,
+  "type": "output",
+}
+`;

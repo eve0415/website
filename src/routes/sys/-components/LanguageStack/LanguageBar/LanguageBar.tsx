@@ -13,8 +13,12 @@ export interface LanguageBarProps {
 
 // Generate bar string with filled and empty chars
 const generateBar = (percentage: number, totalChars: number): string => {
-  const filled = Math.min(totalChars, Math.round((percentage / 100) * totalChars));
-  const empty = totalChars - filled;
+  // Guard against invalid inputs
+  if (!Number.isFinite(percentage) || !Number.isFinite(totalChars) || totalChars <= 0) {
+    return '░'.repeat(Math.max(0, totalChars || 10));
+  }
+  const filled = Math.max(0, Math.min(totalChars, Math.round((percentage / 100) * totalChars)));
+  const empty = Math.max(0, totalChars - filled);
   return '█'.repeat(filled) + '░'.repeat(empty);
 };
 

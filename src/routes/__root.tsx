@@ -4,6 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
+import BSODError from './-components/BSODError/BSODError';
 import rootCss from './__root.css?url';
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
@@ -32,6 +33,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
 
 export const Route = createRootRoute({
   shellComponent: ({ children }) => <RootDocument>{children}</RootDocument>,
+  errorComponent: BSODError,
   head: () => ({
     meta: [
       {
