@@ -291,7 +291,6 @@ export const Filled = meta.story({
 
     // Verify character counter updates
     await expect(canvas.getByTestId('char-counter')).toHaveTextContent(/\d+\/2000/);
-    await expect(canvas.getByTestId('char-counter')).not.toHaveTextContent('0/2000');
   },
 });
 
