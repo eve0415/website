@@ -94,7 +94,7 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
 
   // Windows 11-style BSOD
   return (
-    <div className='fixed inset-0 z-[9999] flex flex-col items-center justify-center bg-[#0078d4] p-8 text-white'>
+    <div className='fixed inset-0 z-9999 flex flex-col items-center justify-center bg-[#0078d4] p-8 text-white'>
       {/* Sad face */}
       <div className='mb-8 font-sans text-[120px] leading-none md:text-[180px]'>:(</div>
 

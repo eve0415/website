@@ -1,4 +1,4 @@
-import { expect, fn, within } from 'storybook/test';
+import { expect, fn, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 import { SudoRmRfError } from '#routes/sys/-components/Terminal/commands';
@@ -99,11 +99,8 @@ export const ProgressComplete = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Wait for progress to complete
-    await new Promise(resolve => setTimeout(resolve, 2500));
-
     // Should show 100%
-    await expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('100% complete');
+    await waitFor(() => expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('100% complete'), { timeout: 5000 });
 
     // Reset button should appear
     await expect(canvas.getByTestId('bsod-reset')).toBeInTheDocument();
