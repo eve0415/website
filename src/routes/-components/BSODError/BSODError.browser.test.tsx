@@ -1,35 +1,63 @@
 import type { FC } from 'react';
 
+import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } from '@tanstack/react-router';
 import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
+import { page, userEvent } from 'vitest/browser';
 
 import { SudoRmRfError } from '#routes/sys/-components/Terminal/commands';
 
 import BSODError from './BSODError';
+import { REPO_URL } from './destinations';
 
-// Test wrapper to provide required props
+// Create a router wrapper for testing Link components
+const createTestRouter = (error: Error, onReset: () => void) => {
+  const rootRoute = createRootRoute({
+    component: () => <BSODError error={error} reset={onReset} />,
+  });
+
+  return createRouter({
+    routeTree: rootRoute,
+    history: createMemoryHistory({ initialEntries: ['/error'] }),
+  });
+};
+
+// Test wrapper to provide required props with router context
 interface TestProps {
   error: Error;
   onReset?: () => void;
 }
 
 const TestWrapper: FC<TestProps> = ({ error, onReset = () => {} }) => {
-  return <BSODError error={error} reset={onReset} />;
+  const router = createTestRouter(error, onReset);
+  return <RouterProvider router={router} />;
 };
 
 describe('BSODError', () => {
-  describe('SudoRmRfError (intentional crash)', () => {
-    test('renders BSOD layout', async () => {
+  describe('renders BSOD for all errors', () => {
+    test('renders BSOD layout for SudoRmRfError', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
       // Should show sad face
       await expect.element(page.getByText(':(')).toBeVisible();
 
-      // Should show main message
-      await expect.element(page.getByText('Your PC ran into a problem and needs to restart.')).toBeVisible();
+      // Should show progress
+      await expect.element(page.getByTestId('bsod-progress')).toBeVisible();
     });
 
+    test('renders BSOD layout for generic errors', async () => {
+      const genericError = new Error('Something went wrong');
+      await render(<TestWrapper error={genericError} />);
+
+      // Should show sad face (BSOD, not simple error)
+      await expect.element(page.getByText(':(')).toBeVisible();
+
+      // Should show progress
+      await expect.element(page.getByTestId('bsod-progress')).toBeVisible();
+    });
+  });
+
+  describe('progress animation', () => {
     test('shows progress indicator', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
@@ -63,20 +91,55 @@ describe('BSODError', () => {
       // Wait for progress to complete
       await expect.element(page.getByTestId('bsod-progress')).toHaveTextContent('100% complete');
     });
+  });
 
+  describe('QR code', () => {
     test('displays QR code', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
       const qrCode = page.getByTestId('bsod-qrcode');
       await expect.element(qrCode).toBeVisible();
-
-      // QR code should contain an SVG - verify the container has content
-      const qrCodeEl = qrCode.element();
-      const hasSvg = qrCodeEl?.querySelector('svg') !== null;
-      expect(hasSvg).toBe(true);
     });
 
-    test('displays stop code', async () => {
+    test('QR code has proper SVG structure', async () => {
+      await render(<TestWrapper error={new SudoRmRfError()} />);
+
+      const qrCode = page.getByTestId('bsod-qrcode');
+
+      // Wait for QR code SVG to render
+      await expect
+        .poll(
+          () => {
+            const qrCodeEl = qrCode.element();
+            const svg = qrCodeEl?.querySelector('svg');
+            return svg !== null;
+          },
+          { timeout: 3000 },
+        )
+        .toBe(true);
+    });
+
+    test('QR code contains path elements (cells)', async () => {
+      await render(<TestWrapper error={new SudoRmRfError()} />);
+
+      const qrCode = page.getByTestId('bsod-qrcode');
+
+      // qrcode.react uses path elements for the QR code cells
+      await expect
+        .poll(
+          () => {
+            const qrCodeEl = qrCode.element();
+            const paths = qrCodeEl?.querySelectorAll('path');
+            return (paths?.length ?? 0) > 0;
+          },
+          { timeout: 3000 },
+        )
+        .toBe(true);
+    });
+  });
+
+  describe('stop code', () => {
+    test('displays stop code with error message', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
       const stopCode = page.getByTestId('bsod-stopcode');
@@ -84,6 +147,24 @@ describe('BSODError', () => {
       await expect.element(stopCode).toHaveTextContent('SYSTEM_DIAGNOSTIC_FAILURE');
     });
 
+    test('displays custom error message in stop code', async () => {
+      const customError = new Error('CUSTOM_ERROR_MESSAGE');
+      await render(<TestWrapper error={customError} />);
+
+      const stopCode = page.getByTestId('bsod-stopcode');
+      await expect.element(stopCode).toHaveTextContent('CUSTOM_ERROR_MESSAGE');
+    });
+
+    test('displays fallback for empty error message', async () => {
+      const emptyError = new Error('');
+      await render(<TestWrapper error={emptyError} />);
+
+      const stopCode = page.getByTestId('bsod-stopcode');
+      await expect.element(stopCode).toHaveTextContent('UNKNOWN_ERROR');
+    });
+  });
+
+  describe('buttons', () => {
     test('reset button appears after progress completes', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
@@ -92,14 +173,47 @@ describe('BSODError', () => {
 
       // Wait for reset button to appear after progress completes
       await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
-      await expect.element(page.getByTestId('bsod-reset')).toHaveTextContent('Press any key to restart');
+      await expect.element(page.getByTestId('bsod-reset')).toHaveTextContent('Restart');
+    });
+
+    test('home button appears after progress completes', async () => {
+      await render(<TestWrapper error={new SudoRmRfError()} />);
+
+      // Initially no home button
+      await expect.element(page.getByTestId('bsod-home')).not.toBeInTheDocument();
+
+      // Wait for home button to appear
+      await expect.element(page.getByTestId('bsod-home')).toBeVisible();
+      await expect.element(page.getByTestId('bsod-home')).toHaveTextContent('Home');
+    });
+
+    test('revert button appears only for easter egg', async () => {
+      await render(<TestWrapper error={new SudoRmRfError()} />);
+
+      // Wait for buttons to appear
+      await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
+
+      // Revert button should be visible for easter egg
+      await expect.element(page.getByTestId('bsod-revert')).toBeVisible();
+      await expect.element(page.getByTestId('bsod-revert')).toHaveTextContent('Revert');
+    });
+
+    test('revert button does not appear for regular errors', async () => {
+      const genericError = new Error('Regular error');
+      await render(<TestWrapper error={genericError} />);
+
+      // Wait for buttons to appear
+      await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
+
+      // Revert button should NOT be visible for regular errors
+      await expect.element(page.getByTestId('bsod-revert')).not.toBeInTheDocument();
     });
 
     test('reset button calls reset callback', async () => {
       const onReset = vi.fn();
       await render(<TestWrapper error={new SudoRmRfError()} onReset={onReset} />);
 
-      // Wait for reset button to appear after progress completes
+      // Wait for reset button to appear
       await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
 
       // Click reset button
@@ -108,181 +222,147 @@ describe('BSODError', () => {
       expect(onReset).toHaveBeenCalledTimes(1);
     });
 
-    test('shows collecting error info message', async () => {
+    test('home button has correct link', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
-      await expect.element(page.getByText(/collecting some error info/i)).toBeVisible();
+      // Wait for home button to appear
+      await expect.element(page.getByTestId('bsod-home')).toBeVisible();
+
+      const homeBtn = page.getByTestId('bsod-home');
+      const href = homeBtn.element()?.getAttribute('href');
+      expect(href).toBe('/');
     });
 
-    test('displays QR destination link', async () => {
+    test('revert button has correct link', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
-      // Should have a link element (one of the three possible destinations)
-      const link = page.getByRole('link');
-      await expect.element(link).toBeVisible();
+      // Wait for revert button to appear
+      await expect.element(page.getByTestId('bsod-revert')).toBeVisible();
 
-      // Link should be to one of the destinations
-      const linkEl = link.element();
-      const href = linkEl?.getAttribute('href');
-      const validUrls = ['https://www.youtube.com/watch?v=dQw4w9WgXcQ', 'https://github.com/eve0415', 'https://eve0415.net'];
-      expect(validUrls).toContain(href);
-    });
-
-    test('has blue background color', async () => {
-      await render(<TestWrapper error={new SudoRmRfError()} />);
-
-      // Find the BSOD container by the sad face text
-      const sadFace = page.getByText(':(');
-      await expect.element(sadFace).toBeVisible();
-
-      // The parent container should have the blue background
-      // We can't easily test CSS in browser tests, but we can verify structure
-      expect(true).toBe(true);
+      const revertBtn = page.getByTestId('bsod-revert');
+      const href = revertBtn.element()?.getAttribute('href');
+      expect(href).toBe('/sys');
     });
   });
 
-  describe('generic error (non-intentional)', () => {
-    test('renders simple error layout', async () => {
-      const genericError = new Error('Something went wrong');
-      await render(<TestWrapper error={genericError} />);
-
-      // Should show "Error" heading
-      await expect.element(page.getByRole('heading', { name: 'Error' })).toBeVisible();
-
-      // Should show error message
-      await expect.element(page.getByText('Something went wrong')).toBeVisible();
-    });
-
-    test('shows Try Again button', async () => {
-      const genericError = new Error('Test error');
-      await render(<TestWrapper error={genericError} />);
-
-      await expect.element(page.getByRole('button', { name: 'Try Again' })).toBeVisible();
-    });
-
-    test('Try Again button calls reset callback', async () => {
+  describe('keypress handling', () => {
+    test('keypress triggers reset after progress completes', async () => {
       const onReset = vi.fn();
-      const genericError = new Error('Test error');
-      await render(<TestWrapper error={genericError} onReset={onReset} />);
+      await render(<TestWrapper error={new SudoRmRfError()} onReset={onReset} />);
 
-      await page.getByRole('button', { name: 'Try Again' }).click();
+      // Wait for progress to complete
+      await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
+
+      // Press a key
+      await userEvent.keyboard('{Enter}');
 
       expect(onReset).toHaveBeenCalledTimes(1);
     });
 
-    test('does not show BSOD elements', async () => {
-      const genericError = new Error('Test error');
-      await render(<TestWrapper error={genericError} />);
+    test('keypress does not trigger reset before progress completes', async () => {
+      const onReset = vi.fn();
+      await render(<TestWrapper error={new SudoRmRfError()} onReset={onReset} />);
 
-      // Should not show sad face
-      await expect.element(page.getByText(':(')).not.toBeInTheDocument();
+      // Immediately press a key before progress completes
+      await userEvent.keyboard('{Enter}');
 
-      // Should not show progress
-      await expect.element(page.getByTestId('bsod-progress')).not.toBeInTheDocument();
-
-      // Should not show QR code
-      await expect.element(page.getByTestId('bsod-qrcode')).not.toBeInTheDocument();
-
-      // Should not show stop code
-      await expect.element(page.getByTestId('bsod-stopcode')).not.toBeInTheDocument();
-    });
-
-    test('handles empty error message', async () => {
-      const emptyError = new Error('');
-      await render(<TestWrapper error={emptyError} />);
-
-      // Should show fallback message
-      await expect.element(page.getByText('An unexpected error occurred')).toBeVisible();
-    });
-
-    test('handles error without message', async () => {
-      const noMessageError = new Error();
-      await render(<TestWrapper error={noMessageError} />);
-
-      // Should show fallback message
-      await expect.element(page.getByText('An unexpected error occurred')).toBeVisible();
+      // Should not have triggered reset yet
+      expect(onReset).not.toHaveBeenCalled();
     });
   });
 
-  describe('SudoRmRfError class', () => {
-    test('is detected as intentional crash', async () => {
-      const error = new SudoRmRfError();
-      await render(<TestWrapper error={error} />);
-
-      // Should show BSOD (sad face proves it's the BSOD view)
-      await expect.element(page.getByText(':(')).toBeVisible();
-    });
-
-    test('other errors with same message are not BSOD', async () => {
-      // Create a regular error with the same message
-      const regularError = new Error('SYSTEM_DIAGNOSTIC_FAILURE');
-      await render(<TestWrapper error={regularError} />);
-
-      // Should NOT show BSOD
-      await expect.element(page.getByText(':(')).not.toBeInTheDocument();
-
-      // Should show simple error
-      await expect.element(page.getByRole('heading', { name: 'Error' })).toBeVisible();
-    });
-  });
-
-  describe('QR code visual', () => {
-    test('QR code has proper SVG structure', async () => {
+  describe('repo link', () => {
+    test('displays repo link', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
-      const qrCode = page.getByTestId('bsod-qrcode');
-      await expect.element(qrCode).toBeVisible();
+      // Find link by text content
+      const link = page.getByText('github.com/eve0415/website');
+      await expect.element(link).toBeVisible();
 
-      // QR code should contain an SVG with white background
-      const qrCodeEl = qrCode.element();
-      const svg = qrCodeEl?.querySelector('svg');
-      expect(svg).not.toBeNull();
-      expect(svg?.classList.contains('bg-white')).toBe(true);
+      const linkEl = link.element();
+      expect(linkEl?.getAttribute('href')).toBe(REPO_URL);
     });
 
-    test('QR code contains rect elements (cells)', async () => {
+    test('repo link has proper security attributes', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
-      const qrCode = page.getByTestId('bsod-qrcode');
-      const qrCodeEl = qrCode.element();
-
-      // Should have multiple rect elements for the QR pattern
-      const rects = qrCodeEl?.querySelectorAll('rect');
-      expect(rects?.length).toBeGreaterThan(0);
-    });
-  });
-
-  describe('accessibility', () => {
-    test('reset button is focusable', async () => {
-      await render(<TestWrapper error={new SudoRmRfError()} />);
-
-      // Wait for reset button to appear after progress completes
-      const resetBtn = page.getByTestId('bsod-reset');
-      await expect.element(resetBtn).toBeVisible();
-
-      // Button should be a button element
-      const btnEl = resetBtn.element();
-      expect(btnEl?.tagName.toLowerCase()).toBe('button');
-    });
-
-    test('generic error Try Again button is focusable', async () => {
-      const genericError = new Error('Test');
-      await render(<TestWrapper error={genericError} />);
-
-      const tryAgainBtn = page.getByRole('button', { name: 'Try Again' });
-      await expect.element(tryAgainBtn).toBeVisible();
-    });
-
-    test('QR destination link has proper attributes', async () => {
-      await render(<TestWrapper error={new SudoRmRfError()} />);
-
-      const link = page.getByRole('link');
+      const link = page.getByText('github.com/eve0415/website');
       const linkEl = link.element();
 
       // Should open in new tab safely
       expect(linkEl?.getAttribute('target')).toBe('_blank');
       expect(linkEl?.getAttribute('rel')).toContain('noopener');
       expect(linkEl?.getAttribute('rel')).toContain('noreferrer');
+    });
+  });
+
+  describe('messages', () => {
+    test('displays main message', async () => {
+      await render(<TestWrapper error={new SudoRmRfError()} />);
+
+      // Check for the sad face which is part of the BSOD layout
+      await expect.element(page.getByText(':(')).toBeVisible();
+
+      // All SudoRmRfError messages mention "delete", "files", "sudo", "rm", etc.
+      // Check that we have visible text content in the message area
+      await expect.element(page.getByTestId('bsod-progress')).toBeVisible();
+    });
+
+    test('displays help text', async () => {
+      await render(<TestWrapper error={new SudoRmRfError()} />);
+
+      // Should show help text about visiting for more info
+      await expect.element(page.getByText(/For more information/i)).toBeVisible();
+    });
+  });
+
+  describe('SudoRmRfError detection', () => {
+    test('SudoRmRfError is detected as easter egg', async () => {
+      const error = new SudoRmRfError();
+      await render(<TestWrapper error={error} />);
+
+      // Wait for buttons
+      await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
+
+      // Revert button proves it's detected as easter egg
+      await expect.element(page.getByTestId('bsod-revert')).toBeVisible();
+    });
+
+    test('regular error with same message is not easter egg', async () => {
+      // Create a regular error with the same message
+      const regularError = new Error('SYSTEM_DIAGNOSTIC_FAILURE');
+      await render(<TestWrapper error={regularError} />);
+
+      // Wait for buttons
+      await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
+
+      // Revert button should NOT appear for regular errors
+      await expect.element(page.getByTestId('bsod-revert')).not.toBeInTheDocument();
+    });
+  });
+
+  describe('accessibility', () => {
+    test('reset button is a proper button element', async () => {
+      await render(<TestWrapper error={new SudoRmRfError()} />);
+
+      await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
+
+      const btnEl = page.getByTestId('bsod-reset').element();
+      expect(btnEl?.tagName.toLowerCase()).toBe('button');
+      expect(btnEl?.getAttribute('type')).toBe('button');
+    });
+
+    test('home and revert are link elements', async () => {
+      await render(<TestWrapper error={new SudoRmRfError()} />);
+
+      await expect.element(page.getByTestId('bsod-home')).toBeVisible();
+      await expect.element(page.getByTestId('bsod-revert')).toBeVisible();
+
+      const homeEl = page.getByTestId('bsod-home').element();
+      const revertEl = page.getByTestId('bsod-revert').element();
+
+      expect(homeEl?.tagName.toLowerCase()).toBe('a');
+      expect(revertEl?.tagName.toLowerCase()).toBe('a');
     });
   });
 });

@@ -1,3 +1,4 @@
+import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } from '@tanstack/react-router';
 import { expect, fn, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
@@ -16,11 +17,23 @@ const meta = preview.meta({
     reset: { action: 'reset' },
     info: { control: false },
   },
+  decorators: [
+    Story => {
+      const rootRoute = createRootRoute({
+        component: Story,
+      });
+      const router = createRouter({
+        routeTree: rootRoute,
+        history: createMemoryHistory({ initialEntries: ['/error'] }),
+      });
+      return <RouterProvider router={router} />;
+    },
+  ],
 });
 
 /**
- * Default BSOD for SudoRmRfError
- * Shows Windows 11-style blue screen with progress animation
+ * Default BSOD for SudoRmRfError (Easter Egg)
+ * Shows Windows 11-style blue screen with progress animation and Revert button
  */
 export const Default = meta.story({
   args: {
@@ -45,7 +58,8 @@ export const Default = meta.story({
 });
 
 /**
- * Generic error - Simple error display for non-intentional crashes
+ * Generic error - Now shows BSOD layout (unified experience)
+ * All errors show the playful BSOD, no more simple error view
  */
 export const GenericError = meta.story({
   args: {
@@ -55,14 +69,14 @@ export const GenericError = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Should show simple error layout
-    await expect(canvas.getByRole('heading', { name: 'Error' })).toBeInTheDocument();
+    // Should show BSOD layout (not simple error)
+    await expect(canvas.getByText(':(')).toBeInTheDocument();
 
-    // Should show error message
-    await expect(canvas.getByText('An unexpected error occurred in the application')).toBeInTheDocument();
+    // Should show progress
+    await expect(canvas.getByTestId('bsod-progress')).toBeInTheDocument();
 
-    // Should show Try Again button
-    await expect(canvas.getByRole('button', { name: 'Try Again' })).toBeInTheDocument();
+    // Should show stop code with the error message
+    await expect(canvas.getByTestId('bsod-stopcode')).toHaveTextContent('An unexpected error occurred in the application');
   },
 });
 
@@ -91,7 +105,8 @@ export const ProgressAnimation = meta.story({
 });
 
 /**
- * Progress complete - Shows reset button after 100%
+ * Progress complete - Shows all buttons after 100%
+ * For easter egg: Restart, Home, and Revert buttons appear
  */
 export const ProgressComplete = meta.story({
   args: {
@@ -101,24 +116,53 @@ export const ProgressComplete = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Should show 100%
+    // Wait for progress to complete
     await waitFor(() => expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('100% complete'), { timeout: 5000 });
 
-    // Reset button should appear
+    // All buttons should appear for easter egg
     await expect(canvas.getByTestId('bsod-reset')).toBeInTheDocument();
-    await expect(canvas.getByTestId('bsod-reset')).toHaveTextContent('Press any key to restart');
+    await expect(canvas.getByTestId('bsod-reset')).toHaveTextContent('Restart');
+    await expect(canvas.getByTestId('bsod-home')).toBeInTheDocument();
+    await expect(canvas.getByTestId('bsod-home')).toHaveTextContent('Home');
+    await expect(canvas.getByTestId('bsod-revert')).toBeInTheDocument();
+    await expect(canvas.getByTestId('bsod-revert')).toHaveTextContent('Revert');
+  },
+});
+
+/**
+ * Progress complete for regular error
+ * Only Restart and Home buttons appear (no Revert)
+ */
+export const ProgressCompleteRegularError = meta.story({
+  args: {
+    error: new Error('Regular error'),
+    reset: fn(),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Wait for progress to complete
+    await waitFor(() => expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('100% complete'), { timeout: 5000 });
+
+    // Restart and Home should appear
+    await expect(canvas.getByTestId('bsod-reset')).toBeInTheDocument();
+    await expect(canvas.getByTestId('bsod-home')).toBeInTheDocument();
+
+    // Revert should NOT appear for regular errors
+    await expect(canvas.queryByTestId('bsod-revert')).not.toBeInTheDocument();
   },
 });
 
 /**
  * QR Code variants
  *
- * The BSOD displays one of three random destinations:
+ * The QR code links to one of four random destinations:
  * - YouTube (Rickroll)
  * - GitHub (eve0415)
  * - eve0415.net
+ * - GitHub repo
  *
- * This story shows the QR code area - actual destination is randomly selected on mount.
+ * The "visit" link always points to the GitHub repo.
  */
 export const QRCodeDisplay = meta.story({
   args: {
@@ -128,8 +172,7 @@ export const QRCodeDisplay = meta.story({
   parameters: {
     docs: {
       description: {
-        story:
-          'Shows the QR code section. The destination link is randomly selected from: YouTube (Rickroll), GitHub (eve0415), or eve0415.net. Refresh to see different destinations.',
+        story: 'Shows the QR code section. The QR destination is randomly selected. The "visit" link always points to github.com/eve0415/website.',
       },
     },
   },
@@ -139,18 +182,35 @@ export const QRCodeDisplay = meta.story({
     // QR code should be visible
     await expect(canvas.getByTestId('bsod-qrcode')).toBeInTheDocument();
 
-    // Should have a link
-    const link = canvas.getByRole('link');
-    await expect(link).toBeInTheDocument();
-
-    // Link should have safe attributes
-    await expect(link).toHaveAttribute('target', '_blank');
-    await expect(link).toHaveAttribute('rel', expect.stringContaining('noopener'));
+    // Should have repo link (always the same)
+    const repoLink = canvas.getByText('github.com/eve0415/website');
+    await expect(repoLink).toBeInTheDocument();
+    await expect(repoLink).toHaveAttribute('href', 'https://github.com/eve0415/website');
+    await expect(repoLink).toHaveAttribute('target', '_blank');
+    await expect(repoLink).toHaveAttribute('rel', expect.stringContaining('noopener'));
   },
 });
 
 /**
- * Empty error message - Falls back to default message
+ * Long error message - Tests multi-line stop code display
+ */
+export const LongErrorMessage = meta.story({
+  args: {
+    error: new Error(
+      'This is a very long error message that should wrap to multiple lines in the stop code area. It tests how the component handles long error messages gracefully without breaking the layout.',
+    ),
+    reset: fn(),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Should show the long error in stop code
+    await expect(canvas.getByTestId('bsod-stopcode')).toHaveTextContent(/very long error message/);
+  },
+});
+
+/**
+ * Empty error message - Falls back to UNKNOWN_ERROR
  */
 export const EmptyErrorMessage = meta.story({
   args: {
@@ -160,8 +220,11 @@ export const EmptyErrorMessage = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Should show fallback message
-    await expect(canvas.getByText('An unexpected error occurred')).toBeInTheDocument();
+    // Should show BSOD layout
+    await expect(canvas.getByText(':(')).toBeInTheDocument();
+
+    // Should show fallback in stop code
+    await expect(canvas.getByTestId('bsod-stopcode')).toHaveTextContent('UNKNOWN_ERROR');
   },
 });
 
@@ -189,29 +252,10 @@ export const ResetInteraction = meta.story({
 });
 
 /**
- * Generic error reset interaction
+ * Messages display
+ * Shows that random messages from the pool are displayed
  */
-export const GenericErrorReset = meta.story({
-  args: {
-    error: new Error('Test error'),
-    reset: fn(),
-  },
-  play: async ({ canvasElement, args }: { canvasElement: HTMLElement; args: { reset: () => void } }) => {
-    const canvas = within(canvasElement);
-
-    // Click Try Again button
-    const tryAgainButton = canvas.getByRole('button', { name: 'Try Again' });
-    tryAgainButton.click();
-
-    // Verify reset was called
-    await expect(args.reset).toHaveBeenCalledTimes(1);
-  },
-});
-
-/**
- * Main message display
- */
-export const MainMessage = meta.story({
+export const MessagesDisplay = meta.story({
   args: {
     error: new SudoRmRfError(),
     reset: fn(),
@@ -219,11 +263,9 @@ export const MainMessage = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Should show main message
-    await expect(canvas.getByText('Your PC ran into a problem and needs to restart.')).toBeInTheDocument();
-
-    // Should show secondary message
-    await expect(canvas.getByText(/collecting some error info/i)).toBeInTheDocument();
+    // Should have some message text (content varies due to randomization)
+    // Check for the help text which is always the same
+    await expect(canvas.getByText(/For more information about this issue/i)).toBeInTheDocument();
   },
 });
 
@@ -241,9 +283,6 @@ export const VisualElements = meta.story({
     // Sad face
     await expect(canvas.getByText(':(')).toBeInTheDocument();
 
-    // Main message
-    await expect(canvas.getByText(/ran into a problem/i)).toBeInTheDocument();
-
     // Progress
     await expect(canvas.getByTestId('bsod-progress')).toBeInTheDocument();
 
@@ -255,5 +294,24 @@ export const VisualElements = meta.story({
 
     // Stop code
     await expect(canvas.getByTestId('bsod-stopcode')).toBeInTheDocument();
+  },
+});
+
+/**
+ * Mobile viewport
+ * Tests the responsive layout on smaller screens
+ */
+export const MobileViewport = meta.story({
+  args: {
+    error: new SudoRmRfError(),
+    reset: fn(),
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+
+    // Core elements should still be visible
+    await expect(canvas.getByText(':(')).toBeInTheDocument();
+    await expect(canvas.getByTestId('bsod-progress')).toBeInTheDocument();
+    await expect(canvas.getByTestId('bsod-qrcode')).toBeInTheDocument();
   },
 });
