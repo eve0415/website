@@ -57,6 +57,12 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
   const isTouchDevice = __forceTouchDevice ?? detectedTouchDevice;
   const promptRef = useRef<HTMLDivElement>(null);
   const [isCrashing, setIsCrashing] = useState(false);
+  const [pendingError, setPendingError] = useState<Error | null>(null);
+
+  // Throw pending error during render so React's error boundary catches it
+  if (pendingError) {
+    throw pendingError;
+  }
 
   const {
     state,
@@ -141,11 +147,11 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
           }
           break;
         case 'crash':
-          // Trigger crash animation then throw error
+          // Trigger crash animation then propagate error to React's error boundary
           setIsCrashing(true);
           terminalExecute(input, <span className='text-red-400'>Executing...</span>);
           setTimeout(() => {
-            throw new SudoRmRfError();
+            setPendingError(new SudoRmRfError());
           }, 1500);
           break;
         case 'diagnostic':

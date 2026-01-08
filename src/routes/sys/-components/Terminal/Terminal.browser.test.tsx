@@ -1,9 +1,29 @@
+import type { ReactNode } from 'react';
+
+import { Component } from 'react';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
 
 import Terminal from './Terminal';
 import { mockGitHubStats } from './Terminal.fixtures';
+
+// Error boundary for testing error propagation
+class TestErrorBoundary extends Component<{ children: ReactNode }, { caughtError: Error | null }> {
+  override state: { caughtError: Error | null } = { caughtError: null };
+
+  static getDerivedStateFromError(error: Error) {
+    return { caughtError: error };
+  }
+
+  override render() {
+    const { caughtError } = this.state;
+    if (caughtError) {
+      return <div data-testid='error-caught'>{caughtError.name}</div>;
+    }
+    return this.props.children;
+  }
+}
 
 // Helper to dispatch Ctrl+C directly to window
 // userEvent.keyboard('{Control>}c{/Control}') doesn't reach window event listeners with fake timers
@@ -589,6 +609,37 @@ describe('Terminal', () => {
 
       // Should show "Executing..." in output
       await expect.element(page.getByTestId('terminal-output')).toHaveTextContent('Executing');
+    });
+
+    test('sudo rm -rf propagates SudoRmRfError to error boundary after 1.5s', async () => {
+      mockTouchDevice(false);
+      const onBootComplete = vi.fn();
+
+      await render(
+        <TestErrorBoundary>
+          <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice={false}>
+            <div data-testid='boot-content'>Content</div>
+          </Terminal>
+        </TestErrorBoundary>,
+      );
+
+      // Navigate to prompt state
+      await vi.advanceTimersByTimeAsync(10000);
+      dispatchCtrlC();
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Execute crash command
+      await userEvent.keyboard('sudo rm -rf /{Enter}');
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Before 1500ms: should show "Executing..."
+      await expect.element(page.getByTestId('terminal-output')).toHaveTextContent('Executing');
+
+      // After 1500ms: error should propagate to boundary
+      await vi.advanceTimersByTimeAsync(1500);
+
+      // Error boundary should have caught SudoRmRfError
+      await expect.element(page.getByTestId('error-caught')).toHaveTextContent('SudoRmRfError');
     });
   });
 
