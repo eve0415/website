@@ -82,9 +82,10 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
       className={`group cursor-pointer border-l-2 border-l-transparent font-mono text-sm transition-all duration-fast hover:translate-x-0.5 hover:border-l-neon hover:bg-neon/5 ${visible ? 'opacity-100' : 'opacity-0'}`}
       style={{ transitionDelay: `${index * 50}ms` }}
     >
-      {/* Mobile layout (<640px): stacked with 10-char bar */}
-      <div className='flex flex-col gap-1 sm:hidden'>
-        <div className='flex items-center'>
+      {/* Unified layout: flex-wrap allows stacking on mobile, inline on tablet+ */}
+      <div className='flex flex-wrap items-center'>
+        {/* Name section - full width on mobile forces bar to wrap */}
+        <div className='flex w-full items-center sm:w-auto sm:shrink-0'>
           <span className='text-subtle-foreground'>{isLast ? '└──' : '├──'}</span>
           <span className='ml-1'>
             {isLoading ? (
@@ -96,54 +97,31 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
             )}
           </span>
         </div>
-        <div className='flex items-center pl-4'>
-          <span className='text-subtle-foreground'>│</span>
-          <span className='ml-2 grow border-subtle-foreground/30 border-b' />
+
+        {/* Bar section - wraps to second row on mobile, inline on tablet+ */}
+        <div className='flex w-full items-center pl-4 sm:w-auto sm:grow sm:pl-0'>
+          {/* Mobile: vertical tree connector */}
+          <span className='text-subtle-foreground sm:hidden'>│</span>
+          {/* Growing dashed line */}
+          <span className='ml-2 grow border-subtle-foreground/30 border-b sm:mx-1 sm:ml-0' />
           <span className='text-subtle-foreground/50'>┤</span>
-          <span style={{ color: barColor }}>{barMobile}</span>
+          {/* Responsive bars - only bar length differs, decorative so OK to toggle visibility */}
+          <span className='sm:hidden' style={{ color: barColor }}>
+            {barMobile}
+          </span>
+          <span className='hidden sm:inline lg:hidden' style={{ color: barColor }}>
+            {barTablet}
+          </span>
+          <span className='hidden lg:inline' style={{ color: barColor }}>
+            {barDesktop}
+          </span>
           <span className='text-subtle-foreground/50'>│</span>
-          <span className='ml-1 text-subtle-foreground tabular-nums'>{isLoading ? '---' : `${progress.toFixed(1)}%`}</span>
+          <span className='ml-1 text-subtle-foreground tabular-nums'>
+            {isLoading ? '---' : `${progress.toFixed(1)}%`}
+            {/* Hex value - desktop only, supplementary info */}
+            {!isLoading && <span className='ml-1 hidden text-subtle-foreground/50 lg:inline'>[{hexValue}]</span>}
+          </span>
         </div>
-      </div>
-
-      {/* Tablet layout (640-1024px): inline with 15-char bar */}
-      <div className='hidden items-center sm:flex lg:hidden'>
-        <span className='text-subtle-foreground'>{isLast ? '└──' : '├──'}</span>
-        <span className='ml-1 shrink-0'>
-          {isLoading ? (
-            <span className='animate-blink text-orange'>[LOADING...]</span>
-          ) : (
-            <span className='text-muted-foreground' title={language.name}>
-              {language.name}
-            </span>
-          )}
-        </span>
-        <span className='mx-1 grow border-subtle-foreground/30 border-b' />
-        <span className='text-subtle-foreground/50'>┤</span>
-        <span style={{ color: barColor }}>{barTablet}</span>
-        <span className='text-subtle-foreground/50'>│</span>
-        <span className='ml-1 text-subtle-foreground tabular-nums'>{isLoading ? '---' : `${progress.toFixed(1)}%`}</span>
-      </div>
-
-      {/* Desktop layout (>=1024px): inline with 20-char bar + hex */}
-      <div className='hidden items-center lg:flex'>
-        <span className='text-subtle-foreground'>{isLast ? '└──' : '├──'}</span>
-        <span className='ml-1 shrink-0'>
-          {isLoading ? (
-            <span className='animate-blink text-orange'>[LOADING...]</span>
-          ) : (
-            <span className='text-muted-foreground' title={language.name}>
-              {language.name}
-            </span>
-          )}
-        </span>
-        <span className='mx-1 grow border-subtle-foreground/30 border-b' />
-        <span className='text-subtle-foreground/50'>┤</span>
-        <span style={{ color: barColor }}>{barDesktop}</span>
-        <span className='text-subtle-foreground/50'>│</span>
-        <span className='ml-1 text-subtle-foreground tabular-nums'>
-          {isLoading ? '---' : progress.toFixed(1)}%{!isLoading && <span className='ml-1 text-subtle-foreground/50'>[{hexValue}]</span>}
-        </span>
       </div>
     </div>
   );

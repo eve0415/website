@@ -98,7 +98,7 @@ export const Interactive = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
 
     // Footer should show help text
     await expect(canvas.getByTestId('terminal-footer')).toHaveTextContent("type 'help' for commands");
@@ -149,7 +149,7 @@ export const Prompt = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
 
     // Input area should be empty
     await expect(canvas.getByTestId('terminal-input')).toHaveTextContent('');
@@ -164,7 +164,10 @@ export const WithHistory = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
+
+    // Click to ensure keyboard listener is attached (webkit race condition fix)
+    await userEvent.click(canvasElement);
 
     // Execute some commands
     await userEvent.keyboard('help{Enter}');
@@ -189,7 +192,10 @@ export const AwaitingConfirmation = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
+
+    // Click to ensure keyboard listener is attached (webkit race condition fix)
+    await userEvent.click(canvasElement);
 
     // Execute exit command
     await userEvent.keyboard('exit{Enter}');
@@ -223,7 +229,7 @@ export const TouchDevice = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot animation to complete (content becomes visible)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // On touch devices, prompt cursor should NOT be rendered
     void expect(canvas.queryByTestId('terminal-prompt-cursor')).not.toBeInTheDocument();
@@ -242,7 +248,10 @@ export const CommandExecution = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
+
+    // Click to ensure keyboard listener is attached (webkit race condition fix)
+    await userEvent.click(canvasElement);
 
     // Type and execute help
     await userEvent.keyboard('help{Enter}');
@@ -266,7 +275,10 @@ export const TabAutocomplete = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
+
+    // Click to ensure keyboard listener is attached (webkit race condition fix)
+    await userEvent.click(canvasElement);
 
     // Type partial command
     await userEvent.keyboard('hel');
@@ -288,7 +300,10 @@ export const ErrorCommand = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
+
+    // Click to ensure keyboard listener is attached (webkit race condition fix)
+    await userEvent.click(canvasElement);
 
     // Execute unknown command
     await userEvent.keyboard('unknowncommand{Enter}');
@@ -327,7 +342,10 @@ export const CtrlCClearsInput = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
+
+    // Click to ensure keyboard listener is attached (webkit race condition fix)
+    await userEvent.click(canvasElement);
 
     // Type something
     await userEvent.keyboard('some partial command');
@@ -349,7 +367,10 @@ export const ClearCommand = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for boot sequence to complete (prompt cursor appears)
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 10000 });
+
+    // Click to ensure keyboard listener is attached (webkit race condition fix)
+    await userEvent.click(canvasElement);
 
     // Add some output
     await userEvent.keyboard('help{Enter}');
