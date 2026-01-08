@@ -32,8 +32,9 @@ export const Static = meta.story({
     delay: 0,
   },
   play: async context => {
-    // Wait for text to render
-    await new Promise(resolve => setTimeout(resolve, 100));
+    const canvas = within(context.canvasElement);
+    // Wait for static text to render (speed=0 means instant)
+    await waitFor(() => expect(canvas.getByText('Complete text displayed')).toBeInTheDocument());
     await testAllViewports(context);
   },
 });

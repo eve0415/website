@@ -1,16 +1,24 @@
-import { describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
 import TerminalText from './TerminalText';
 
 describe('TerminalText', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test('renders with required text prop only (default parameters)', async () => {
     // This covers line 13 default parameter branch
     await render(<TerminalText text='Hello' />);
 
-    // Eventually the text should appear
-    await new Promise(resolve => setTimeout(resolve, 500));
+    // Fast-forward time for typing to complete
+    await vi.advanceTimersByTimeAsync(500);
 
     const element = page.getByText('Hello');
     await expect.element(element).toBeInTheDocument();
@@ -21,8 +29,8 @@ describe('TerminalText', () => {
 
     await render(<TerminalText text='Test' delay={0} speed={10} className='custom' onComplete={onComplete} />);
 
-    // Wait for typing to complete
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Fast-forward time for typing to complete
+    await vi.advanceTimersByTimeAsync(200);
 
     await expect.element(page.getByText('Test')).toBeInTheDocument();
     expect(onComplete).toHaveBeenCalled();
@@ -31,8 +39,8 @@ describe('TerminalText', () => {
   test('applies custom className', async () => {
     const { container } = await render(<TerminalText text='Hi' className='test-class' />);
 
-    // Wait for render
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Fast-forward for render
+    await vi.advanceTimersByTimeAsync(100);
 
     const span = container.querySelector('.test-class');
     expect(span).not.toBeNull();
@@ -41,8 +49,8 @@ describe('TerminalText', () => {
   test('shows cursor during typing', async () => {
     const { container } = await render(<TerminalText text='LongText' speed={100} />);
 
-    // During typing, cursor should be visible
-    await new Promise(resolve => setTimeout(resolve, 50));
+    // Fast-forward slightly into typing
+    await vi.advanceTimersByTimeAsync(50);
 
     // Check for cursor element (animate-blink class)
     const cursor = container.querySelector('.animate-blink');
@@ -56,8 +64,8 @@ describe('TerminalText', () => {
     const element = page.getByText('Delayed');
     await expect.element(element).not.toBeInTheDocument();
 
-    // After delay + typing time
-    await new Promise(resolve => setTimeout(resolve, 400));
+    // Fast-forward past delay + typing time
+    await vi.advanceTimersByTimeAsync(400);
 
     await expect.element(page.getByText('Delayed')).toBeInTheDocument();
   });
@@ -67,8 +75,8 @@ describe('TerminalText', () => {
 
     await render(<TerminalText text='Done' delay={0} speed={10} onComplete={onComplete} />);
 
-    // Wait for completion
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // Fast-forward for completion
+    await vi.advanceTimersByTimeAsync(300);
 
     expect(onComplete).toHaveBeenCalledTimes(1);
   });

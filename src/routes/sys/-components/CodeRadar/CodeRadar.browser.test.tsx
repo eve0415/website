@@ -1,6 +1,6 @@
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 
-import { describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
@@ -27,6 +27,14 @@ const generateMockContributions = (): ContributionDay[] => {
 const mockContributions = generateMockContributions();
 
 describe('CodeRadar', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test('renders canvas element', async () => {
     const { container } = await render(<CodeRadar contributionCalendar={mockContributions} />);
 
@@ -80,8 +88,8 @@ describe('CodeRadar', () => {
 
     await render(<CodeRadar contributionCalendar={mockContributions} onBootComplete={onBootComplete} />);
 
-    // Wait for boot animation to complete (2000ms + buffer)
-    await new Promise(resolve => setTimeout(resolve, 2500));
+    // Fast-forward for boot animation to complete (2000ms + buffer)
+    await vi.advanceTimersByTimeAsync(2500);
 
     expect(onBootComplete).toHaveBeenCalledTimes(1);
 
@@ -107,7 +115,7 @@ describe('CodeRadar', () => {
     await render(<CodeRadar contributionCalendar={mockContributions} onBootComplete={onBootComplete} />);
 
     // With reduced motion, onBootComplete should be called immediately
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await vi.advanceTimersByTimeAsync(100);
 
     expect(onBootComplete).toHaveBeenCalled();
 
@@ -153,8 +161,6 @@ describe('CodeRadar', () => {
     }));
 
     const screen = await render(<CodeRadar contributionCalendar={mockContributions} />);
-
-    await new Promise(resolve => setTimeout(resolve, 100));
 
     await screen.unmount();
 

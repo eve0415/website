@@ -7,9 +7,6 @@ import { page, userEvent } from 'vitest/browser';
 
 import { useKeyboardCapture } from './useKeyboardCapture';
 
-// Helper for time-based waits
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 interface TestProps {
   enabled: boolean;
   commands: string[];
@@ -295,7 +292,6 @@ describe('useKeyboardCapture', () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper', 'helping']} />);
 
             await userEvent.keyboard('hel');
-            await sleep(50);
             await userEvent.keyboard('{Tab}');
 
             await expect.element(page.getByTestId('input')).toHaveTextContent('help');
@@ -305,7 +301,6 @@ describe('useKeyboardCapture', () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper']} />);
 
             await userEvent.keyboard('hel');
-            await sleep(50);
             await userEvent.keyboard('{Tab}');
 
             await expect.element(page.getByTestId('suggestions')).toHaveTextContent('[]');
@@ -317,7 +312,6 @@ describe('useKeyboardCapture', () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper', 'exit']} />);
 
             await userEvent.keyboard('hel');
-            await sleep(50);
             await userEvent.keyboard('{Tab}');
             await userEvent.keyboard('{Tab}');
 
@@ -332,7 +326,6 @@ describe('useKeyboardCapture', () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper']} />);
 
             await userEvent.keyboard('hel');
-            await sleep(50);
             await userEvent.keyboard('{Tab}');
             await userEvent.keyboard('{Tab}');
 

@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 
 import { useState } from 'react';
-import { describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
@@ -26,6 +26,14 @@ const LogoTestWrapper: FC<{ animate?: boolean }> = ({ animate = true }) => {
 };
 
 describe('Logo', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test('renders without crashing', async () => {
     await render(<Logo />);
 
@@ -61,8 +69,8 @@ describe('Logo', () => {
     const svg = page.getByRole('img');
     await expect.element(svg).toBeInTheDocument();
 
-    // Wait for animation to complete (2000ms + buffer)
-    await new Promise(resolve => setTimeout(resolve, 2200));
+    // Fast-forward animation timer (2000ms)
+    await vi.advanceTimersByTimeAsync(2200);
 
     // After animation, the component should still be rendered
     await expect.element(svg).toBeInTheDocument();

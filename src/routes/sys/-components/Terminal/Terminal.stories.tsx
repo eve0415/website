@@ -1,7 +1,7 @@
 import type { GitHubStats } from '../../-utils/github-stats-utils';
 import type { FC, ReactNode } from 'react';
 
-import { expect, fn, userEvent, within } from 'storybook/test';
+import { expect, fn, userEvent, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 
@@ -95,13 +95,10 @@ export const Default = meta.story({});
  */
 export const Interactive = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for boot sequence to complete
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
 
-    // Verify boot completed
-    await expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument();
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Footer should show help text
     await expect(canvas.getByTestId('terminal-footer')).toHaveTextContent("type 'help' for commands");
@@ -113,13 +110,10 @@ export const Interactive = meta.story({
  */
 export const Typing = meta.story({
   play: async ({ canvasElement }) => {
-    // Short delay to catch typing state
-    await new Promise(resolve => setTimeout(resolve, 800));
-
     const canvas = within(canvasElement);
 
-    // Should see cursor (typing state)
-    await expect(canvas.getByTestId('terminal-cursor')).toBeInTheDocument();
+    // Wait for typing cursor to appear (indicates typing state)
+    await waitFor(() => expect(canvas.getByTestId('terminal-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Footer should show "4 で戻る" during typing
     await expect(canvas.getByTestId('terminal-footer')).toHaveTextContent('4');
@@ -131,19 +125,16 @@ export const Typing = meta.story({
  */
 export const Interrupted = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for typing to start
-    await new Promise(resolve => setTimeout(resolve, 600));
+    const canvas = within(canvasElement);
+
+    // Wait for typing cursor to appear (typing has started)
+    await waitFor(() => expect(canvas.getByTestId('terminal-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Press Ctrl+C to interrupt
     await userEvent.keyboard('{Control>}c{/Control}');
 
-    // Wait for state transition to prompt (^C shows briefly then transitions)
-    await new Promise(resolve => setTimeout(resolve, 300));
-
-    const canvas = within(canvasElement);
-
-    // After interrupt, should be in prompt state (prompt cursor visible)
-    await expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument();
+    // Wait for prompt cursor to appear (interrupt completed)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Content should be visible after interrupt
     await expect(canvas.getByText('System Diagnostics')).toBeInTheDocument();
@@ -155,13 +146,10 @@ export const Interrupted = meta.story({
  */
 export const Prompt = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for full boot
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
 
-    // Prompt cursor should be visible
-    await expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument();
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Input area should be empty
     await expect(canvas.getByTestId('terminal-input')).toHaveTextContent('');
@@ -173,26 +161,23 @@ export const Prompt = meta.story({
  */
 export const WithHistory = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for boot
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
+
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Execute some commands
     await userEvent.keyboard('help{Enter}');
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('help'));
 
     await userEvent.keyboard('whoami{Enter}');
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('whoami'));
 
     await userEvent.keyboard('neofetch{Enter}');
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('neofetch'));
 
-    // Verify output area exists with history
+    // Verify output area exists with all commands
     await expect(canvas.getByTestId('terminal-output')).toBeInTheDocument();
-    await expect(canvas.getByTestId('terminal-output')).toHaveTextContent('help');
-    await expect(canvas.getByTestId('terminal-output')).toHaveTextContent('whoami');
-    await expect(canvas.getByTestId('terminal-output')).toHaveTextContent('neofetch');
   },
 });
 
@@ -201,18 +186,19 @@ export const WithHistory = meta.story({
  */
 export const AwaitingConfirmation = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for boot
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
+
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Execute exit command
     await userEvent.keyboard('exit{Enter}');
-    await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Should show confirmation prompt
+    // Wait for confirmation prompt to appear
+    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('y/n'));
+
+    // Should show exit command in output
     await expect(canvas.getByTestId('terminal-output')).toHaveTextContent('exit');
-    await expect(canvas.getByTestId('terminal-output')).toHaveTextContent('y/n');
   },
 });
 
@@ -234,10 +220,10 @@ export const TouchDevice = meta.story({
     },
   },
   play: async ({ canvasElement }) => {
-    // Wait for boot animation to complete
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
+
+    // Wait for boot animation to complete (content becomes visible)
+    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 5000 });
 
     // On touch devices, prompt cursor should NOT be rendered
     void expect(canvas.queryByTestId('terminal-prompt-cursor')).not.toBeInTheDocument();
@@ -253,18 +239,19 @@ export const TouchDevice = meta.story({
  */
 export const CommandExecution = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for boot
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
+
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Type and execute help
     await userEvent.keyboard('help{Enter}');
-    await new Promise(resolve => setTimeout(resolve, 100));
+
+    // Wait for help output to appear
+    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('COMMANDS'));
 
     // Verify help output - matches actual HelpOutput component structure
     const output = canvas.getByTestId('terminal-output');
-    await expect(output).toHaveTextContent('COMMANDS');
     await expect(output).toHaveTextContent('Display this help message');
     await expect(output).toHaveTextContent('Clear terminal output');
     await expect(output).toHaveTextContent('Exit diagnostic mode');
@@ -276,21 +263,20 @@ export const CommandExecution = meta.story({
  */
 export const TabAutocomplete = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for boot
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
+
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Type partial command
     await userEvent.keyboard('hel');
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await waitFor(() => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('hel'));
 
     // Tab to autocomplete
     await userEvent.keyboard('{Tab}');
-    await new Promise(resolve => setTimeout(resolve, 100));
 
     // Should complete to 'help'
-    await expect(canvas.getByTestId('terminal-input')).toHaveTextContent('help');
+    await waitFor(() => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('help'));
   },
 });
 
@@ -299,18 +285,16 @@ export const TabAutocomplete = meta.story({
  */
 export const ErrorCommand = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for boot
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
+
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Execute unknown command
     await userEvent.keyboard('unknowncommand{Enter}');
-    await new Promise(resolve => setTimeout(resolve, 100));
 
-    // Should show error
-    const output = canvas.getByTestId('terminal-output');
-    await expect(output).toHaveTextContent('command not found');
+    // Wait for error to appear
+    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('command not found'));
   },
 });
 
@@ -340,24 +324,20 @@ export const Crashing = meta.story({
  */
 export const CtrlCClearsInput = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for boot
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
+
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Type something
     await userEvent.keyboard('some partial command');
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Verify input shows
-    await expect(canvas.getByTestId('terminal-input')).toHaveTextContent('some partial command');
+    await waitFor(() => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('some partial command'));
 
     // Press Ctrl+C
     await userEvent.keyboard('{Control>}c{/Control}');
-    await new Promise(resolve => setTimeout(resolve, 100));
 
     // Input should be cleared
-    await expect(canvas.getByTestId('terminal-input')).toHaveTextContent('');
+    await waitFor(() => expect(canvas.getByTestId('terminal-input')).toHaveTextContent(''));
   },
 });
 
@@ -366,23 +346,19 @@ export const CtrlCClearsInput = meta.story({
  */
 export const ClearCommand = meta.story({
   play: async ({ canvasElement }) => {
-    // Wait for boot
-    await new Promise(resolve => setTimeout(resolve, 4000));
-
     const canvas = within(canvasElement);
+
+    // Wait for boot sequence to complete (prompt cursor appears)
+    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 5000 });
 
     // Add some output
     await userEvent.keyboard('help{Enter}');
-    await new Promise(resolve => setTimeout(resolve, 100));
-
-    // Verify output exists
-    await expect(canvas.getByTestId('terminal-output')).toBeInTheDocument();
+    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toBeInTheDocument());
 
     // Clear
     await userEvent.keyboard('clear{Enter}');
-    await new Promise(resolve => setTimeout(resolve, 100));
 
     // Output should be gone (element won't exist when lines.length === 0)
-    await expect(canvas.queryByTestId('terminal-output')).not.toBeInTheDocument();
+    await waitFor(() => expect(canvas.queryByTestId('terminal-output')).not.toBeInTheDocument());
   },
 });

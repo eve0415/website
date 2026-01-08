@@ -31,7 +31,6 @@ describe('Background', () => {
     window.dispatchEvent(new Event('resize'));
 
     // Canvas should still exist after resize
-    await new Promise(resolve => setTimeout(resolve, 50));
     expect(container.querySelector('canvas')).not.toBeNull();
   });
 
@@ -40,9 +39,6 @@ describe('Background', () => {
     const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
 
     const screen = await render(<Background />);
-
-    // Let animation start
-    await new Promise(resolve => setTimeout(resolve, 50));
 
     await screen.unmount();
 
@@ -87,8 +83,7 @@ describe('Background', () => {
     // Dispatch mouse move event
     window.dispatchEvent(new MouseEvent('mousemove', { clientX: 100, clientY: 200 }));
 
-    // Animation should continue
-    await new Promise(resolve => setTimeout(resolve, 50));
+    // Animation should continue (canvas still exists)
     expect(container.querySelector('canvas')).not.toBeNull();
   });
 });

@@ -31,8 +31,9 @@ export const Static = meta.story({
   },
   decorators: [withDisabledAnimations],
   play: async context => {
-    // Wait for reduced motion to take effect (instant render)
-    await new Promise(resolve => setTimeout(resolve, 100));
+    const canvas = within(context.canvasElement);
+    // Wait for radar to render with reduced motion (instant render)
+    await waitFor(() => expect(canvas.getByRole('img', { name: /contribution radar/i })).toBeInTheDocument());
     await testAllViewports(context);
   },
 });

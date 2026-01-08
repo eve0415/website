@@ -1,6 +1,6 @@
 import type { Skill } from '../../-config/skills-config';
 
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
@@ -14,6 +14,14 @@ const mockSkill: Skill = {
 };
 
 describe('SkillCard', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test('renders skill name and level', async () => {
     await render(<SkillCard skill={mockSkill} index={0} />);
 
@@ -66,9 +74,8 @@ describe('SkillCard', () => {
   test('animates in based on index', async () => {
     const { container } = await render(<SkillCard skill={mockSkill} index={2} />);
 
-    // Initially might be invisible due to animation delay
-    // After delay (index * 50ms = 100ms), it should become visible
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Fast-forward past animation delay (index * 50ms = 100ms + buffer)
+    await vi.advanceTimersByTimeAsync(200);
 
     const card = container.querySelector('.translate-y-0.opacity-100');
     expect(card).not.toBeNull();
@@ -77,8 +84,8 @@ describe('SkillCard', () => {
   test('handles mouse enter (hover state)', async () => {
     const { container } = await render(<SkillCard skill={mockSkill} index={0} />);
 
-    // Wait for initial animation
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Fast-forward past initial animation
+    await vi.advanceTimersByTimeAsync(100);
 
     const card = container.querySelector('.group');
     expect(card).not.toBeNull();
@@ -87,25 +94,21 @@ describe('SkillCard', () => {
     card!.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
 
     // Progress bar should expand (checking the card still exists and is hovered)
-    await new Promise(resolve => setTimeout(resolve, 50));
     expect(container.querySelector('.group')).not.toBeNull();
   });
 
   test('handles mouse leave (resets hover state - line 55)', async () => {
     const { container } = await render(<SkillCard skill={mockSkill} index={0} />);
 
-    // Wait for initial animation
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Fast-forward past initial animation
+    await vi.advanceTimersByTimeAsync(100);
 
     const card = container.querySelector('.group');
     expect(card).not.toBeNull();
 
     // Hover then unhover using native events
     card!.dispatchEvent(new MouseEvent('mouseenter', { bubbles: true }));
-    await new Promise(resolve => setTimeout(resolve, 50));
-
     card!.dispatchEvent(new MouseEvent('mouseleave', { bubbles: true }));
-    await new Promise(resolve => setTimeout(resolve, 50));
 
     // Card should still exist after unhover
     expect(container.querySelector('.group')).not.toBeNull();
@@ -114,8 +117,8 @@ describe('SkillCard', () => {
   test('shows progress bar on hover', async () => {
     const { container } = await render(<SkillCard skill={mockSkill} index={0} />);
 
-    // Wait for initial animation
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Fast-forward past initial animation
+    await vi.advanceTimersByTimeAsync(100);
 
     const card = container.querySelector('.group');
     expect(card).not.toBeNull();

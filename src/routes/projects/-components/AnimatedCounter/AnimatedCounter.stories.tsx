@@ -1,3 +1,5 @@
+import { expect, waitFor, within } from 'storybook/test';
+
 import preview from '#.storybook/preview';
 import { testAllViewports } from '#.storybook/viewports';
 
@@ -34,8 +36,10 @@ export const Static = meta.story({
     duration: 0,
   },
   play: async context => {
-    // Wait for instant render
-    await new Promise(resolve => setTimeout(resolve, 100));
+    const canvas = within(context.canvasElement);
+    // Wait for IntersectionObserver to trigger and value to appear
+    // duration=0 means instant animation once visible
+    await waitFor(() => expect(canvas.getByText('100')).toBeInTheDocument(), { timeout: 10000 });
     await testAllViewports(context);
   },
 });

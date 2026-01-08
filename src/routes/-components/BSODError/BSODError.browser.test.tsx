@@ -8,9 +8,6 @@ import { SudoRmRfError } from '#routes/sys/-components/Terminal/commands';
 
 import BSODError from './BSODError';
 
-// Helper for time-based waits
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
-
 // Test wrapper to provide required props
 interface TestProps {
   error: Error;
@@ -47,23 +44,23 @@ describe('BSODError', () => {
       // Initially should be 0%
       await expect.element(page.getByTestId('bsod-progress')).toHaveTextContent('0% complete');
 
-      // Wait for progress to increase
-      await sleep(500);
-
-      // Should have increased
-      const progressEl = page.getByTestId('bsod-progress');
-      const el = progressEl.element();
-      const textContent = el?.textContent ?? '';
-      const percentage = Number.parseInt(textContent.replace('% complete', ''), 10);
-      expect(percentage).toBeGreaterThan(0);
+      // Wait for progress to increase from 0
+      await expect
+        .poll(
+          () => {
+            const el = page.getByTestId('bsod-progress').element();
+            const textContent = el?.textContent ?? '';
+            return Number.parseInt(textContent.replace('% complete', ''), 10);
+          },
+          { timeout: 2000 },
+        )
+        .toBeGreaterThan(0);
     });
 
     test('progress caps at 100%', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
-      // Wait for progress to complete (should take ~1.5-2 seconds at random increments of up to 15)
-      await sleep(2500);
-
+      // Wait for progress to complete
       await expect.element(page.getByTestId('bsod-progress')).toHaveTextContent('100% complete');
     });
 
@@ -93,10 +90,7 @@ describe('BSODError', () => {
       // Initially no reset button
       await expect.element(page.getByTestId('bsod-reset')).not.toBeInTheDocument();
 
-      // Wait for progress to complete
-      await sleep(2500);
-
-      // Reset button should appear
+      // Wait for reset button to appear after progress completes
       await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
       await expect.element(page.getByTestId('bsod-reset')).toHaveTextContent('Press any key to restart');
     });
@@ -105,8 +99,8 @@ describe('BSODError', () => {
       const onReset = vi.fn();
       await render(<TestWrapper error={new SudoRmRfError()} onReset={onReset} />);
 
-      // Wait for progress to complete
-      await sleep(2500);
+      // Wait for reset button to appear after progress completes
+      await expect.element(page.getByTestId('bsod-reset')).toBeVisible();
 
       // Click reset button
       await page.getByTestId('bsod-reset').click();
@@ -262,9 +256,7 @@ describe('BSODError', () => {
     test('reset button is focusable', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
-      // Wait for progress to complete
-      await sleep(2500);
-
+      // Wait for reset button to appear after progress completes
       const resetBtn = page.getByTestId('bsod-reset');
       await expect.element(resetBtn).toBeVisible();
 

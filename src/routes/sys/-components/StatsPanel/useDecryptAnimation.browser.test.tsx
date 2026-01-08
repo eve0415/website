@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
@@ -40,6 +40,14 @@ const NumberTestComponent: FC<Omit<TestComponentProps, 'value'> & { value: numbe
 };
 
 describe('useDecryptAnimation', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test('returns final value immediately when enabled is false', async () => {
     await render(<TestComponent value='TEST' enabled={false} />);
 
@@ -57,16 +65,16 @@ describe('useDecryptAnimation', () => {
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('[ENCRYPTED]');
 
-    // Wait for animation to start and progress
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Fast-forward for animation to start and progress
+    await vi.advanceTimersByTimeAsync(100);
 
     // At 50%, approximately 2 of 4 characters should be locked
     const halfway = page.getByTestId('result').element().textContent;
     expect(halfway).not.toBe('[ENCRYPTED]');
     expect(halfway).not.toBe('TEST');
 
-    // Wait for completion
-    await new Promise(resolve => setTimeout(resolve, 150));
+    // Fast-forward for completion
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('TEST');
   });
@@ -74,7 +82,7 @@ describe('useDecryptAnimation', () => {
   test('ends with exact final value', async () => {
     await render(<TestComponent value='EXACT' duration={100} />);
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('EXACT');
   });
@@ -85,11 +93,11 @@ describe('useDecryptAnimation', () => {
     await expect.element(page.getByTestId('result')).toHaveTextContent('[ENCRYPTED]');
 
     // Before delay completes
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await vi.advanceTimersByTimeAsync(100);
     await expect.element(page.getByTestId('result')).toHaveTextContent('[ENCRYPTED]');
 
     // After delay and animation complete
-    await new Promise(resolve => setTimeout(resolve, 250));
+    await vi.advanceTimersByTimeAsync(250);
     await expect.element(page.getByTestId('result')).toHaveTextContent('TEST');
   });
 
@@ -97,19 +105,19 @@ describe('useDecryptAnimation', () => {
     await render(<TestComponent value='TEST' duration={400} />);
 
     // After half duration, should not be complete
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await vi.advanceTimersByTimeAsync(200);
     const halfway = page.getByTestId('result').element().textContent;
     expect(halfway).not.toBe('TEST');
 
     // After full duration, should be complete
-    await new Promise(resolve => setTimeout(resolve, 250));
+    await vi.advanceTimersByTimeAsync(250);
     await expect.element(page.getByTestId('result')).toHaveTextContent('TEST');
   });
 
   test('only animates once (ref guard)', async () => {
     const screen = await render(<TestComponent value='FIRST' duration={100} />);
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('FIRST');
 
@@ -123,25 +131,25 @@ describe('useDecryptAnimation', () => {
     await render(<TestComponent value='ABCD' duration={300} />);
 
     // At ~33% progress, first character should be locked
-    await new Promise(resolve => setTimeout(resolve, 120));
+    await vi.advanceTimersByTimeAsync(120);
     const quarter = page.getByTestId('result').element().textContent;
     expect(quarter?.[0]).toBe('A');
 
     // At ~67% progress, first two/three characters should be locked
-    await new Promise(resolve => setTimeout(resolve, 100));
+    await vi.advanceTimersByTimeAsync(100);
     const twoThirds = page.getByTestId('result').element().textContent;
     expect(twoThirds?.[0]).toBe('A');
     expect(twoThirds?.[1]).toBe('B');
 
     // Complete
-    await new Promise(resolve => setTimeout(resolve, 130));
+    await vi.advanceTimersByTimeAsync(130);
     await expect.element(page.getByTestId('result')).toHaveTextContent('ABCD');
   });
 
   test('handles numeric input converted to string', async () => {
     await render(<TestComponent value={12345} duration={100} />);
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('12345');
   });
@@ -149,7 +157,7 @@ describe('useDecryptAnimation', () => {
   test('handles empty string', async () => {
     await render(<TestComponent value='' duration={100} />);
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('');
   });
@@ -157,7 +165,7 @@ describe('useDecryptAnimation', () => {
   test('handles single character', async () => {
     await render(<TestComponent value='X' duration={100} />);
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('X');
   });
@@ -169,18 +177,26 @@ describe('useDecryptAnimation', () => {
     // Should start with [ENCRYPTED] since enabled defaults to true
     await expect.element(page.getByTestId('default-result')).toHaveTextContent('[ENCRYPTED]');
 
-    // Wait for default duration (1500ms) + delay (0ms) + buffer
-    await new Promise(resolve => setTimeout(resolve, 1700));
+    // Fast-forward for default duration (1500ms) + delay (0ms) + buffer
+    await vi.advanceTimersByTimeAsync(1700);
 
     await expect.element(page.getByTestId('default-result')).toHaveTextContent('DEFAULT');
   });
 });
 
 describe('useDecryptNumber', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   test('formats number with locale (thousands separator)', async () => {
     await render(<NumberTestComponent value={1000} duration={100} />);
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('1,000');
   });
@@ -188,7 +204,7 @@ describe('useDecryptNumber', () => {
   test('formats large numbers correctly', async () => {
     await render(<NumberTestComponent value={1234567} duration={100} />);
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('1,234,567');
   });
@@ -205,7 +221,7 @@ describe('useDecryptNumber', () => {
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('[ENCRYPTED]');
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('5,000');
   });
@@ -213,7 +229,7 @@ describe('useDecryptNumber', () => {
   test('handles zero', async () => {
     await render(<NumberTestComponent value={0} duration={100} />);
 
-    await new Promise(resolve => setTimeout(resolve, 150));
+    await vi.advanceTimersByTimeAsync(150);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('0');
   });

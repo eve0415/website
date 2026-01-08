@@ -1,12 +1,9 @@
-import { describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
 
 import Terminal from './Terminal';
 import { mockGitHubStats } from './Terminal.fixtures';
-
-// Helper for time-based waits
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
@@ -25,6 +22,14 @@ const mockTouchDevice = (isTouch: boolean, reducedMotion = false) => {
 };
 
 describe('Terminal', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   describe('boot sequence', () => {
     test('starts in typing state with animated text', async () => {
       mockTouchDevice(false);
@@ -67,10 +72,10 @@ describe('Terminal', () => {
         </Terminal>,
       );
 
-      // Wait for typing to start then skip with Ctrl+C
-      await sleep(600);
+      // Advance past initial delay then skip with Ctrl+C
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Should call onBootComplete
       expect(onBootComplete).toHaveBeenCalled();
@@ -93,9 +98,9 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       const footer = page.getByTestId('terminal-footer');
       await expect.element(footer).toHaveTextContent("type 'help' for commands");
@@ -113,8 +118,8 @@ describe('Terminal', () => {
         </Terminal>,
       );
 
-      // Wait for typing to start (500ms initial delay + some typing time)
-      await sleep(550);
+      // Advance past initial delay to start typing
+      await vi.advanceTimersByTimeAsync(550);
 
       // Verify we're in typing state - cursor should be visible
       await expect.element(page.getByTestId('terminal-cursor')).toBeVisible();
@@ -122,8 +127,11 @@ describe('Terminal', () => {
       // Press Ctrl+C to interrupt
       await userEvent.keyboard('{Control>}c{/Control}');
 
-      // onBootComplete should be called after interrupt (within 200ms)
-      await expect.poll(() => onBootComplete.mock.calls.length, { interval: 50, timeout: 500 }).toBe(1);
+      // Advance time for boot complete transition
+      await vi.advanceTimersByTimeAsync(200);
+
+      // onBootComplete should be called after interrupt
+      expect(onBootComplete).toHaveBeenCalledTimes(1);
 
       // Should transition to prompt state - prompt cursor appears
       await expect.element(page.getByTestId('terminal-prompt-cursor')).toBeVisible();
@@ -139,14 +147,14 @@ describe('Terminal', () => {
         </Terminal>,
       );
 
-      // Wait for typing to start
-      await sleep(600);
+      // Advance past initial delay
+      await vi.advanceTimersByTimeAsync(600);
 
       // Press Ctrl+C
       await userEvent.keyboard('{Control>}c{/Control}');
 
-      // Wait for state transitions
-      await sleep(300);
+      // Advance time for state transitions
+      await vi.advanceTimersByTimeAsync(300);
 
       // Content should be visible (boot complete)
       await expect.element(page.getByTestId('boot-content')).toBeVisible();
@@ -169,8 +177,8 @@ describe('Terminal', () => {
         </Terminal>,
       );
 
-      // Wait for boot to complete (reduced motion makes it fast)
-      await sleep(1000);
+      // Advance time for boot to complete (reduced motion makes it fast)
+      await vi.advanceTimersByTimeAsync(1000);
 
       // Prompt cursor should not exist on touch device
       const promptCursor = page.getByTestId('terminal-prompt-cursor');
@@ -188,8 +196,8 @@ describe('Terminal', () => {
         </Terminal>,
       );
 
-      // Wait for boot to complete (reduced motion makes it fast)
-      await sleep(1000);
+      // Advance time for boot to complete (reduced motion makes it fast)
+      await vi.advanceTimersByTimeAsync(1000);
 
       const footer = page.getByTestId('terminal-footer');
       await expect.element(footer).toHaveTextContent('4');
@@ -211,9 +219,9 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Type in the terminal
       await userEvent.keyboard('help');
@@ -235,15 +243,15 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute help command
       await userEvent.keyboard('help{Enter}');
 
-      // Wait for command execution
-      await sleep(100);
+      // Advance time for command execution
+      await vi.advanceTimersByTimeAsync(100);
 
       // Output should appear in terminal-output
       await expect.element(page.getByTestId('terminal-output')).toBeVisible();
@@ -261,17 +269,17 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute help to add output
       await userEvent.keyboard('help{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Execute clear
       await userEvent.keyboard('clear{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Output should be gone (terminal-output won't render if lines.length === 0)
       await expect.element(page.getByTestId('terminal-output')).not.toBeInTheDocument();
@@ -288,13 +296,13 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute unknown command
       await userEvent.keyboard('unknowncommand{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Error should appear in output
       await expect.element(page.getByTestId('terminal-output')).toHaveTextContent('command not found');
@@ -314,13 +322,13 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute exit
       await userEvent.keyboard('exit{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Should show confirmation prompt
       await expect.element(page.getByTestId('terminal-output')).toHaveTextContent('exit');
@@ -342,17 +350,17 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute exit
       await userEvent.keyboard('exit{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Confirm with y
       await userEvent.keyboard('y{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Should navigate to home
       expect(mockNavigate).toHaveBeenCalledWith({ to: '/' });
@@ -370,17 +378,17 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute exit
       await userEvent.keyboard('exit{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Decline with n
       await userEvent.keyboard('n{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Should NOT navigate
       expect(mockNavigate).not.toHaveBeenCalled();
@@ -401,17 +409,17 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute exit
       await userEvent.keyboard('exit{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Cancel with Ctrl+C
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Should NOT navigate
       expect(mockNavigate).not.toHaveBeenCalled();
@@ -434,9 +442,9 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Type partial command
       await userEvent.keyboard('hel');
@@ -459,13 +467,13 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // First execute a command so terminal-output renders (it only shows when lines.length > 0)
       await userEvent.keyboard('help{Enter}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Now type partial that matches multiple
       await userEvent.keyboard('e');
@@ -490,14 +498,14 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute multiple commands to generate output
       for (let i = 0; i < 3; i++) {
         await userEvent.keyboard('help{Enter}');
-        await sleep(100);
+        await vi.advanceTimersByTimeAsync(100);
       }
 
       // The terminal-output should exist and have scrolled
@@ -523,15 +531,15 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Execute crash command
       await userEvent.keyboard('sudo rm -rf /{Enter}');
 
-      // Wait a bit for crash state to be set
-      await sleep(100);
+      // Advance time for crash state to be set
+      await vi.advanceTimersByTimeAsync(100);
 
       // Should show "Executing..." in output
       await expect.element(page.getByTestId('terminal-output')).toHaveTextContent('Executing');
@@ -550,9 +558,9 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Header should show the cached date
       const header = page.getByTestId('terminal-header');
@@ -574,9 +582,9 @@ describe('Terminal', () => {
       );
 
       // Skip boot with Ctrl+C
-      await sleep(600);
+      await vi.advanceTimersByTimeAsync(600);
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(300);
+      await vi.advanceTimersByTimeAsync(300);
 
       // Type something
       await userEvent.keyboard('some input');
@@ -584,7 +592,7 @@ describe('Terminal', () => {
 
       // Press Ctrl+C
       await userEvent.keyboard('{Control>}c{/Control}');
-      await sleep(100);
+      await vi.advanceTimersByTimeAsync(100);
 
       // Input should be cleared
       await expect.element(page.getByTestId('terminal-input')).toHaveTextContent('');

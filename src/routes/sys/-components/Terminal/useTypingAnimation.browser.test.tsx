@@ -1,13 +1,10 @@
 import type { FC } from 'react';
 
-import { describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
 import { useTypingAnimation } from './useTypingAnimation';
-
-// Helper for time-based waits
-const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
 
 interface TestProps {
   text: string;
@@ -38,6 +35,14 @@ const TestComponent: FC<TestProps> = ({ text, minDelay, maxDelay, onComplete, en
 };
 
 describe('useTypingAnimation', () => {
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
+  afterEach(() => {
+    vi.useRealTimers();
+  });
+
   describe('basic functionality', () => {
     test('starts with empty text when enabled', async () => {
       // Mock matchMedia to return no reduced motion
@@ -66,13 +71,11 @@ describe('useTypingAnimation', () => {
 
       await render(<TestComponent text='Hi' minDelay={10} maxDelay={20} />);
 
-      // Wait for typing to start (500ms initial delay + some typing time)
-      await sleep(600);
+      // Advance past initial delay (500ms) + some typing time
+      await vi.advanceTimersByTimeAsync(600);
 
       // Should have at least some text
-      const element = page.getByTestId('displayed-text');
-      const text = element.element();
-      expect(text?.textContent?.length).toBeGreaterThan(0);
+      await expect.element(page.getByTestId('displayed-text')).not.toHaveTextContent('');
     });
 
     test('completes typing and calls onComplete', async () => {
@@ -87,8 +90,8 @@ describe('useTypingAnimation', () => {
 
       await render(<TestComponent text='Hi' minDelay={5} maxDelay={10} onComplete={onComplete} />);
 
-      // Wait for typing to complete
-      await sleep(800);
+      // Advance past initial delay + typing time for 2 chars
+      await vi.advanceTimersByTimeAsync(800);
 
       await expect.element(page.getByTestId('displayed-text')).toHaveTextContent('Hi');
       await expect.element(page.getByTestId('is-typing')).toHaveTextContent('false');
@@ -108,8 +111,8 @@ describe('useTypingAnimation', () => {
 
       await render(<TestComponent text='Hello World' minDelay={50} maxDelay={100} />);
 
-      // Wait for typing to start
-      await sleep(550);
+      // Advance past initial delay to start typing
+      await vi.advanceTimersByTimeAsync(550);
 
       await expect.element(page.getByTestId('cursor-visible')).toHaveTextContent('true');
       await expect.element(page.getByTestId('is-typing')).toHaveTextContent('true');
@@ -200,8 +203,8 @@ describe('useTypingAnimation', () => {
 
       const screen = await render(<TestComponent text='Long text that takes a while' minDelay={50} maxDelay={100} />);
 
-      // Unmount during typing
-      await sleep(100);
+      // Advance time a bit then unmount during typing
+      await vi.advanceTimersByTimeAsync(100);
       await screen.unmount();
 
       // Verify the component was unmounted without errors
@@ -221,8 +224,8 @@ describe('useTypingAnimation', () => {
 
       const { rerender } = await render(<TestComponent text='First' minDelay={5} maxDelay={10} />);
 
-      // Wait for first animation to start
-      await sleep(550);
+      // Advance past initial delay to start first animation
+      await vi.advanceTimersByTimeAsync(550);
 
       // Change text
       await rerender(<TestComponent text='Second' minDelay={5} maxDelay={10} />);
@@ -230,8 +233,8 @@ describe('useTypingAnimation', () => {
       // Should reset to typing state
       await expect.element(page.getByTestId('is-typing')).toHaveTextContent('true');
 
-      // Eventually should show new text
-      await sleep(800);
+      // Advance time for new text to complete
+      await vi.advanceTimersByTimeAsync(800);
       await expect.element(page.getByTestId('displayed-text')).toHaveTextContent('Second');
     });
   });
@@ -247,13 +250,11 @@ describe('useTypingAnimation', () => {
 
       await render(<TestComponent text='AB' />);
 
-      // Wait for initial delay (500ms) + at least 2 char delays with defaults
-      await sleep(800);
+      // Advance past initial delay (500ms) + char delays with defaults
+      await vi.advanceTimersByTimeAsync(800);
 
-      // Should have completed (2 chars with 50-150ms each + 500ms initial)
-      const element = page.getByTestId('displayed-text');
-      const text = element.element();
-      expect(text?.textContent?.length).toBeGreaterThan(0);
+      // Should have some text (2 chars with 50-150ms each + 500ms initial)
+      await expect.element(page.getByTestId('displayed-text')).not.toHaveTextContent('');
     });
   });
 
@@ -272,14 +273,12 @@ describe('useTypingAnimation', () => {
       await expect.element(page.getByTestId('displayed-text')).toHaveTextContent('');
 
       // After 400ms - still empty (within initial delay)
-      await sleep(400);
+      await vi.advanceTimersByTimeAsync(400);
       await expect.element(page.getByTestId('displayed-text')).toHaveTextContent('');
 
       // After 600ms total - should have started typing
-      await sleep(200);
-      const element = page.getByTestId('displayed-text');
-      const text = element.element();
-      expect(text?.textContent?.length).toBeGreaterThan(0);
+      await vi.advanceTimersByTimeAsync(200);
+      await expect.element(page.getByTestId('displayed-text')).not.toHaveTextContent('');
     });
   });
 
@@ -296,8 +295,8 @@ describe('useTypingAnimation', () => {
 
       await render(<TestComponent text='' onComplete={onComplete} />);
 
-      // Wait for initial delay + completion
-      await sleep(600);
+      // Advance past initial delay + completion
+      await vi.advanceTimersByTimeAsync(600);
 
       await expect.element(page.getByTestId('displayed-text')).toHaveTextContent('');
       await expect.element(page.getByTestId('is-complete')).toHaveTextContent('true');

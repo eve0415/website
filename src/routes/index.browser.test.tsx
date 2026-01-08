@@ -105,15 +105,13 @@ describe('IndexPage', () => {
 
   test('shows tagline after delay', async () => {
     await render(<TestIndexPage />);
-    // Wait for the tagline to appear (100ms + some buffer)
-    await new Promise(resolve => setTimeout(resolve, 200));
+    // Wait for the tagline to appear
     await expect.element(page.getByTestId('tagline')).toBeInTheDocument();
   });
 
   test('shows navigation after delay', async () => {
     await render(<TestIndexPage />);
-    // Wait for nav to appear (200ms + some buffer)
-    await new Promise(resolve => setTimeout(resolve, 300));
+    // Wait for nav to appear
     await expect.element(page.getByTestId('nav')).toBeInTheDocument();
   });
 

@@ -49,8 +49,33 @@ play: async ({ canvasElement }) => {
 **DO**: Import from 'storybook/test', not '@storybook/test'
 
 ```tsx
-import { expect, within } from 'storybook/test';
+import { expect, waitFor, within } from 'storybook/test';
 ```
+
+## Async Testing (Play Functions)
+
+**DO**: Use `waitFor()` from `storybook/test` for async assertions
+
+```tsx
+import { expect, waitFor, within } from 'storybook/test';
+
+play: async ({ canvasElement }) => {
+  const canvas = within(canvasElement);
+
+  // Wait for async state with explicit timeout
+  await waitFor(() => expect(canvas.getByTestId('progress')).toHaveTextContent('100%'), { timeout: 5000, interval: 100 });
+};
+```
+
+**DON'T**: Use bare `setTimeout` or `sleep()` patterns
+
+```tsx
+// WRONG - flaky, no retry logic
+await new Promise(resolve => setTimeout(resolve, 2500));
+await expect(canvas.getByTestId('progress')).toHaveTextContent('100%');
+```
+
+**WHY**: `waitFor()` retries the assertion until it passes or times out. Bare `setTimeout` waits a fixed time then asserts once - if timing varies, tests fail intermittently.
 
 ## Decorators
 

@@ -78,13 +78,15 @@ export const ProgressAnimation = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
-    // Wait for progress to increase
-    await new Promise(resolve => setTimeout(resolve, 600));
-
-    // Should have increased from 0
-    const progressText = canvas.getByTestId('bsod-progress').textContent ?? '';
-    const percentage = Number.parseInt(progressText.replace('% complete', ''), 10);
-    await expect(percentage).toBeGreaterThan(0);
+    // Wait for progress to increase from 0
+    await waitFor(
+      () => {
+        const progressText = canvas.getByTestId('bsod-progress').textContent ?? '';
+        const percentage = Number.parseInt(progressText.replace('% complete', ''), 10);
+        void expect(percentage).toBeGreaterThan(0);
+      },
+      { timeout: 2000 },
+    );
   },
 });
 
@@ -174,8 +176,8 @@ export const ResetInteraction = meta.story({
   play: async ({ canvasElement, args }: { canvasElement: HTMLElement; args: { reset: () => void } }) => {
     const canvas = within(canvasElement);
 
-    // Wait for progress to complete
-    await new Promise(resolve => setTimeout(resolve, 2500));
+    // Wait for progress to complete and reset button to appear
+    await waitFor(() => expect(canvas.getByTestId('bsod-reset')).toBeInTheDocument(), { timeout: 5000 });
 
     // Click reset button
     const resetButton = canvas.getByTestId('bsod-reset');

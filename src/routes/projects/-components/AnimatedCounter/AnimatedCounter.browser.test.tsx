@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
@@ -7,7 +7,12 @@ import AnimatedCounter from './AnimatedCounter';
 describe('AnimatedCounter', () => {
   const originalIntersectionObserver = window.IntersectionObserver;
 
+  beforeEach(() => {
+    vi.useFakeTimers();
+  });
+
   afterEach(() => {
+    vi.useRealTimers();
     window.IntersectionObserver = originalIntersectionObserver;
   });
 
@@ -61,8 +66,8 @@ describe('AnimatedCounter', () => {
 
     await render(<AnimatedCounter end={100} duration={500} />);
 
-    // Wait for animation to complete
-    await new Promise(resolve => setTimeout(resolve, 700));
+    // Fast-forward for animation to complete
+    await vi.advanceTimersByTimeAsync(700);
 
     // Should have animated to the final value
     await expect.element(page.getByText('100')).toBeInTheDocument();
@@ -119,12 +124,12 @@ describe('AnimatedCounter', () => {
     // Trigger first intersection manually
     mockObserverInstance?.triggerIntersection();
 
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await vi.advanceTimersByTimeAsync(200);
 
     // Trigger second intersection
     mockObserverInstance?.triggerIntersection();
 
-    await new Promise(resolve => setTimeout(resolve, 200));
+    await vi.advanceTimersByTimeAsync(200);
 
     // Should still show 100, not restart animation
     await expect.element(page.getByText('100')).toBeInTheDocument();

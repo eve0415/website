@@ -45,15 +45,64 @@ await expect.element(page.getByTestId('result')).toHaveTextContent('value');
 
 **DON'T**: Use `screen.getByTestId()` pattern from Testing Library
 
-## Fake Timers
+## Async Assertions
 
-**DON'T**: Use `vi.useFakeTimers()` in browser tests - doesn't work reliably with Cloudflare bindings and requestAnimationFrame
-
-**DO**: Use real timers with await
+**DO**: Use `await expect.element()` for DOM assertions - it has built-in polling
 
 ```ts
-await new Promise(resolve => setTimeout(resolve, 150));
+// Retries until element has expected content or times out
+await expect.element(page.getByTestId('result')).toHaveTextContent('done');
+await expect.element(page.getByRole('button')).toBeVisible();
 ```
+
+**DO**: Use `expect.poll()` for non-DOM assertions with timeout
+
+```ts
+// Poll a function until assertion passes
+await expect.poll(() => mockFn.mock.calls.length, { interval: 50, timeout: 500 }).toBe(1);
+```
+
+**DON'T**: Use `sleep()` or `Promise + setTimeout` patterns
+
+```ts
+// WRONG - flaky, no retry logic
+const sleep = (ms: number) => new Promise(resolve => setTimeout(resolve, ms));
+await sleep(500);
+await expect.element(page.getByTestId('result')).toHaveTextContent('done');
+```
+
+## Fake Timers
+
+**DO**: Use `vi.useFakeTimers()` when testing time-dependent behavior
+
+```ts
+beforeEach(() => {
+  vi.useFakeTimers();
+});
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+test('debounce waits 300ms', async () => {
+  // Trigger debounced action
+  await userEvent.type(input, 'test');
+
+  // Fast-forward time
+  await vi.advanceTimersByTimeAsync(300);
+
+  // Assert result
+  expect(callback).toHaveBeenCalled();
+});
+```
+
+**LIMITATIONS**: Fake timers may not work with:
+
+- CSS transitions/animations
+- `requestAnimationFrame`-based code
+- Some third-party libraries
+
+For these edge cases, redesign the test to assert final state rather than intermediate timing.
 
 ## Functions with `this` Parameter
 

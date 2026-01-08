@@ -16,10 +16,6 @@ describe('SkillsVisualization', () => {
 
     const canvas = container.querySelector('canvas');
     expect(canvas).not.toBeNull();
-
-    // Let animation run
-    await new Promise(resolve => setTimeout(resolve, 100));
-    expect(container.querySelector('canvas')).not.toBeNull();
   });
 
   test('renders with animate=false', async () => {
@@ -69,7 +65,6 @@ describe('SkillsVisualization', () => {
     // Trigger resize
     window.dispatchEvent(new Event('resize'));
 
-    await new Promise(resolve => setTimeout(resolve, 50));
     expect(container.querySelector('canvas')).not.toBeNull();
   });
 
@@ -78,9 +73,6 @@ describe('SkillsVisualization', () => {
     const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
 
     const screen = await render(<SkillsVisualization animate={true} />);
-
-    // Let animation start
-    await new Promise(resolve => setTimeout(resolve, 50));
 
     await screen.unmount();
 
@@ -98,7 +90,6 @@ describe('SkillsVisualization', () => {
     expect(canvas).not.toBeNull();
 
     // Canvas should have valid dimensions
-    await new Promise(resolve => setTimeout(resolve, 100));
     expect(canvas.width).toBeGreaterThan(0);
   });
 });
