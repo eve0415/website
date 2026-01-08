@@ -697,4 +697,137 @@ describe('Terminal', () => {
       await expect.element(page.getByTestId('terminal-input')).toHaveTextContent('');
     });
   });
+
+  describe('cursor movement', () => {
+    test('cursor renders at correct position with pipe character', async () => {
+      mockTouchDevice(false);
+      const onBootComplete = vi.fn();
+
+      await render(
+        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice={false}>
+          <div data-testid='boot-content'>Content</div>
+        </Terminal>,
+      );
+
+      // Wait for displaying state then dismiss with Ctrl+C
+      await vi.advanceTimersByTimeAsync(10000);
+      await expect.element(page.getByTestId('boot-content')).toBeVisible();
+      dispatchCtrlC();
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Type some text
+      await userEvent.keyboard('hello');
+
+      // Cursor should be at end (pipe character)
+      const cursor = page.getByTestId('terminal-prompt-cursor');
+      await expect.element(cursor).toHaveTextContent('|');
+    });
+
+    test('left arrow moves cursor visually', async () => {
+      mockTouchDevice(false);
+      const onBootComplete = vi.fn();
+
+      await render(
+        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice={false}>
+          <div data-testid='boot-content'>Content</div>
+        </Terminal>,
+      );
+
+      // Wait for displaying state then dismiss with Ctrl+C
+      await vi.advanceTimersByTimeAsync(10000);
+      await expect.element(page.getByTestId('boot-content')).toBeVisible();
+      dispatchCtrlC();
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Type text and move cursor left
+      await userEvent.keyboard('abc');
+      await userEvent.keyboard('{ArrowLeft}');
+
+      // Input before cursor should be 'ab'
+      await expect.element(page.getByTestId('terminal-input')).toHaveTextContent('ab');
+    });
+
+    test('character inserts at cursor position visually', async () => {
+      mockTouchDevice(false);
+      const onBootComplete = vi.fn();
+
+      await render(
+        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice={false}>
+          <div data-testid='boot-content'>Content</div>
+        </Terminal>,
+      );
+
+      // Wait for displaying state then dismiss with Ctrl+C
+      await vi.advanceTimersByTimeAsync(10000);
+      await expect.element(page.getByTestId('boot-content')).toBeVisible();
+      dispatchCtrlC();
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Type 'ac', move left, insert 'b'
+      await userEvent.keyboard('ac');
+      await userEvent.keyboard('{ArrowLeft}');
+      await userEvent.keyboard('b');
+
+      // Should show 'ab' before cursor
+      await expect.element(page.getByTestId('terminal-input')).toHaveTextContent('ab');
+    });
+  });
+
+  describe('history navigation', () => {
+    test('up arrow recalls previous command', async () => {
+      mockTouchDevice(false);
+      const onBootComplete = vi.fn();
+
+      await render(
+        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice={false}>
+          <div data-testid='boot-content'>Content</div>
+        </Terminal>,
+      );
+
+      // Wait for displaying state then dismiss with Ctrl+C
+      await vi.advanceTimersByTimeAsync(10000);
+      await expect.element(page.getByTestId('boot-content')).toBeVisible();
+      dispatchCtrlC();
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Execute a command
+      await userEvent.keyboard('help{Enter}');
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Press up to recall
+      await userEvent.keyboard('{ArrowUp}');
+
+      // Should show 'help' in input
+      await expect.element(page.getByTestId('terminal-input')).toHaveTextContent('help');
+    });
+
+    test('down arrow returns to current input', async () => {
+      mockTouchDevice(false);
+      const onBootComplete = vi.fn();
+
+      await render(
+        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice={false}>
+          <div data-testid='boot-content'>Content</div>
+        </Terminal>,
+      );
+
+      // Wait for displaying state then dismiss with Ctrl+C
+      await vi.advanceTimersByTimeAsync(10000);
+      await expect.element(page.getByTestId('boot-content')).toBeVisible();
+      dispatchCtrlC();
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Execute a command
+      await userEvent.keyboard('help{Enter}');
+      await vi.advanceTimersByTimeAsync(100);
+
+      // Type new text, go up then down
+      await userEvent.keyboard('wip');
+      await userEvent.keyboard('{ArrowUp}');
+      await userEvent.keyboard('{ArrowDown}');
+
+      // Should restore 'wip'
+      await expect.element(page.getByTestId('terminal-input')).toHaveTextContent('wip');
+    });
+  });
 });

@@ -188,7 +188,11 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
 
   // Keyboard capture (only on desktop and when in prompt state)
   const keyboardEnabled = !isTouchDevice && state === 'prompt';
-  const { input: keyboardInput, suggestions } = useKeyboardCapture({
+  const {
+    input: keyboardInput,
+    cursorPosition,
+    suggestions,
+  } = useKeyboardCapture({
     enabled: keyboardEnabled,
     commands: COMMAND_NAMES,
     onSubmit: handleCommandSubmit,
@@ -286,11 +290,12 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
           <div className='font-mono text-sm'>
             <span className='text-subtle-foreground'>&gt; </span>
             <span data-testid='terminal-input' className='text-foreground'>
-              {awaitingConfirmation ? '' : keyboardInput}
+              {awaitingConfirmation ? '' : keyboardInput.slice(0, cursorPosition)}
             </span>
             <span data-testid='terminal-prompt-cursor' className='animate-blink'>
-              _
+              |
             </span>
+            <span className='text-foreground'>{awaitingConfirmation ? '' : keyboardInput.slice(cursorPosition)}</span>
           </div>
         </div>
       )}

@@ -16,6 +16,8 @@ interface UseKeyboardCaptureOptions {
 interface UseKeyboardCaptureResult {
   /** Current input string */
   input: string;
+  /** Cursor position within input (0 = before first char, input.length = after last) */
+  cursorPosition: number;
   /** Autocomplete suggestions to display */
   suggestions: string[];
   /** Clear the input */
@@ -32,7 +34,14 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
   const { enabled, commands, onSubmit, onCtrlC, onInputChange } = options;
 
   const [input, setInputState] = useState('');
+  const [cursorPosition, setCursorPosition] = useState(0);
   const [suggestions, setSuggestions] = useState<string[]>([]);
+
+  // Command history state
+  const [history, setHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1); // -1 = not navigating
+  const wipInputRef = useRef(''); // Work-in-progress input saved when navigating
+
   const tabPressCount = useRef(0);
   const lastTabInput = useRef('');
   // Track tab presses to handle React Strict Mode double-invocation
@@ -53,17 +62,25 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
 
   const setInput = useCallback((value: string) => {
     setInputState(value);
+    setCursorPosition(value.length);
     onInputChangeRef.current?.(value);
     // Reset tab state when input changes manually
     tabPressCount.current = 0;
     setSuggestions([]);
+    // Reset history navigation
+    setHistoryIndex(-1);
+    wipInputRef.current = '';
   }, []);
 
   const clearInput = useCallback(() => {
     setInputState('');
+    setCursorPosition(0);
     setSuggestions([]);
     tabPressCount.current = 0;
     onInputChangeRef.current?.('');
+    // Reset history navigation
+    setHistoryIndex(-1);
+    wipInputRef.current = '';
   }, []);
 
   const handleTab = useCallback(
@@ -150,7 +167,11 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         const tabId = ++pendingTabId.current;
         setInputState(prev => {
           const newValue = handleTab(prev, tabId);
+          setCursorPosition(newValue.length);
           onInputChangeRef.current?.(newValue);
+          // Reset history navigation on tab
+          setHistoryIndex(-1);
+          wipInputRef.current = '';
           return newValue;
         });
         return;
@@ -161,44 +182,165 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         e.preventDefault();
         const currentInput = input;
         if (currentInput.trim()) {
+          // Add to history
+          setHistory(prev => [...prev, currentInput.trim()]);
           onSubmitRef.current(currentInput.trim());
         }
         clearInput();
         return;
       }
 
-      // Backspace
+      // Backspace - delete character before cursor
       if (e.key === 'Backspace') {
         e.preventDefault();
-        setInputState(prev => {
-          const newValue = prev.slice(0, -1);
-          onInputChangeRef.current?.(newValue);
-          tabPressCount.current = 0;
-          setSuggestions([]);
-          return newValue;
-        });
+        if (cursorPosition > 0) {
+          setInputState(prev => {
+            const newValue = prev.slice(0, cursorPosition - 1) + prev.slice(cursorPosition);
+            onInputChangeRef.current?.(newValue);
+            tabPressCount.current = 0;
+            setSuggestions([]);
+            return newValue;
+          });
+          setCursorPosition(prev => prev - 1);
+          // Reset history navigation
+          setHistoryIndex(-1);
+          wipInputRef.current = '';
+        }
         return;
       }
 
-      // Regular character input
+      // Delete - delete character at cursor (forward delete)
+      if (e.key === 'Delete') {
+        e.preventDefault();
+        if (cursorPosition < input.length) {
+          setInputState(prev => {
+            const newValue = prev.slice(0, cursorPosition) + prev.slice(cursorPosition + 1);
+            onInputChangeRef.current?.(newValue);
+            tabPressCount.current = 0;
+            setSuggestions([]);
+            return newValue;
+          });
+          // Cursor position stays the same
+          // Reset history navigation
+          setHistoryIndex(-1);
+          wipInputRef.current = '';
+        }
+        return;
+      }
+
+      // Arrow left - move cursor left
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCursorPosition(prev => Math.max(0, prev - 1));
+        return;
+      }
+
+      // Arrow right - move cursor right
+      if (e.key === 'ArrowRight') {
+        e.preventDefault();
+        setCursorPosition(prev => Math.min(input.length, prev + 1));
+        return;
+      }
+
+      // Home - cursor to start
+      if (e.key === 'Home') {
+        e.preventDefault();
+        setCursorPosition(0);
+        return;
+      }
+
+      // End - cursor to end
+      if (e.key === 'End') {
+        e.preventDefault();
+        setCursorPosition(input.length);
+        return;
+      }
+
+      // Arrow up - navigate history (older)
+      if (e.key === 'ArrowUp') {
+        e.preventDefault();
+        if (history.length === 0) return;
+
+        if (historyIndex === -1) {
+          // Starting navigation - save current input as WIP
+          wipInputRef.current = input;
+          const newIndex = history.length - 1;
+          setHistoryIndex(newIndex);
+          const historyEntry = history[newIndex];
+          if (historyEntry !== undefined) {
+            setInputState(historyEntry);
+            setCursorPosition(historyEntry.length);
+            onInputChangeRef.current?.(historyEntry);
+          }
+        } else if (historyIndex > 0) {
+          // Go to older entry
+          const newIndex = historyIndex - 1;
+          setHistoryIndex(newIndex);
+          const historyEntry = history[newIndex];
+          if (historyEntry !== undefined) {
+            setInputState(historyEntry);
+            setCursorPosition(historyEntry.length);
+            onInputChangeRef.current?.(historyEntry);
+          }
+        }
+        // At oldest entry (index 0) - stay there
+        tabPressCount.current = 0;
+        setSuggestions([]);
+        return;
+      }
+
+      // Arrow down - navigate history (newer)
+      if (e.key === 'ArrowDown') {
+        e.preventDefault();
+        if (historyIndex === -1) return; // Not navigating
+
+        if (historyIndex < history.length - 1) {
+          // Go to newer entry
+          const newIndex = historyIndex + 1;
+          setHistoryIndex(newIndex);
+          const historyEntry = history[newIndex];
+          if (historyEntry !== undefined) {
+            setInputState(historyEntry);
+            setCursorPosition(historyEntry.length);
+            onInputChangeRef.current?.(historyEntry);
+          }
+        } else {
+          // At newest entry - return to WIP
+          setHistoryIndex(-1);
+          setInputState(wipInputRef.current);
+          setCursorPosition(wipInputRef.current.length);
+          onInputChangeRef.current?.(wipInputRef.current);
+          wipInputRef.current = '';
+        }
+        tabPressCount.current = 0;
+        setSuggestions([]);
+        return;
+      }
+
+      // Regular character input - insert at cursor position
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
         setInputState(prev => {
-          const newValue = prev + e.key;
+          const newValue = prev.slice(0, cursorPosition) + e.key + prev.slice(cursorPosition);
           onInputChangeRef.current?.(newValue);
           tabPressCount.current = 0;
           setSuggestions([]);
           return newValue;
         });
+        setCursorPosition(prev => prev + 1);
+        // Reset history navigation
+        setHistoryIndex(-1);
+        wipInputRef.current = '';
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [enabled, handleTab, clearInput, input]);
+  }, [enabled, handleTab, clearInput, input, cursorPosition, history, historyIndex]);
 
   return {
     input,
+    cursorPosition,
     suggestions,
     clearInput,
     setInput,
