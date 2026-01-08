@@ -54,6 +54,7 @@ export default defineConfig({
         plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' } }), storybookTest()],
         test: {
           name: 'storybook',
+          exclude: ['src/**/__screenshots__/**/*'],
           browser: {
             enabled: true,
             headless: true,
