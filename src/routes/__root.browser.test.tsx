@@ -28,7 +28,6 @@ vi.mock('@tanstack/react-router-devtools', () => ({
   TanStackRouterDevtoolsPanel: () => <div data-testid='router-devtools'>Router Devtools</div>,
 }));
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type RouteWithShell = { options: { shellComponent: FC<PropsWithChildren> } };
 
 // Import after mocks are set up

@@ -2,7 +2,6 @@ import { describe, expect, test } from 'vitest';
 
 import { Route } from './__root';
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
 type RouteOptions = typeof Route.options & { head: () => any };
 
 describe('__root Route', () => {
