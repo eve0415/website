@@ -470,11 +470,9 @@ describe('refreshGitHubStats', () => {
     await refreshGitHubStats(testEnv);
 
     const storedValue = await env.GITHUB_STATS_CACHE.get<{ languages: unknown[] }>('github_stats_eve0415', 'json');
-    expect(storedValue).toBeDefined();
 
-    if (storedValue) {
-      expect(storedValue.languages).toEqual([]);
-    }
+    expect(storedValue).toBeDefined();
+    expect(storedValue?.languages).toEqual([]);
   });
 
   // Note: Rate limit tests with Octokit's retry plugin are difficult to reliably test

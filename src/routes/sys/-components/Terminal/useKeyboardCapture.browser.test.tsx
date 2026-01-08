@@ -16,10 +16,8 @@ interface TestProps {
 }
 
 const TestComponent: FC<TestProps> = ({ enabled, commands, onSubmit = () => {}, onCtrlC = () => {}, onInputChange }) => {
-  // Serialize commands for dependency comparison (stable string representation)
-  const commandsKey = commands.join(',');
   // Memoize commands to prevent unnecessary re-creations of handleTab callback
-  const memoizedCommands = useMemo(() => commands, [commandsKey, commands]);
+  const memoizedCommands = useMemo(() => commands, [commands]);
 
   // Build options object with only defined values
   const options = {
@@ -285,9 +283,6 @@ describe('useKeyboardCapture', () => {
     describe('multiple matches', () => {
       describe('with common prefix', () => {
         describe('1 tab', () => {
-          // Skip: Tab key appears to fire twice in browser test environment
-          // This causes tabPressCount to be 2 instead of 1, showing suggestions instead of extending prefix
-          // The actual behavior in Terminal.tsx works correctly because Tab is handled by useKeyboardCapture
           test('extends input to common prefix', async () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper', 'helping']} />);
 
@@ -320,8 +315,6 @@ describe('useKeyboardCapture', () => {
             await expect.element(suggestions).toHaveTextContent('helper');
           });
 
-          // Skip: Tab key appears to fire twice in browser test environment
-          // This makes prefix extension unreliable
           test('keeps extended prefix in input', async () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper']} />);
 

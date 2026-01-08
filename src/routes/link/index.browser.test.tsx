@@ -24,8 +24,8 @@ const TestLinkPage: FC = () => {
     e.preventDefault();
     setFormState('submitting');
 
-    // Simulate form submission - reduced timeout for testing
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Simulate form submission - longer timeout to reliably test submitting state
+    await new Promise(resolve => setTimeout(resolve, 500));
 
     setFormState('success');
     setFormData({ name: '', email: '', message: '' });
@@ -258,9 +258,9 @@ describe('LinkPage', () => {
   test('submit button is disabled during submission', async () => {
     const { getByTestId } = await render(<TestLinkPage />);
 
-    await getByTestId('name-input').fill('テスト太郎');
-    await getByTestId('email-input').fill('test@example.com');
-    await getByTestId('message-input').fill('テストメッセージ');
+    await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
+    await userEvent.fill(getByTestId('email-input'), 'test@example.com');
+    await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
 
     // Submit form
     await userEvent.click(getByTestId('submit-button'));
@@ -275,11 +275,14 @@ describe('LinkPage', () => {
   test('form inputs are disabled during submission', async () => {
     const { getByTestId } = await render(<TestLinkPage />);
 
-    await getByTestId('name-input').fill('テスト太郎');
-    await getByTestId('email-input').fill('test@example.com');
-    await getByTestId('message-input').fill('テストメッセージ');
+    await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
+    await userEvent.fill(getByTestId('email-input'), 'test@example.com');
+    await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
 
     await userEvent.click(getByTestId('submit-button'));
+
+    // Wait for submitting state to be active
+    await expect.element(page.getByTestId('submitting-text')).toBeVisible();
 
     // Inputs should be disabled during submission
     await expect.element(page.getByTestId('name-input')).toBeDisabled();

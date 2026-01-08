@@ -35,6 +35,10 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const tabPressCount = useRef(0);
   const lastTabInput = useRef('');
+  // Track tab presses to handle React Strict Mode double-invocation
+  const pendingTabId = useRef(0);
+  const lastProcessedTabId = useRef(0);
+  const lastTabResult = useRef('');
 
   // Refs for callbacks to avoid stale closures
   const onSubmitRef = useRef(onSubmit);
@@ -63,21 +67,33 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
   }, []);
 
   const handleTab = useCallback(
-    (currentInput: string): string => {
+    (currentInput: string, tabId: number): string => {
+      // If already processed, return the cached result (React Strict Mode double-call)
+      if (tabId === lastProcessedTabId.current) {
+        return lastTabResult.current;
+      }
+      lastProcessedTabId.current = tabId;
+
+      // Helper to cache and return result
+      const cacheAndReturn = (result: string): string => {
+        lastTabResult.current = result;
+        return result;
+      };
+
       const trimmedInput = currentInput.trimStart();
 
       // Find matching commands
       const matches = commands.filter(cmd => cmd.startsWith(trimmedInput));
 
       if (matches.length === 0) {
-        return currentInput;
+        return cacheAndReturn(currentInput);
       }
 
       if (matches.length === 1 && matches[0] !== undefined) {
         // Single match: complete it
         setSuggestions([]);
         tabPressCount.current = 0;
-        return matches[0];
+        return cacheAndReturn(matches[0]);
       }
 
       // Multiple matches
@@ -94,15 +110,17 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         const commonPrefix = findCommonPrefix(matches);
         if (commonPrefix.length > trimmedInput.length) {
           setSuggestions([]);
-          return commonPrefix;
+          // Update lastTabInput so next Tab continues counting instead of resetting
+          lastTabInput.current = commonPrefix;
+          return cacheAndReturn(commonPrefix);
         }
         // No additional prefix to complete, show suggestions on second tab
-        return currentInput;
+        return cacheAndReturn(currentInput);
       }
 
       // Second tab: show all matches
       setSuggestions(matches);
-      return currentInput;
+      return cacheAndReturn(currentInput);
     },
     [commands],
   );
@@ -129,8 +147,9 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       // Tab for autocomplete
       if (e.key === 'Tab') {
         e.preventDefault();
+        const tabId = ++pendingTabId.current;
         setInputState(prev => {
-          const newValue = handleTab(prev);
+          const newValue = handleTab(prev, tabId);
           onInputChangeRef.current?.(newValue);
           return newValue;
         });
