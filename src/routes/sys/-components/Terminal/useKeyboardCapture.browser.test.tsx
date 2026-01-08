@@ -288,7 +288,7 @@ describe('useKeyboardCapture', () => {
           // Skip: Tab key appears to fire twice in browser test environment
           // This causes tabPressCount to be 2 instead of 1, showing suggestions instead of extending prefix
           // The actual behavior in Terminal.tsx works correctly because Tab is handled by useKeyboardCapture
-          test.skip('extends input to common prefix', async () => {
+          test('extends input to common prefix', async () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper', 'helping']} />);
 
             await userEvent.keyboard('hel');
@@ -297,7 +297,7 @@ describe('useKeyboardCapture', () => {
             await expect.element(page.getByTestId('input')).toHaveTextContent('help');
           });
 
-          test.skip('does not show suggestions yet', async () => {
+          test('does not show suggestions yet', async () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper']} />);
 
             await userEvent.keyboard('hel');
@@ -322,7 +322,7 @@ describe('useKeyboardCapture', () => {
 
           // Skip: Tab key appears to fire twice in browser test environment
           // This makes prefix extension unreliable
-          test.skip('keeps extended prefix in input', async () => {
+          test('keeps extended prefix in input', async () => {
             await render(<TestComponent enabled={true} commands={['helpme', 'helper']} />);
 
             await userEvent.keyboard('hel');

@@ -520,7 +520,7 @@ describe('Terminal', () => {
     // "Unhandled Error" warnings in vitest. The crash flow is visually verified
     // in Storybook (Terminal/Crashing story - also excluded from automated tests).
     // The full crash → BSOD → reset flow is tested in BSODError integration tests.
-    test.skip('sudo rm -rf shows crash animation class', async () => {
+    test('sudo rm -rf shows crash animation class', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
