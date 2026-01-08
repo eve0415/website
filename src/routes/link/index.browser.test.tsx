@@ -1,3 +1,4 @@
+import type { SocialLink } from './-components/SocialLinkCard/SocialLinkCard';
 import type { FC, FormEvent } from 'react';
 
 import { useState } from 'react';
@@ -6,13 +7,46 @@ import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
 
 import CurrentTime from './-components/CurrentTime/CurrentTime';
+import BlueskyIcon from './-components/icons/BlueskyIcon';
+import DiscordIcon from './-components/icons/DiscordIcon';
+import GitHubIcon from './-components/icons/GitHubIcon';
+import XIcon from './-components/icons/XIcon';
 import SocialLinkCard from './-components/SocialLinkCard/SocialLinkCard';
 
-const socialLinks = [
-  { name: 'GitHub', url: 'https://github.com/eve0415', handle: 'eve0415', icon: 'GH', color: 'hover:border-[#238636]/50' },
-  { name: 'Twitter / X', url: 'https://twitter.com/eveevekun', handle: '@eveevekun', icon: 'X', color: 'hover:border-muted-foreground/50' },
-  { name: 'Bluesky', url: 'https://bsky.app/profile/eve0415.net', handle: '@eve0415.net', icon: 'BS', color: 'hover:border-[#0085ff]/50' },
-  { name: 'Discord', url: '#', handle: 'eve0415', icon: 'DC', color: 'hover:border-[#5865F2]/50' },
+const socialLinks: SocialLink[] = [
+  {
+    name: 'GitHub',
+    url: 'https://github.com/eve0415',
+    handle: 'eve0415',
+    icon: <GitHubIcon className='size-6' />,
+    color: 'hover:border-white/50',
+    iconHover: 'group-hover:bg-white/10 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.3)]',
+  },
+  {
+    name: 'Twitter / X',
+    url: 'https://twitter.com/eveevekun',
+    handle: '@eveevekun',
+    icon: <XIcon className='size-6' />,
+    color: 'hover:border-white/50',
+    iconHover: 'group-hover:bg-white/10 group-hover:shadow-[0_0_12px_rgba(255,255,255,0.3)]',
+  },
+  {
+    name: 'Bluesky',
+    url: 'https://bsky.app/profile/eve0415.net',
+    handle: '@eve0415.net',
+    icon: <BlueskyIcon className='size-6' />,
+    color: 'hover:border-[#0085ff]/50',
+    iconHover: 'group-hover:bg-[#0085ff]/10 group-hover:shadow-[0_0_12px_rgba(0,133,255,0.4)]',
+  },
+  {
+    name: 'Discord',
+    url: '#',
+    handle: 'eve0415',
+    icon: <DiscordIcon className='size-6' />,
+    color: 'hover:border-[#5865F2]/50',
+    iconHover: 'group-hover:bg-[#5865F2]/10 group-hover:shadow-[0_0_12px_rgba(88,101,242,0.4)]',
+    copyAction: true,
+  },
 ];
 
 // Test component without router dependencies
@@ -48,17 +82,6 @@ const TestLinkPage: FC = () => {
             {socialLinks.map((link, index) => (
               <SocialLinkCard key={link.name} link={link} index={index} />
             ))}
-          </div>
-          <div className='mt-8 rounded-lg border border-line border-dashed bg-surface/50 p-4'>
-            <div className='flex items-center gap-3'>
-              <span className='flex size-10 items-center justify-center rounded-lg bg-muted font-mono text-sm text-subtle-foreground'>@</span>
-              <div>
-                <span className='block text-sm text-subtle-foreground'>直接メール</span>
-                <a href='mailto:eve@eve0415.net' className='font-mono text-muted-foreground transition-colors hover:text-neon'>
-                  eve@eve0415.net
-                </a>
-              </div>
-            </div>
           </div>
         </section>
 
@@ -291,12 +314,5 @@ describe('LinkPage', () => {
 
     // Wait for completion and verify inputs are enabled again
     await expect.element(page.getByTestId('idle-text')).toBeVisible();
-  });
-
-  test('email link is rendered correctly', async () => {
-    await render(<TestLinkPage />);
-    const emailLink = page.getByRole('link', { name: 'eve@eve0415.net' });
-    await expect.element(emailLink).toBeInTheDocument();
-    await expect.element(emailLink).toHaveAttribute('href', 'mailto:eve@eve0415.net');
   });
 });

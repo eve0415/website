@@ -4,7 +4,7 @@ import preview from '#.storybook/preview';
 import { testAllViewports } from '#.storybook/viewports';
 
 import SocialLinkCard from './SocialLinkCard';
-import { discordLink, githubLink, placeholderLink, twitterLink } from './SocialLinkCard.fixtures';
+import { blueskyLink, discordLink, githubLink, placeholderLink, twitterLink } from './SocialLinkCard.fixtures';
 
 const meta = preview.meta({
   component: SocialLinkCard,
@@ -45,10 +45,24 @@ export const Twitter = meta.story({
   },
 });
 
+export const Bluesky = meta.story({
+  args: {
+    link: blueskyLink,
+    index: 0,
+  },
+});
+
 export const Discord = meta.story({
   args: {
     link: discordLink,
     index: 0,
+  },
+  play: async ({ canvasElement }) => {
+    const canvas = within(canvasElement);
+    await expect(canvas.getByText('Discord')).toBeInTheDocument();
+    // Discord uses button for copy action, not a link
+    const button = canvas.getByRole('button');
+    await expect(button).toBeInTheDocument();
   },
 });
 
@@ -70,7 +84,8 @@ export const MultipleIndices = meta.story({
     <div className='flex w-80 flex-col gap-3'>
       <SocialLinkCard link={githubLink} index={0} />
       <SocialLinkCard link={twitterLink} index={1} />
-      <SocialLinkCard link={discordLink} index={2} />
+      <SocialLinkCard link={blueskyLink} index={2} />
+      <SocialLinkCard link={discordLink} index={3} />
     </div>
   ),
 });
@@ -80,8 +95,9 @@ export const AllLinks = meta.story({
     <div className='flex w-80 flex-col gap-3'>
       <SocialLinkCard link={githubLink} index={0} />
       <SocialLinkCard link={twitterLink} index={1} />
-      <SocialLinkCard link={discordLink} index={2} />
-      <SocialLinkCard link={placeholderLink} index={3} />
+      <SocialLinkCard link={blueskyLink} index={2} />
+      <SocialLinkCard link={discordLink} index={3} />
+      <SocialLinkCard link={placeholderLink} index={4} />
     </div>
   ),
 });
