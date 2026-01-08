@@ -1,9 +1,9 @@
 import type { SocialLink } from './-components/SocialLinkCard/SocialLinkCard';
-import type { FC, FormEvent } from 'react';
+import type { FC } from 'react';
 
 import { Link, createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
 
+import ContactForm from './-components/ContactForm/ContactForm';
 import CurrentTime from './-components/CurrentTime/CurrentTime';
 import BlueskyIcon from './-components/icons/BlueskyIcon';
 import DiscordIcon from './-components/icons/DiscordIcon';
@@ -48,24 +48,6 @@ const socialLinks: SocialLink[] = [
 ];
 
 const LinkPage: FC = () => {
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setFormState('submitting');
-
-    // Simulate form submission - in production this would call a Cloudflare Worker
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
-    // For now, just show success
-    setFormState('success');
-    setFormData({ name: '', email: '', message: '' });
-
-    // Reset after 3 seconds
-    setTimeout(() => setFormState('idle'), 3000);
-  };
-
   return (
     <main className='min-h-dvh px-6 py-24 md:px-12'>
       {/* Header */}
@@ -92,87 +74,7 @@ const LinkPage: FC = () => {
         {/* Contact Form */}
         <section>
           <h2 className='mb-8 font-mono text-sm text-subtle-foreground uppercase tracking-wider'>// Contact</h2>
-          <form data-testid='contact-form' onSubmit={handleSubmit} className='space-y-6'>
-            <div className='group'>
-              <label htmlFor='name' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
-                お名前
-              </label>
-              <input
-                type='text'
-                id='name'
-                data-testid='name-input'
-                required
-                value={formData.name}
-                onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className='w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
-                placeholder='山田太郎'
-                disabled={formState === 'submitting'}
-              />
-            </div>
-            <div className='group'>
-              <label htmlFor='email' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
-                メールアドレス
-              </label>
-              <input
-                type='email'
-                id='email'
-                data-testid='email-input'
-                required
-                value={formData.email}
-                onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className='w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
-                placeholder='you@example.com'
-                disabled={formState === 'submitting'}
-              />
-            </div>
-            <div className='group'>
-              <label htmlFor='message' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
-                メッセージ
-              </label>
-              <textarea
-                id='message'
-                data-testid='message-input'
-                required
-                rows={5}
-                value={formData.message}
-                onChange={e => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                className='w-full resize-none rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
-                placeholder='ご用件をお書きください...'
-                disabled={formState === 'submitting'}
-              />
-            </div>
-            <button
-              type='submit'
-              data-testid='submit-button'
-              disabled={formState === 'submitting' || formState === 'success'}
-              className={`group relative w-full overflow-hidden rounded-lg px-6 py-3 font-medium transition-all duration-fast ${
-                formState === 'success' ? 'bg-neon/20 text-neon' : 'bg-neon text-background hover:shadow-glow/20 hover:shadow-lg'
-              } disabled:cursor-not-allowed disabled:opacity-50`}
-            >
-              <span className='relative z-10'>
-                {formState === 'submitting' ? (
-                  <span data-testid='submitting-text' className='flex items-center justify-center gap-2'>
-                    <span className='size-4 animate-spin rounded-full border-2 border-background border-t-transparent' />
-                    送信中...
-                  </span>
-                ) : formState === 'success' ? (
-                  <span data-testid='success-text'>送信完了！ ✓</span>
-                ) : (
-                  <span data-testid='idle-text'>送信する</span>
-                )}
-              </span>
-            </button>
-            {formState === 'success' && (
-              <p data-testid='success-message' className='animate-fade-in-up text-center text-neon text-sm'>
-                メッセージが送信されました。ありがとうございます！
-              </p>
-            )}
-            {formState === 'error' && (
-              <p data-testid='error-message' className='animate-fade-in-up text-center text-orange text-sm'>
-                エラーが発生しました。もう一度お試しください。
-              </p>
-            )}
-          </form>
+          <ContactForm />
         </section>
       </div>
 

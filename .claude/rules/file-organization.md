@@ -145,3 +145,23 @@ import { useReducedMotion } from '#hooks/useReducedMotion';
 ```
 
 Configured in `package.json` (imports) and `tsconfig.json` (paths).
+
+## Test Fixtures
+
+Fixtures are reusable test data objects. Location depends on usage scope:
+
+| Scope          | Location                       | Example                              |
+| -------------- | ------------------------------ | ------------------------------------ |
+| Single file    | Inline in test/story file      | Form data in ContactForm.stories.tsx |
+| Same directory | `ComponentName.fixtures.tsx`   | SkillCard.fixtures.tsx               |
+| Cross-route    | `src/fixtures/fixture-name.ts` | (when needed)                        |
+
+**Pattern**: Export named constants with descriptive scenario names.
+
+```typescript
+// SkillCard.fixtures.tsx
+export const expertSkill: Skill = { ... };
+export const learningSkill: Skill = { ... };
+```
+
+**Naming**: Use descriptive names that indicate the scenario (e.g., `validFormData`, `longNameData`, `emptyFieldsData`).

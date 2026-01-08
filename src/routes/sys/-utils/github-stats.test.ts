@@ -441,6 +441,8 @@ describe('refreshGitHubStats', () => {
     const testEnv = {
       GITHUB_PAT: 'test-token',
       GITHUB_STATS_CACHE: env.GITHUB_STATS_CACHE,
+      CONTACT_RATE_LIMIT: {} as KVNamespace,
+      CONTACT_EMAIL: {} as SendEmail,
     };
 
     // Call refresh
@@ -465,6 +467,8 @@ describe('refreshGitHubStats', () => {
     const testEnv = {
       GITHUB_PAT: 'test-token',
       GITHUB_STATS_CACHE: env.GITHUB_STATS_CACHE,
+      CONTACT_RATE_LIMIT: {} as KVNamespace,
+      CONTACT_EMAIL: {} as SendEmail,
     };
 
     await refreshGitHubStats(testEnv);

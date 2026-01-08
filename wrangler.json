@@ -26,6 +26,17 @@
     {
       "binding": "GITHUB_STATS_CACHE",
       "id": "7c81378ba627479abce566995492eda0"
+    },
+    {
+      "binding": "CONTACT_RATE_LIMIT",
+      "id": "TODO_CREATE_KV_NAMESPACE"
+    }
+  ],
+
+  "send_email": [
+    {
+      "name": "CONTACT_EMAIL",
+      "destination_address": "contact@eve0415.net"
     }
   ]
 }

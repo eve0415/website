@@ -1,8 +1,8 @@
 import type { SocialLink } from './-components/SocialLinkCard/SocialLinkCard';
-import type { FC, FormEvent } from 'react';
+import type { ContactFormResult } from './-utils/contact-form';
+import type { FC } from 'react';
 
-import { useState } from 'react';
-import { describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
 
@@ -12,6 +12,26 @@ import DiscordIcon from './-components/icons/DiscordIcon';
 import GitHubIcon from './-components/icons/GitHubIcon';
 import XIcon from './-components/icons/XIcon';
 import SocialLinkCard from './-components/SocialLinkCard/SocialLinkCard';
+
+// Mock the server function
+vi.mock('./-utils/contact-form', () => ({
+  submitContactForm: vi.fn(),
+}));
+
+// Mock Turnstile to auto-verify
+vi.mock('./-components/TurnstileWidget/TurnstileWidget', () => ({
+  default: ({ onVerify }: { onVerify: (token: string) => void }) => {
+    // Auto-verify after a short delay to simulate real behavior
+    setTimeout(() => onVerify('mock-turnstile-token'), 10);
+    return <div data-testid='turnstile-mock'>Turnstile Mock</div>;
+  },
+}));
+
+import ContactForm from './-components/ContactForm/ContactForm';
+// Import after mocking
+import { submitContactForm } from './-utils/contact-form';
+
+const mockedSubmitContactForm = vi.mocked(submitContactForm);
 
 const socialLinks: SocialLink[] = [
   {
@@ -45,29 +65,11 @@ const socialLinks: SocialLink[] = [
     icon: <DiscordIcon className='size-6' />,
     color: 'hover:border-[#5865F2]/50',
     iconHover: 'group-hover:bg-[#5865F2]/10 group-hover:shadow-[0_0_12px_rgba(88,101,242,0.4)]',
-    copyAction: true,
   },
 ];
 
-// Test component without router dependencies
+// Test component for LinkPage without router dependencies
 const TestLinkPage: FC = () => {
-  const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
-  const [formData, setFormData] = useState({ name: '', email: '', message: '' });
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setFormState('submitting');
-
-    // Simulate form submission - longer timeout to reliably test submitting state
-    await new Promise(resolve => setTimeout(resolve, 500));
-
-    setFormState('success');
-    setFormData({ name: '', email: '', message: '' });
-
-    // Reset after reduced time for testing
-    setTimeout(() => setFormState('idle'), 200);
-  };
-
   return (
     <main data-testid='main' className='min-h-dvh px-6 py-24 md:px-12'>
       <header className='mb-16'>
@@ -87,87 +89,7 @@ const TestLinkPage: FC = () => {
 
         <section>
           <h2 className='mb-8 font-mono text-sm text-subtle-foreground uppercase tracking-wider'>// Contact</h2>
-          <form data-testid='contact-form' onSubmit={handleSubmit} className='space-y-6'>
-            <div className='group'>
-              <label htmlFor='name' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
-                お名前
-              </label>
-              <input
-                type='text'
-                id='name'
-                data-testid='name-input'
-                required
-                value={formData.name}
-                onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className='w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
-                placeholder='山田太郎'
-                disabled={formState === 'submitting'}
-              />
-            </div>
-            <div className='group'>
-              <label htmlFor='email' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
-                メールアドレス
-              </label>
-              <input
-                type='email'
-                id='email'
-                data-testid='email-input'
-                required
-                value={formData.email}
-                onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-                className='w-full rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
-                placeholder='you@example.com'
-                disabled={formState === 'submitting'}
-              />
-            </div>
-            <div className='group'>
-              <label htmlFor='message' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
-                メッセージ
-              </label>
-              <textarea
-                id='message'
-                data-testid='message-input'
-                required
-                rows={5}
-                value={formData.message}
-                onChange={e => setFormData(prev => ({ ...prev, message: e.target.value }))}
-                className='w-full resize-none rounded-lg border border-line bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:border-neon focus:outline-none focus:ring-1 focus:ring-neon'
-                placeholder='ご用件をお書きください...'
-                disabled={formState === 'submitting'}
-              />
-            </div>
-            <button
-              type='submit'
-              data-testid='submit-button'
-              disabled={formState === 'submitting' || formState === 'success'}
-              className={`group relative w-full overflow-hidden rounded-lg px-6 py-3 font-medium transition-all duration-fast ${
-                formState === 'success' ? 'bg-neon/20 text-neon' : 'bg-neon text-background hover:shadow-glow/20 hover:shadow-lg'
-              } disabled:cursor-not-allowed disabled:opacity-50`}
-            >
-              <span className='relative z-10'>
-                {formState === 'submitting' ? (
-                  <span data-testid='submitting-text' className='flex items-center justify-center gap-2'>
-                    <span className='size-4 animate-spin rounded-full border-2 border-background border-t-transparent' />
-                    送信中...
-                  </span>
-                ) : formState === 'success' ? (
-                  <span data-testid='success-text'>送信完了！ ✓</span>
-                ) : (
-                  <span data-testid='idle-text'>送信する</span>
-                )}
-              </span>
-            </button>
-            {formState === 'success' && (
-              <p data-testid='success-message' className='animate-fade-in-up text-center text-neon text-sm'>
-                メッセージが送信されました。ありがとうございます！
-              </p>
-            )}
-            {formState === 'error' && (
-              <p data-testid='error-message' className='animate-fade-in-up text-center text-orange text-sm'>
-                エラーが発生しました。もう一度お試しください。
-              </p>
-            )}
-          </form>
+          <ContactForm />
         </section>
       </div>
 
@@ -226,9 +148,19 @@ describe('LinkPage', () => {
     await expect.element(page.getByText('UTC+9 (JST)')).toBeInTheDocument();
     await expect.element(page.getByText('Available')).toBeInTheDocument();
   });
+});
+
+describe('ContactForm', () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  afterEach(() => {
+    vi.clearAllMocks();
+  });
 
   test('form starts in idle state with empty fields', async () => {
-    await render(<TestLinkPage />);
+    await render(<ContactForm />);
     await expect.element(page.getByTestId('idle-text')).toBeInTheDocument();
     await expect.element(page.getByTestId('name-input')).toHaveValue('');
     await expect.element(page.getByTestId('email-input')).toHaveValue('');
@@ -236,83 +168,225 @@ describe('LinkPage', () => {
   });
 
   test('form fields update on user input', async () => {
-    const { getByTestId } = await render(<TestLinkPage />);
+    const { getByTestId } = await render(<ContactForm />);
 
-    const nameInput = getByTestId('name-input');
-    const emailInput = getByTestId('email-input');
-    const messageInput = getByTestId('message-input');
-
-    await nameInput.fill('テスト太郎');
-    await emailInput.fill('test@example.com');
-    await messageInput.fill('テストメッセージ');
+    await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
+    await userEvent.fill(getByTestId('email-input'), 'test@example.com');
+    await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
 
     await expect.element(page.getByTestId('name-input')).toHaveValue('テスト太郎');
     await expect.element(page.getByTestId('email-input')).toHaveValue('test@example.com');
     await expect.element(page.getByTestId('message-input')).toHaveValue('テストメッセージ');
   });
 
-  test('form submission transitions through states and clears data', async () => {
-    const { getByTestId } = await render(<TestLinkPage />);
+  test('character counter updates with message input', async () => {
+    const { getByTestId } = await render(<ContactForm />);
+
+    await userEvent.fill(getByTestId('message-input'), 'Hello');
+
+    await expect.element(page.getByTestId('char-counter')).toHaveTextContent('5/2000');
+  });
+
+  test('shows validation errors on empty submit', async () => {
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Wait for Turnstile to auto-verify
+    await expect.element(page.getByTestId('turnstile-mock')).toBeInTheDocument();
+
+    // Submit without filling
+    await userEvent.click(getByTestId('submit-button'));
+
+    // Should show validation errors (client-side validation)
+    await expect.element(page.getByTestId('name-error')).toBeVisible();
+    await expect.element(page.getByTestId('email-error')).toBeVisible();
+    await expect.element(page.getByTestId('message-error')).toBeVisible();
+  });
+
+  test('shows inline error on blur with invalid name', async () => {
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Type a very long name
+    await userEvent.fill(getByTestId('name-input'), 'a'.repeat(101));
+    // Blur by clicking elsewhere
+    await userEvent.click(getByTestId('email-input'));
+
+    await expect.element(page.getByTestId('name-error')).toBeVisible();
+  });
+
+  test('clears field error on focus', async () => {
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Trigger validation error
+    await userEvent.fill(getByTestId('name-input'), '');
+    await userEvent.click(getByTestId('email-input')); // blur to trigger validation
+
+    // Now focus name again
+    await userEvent.click(getByTestId('name-input'));
+
+    // Error should be cleared (element should not exist)
+    await expect.element(page.getByTestId('name-error')).not.toBeInTheDocument();
+  });
+
+  test('successful submission shows success message and clears form', async () => {
+    const successResult: ContactFormResult = { success: true };
+    mockedSubmitContactForm.mockResolvedValueOnce(successResult);
+
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Wait for Turnstile to auto-verify
+    await expect.element(page.getByTestId('turnstile-mock')).toBeInTheDocument();
 
     // Fill form
     await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
     await userEvent.fill(getByTestId('email-input'), 'test@example.com');
     await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
 
-    // Verify initial state
-    await expect.element(page.getByTestId('idle-text')).toBeInTheDocument();
+    // Small delay to ensure Turnstile token is set
+    await new Promise(resolve => setTimeout(resolve, 50));
 
-    // Submit form by clicking button
+    // Submit
     await userEvent.click(getByTestId('submit-button'));
 
-    // Wait for success state (500ms delay + React render time under parallel test load)
+    // Should show success
     await expect.element(page.getByTestId('success-text'), { timeout: 5000 }).toBeVisible();
-    await expect.element(page.getByTestId('success-message'), { timeout: 5000 }).toBeInTheDocument();
+    await expect.element(page.getByTestId('success-message')).toBeInTheDocument();
 
-    // Form data should be cleared
+    // Form should be cleared
     await expect.element(page.getByTestId('name-input')).toHaveValue('');
     await expect.element(page.getByTestId('email-input')).toHaveValue('');
     await expect.element(page.getByTestId('message-input')).toHaveValue('');
-
-    // Wait for idle state (TestLinkPage resets after 200ms)
-    await expect.element(page.getByTestId('idle-text')).toBeVisible();
   });
 
-  test('submit button is disabled during submission', async () => {
-    const { getByTestId } = await render(<TestLinkPage />);
+  test('rate limit error shows alternative contact options', async () => {
+    const rateLimitResult: ContactFormResult = {
+      success: false,
+      error: 'rate_limit',
+      message: 'メッセージの送信制限に達しました（1時間に3回まで）。Discord または X でお問い合わせください。',
+    };
+    mockedSubmitContactForm.mockResolvedValueOnce(rateLimitResult);
 
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Wait for Turnstile
+    await expect.element(page.getByTestId('turnstile-mock')).toBeInTheDocument();
+
+    // Fill and submit
     await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
     await userEvent.fill(getByTestId('email-input'), 'test@example.com');
     await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
-
-    // Submit form
+    await new Promise(resolve => setTimeout(resolve, 50));
     await userEvent.click(getByTestId('submit-button'));
 
-    // Button should be disabled
-    await expect.element(page.getByTestId('submit-button')).toBeDisabled();
-
-    // Wait for completion and verify button is enabled again
-    await expect.element(page.getByTestId('idle-text')).toBeVisible();
+    // Should show error with alternative contact
+    await expect.element(page.getByTestId('error-message')).toBeVisible();
+    await expect.element(page.getByText('Discord')).toBeInTheDocument();
+    await expect.element(page.getByText('X (@eveevekun)')).toBeInTheDocument();
   });
 
-  test('form inputs are disabled during submission', async () => {
-    const { getByTestId } = await render(<TestLinkPage />);
+  test('email failure error shows alternative contact options', async () => {
+    const emailFailedResult: ContactFormResult = {
+      success: false,
+      error: 'email_failed',
+      message: 'メールの送信に失敗しました。Discord または X でお問い合わせください。',
+    };
+    mockedSubmitContactForm.mockResolvedValueOnce(emailFailedResult);
 
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Wait for Turnstile
+    await expect.element(page.getByTestId('turnstile-mock')).toBeInTheDocument();
+
+    // Fill and submit
     await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
     await userEvent.fill(getByTestId('email-input'), 'test@example.com');
     await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
-
+    await new Promise(resolve => setTimeout(resolve, 50));
     await userEvent.click(getByTestId('submit-button'));
 
-    // Wait for submitting state to be active
+    // Should show error with alternative contact
+    await expect.element(page.getByTestId('error-message')).toBeVisible();
+  });
+
+  test('form is disabled during submission', async () => {
+    // Slow response to test disabled state
+    mockedSubmitContactForm.mockImplementation(() => new Promise(resolve => setTimeout(() => resolve({ success: true }), 500)));
+
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Wait for Turnstile
+    await expect.element(page.getByTestId('turnstile-mock')).toBeInTheDocument();
+
+    // Fill form
+    await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
+    await userEvent.fill(getByTestId('email-input'), 'test@example.com');
+    await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Submit
+    await userEvent.click(getByTestId('submit-button'));
+
+    // Should show submitting state
     await expect.element(page.getByTestId('submitting-text')).toBeVisible();
 
-    // Inputs should be disabled during submission
+    // Inputs should be disabled
     await expect.element(page.getByTestId('name-input')).toBeDisabled();
     await expect.element(page.getByTestId('email-input')).toBeDisabled();
     await expect.element(page.getByTestId('message-input')).toBeDisabled();
+    await expect.element(page.getByTestId('submit-button')).toBeDisabled();
+  });
 
-    // Wait for completion and verify inputs are enabled again
-    await expect.element(page.getByTestId('idle-text')).toBeVisible();
+  test('server validation errors display per-field', async () => {
+    const validationResult: ContactFormResult = {
+      success: false,
+      error: 'validation',
+      errors: {
+        name: 'お名前は100文字以内で入力してください',
+        email: '有効なメールアドレスを入力してください',
+      },
+    };
+    mockedSubmitContactForm.mockResolvedValueOnce(validationResult);
+
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Wait for Turnstile
+    await expect.element(page.getByTestId('turnstile-mock')).toBeInTheDocument();
+
+    // Fill form
+    await userEvent.fill(getByTestId('name-input'), 'Test');
+    await userEvent.fill(getByTestId('email-input'), 'test@example.com');
+    await userEvent.fill(getByTestId('message-input'), 'Test message');
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // Submit
+    await userEvent.click(getByTestId('submit-button'));
+
+    // Should show per-field errors
+    await expect.element(page.getByTestId('name-error')).toBeVisible();
+    await expect.element(page.getByTestId('email-error')).toBeVisible();
+  });
+
+  test('turnstile error shows global error message', async () => {
+    const turnstileResult: ContactFormResult = {
+      success: false,
+      error: 'turnstile',
+      message: '認証に失敗しました',
+    };
+    mockedSubmitContactForm.mockResolvedValueOnce(turnstileResult);
+
+    const { getByTestId } = await render(<ContactForm />);
+
+    // Wait for Turnstile
+    await expect.element(page.getByTestId('turnstile-mock')).toBeInTheDocument();
+
+    // Fill and submit
+    await userEvent.fill(getByTestId('name-input'), 'テスト太郎');
+    await userEvent.fill(getByTestId('email-input'), 'test@example.com');
+    await userEvent.fill(getByTestId('message-input'), 'テストメッセージ');
+    await new Promise(resolve => setTimeout(resolve, 50));
+    await userEvent.click(getByTestId('submit-button'));
+
+    // Should show global error
+    await expect.element(page.getByTestId('error-message')).toBeVisible();
+    await expect.element(page.getByText('認証に失敗しました')).toBeInTheDocument();
   });
 });
