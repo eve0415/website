@@ -1,7 +1,7 @@
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 import type { FC } from 'react';
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
@@ -50,6 +50,10 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
   const [bootPhase, setBootPhase] = useState<'booting' | 'idle'>(prefersReducedMotion ? 'idle' : 'booting');
   const bootProgressRef = useRef(0);
   const animationRef = useRef<number>(0);
+
+  const totalContributions = useMemo(() => {
+    return contributionCalendar.reduce((sum, day) => sum + day.count, 0);
+  }, [contributionCalendar]);
 
   const draw = useCallback(
     (ctx: CanvasRenderingContext2D, width: number, height: number, time: number) => {
@@ -266,7 +270,13 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
       </div>
 
       <div className='relative aspect-square w-full rounded border border-line bg-surface/50'>
-        <canvas ref={canvasRef} className='h-full w-full' style={{ width: '100%', height: '100%' }} />
+        <canvas
+          ref={canvasRef}
+          role='img'
+          aria-label={`Contribution radar: ${totalContributions.toLocaleString()} total contributions across 52 weeks`}
+          className='h-full w-full'
+          style={{ width: '100%', height: '100%' }}
+        />
 
         {/* Boot status overlay */}
         {bootPhase === 'booting' && !prefersReducedMotion && (

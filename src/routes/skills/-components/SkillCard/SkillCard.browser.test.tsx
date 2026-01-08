@@ -77,8 +77,12 @@ describe('SkillCard', () => {
     // Fast-forward past animation delay (index * 50ms = 100ms + buffer)
     await vi.advanceTimersByTimeAsync(200);
 
-    const card = container.querySelector('.translate-y-0.opacity-100');
+    const card = container.querySelector('.group');
     expect(card).not.toBeNull();
+
+    // Check actual computed opacity instead of class presence
+    const opacity = window.getComputedStyle(card!).opacity;
+    expect(opacity).toBe('1');
   });
 
   test('handles mouse enter (hover state)', async () => {
