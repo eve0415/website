@@ -27,7 +27,7 @@ export const Default = meta.story({
     error: new SudoRmRfError(),
     reset: fn(),
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Should show sad face
@@ -52,7 +52,7 @@ export const GenericError = meta.story({
     error: new Error('An unexpected error occurred in the application'),
     reset: fn(),
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Should show simple error layout
@@ -75,7 +75,7 @@ export const ProgressAnimation = meta.story({
     error: new SudoRmRfError(),
     reset: fn(),
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Wait for progress to increase
@@ -96,7 +96,7 @@ export const ProgressComplete = meta.story({
     error: new SudoRmRfError(),
     reset: fn(),
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Wait for progress to complete
@@ -134,7 +134,7 @@ export const QRCodeDisplay = meta.story({
       },
     },
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // QR code should be visible
@@ -158,7 +158,7 @@ export const EmptyErrorMessage = meta.story({
     error: new Error(''),
     reset: fn(),
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Should show fallback message
@@ -217,7 +217,7 @@ export const MainMessage = meta.story({
     error: new SudoRmRfError(),
     reset: fn(),
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Should show main message
@@ -236,7 +236,7 @@ export const VisualElements = meta.story({
     error: new SudoRmRfError(),
     reset: fn(),
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Sad face

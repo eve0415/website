@@ -94,7 +94,7 @@ export const Default = meta.story({});
  * Users can type commands after boot completes
  */
 export const Interactive = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot sequence to complete
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -112,7 +112,7 @@ export const Interactive = meta.story({
  * Typing state - Shows typing animation in progress
  */
 export const Typing = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Short delay to catch typing state
     await new Promise(resolve => setTimeout(resolve, 800));
 
@@ -130,7 +130,7 @@ export const Typing = meta.story({
  * Interrupted state - Ctrl+C during boot skips to prompt
  */
 export const Interrupted = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for typing to start
     await new Promise(resolve => setTimeout(resolve, 600));
 
@@ -154,7 +154,7 @@ export const Interrupted = meta.story({
  * Prompt state - Ready for user input
  */
 export const Prompt = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for full boot
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -172,7 +172,7 @@ export const Prompt = meta.story({
  * WithHistory - Terminal with command history
  */
 export const WithHistory = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -200,7 +200,7 @@ export const WithHistory = meta.story({
  * AwaitingConfirmation - Exit confirmation dialog
  */
 export const AwaitingConfirmation = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -233,7 +233,7 @@ export const TouchDevice = meta.story({
       },
     },
   },
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot animation to complete
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -252,7 +252,7 @@ export const TouchDevice = meta.story({
  * CommandExecution - Shows help command output
  */
 export const CommandExecution = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -275,7 +275,7 @@ export const CommandExecution = meta.story({
  * TabAutocomplete - Demonstrates tab completion
  */
 export const TabAutocomplete = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -298,7 +298,7 @@ export const TabAutocomplete = meta.story({
  * ErrorCommand - Shows error for unknown command
  */
 export const ErrorCommand = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -339,7 +339,7 @@ export const Crashing = meta.story({
  * CtrlCClearsInput - Ctrl+C clears current input in prompt state
  */
 export const CtrlCClearsInput = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot
     await new Promise(resolve => setTimeout(resolve, 4000));
 
@@ -365,7 +365,7 @@ export const CtrlCClearsInput = meta.story({
  * ClearCommand - Shows clear command in action
  */
 export const ClearCommand = meta.story({
-  play: async ({ canvasElement }: { canvasElement: HTMLElement }) => {
+  play: async ({ canvasElement }) => {
     // Wait for boot
     await new Promise(resolve => setTimeout(resolve, 4000));
 
