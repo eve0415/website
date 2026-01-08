@@ -33,7 +33,8 @@
         "google.gemini-cli-vscode-ide-companion",
         "TypeScriptTeam.native-preview",
         "capaj.graphql-codegen-vscode",
-        "GraphQL.vscode-graphql"
+        "GraphQL.vscode-graphql",
+        "vitest.explorer"
       ],
       "settings": {
         "diffEditor.diffAlgorithm": "advanced",
