@@ -30,7 +30,7 @@ const MockTurnstile: FC<{
   };
 
   return (
-    <div data-testid='turnstile-widget' className='flex min-h-[65px] w-[300px] items-center justify-between rounded-lg border border-line bg-surface p-3'>
+    <div data-testid='turnstile-widget' className='flex min-h-16.25 w-75 items-center justify-between rounded-lg border border-line bg-surface p-3'>
       <div className='flex items-center gap-2'>
         {status === 'pending' && (
           <>

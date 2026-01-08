@@ -32,7 +32,7 @@ const MockTurnstileWidget: FC<{
   }, [onVerify]);
 
   return (
-    <div data-testid='turnstile-mock' className='flex h-[65px] items-center gap-2 rounded-lg border border-line bg-surface p-3'>
+    <div data-testid='turnstile-mock' className='flex h-16.25 items-center gap-2 rounded-lg border border-line bg-surface p-3'>
       <span className='text-neon'>✓</span>
       <span className='text-neon text-sm'>認証完了</span>
     </div>
@@ -248,7 +248,7 @@ const meta = preview.meta({
   decorators: [
     withDisabledAnimations,
     Story => (
-      <div className='w-[400px] bg-bg-primary p-8'>
+      <div className='w-100 bg-bg-primary p-8'>
         <Story />
       </div>
     ),
