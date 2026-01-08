@@ -50,6 +50,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
   const [bootPhase, setBootPhase] = useState<'booting' | 'idle'>(prefersReducedMotion ? 'idle' : 'booting');
   const bootProgressRef = useRef(0);
   const animationRef = useRef<number>(0);
+  const bootCompleteCalledRef = useRef(false);
 
   const totalContributions = useMemo(() => {
     return contributionCalendar.reduce((sum, day) => sum + day.count, 0);
@@ -218,7 +219,10 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
 
         if (bootProgressRef.current >= 1) {
           setBootPhase('idle');
-          onBootComplete?.();
+          if (!bootCompleteCalledRef.current) {
+            bootCompleteCalledRef.current = true;
+            onBootComplete?.();
+          }
         }
       }
 
@@ -230,7 +234,10 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     if (prefersReducedMotion) {
       bootProgressRef.current = 1;
       draw(ctx, rect.width, rect.height, 0);
-      onBootComplete?.();
+      if (!bootCompleteCalledRef.current) {
+        bootCompleteCalledRef.current = true;
+        onBootComplete?.();
+      }
     } else {
       animationRef.current = requestAnimationFrame(animate);
     }

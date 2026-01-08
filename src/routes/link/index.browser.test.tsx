@@ -242,9 +242,9 @@ describe('LinkPage', () => {
     // Submit form by clicking button
     await userEvent.click(getByTestId('submit-button'));
 
-    // Wait for success state (submitting state is too brief to reliably test at 100ms)
-    await expect.element(page.getByTestId('success-text')).toBeVisible();
-    await expect.element(page.getByTestId('success-message')).toBeInTheDocument();
+    // Wait for success state (500ms delay + React render time under parallel test load)
+    await expect.element(page.getByTestId('success-text'), { timeout: 5000 }).toBeVisible();
+    await expect.element(page.getByTestId('success-message'), { timeout: 5000 }).toBeInTheDocument();
 
     // Form data should be cleared
     await expect.element(page.getByTestId('name-input')).toHaveValue('');
