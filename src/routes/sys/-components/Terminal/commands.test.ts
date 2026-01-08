@@ -21,8 +21,8 @@ describe('SudoRmRfError', () => {
 });
 
 describe('COMMANDS', () => {
-  test('contains exactly 6 commands', () => {
-    expect(COMMANDS).toHaveLength(6);
+  test('contains exactly 7 commands', () => {
+    expect(COMMANDS).toHaveLength(7);
   });
 
   test('all commands have required properties', () => {
@@ -112,6 +112,30 @@ describe('executeCommand', () => {
     test('snapshot', () => {
       const result = executeCommand('neofetch', mockCommandContext);
       expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('sys.diagnostic command', () => {
+    test('returns diagnostic type with valid --user flag', () => {
+      const result = executeCommand('sys.diagnostic --user=eve0415', mockCommandContext);
+      expect(result.type).toBe('diagnostic');
+    });
+
+    test('returns error for missing --user flag', () => {
+      const result = executeCommand('sys.diagnostic', mockCommandContext);
+      expect(result.type).toBe('error');
+      expect(result).toHaveProperty('message', expect.stringContaining('missing required flag --user'));
+    });
+
+    test('returns error for unknown flag', () => {
+      const result = executeCommand('sys.diagnostic --user=eve0415 --verbose', mockCommandContext);
+      expect(result.type).toBe('error');
+      expect(result).toHaveProperty('message', expect.stringContaining('unknown flag'));
+    });
+
+    test('is case-insensitive for command name', () => {
+      const result = executeCommand('SYS.DIAGNOSTIC --user=eve0415', mockCommandContext);
+      expect(result.type).toBe('diagnostic');
     });
   });
 

@@ -25,17 +25,18 @@ export type CommandResult =
   | { type: 'clear' }
   | { type: 'exit'; needsConfirmation: boolean }
   | { type: 'error'; message: string }
-  | { type: 'crash' };
+  | { type: 'crash' }
+  | { type: 'diagnostic' };
 
 // ASCII art for neofetch
-const ASCII_LOGO = `
-    ███████╗██╗   ██╗███████╗
-    ██╔════╝██║   ██║██╔════╝
-    █████╗  ██║   ██║█████╗
-    ██╔══╝  ╚██╗ ██╔╝██╔══╝
-    ███████╗ ╚████╔╝ ███████╗
-    ╚══════╝  ╚═══╝  ╚══════╝
-`.trim();
+const ASCII_LOGO = [
+  '███████╗██╗   ██╗███████╗',
+  '██╔════╝██║   ██║ ██╔════╝',
+  '█████╗   ██║   ██║█████╗  ',
+  '██╔══╝   ╚██╗ ██╔╝ ██╔══╝  ',
+  '███████╗ ╚████╔╝ ███████╗',
+  '╚══════╝  ╚═══╝  ╚══════╝',
+].join('\n');
 
 const HelpOutput = () => (
   <div className='font-mono text-sm'>
@@ -185,6 +186,25 @@ export const COMMANDS: Command[] = [
       type: 'output',
       content: <NeofetchOutput stats={context.stats} />,
     }),
+  },
+  {
+    name: 'sys.diagnostic',
+    description: 'Run system diagnostics',
+    execute: args => {
+      // Parse args for --user flag
+      const userArg = args.find(a => a.startsWith('--user='));
+      if (!userArg) {
+        return { type: 'error', message: 'sys.diagnostic: missing required flag --user' };
+      }
+
+      // Check for unknown flags
+      const unknownArgs = args.filter(a => !a.startsWith('--user='));
+      if (unknownArgs.length > 0) {
+        return { type: 'error', message: `sys.diagnostic: unknown flag: ${unknownArgs[0]}` };
+      }
+
+      return { type: 'diagnostic' };
+    },
   },
   {
     name: 'sudo',

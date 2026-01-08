@@ -55,50 +55,43 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
   const navigate = useNavigate();
   const detectedTouchDevice = useIsTouchDevice();
   const isTouchDevice = __forceTouchDevice ?? detectedTouchDevice;
-  const terminalRef = useRef<HTMLDivElement>(null);
+  const promptRef = useRef<HTMLDivElement>(null);
   const [isCrashing, setIsCrashing] = useState(false);
 
   const {
     state,
     lines,
     awaitingConfirmation,
+    contentVisible,
+    bootCommandVisible,
+    interruptedText,
     onTypingDone,
     onCtrlC,
-    onBootComplete: terminalBootComplete,
     executeCommand: terminalExecute,
     clear,
     awaitConfirmation,
     confirm,
     addOutput,
+    showDiagnostic,
   } = useTerminal();
 
   // Typing animation for initial command
-  const {
-    displayedText,
-    cursorVisible,
-    isComplete: typingComplete,
-  } = useTypingAnimation(INITIAL_COMMAND, {
+  const { displayedText, cursorVisible } = useTypingAnimation(INITIAL_COMMAND, {
     enabled: state === 'typing',
     onComplete: onTypingDone,
   });
 
-  // Track when we've triggered the boot complete
+  // For touch devices: auto-trigger boot complete when typing finishes
+  // Desktop users must press Ctrl+C to dismiss content
   const bootTriggeredRef = useRef(false);
-
-  // When typing completes and we're in "running" state, trigger boot after a small delay
   useEffect(() => {
-    if (state !== 'running' || !typingComplete || bootTriggeredRef.current) {
+    if (!isTouchDevice || state !== 'displaying' || bootTriggeredRef.current) {
       return;
     }
-
     bootTriggeredRef.current = true;
-    // Small delay to simulate "Enter" press
-    const timeout = setTimeout(() => {
-      terminalBootComplete(); // Transition state to 'prompt'
-      onBootComplete(); // Notify parent
-    }, 300);
-    return () => clearTimeout(timeout);
-  }, [state, typingComplete, terminalBootComplete, onBootComplete]);
+    // Notify parent that boot is complete (for animations)
+    onBootComplete();
+  }, [isTouchDevice, state, onBootComplete]);
 
   // Navigation helper
   const handleNavigateHome = useCallback(() => {
@@ -155,24 +148,37 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
             throw new SudoRmRfError();
           }, 1500);
           break;
+        case 'diagnostic':
+          // Add command to history and show diagnostic content
+          terminalExecute(input, null);
+          showDiagnostic();
+          break;
       }
     },
-    [awaitingConfirmation, confirm, commandContext, terminalExecute, clear, awaitConfirmation, addOutput, handleNavigateHome],
+    [awaitingConfirmation, confirm, commandContext, terminalExecute, clear, awaitConfirmation, addOutput, handleNavigateHome, showDiagnostic],
   );
 
-  // Handle Ctrl+C
+  // Handle Ctrl+C - use ref to avoid effect re-runs during typing animation
   const handleCtrlC = useCallback(() => {
-    if (state === 'typing' || state === 'running') {
+    if (state === 'typing') {
+      // Pass partial text to show "command^C" in header
+      onCtrlC(displayedText);
+    } else if (state === 'displaying') {
+      // Dismiss content and show prompt
       onCtrlC();
-      // Trigger boot complete after interrupt
-      setTimeout(() => {
-        terminalBootComplete();
-        onBootComplete();
-      }, 100);
+      // Notify parent for any cleanup/state updates
+      onBootComplete();
     } else {
+      // In prompt state: just clear input
       onCtrlC();
     }
-  }, [state, onCtrlC, terminalBootComplete, onBootComplete]);
+  }, [state, onCtrlC, displayedText, onBootComplete]);
+
+  // Ref to hold current handler for use in effect
+  const handleCtrlCRef = useRef(handleCtrlC);
+  useEffect(() => {
+    handleCtrlCRef.current = handleCtrlC;
+  }, [handleCtrlC]);
 
   // Keyboard capture (only on desktop and when in prompt state)
   const keyboardEnabled = !isTouchDevice && state === 'prompt';
@@ -183,70 +189,71 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
     onCtrlC: handleCtrlC,
   });
 
-  // Also listen for Ctrl+C during typing/running states
+  // Listen for Ctrl+C during typing/displaying states (not handled by keyboard capture)
   useEffect(() => {
     if (isTouchDevice || state === 'prompt') return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === 'c') {
         e.preventDefault();
-        handleCtrlC();
+        handleCtrlCRef.current();
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isTouchDevice, state, handleCtrlC]);
+  }, [isTouchDevice, state]);
 
-  // Auto-scroll to bottom when lines change
+  // Auto-scroll to prompt after command execution
   useEffect(() => {
-    if (terminalRef.current) {
-      terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+    if (state === 'prompt' && promptRef.current) {
+      promptRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-  }, [lines, keyboardInput]);
+  }, [state, lines.length]);
 
   // Determine if we should show the children (boot content)
-  const showContent = state === 'running' || state === 'prompt' || state === 'interrupted';
+  const showContent = contentVisible;
 
   return (
     <div className={`relative ${isCrashing ? 'animate-tv-static' : ''}`}>
-      {/* Terminal header with command */}
-      <header data-testid='terminal-header' className='mb-8 flex flex-col gap-2 md:flex-row md:items-center md:justify-between'>
-        <h1 className='font-mono text-lg text-neon md:text-xl'>
-          <span className='text-subtle-foreground'>&gt; </span>
-          {state === 'typing' ? (
-            <>
-              {displayedText}
-              <span data-testid='terminal-cursor' className={`${cursorVisible ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
-                _
-              </span>
-            </>
-          ) : state === 'interrupted' ? (
-            <>
-              {INITIAL_COMMAND}
-              <span className='text-red-400'>^C</span>
-            </>
-          ) : (
-            INITIAL_COMMAND
+      {/* Terminal header with command (hidden after clear) */}
+      {bootCommandVisible && (
+        <header data-testid='terminal-header' className='mb-8 flex flex-col gap-2 md:flex-row md:items-center md:justify-between'>
+          <h1 className='font-mono text-lg text-neon md:text-xl'>
+            <span className='text-subtle-foreground'>&gt; </span>
+            {state === 'typing' ? (
+              <>
+                {displayedText}
+                <span data-testid='terminal-cursor' className={`${cursorVisible ? 'opacity-100' : 'opacity-0'} transition-opacity`}>
+                  _
+                </span>
+              </>
+            ) : interruptedText ? (
+              <>
+                {interruptedText.slice(0, -2)}
+                <span className='text-red-400'>^C</span>
+              </>
+            ) : (
+              INITIAL_COMMAND
+            )}
+          </h1>
+          {showContent && (
+            <div className='font-mono text-subtle-foreground text-xs'>
+              <span className='opacity-70'>最終更新: </span>
+              <span>{new Date(stats.cachedAt).toLocaleDateString('ja-JP')}</span>
+            </div>
           )}
-        </h1>
-        {showContent && (
-          <div className='font-mono text-subtle-foreground text-xs'>
-            <span className='opacity-70'>最終更新: </span>
-            <span>{new Date(stats.cachedAt).toLocaleDateString('ja-JP')}</span>
-          </div>
-        )}
-      </header>
+        </header>
+      )}
 
       {/* Terminal output area (for command history in prompt mode) */}
       {state === 'prompt' && lines.length > 0 && (
-        <div
-          ref={terminalRef}
-          data-testid='terminal-output'
-          className='mb-8 max-h-64 overflow-y-auto rounded border border-line/30 bg-background/50 p-4 font-mono text-sm'
-        >
-          {lines.map((line: TerminalLine) => (
-            <div key={line.id} className={`${line.type === 'error' ? 'text-red-400' : ''} ${line.type === 'command' ? 'text-subtle-foreground' : ''}`}>
+        <div data-testid='terminal-output' className='font-mono text-sm'>
+          {lines.map((line: TerminalLine, index: number) => (
+            <div
+              key={line.id}
+              className={`${index > 0 && line.type === 'command' ? 'mt-4' : ''} ${line.type === 'error' ? 'text-red-400' : ''} ${line.type === 'command' ? 'text-subtle-foreground' : ''}`}
+            >
               {line.content}
             </div>
           ))}
@@ -269,7 +276,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
 
       {/* Prompt line (desktop only, prompt state) */}
       {state === 'prompt' && !isTouchDevice && (
-        <div className='mt-8 border-line/30 border-t pt-4'>
+        <div ref={promptRef} className='mt-4'>
           <div className='font-mono text-sm'>
             <span className='text-subtle-foreground'>&gt; </span>
             <span data-testid='terminal-input' className='text-foreground'>
@@ -282,17 +289,12 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
         </div>
       )}
 
-      {/* Footer hint */}
-      <footer data-testid='terminal-footer' className='mt-16 flex items-center justify-center gap-2 text-subtle-foreground text-xs opacity-50'>
-        {state === 'prompt' && !isTouchDevice ? (
+      {/* Footer hint - only in prompt mode */}
+      {state === 'prompt' && !isTouchDevice && (
+        <footer data-testid='terminal-footer' className='mt-8 flex items-center justify-center gap-2 text-subtle-foreground text-xs opacity-50'>
           <span className='font-mono'># type 'help' for commands</span>
-        ) : (
-          <>
-            <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
-            <span>で戻る</span>
-          </>
-        )}
-      </footer>
+        </footer>
+      )}
     </div>
   );
 };

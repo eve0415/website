@@ -16,15 +16,18 @@ const TestComponent: FC<TestProps> = () => {
     lines,
     currentInput,
     awaitingConfirmation,
+    contentVisible,
+    bootCommandVisible,
+    interruptedText,
     onTypingDone,
     onCtrlC,
-    onBootComplete,
     setInput,
     executeCommand,
     clear,
     awaitConfirmation,
     confirm,
     addOutput,
+    showDiagnostic,
   } = useTerminal();
 
   return (
@@ -34,15 +37,18 @@ const TestComponent: FC<TestProps> = () => {
       <div data-testid='lines-count'>{lines.length}</div>
       <div data-testid='current-input'>{currentInput}</div>
       <div data-testid='awaiting-confirmation'>{awaitingConfirmation ?? ''}</div>
+      <div data-testid='content-visible'>{contentVisible.toString()}</div>
+      <div data-testid='boot-command-visible'>{bootCommandVisible.toString()}</div>
+      <div data-testid='interrupted-text'>{interruptedText ?? ''}</div>
 
       <button data-testid='typing-done-btn' type='button' onClick={onTypingDone}>
         Typing Done
       </button>
-      <button data-testid='ctrl-c-btn' type='button' onClick={onCtrlC}>
+      <button data-testid='ctrl-c-btn' type='button' onClick={() => onCtrlC()}>
         Ctrl+C
       </button>
-      <button data-testid='boot-complete-btn' type='button' onClick={onBootComplete}>
-        Boot Complete
+      <button data-testid='ctrl-c-with-text-btn' type='button' onClick={() => onCtrlC('partial')}>
+        Ctrl+C With Text
       </button>
       <button data-testid='set-input-btn' type='button' onClick={() => setInput('test input')}>
         Set Input
@@ -55,6 +61,9 @@ const TestComponent: FC<TestProps> = () => {
       </button>
       <button data-testid='execute-error-btn' type='button' onClick={() => executeCommand('bad', 'Error message', true)}>
         Execute Error
+      </button>
+      <button data-testid='execute-null-btn' type='button' onClick={() => executeCommand('sys.diagnostic', null)}>
+        Execute Null Output
       </button>
       <button data-testid='clear-btn' type='button' onClick={clear}>
         Clear
@@ -70,6 +79,9 @@ const TestComponent: FC<TestProps> = () => {
       </button>
       <button data-testid='add-output-btn' type='button' onClick={() => addOutput('Additional output')}>
         Add Output
+      </button>
+      <button data-testid='show-diagnostic-btn' type='button' onClick={showDiagnostic}>
+        Show Diagnostic
       </button>
     </div>
   );
@@ -104,70 +116,41 @@ describe('useTerminal', () => {
 
   describe('state transitions', () => {
     describe('from typing state', () => {
-      test('typing → running on onTypingDone', async () => {
+      test('typing → displaying on onTypingDone', async () => {
         await render(<TestComponent />);
 
         await expect.element(page.getByTestId('state')).toHaveTextContent('typing');
 
         await page.getByTestId('typing-done-btn').click();
 
-        await expect.element(page.getByTestId('state')).toHaveTextContent('running');
+        await expect.element(page.getByTestId('state')).toHaveTextContent('displaying');
+        await expect.element(page.getByTestId('content-visible')).toHaveTextContent('true');
       });
 
-      test('typing → interrupted on onCtrlC', async () => {
+      test('typing → prompt on Ctrl+C with text (skips content)', async () => {
         await render(<TestComponent />);
 
         await expect.element(page.getByTestId('state')).toHaveTextContent('typing');
 
-        await page.getByTestId('ctrl-c-btn').click();
+        await page.getByTestId('ctrl-c-with-text-btn').click();
 
-        await expect.element(page.getByTestId('state')).toHaveTextContent('interrupted');
-      });
-
-      test('Ctrl+C adds ^C line to output', async () => {
-        await render(<TestComponent />);
-
-        await page.getByTestId('ctrl-c-btn').click();
-
-        await expect.element(page.getByTestId('lines')).toHaveTextContent('^C');
-        await expect.element(page.getByTestId('lines-count')).toHaveTextContent('1');
+        await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
+        await expect.element(page.getByTestId('content-visible')).toHaveTextContent('false');
+        await expect.element(page.getByTestId('interrupted-text')).toHaveTextContent('partial^C');
       });
     });
 
-    describe('from running state', () => {
-      test('running → interrupted on onCtrlC', async () => {
+    describe('from displaying state', () => {
+      test('displaying → prompt on onCtrlC', async () => {
         await render(<TestComponent />);
 
         await page.getByTestId('typing-done-btn').click();
-        await expect.element(page.getByTestId('state')).toHaveTextContent('running');
+        await expect.element(page.getByTestId('state')).toHaveTextContent('displaying');
 
         await page.getByTestId('ctrl-c-btn').click();
 
-        await expect.element(page.getByTestId('state')).toHaveTextContent('interrupted');
-      });
-
-      test('running → prompt on onBootComplete', async () => {
-        await render(<TestComponent />);
-
-        await page.getByTestId('typing-done-btn').click();
-        await expect.element(page.getByTestId('state')).toHaveTextContent('running');
-
-        await page.getByTestId('boot-complete-btn').click();
-
         await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
-      });
-    });
-
-    describe('from interrupted state', () => {
-      test('interrupted → prompt on onBootComplete', async () => {
-        await render(<TestComponent />);
-
-        await page.getByTestId('ctrl-c-btn').click();
-        await expect.element(page.getByTestId('state')).toHaveTextContent('interrupted');
-
-        await page.getByTestId('boot-complete-btn').click();
-
-        await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
+        await expect.element(page.getByTestId('content-visible')).toHaveTextContent('false');
       });
     });
 
@@ -177,7 +160,7 @@ describe('useTerminal', () => {
 
         // Get to prompt state
         await page.getByTestId('typing-done-btn').click();
-        await page.getByTestId('boot-complete-btn').click();
+        await page.getByTestId('ctrl-c-btn').click();
 
         // Set some input
         await page.getByTestId('set-input-btn').click();
@@ -196,7 +179,7 @@ describe('useTerminal', () => {
 
         // Get to prompt state
         await page.getByTestId('typing-done-btn').click();
-        await page.getByTestId('boot-complete-btn').click();
+        await page.getByTestId('ctrl-c-btn').click();
 
         // Set awaiting confirmation
         await page.getByTestId('await-confirm-btn').click();
@@ -206,6 +189,21 @@ describe('useTerminal', () => {
         await page.getByTestId('ctrl-c-btn').click();
 
         await expect.element(page.getByTestId('awaiting-confirmation')).toHaveTextContent('');
+      });
+
+      test('showDiagnostic returns to displaying state', async () => {
+        await render(<TestComponent />);
+
+        // Get to prompt state
+        await page.getByTestId('typing-done-btn').click();
+        await page.getByTestId('ctrl-c-btn').click();
+        await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
+
+        // Show diagnostic again
+        await page.getByTestId('show-diagnostic-btn').click();
+
+        await expect.element(page.getByTestId('state')).toHaveTextContent('displaying');
+        await expect.element(page.getByTestId('content-visible')).toHaveTextContent('true');
       });
     });
   });
@@ -320,6 +318,16 @@ describe('useTerminal', () => {
 
       await expect.element(page.getByTestId('awaiting-confirmation')).toHaveTextContent('');
     });
+
+    test('hides boot command', async () => {
+      await render(<TestComponent />);
+
+      await expect.element(page.getByTestId('boot-command-visible')).toHaveTextContent('true');
+
+      await page.getByTestId('clear-btn').click();
+
+      await expect.element(page.getByTestId('boot-command-visible')).toHaveTextContent('false');
+    });
   });
 
   describe('awaitConfirmation action', () => {
@@ -433,34 +441,35 @@ describe('useTerminal', () => {
   });
 
   describe('full boot sequence', () => {
-    test('typing → running → prompt', async () => {
+    test('typing → displaying → prompt (normal flow)', async () => {
       await render(<TestComponent />);
 
       // Start in typing
       await expect.element(page.getByTestId('state')).toHaveTextContent('typing');
+      await expect.element(page.getByTestId('content-visible')).toHaveTextContent('false');
 
-      // Typing complete → running
+      // Typing complete → displaying (content visible)
       await page.getByTestId('typing-done-btn').click();
-      await expect.element(page.getByTestId('state')).toHaveTextContent('running');
+      await expect.element(page.getByTestId('state')).toHaveTextContent('displaying');
+      await expect.element(page.getByTestId('content-visible')).toHaveTextContent('true');
 
-      // Boot complete → prompt
-      await page.getByTestId('boot-complete-btn').click();
+      // Ctrl+C → prompt (content hidden)
+      await page.getByTestId('ctrl-c-btn').click();
       await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
+      await expect.element(page.getByTestId('content-visible')).toHaveTextContent('false');
     });
 
-    test('typing → interrupted → prompt', async () => {
+    test('typing → prompt (interrupted flow, skips content)', async () => {
       await render(<TestComponent />);
 
       // Start in typing
       await expect.element(page.getByTestId('state')).toHaveTextContent('typing');
 
-      // Ctrl+C → interrupted
-      await page.getByTestId('ctrl-c-btn').click();
-      await expect.element(page.getByTestId('state')).toHaveTextContent('interrupted');
-
-      // Boot complete → prompt
-      await page.getByTestId('boot-complete-btn').click();
+      // Ctrl+C with text → skip to prompt
+      await page.getByTestId('ctrl-c-with-text-btn').click();
       await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
+      await expect.element(page.getByTestId('content-visible')).toHaveTextContent('false');
+      await expect.element(page.getByTestId('interrupted-text')).toHaveTextContent('partial^C');
     });
   });
 
@@ -468,9 +477,9 @@ describe('useTerminal', () => {
     test('full exit confirmation with yes', async () => {
       await render(<TestComponent />);
 
-      // Get to prompt
+      // Get to prompt (typing → displaying → prompt)
       await page.getByTestId('typing-done-btn').click();
-      await page.getByTestId('boot-complete-btn').click();
+      await page.getByTestId('ctrl-c-btn').click();
 
       // Await confirmation
       await page.getByTestId('await-confirm-btn').click();
@@ -486,9 +495,9 @@ describe('useTerminal', () => {
     test('full exit confirmation with no', async () => {
       await render(<TestComponent />);
 
-      // Get to prompt
+      // Get to prompt (typing → displaying → prompt)
       await page.getByTestId('typing-done-btn').click();
-      await page.getByTestId('boot-complete-btn').click();
+      await page.getByTestId('ctrl-c-btn').click();
 
       // Await confirmation
       await page.getByTestId('await-confirm-btn').click();
@@ -502,9 +511,9 @@ describe('useTerminal', () => {
     test('cancel confirmation with Ctrl+C', async () => {
       await render(<TestComponent />);
 
-      // Get to prompt
+      // Get to prompt (typing → displaying → prompt)
       await page.getByTestId('typing-done-btn').click();
-      await page.getByTestId('boot-complete-btn').click();
+      await page.getByTestId('ctrl-c-btn').click();
 
       // Await confirmation
       await page.getByTestId('await-confirm-btn').click();
@@ -514,6 +523,18 @@ describe('useTerminal', () => {
       await expect.element(page.getByTestId('awaiting-confirmation')).toHaveTextContent('');
       // State stays prompt
       await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
+    });
+  });
+
+  describe('executeCommand with null output', () => {
+    test('only adds command line, not output line', async () => {
+      await render(<TestComponent />);
+
+      await page.getByTestId('execute-null-btn').click();
+
+      // Should only have 1 line (command), not 2 (command + output)
+      await expect.element(page.getByTestId('lines-count')).toHaveTextContent('1');
+      await expect.element(page.getByTestId('lines')).toHaveTextContent('> sys.diagnostic');
     });
   });
 });
