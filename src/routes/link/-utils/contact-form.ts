@@ -45,7 +45,7 @@ export const submitContactForm = createServerFn({ method: 'POST' })
 
     // 3. Verify Turnstile token
     // TURNSTILE_SECRET_KEY is set via `wrangler secret put`
-    const turnstileSecretKey = (env as unknown as Record<string, string | undefined>)['TURNSTILE_SECRET_KEY'] ?? '';
+    const turnstileSecretKey = env.TURNSTILE_SECRET_KEY;
     const turnstileResult = await verifyTurnstile(turnstileToken, turnstileSecretKey, clientIp);
     if (!turnstileResult.success) {
       return {
