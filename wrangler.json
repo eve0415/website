@@ -29,14 +29,13 @@
     },
     {
       "binding": "CONTACT_RATE_LIMIT",
-      "id": "TODO_CREATE_KV_NAMESPACE"
+      "id": "fa789c815279403293672ad135db0a3f"
     }
   ],
 
   "send_email": [
     {
-      "name": "CONTACT_EMAIL",
-      "destination_address": "contact@eve0415.net"
+      "name": "CONTACT_EMAIL"
     }
   ]
 }

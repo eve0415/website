@@ -15,7 +15,6 @@ const RATE_LIMIT_WINDOW_SECONDS = 3600; // 1 hour
 
 // Email configuration
 const SENDER_ADDRESS = 'noreply@eve0415.net';
-const RECIPIENT_ADDRESS = 'contact@eve0415.net';
 
 export type ContactFormResult =
   | { success: true }
@@ -112,7 +111,7 @@ export async function checkAndIncrementRateLimit(ip: string): Promise<{ allowed:
 export async function sendContactEmail(formData: ContactFormData): Promise<void> {
   const msg = createMimeMessage();
   msg.setSender({ name: 'Contact Form', addr: SENDER_ADDRESS });
-  msg.setRecipient(RECIPIENT_ADDRESS);
+  msg.setRecipient(env.MAIL_ADDRESS);
 
   // Sanitize name for subject to prevent email header injection
   const safeSubjectName = formData.name.trim().replace(/[\r\n]+/g, ' ');
@@ -129,7 +128,7 @@ ${formData.message.trim()}`;
     data: body,
   });
 
-  const message = new EmailMessage(SENDER_ADDRESS, RECIPIENT_ADDRESS, msg.asRaw());
+  const message = new EmailMessage(SENDER_ADDRESS, env.MAIL_ADDRESS, msg.asRaw());
 
   await env.CONTACT_EMAIL.send(message);
 }
