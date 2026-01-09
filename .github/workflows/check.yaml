@@ -89,3 +89,39 @@ jobs:
 
       - name: Build website
         run: pnpm oxfmt --check
+
+  test:
+    name: Test
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Browsers
+        run: pnpm playwright install --with-deps
+
+      - name: Generate .dev.vars
+        run: |
+          echo GITHUB_PAT=test >> .dev.vars
+          echo MAIL_ADDRESS=test >> .dev.vars
+
+      - name: Generate types
+        run: pnpm generate
+
+      - name: Build website
+        run: pnpm test
