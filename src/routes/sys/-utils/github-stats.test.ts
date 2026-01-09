@@ -437,16 +437,8 @@ describe('getRelativeTimeJapanese', () => {
 
 describe('refreshGitHubStats', () => {
   test('fetches from GitHub API and stores in KV', async () => {
-    // Create env using real KV binding from cloudflare:workers with test PAT
-    const testEnv = {
-      GITHUB_PAT: 'test-token',
-      GITHUB_STATS_CACHE: env.GITHUB_STATS_CACHE,
-      CONTACT_RATE_LIMIT: {} as KVNamespace,
-      CONTACT_EMAIL: {} as SendEmail,
-    };
-
     // Call refresh
-    await refreshGitHubStats(testEnv);
+    await refreshGitHubStats(env);
 
     // Check KV was updated by reading from it
     const storedValue = await env.GITHUB_STATS_CACHE.get('github_stats_eve0415', 'json');
@@ -464,14 +456,7 @@ describe('refreshGitHubStats', () => {
       }),
     );
 
-    const testEnv = {
-      GITHUB_PAT: 'test-token',
-      GITHUB_STATS_CACHE: env.GITHUB_STATS_CACHE,
-      CONTACT_RATE_LIMIT: {} as KVNamespace,
-      CONTACT_EMAIL: {} as SendEmail,
-    };
-
-    await refreshGitHubStats(testEnv);
+    await refreshGitHubStats(env);
 
     const storedValue = await env.GITHUB_STATS_CACHE.get<{ languages: unknown[] }>('github_stats_eve0415', 'json');
 
