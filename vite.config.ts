@@ -44,9 +44,6 @@ export default defineConfig({
   ],
   build: {
     minify: 'oxc',
-    rolldownOptions: {
-      external: ['cloudflare:workers', 'cloudflare:email'],
-    },
   },
   css: {
     transformer: 'lightningcss',

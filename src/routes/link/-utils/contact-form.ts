@@ -1,6 +1,6 @@
 import type { ContactFormData, ValidationErrors } from './validation';
 
-import { createServerFn } from '@tanstack/react-start';
+import { createServerFn, createServerOnlyFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 import { EmailMessage } from 'cloudflare:email';
 import { env } from 'cloudflare:workers';
@@ -85,7 +85,7 @@ export const submitContactForm = createServerFn({ method: 'POST' })
  * Increments first, then checks if over limit - this ensures concurrent requests are counted correctly.
  * @internal Exported for testing purposes only
  */
-export async function checkAndIncrementRateLimit(ip: string): Promise<{ allowed: boolean; remaining: number }> {
+export const checkAndIncrementRateLimit = createServerOnlyFn(async (ip: string) => {
   const kv = env.CONTACT_RATE_LIMIT;
   const key = `rate:${ip}`;
 
@@ -102,13 +102,13 @@ export async function checkAndIncrementRateLimit(ip: string): Promise<{ allowed:
     allowed: newCount <= RATE_LIMIT_MAX,
     remaining: Math.max(0, RATE_LIMIT_MAX - newCount),
   };
-}
+});
 
 /**
  * Send contact form email.
  * @internal Exported for testing purposes only
  */
-export async function sendContactEmail(formData: ContactFormData): Promise<void> {
+export const sendContactEmail = createServerOnlyFn(async (formData: ContactFormData) => {
   const msg = createMimeMessage();
   msg.setSender({ name: 'Contact Form', addr: SENDER_ADDRESS });
   msg.setRecipient(env.MAIL_ADDRESS);
@@ -131,4 +131,4 @@ ${formData.message.trim()}`;
   const message = new EmailMessage(SENDER_ADDRESS, env.MAIL_ADDRESS, msg.asRaw());
 
   await env.CONTACT_EMAIL.send(message);
-}
+});
