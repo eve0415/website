@@ -1,3 +1,5 @@
+import type { RefObject } from 'react';
+
 import { useCallback, useEffect, useState } from 'react';
 
 const DEBUG_STORAGE_KEY = '404-debug';
@@ -51,7 +53,7 @@ const DEFAULT_STATE: DebugState = {
  * - Shift+F11: Step Out (run until returning to shallower depth)
  * - Escape: Stop debugging
  */
-export const useDebugMode = (messageDepths: number[] = [], totalMessages: number = 0): UseDebugModeReturn => {
+export const useDebugMode = (messageDepths: number[] = [], totalMessages: number = 0, visibleCountRef?: RefObject<number>): UseDebugModeReturn => {
   const [debugState, setDebugState] = useState<DebugState>(() => {
     // Check localStorage for persisted debug mode
     if (typeof window !== 'undefined') {
@@ -122,9 +124,15 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
   const pause = useCallback(() => {
     setDebugState(prev => {
       if (!prev.isEnabled || prev.isPaused) return prev;
-      return { ...prev, isPaused: true };
+      // Sync debugIndex to current visible count when pausing
+      const currentCount = visibleCountRef?.current ?? prev.debugIndex + 1;
+      return {
+        ...prev,
+        isPaused: true,
+        debugIndex: Math.max(0, currentCount - 1),
+      };
     });
-  }, []);
+  }, [visibleCountRef]);
 
   const stepOver = useCallback((depths: number[]) => {
     setDebugState(prev => {

@@ -43,6 +43,9 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   // Scroll container ref for auto-scroll
   const scrollContainerRef = useRef<HTMLDivElement>(null);
 
+  // Ref to track current visible message count for debug mode sync
+  const visibleCountRef = useRef(0);
+
   // Fetch server-side connection info
   const [connection, setConnection] = useState<ConnectionInfo>(DEFAULT_CONNECTION);
   useEffect(() => {
@@ -75,6 +78,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   const { debugState, stepContinue, pause, stepOver, stepInto, stepOut, stopDebug } = useDebugMode(
     preliminaryAnimation.messageDepths,
     preliminaryAnimation.allMessages.length,
+    visibleCountRef,
   );
 
   // Boot animation with debug state
@@ -97,6 +101,11 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
     dependency: visibleMessages.length,
     smooth: 'auto',
   });
+
+  // Sync visible count ref for debug pause functionality
+  useEffect(() => {
+    visibleCountRef.current = visibleMessages.length;
+  }, [visibleMessages.length]);
 
   // Notify parent when debug paused state changes
   useEffect(() => {
