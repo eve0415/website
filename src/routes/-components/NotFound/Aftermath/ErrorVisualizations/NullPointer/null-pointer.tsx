@@ -23,9 +23,9 @@ const NullPointer: FC<NullPointerProps> = () => {
   // Generate memory grid with null reference
   const memoryGrid = useMemo((): MemoryCell[] => {
     return [
-      { address: '0x7fff0000', value: '42', isPointer: false, pointsTo: null },
-      { address: '0x7fff0008', value: '"hello"', isPointer: false, pointsTo: null },
-      { address: '0x7fff0010', value: 'ptr →', isPointer: true, pointsTo: 5 },
+      { address: '0x7fff0000', value: '0x2A', isPointer: false, pointsTo: null },
+      { address: '0x7fff0008', value: '0x68656C6C6F', isPointer: false, pointsTo: null },
+      { address: '0x7fff0010', value: '0x7fff0028', isPointer: true, pointsTo: 5 },
       { address: '0x7fff0018', value: '3.14', isPointer: false, pointsTo: null },
       { address: '0x7fff0020', value: 'ref →', isPointer: true, pointsTo: null }, // NULL POINTER
       { address: '0x7fff0028', value: 'Object{}', isPointer: false, pointsTo: null },
