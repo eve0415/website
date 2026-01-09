@@ -79,14 +79,21 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
   }, []);
 
   const enableDebugMode = useCallback(() => {
-    setDebugState(prev => ({
-      ...prev,
-      isEnabled: true,
-      isPaused: true,
-      maxVisibleDepth: Infinity,
-    }));
+    setDebugState(prev => {
+      // Sync debugIndex to current visible count (minimum 1 to show first message)
+      const currentCount = visibleCountRef?.current ?? 1;
+      const syncedIndex = Math.max(0, currentCount - 1);
+
+      return {
+        ...prev,
+        isEnabled: true,
+        isPaused: true,
+        debugIndex: syncedIndex,
+        maxVisibleDepth: Infinity,
+      };
+    });
     persistDebugMode(true);
-  }, [persistDebugMode]);
+  }, [persistDebugMode, visibleCountRef]);
 
   const disableDebugMode = useCallback(() => {
     setDebugState(prev => ({

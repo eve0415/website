@@ -56,6 +56,7 @@ const DebugPausedTestComponent: FC = () => {
     <div>
       <div data-testid='current'>{phase.current}</div>
       <div data-testid='progress'>{phase.progress.toFixed(4)}</div>
+      <div data-testid='elapsed'>{phase.elapsed}</div>
       <div data-testid='debug-paused'>{String(debugPaused)}</div>
       <button data-testid='toggle-pause' onClick={() => setDebugPaused(p => !p)} type='button'>
         Toggle Pause
@@ -344,6 +345,91 @@ describe('usePhaseController', () => {
 
       // elapsed should be 0 because skipToAftermath skips the animation entirely
       await expect.element(page.getByTestId('elapsed')).toHaveTextContent('0');
+    });
+  });
+
+  describe('debugPaused elapsed time freezing (regression)', () => {
+    test('freezes elapsed time when debugPaused becomes true', async () => {
+      await render(<DebugPausedTestComponent />);
+
+      // Wait for some elapsed time to accumulate
+      await waitForRAF(10);
+
+      // Get elapsed before pausing
+      const elapsedEl = page.getByTestId('elapsed');
+      const elapsedBefore = Number.parseFloat(elapsedEl.element().textContent || '0');
+      expect(elapsedBefore).toBeGreaterThan(0);
+
+      // Pause
+      await page.getByTestId('toggle-pause').click();
+      await expect.element(page.getByTestId('debug-paused')).toHaveTextContent('true');
+
+      // Wait more RAF cycles
+      await waitForRAF(10);
+
+      // Elapsed should be frozen (approximately same value, within tolerance)
+      const elapsedAfter = Number.parseFloat(elapsedEl.element().textContent || '0');
+      // Should be close to the frozen value (tolerance for RAF timing jitter and test execution)
+      expect(Math.abs(elapsedAfter - elapsedBefore)).toBeLessThan(100);
+    });
+
+    test('resumes elapsed from frozen position when debugPaused becomes false', async () => {
+      await render(<DebugPausedTestComponent />);
+
+      // Let some time pass
+      await waitForRAF(10);
+
+      // Pause and record frozen value
+      await page.getByTestId('toggle-pause').click();
+      await expect.element(page.getByTestId('debug-paused')).toHaveTextContent('true');
+
+      const elapsedEl = page.getByTestId('elapsed');
+      const frozenValue = Number.parseFloat(elapsedEl.element().textContent || '0');
+
+      // Wait while paused (time should not count)
+      await waitForRAF(15);
+
+      // Resume
+      await page.getByTestId('toggle-pause').click();
+      await expect.element(page.getByTestId('debug-paused')).toHaveTextContent('false');
+
+      // Wait a bit more for animation to run
+      await waitForRAF(5);
+
+      // Elapsed should have increased from frozen value, not jumped by the paused duration
+      const elapsedAfterResume = Number.parseFloat(elapsedEl.element().textContent || '0');
+
+      // Should be greater than frozen (some time passed after resume)
+      expect(elapsedAfterResume).toBeGreaterThan(frozenValue);
+      // But not by the full paused duration (tolerance for test timing)
+      // If pause wasn't working, elapsed would be ~frozenValue + 15 RAF cycles worth
+      // With pause working, it should be ~frozenValue + 5 RAF cycles worth
+      expect(elapsedAfterResume - frozenValue).toBeLessThan(200);
+    });
+
+    test('progress percentage freezes during pause', async () => {
+      await render(<DebugPausedTestComponent />);
+
+      // Jump to boot phase (has duration) and wait for some progress
+      await page.getByTestId('jump-boot').click();
+      await waitForRAF(10);
+
+      // Get progress before pausing
+      const progressEl = page.getByTestId('progress');
+      const progressBefore = Number.parseFloat(progressEl.element().textContent || '0');
+      expect(progressBefore).toBeGreaterThan(0);
+      expect(progressBefore).toBeLessThan(1);
+
+      // Pause
+      await page.getByTestId('toggle-pause').click();
+      await expect.element(page.getByTestId('debug-paused')).toHaveTextContent('true');
+
+      // Wait more RAF cycles
+      await waitForRAF(10);
+
+      // Progress should be frozen
+      const progressAfter = Number.parseFloat(progressEl.element().textContent || '0');
+      expect(Math.abs(progressAfter - progressBefore)).toBeLessThan(0.01);
     });
   });
 });

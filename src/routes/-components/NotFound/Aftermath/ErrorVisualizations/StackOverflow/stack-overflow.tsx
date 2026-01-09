@@ -51,7 +51,7 @@ const StackOverflow: FC = () => {
   }, []);
 
   return (
-    <div className='fixed inset-0 overflow-hidden bg-[#0a0a0a]'>
+    <div className='fixed inset-0 overflow-hidden bg-background'>
       {/* CRT scan line effect */}
       <div
         className='pointer-events-none absolute inset-0 opacity-10'

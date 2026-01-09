@@ -437,4 +437,44 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('4');
     });
   });
+
+  describe('F5 enableDebugMode sync (regression)', () => {
+    test('F5 syncs debugIndex to current visible message count mid-stream', async () => {
+      // Simulate 10 messages already visible when F5 is pressed
+      const visibleCountRef = { current: 10 };
+      await render(<TestComponent visibleCountRef={visibleCountRef} />);
+
+      // Press F5 to enable debug mode mid-stream
+      await userEvent.keyboard('{F5}');
+
+      // debugIndex should be synced to visibleCount - 1 (0-indexed)
+      await expect.element(page.getByTestId('debug-index')).toHaveTextContent('9');
+      await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
+      await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
+    });
+
+    test('F5 pressed immediately shows at least first message', async () => {
+      // Simulate no messages visible yet (or just starting)
+      const visibleCountRef = { current: 0 };
+      await render(<TestComponent visibleCountRef={visibleCountRef} />);
+
+      // Press F5 immediately before any messages stream
+      await userEvent.keyboard('{F5}');
+
+      // debugIndex should be 0 (shows first message)
+      await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
+      await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
+    });
+
+    test('F5 with visibleCount of 1 sets debugIndex to 0', async () => {
+      // Simulate exactly 1 message visible
+      const visibleCountRef = { current: 1 };
+      await render(<TestComponent visibleCountRef={visibleCountRef} />);
+
+      await userEvent.keyboard('{F5}');
+
+      // debugIndex should be 0 (1 - 1 = 0)
+      await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
+    });
+  });
 });
