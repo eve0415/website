@@ -2,10 +2,11 @@ import type { MouseInfluence } from '../useMouseInfluence';
 import type { ConnectionInfo } from './connection-info';
 import type { FC } from 'react';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { getConnectionInfo } from './connection-info';
 import { DebugToolbar } from './DebugToolbar/debug-toolbar';
+import { useAutoScroll } from './useAutoScroll';
 import { useBootAnimation } from './useBootAnimation';
 import { useDebugMode } from './useDebugMode';
 import { useDOMScan } from './useDOMScan';
@@ -16,6 +17,7 @@ interface BootSequenceProps {
   progress: number;
   mouseInfluence: MouseInfluence;
   visible: boolean;
+  onDebugPausedChange?: (isPaused: boolean) => void;
 }
 
 // Default connection info for initial render
@@ -33,10 +35,13 @@ const DEFAULT_CONNECTION: ConnectionInfo = {
   colo: null,
 };
 
-const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence }) => {
+const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence, onDebugPausedChange }) => {
   // Get real browser data
   const timing = useNavigationTiming();
   const dom = useDOMScan();
+
+  // Scroll container ref for auto-scroll
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   // Fetch server-side connection info
   const [connection, setConnection] = useState<ConnectionInfo>(DEFAULT_CONNECTION);
@@ -82,6 +87,18 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence 
     debugIndex: debugState.debugIndex,
     maxVisibleDepth: debugState.maxVisibleDepth,
   });
+
+  // Auto-scroll: hybrid mode uses instant for multiple messages, smooth for single
+  const { handleScroll } = useAutoScroll({
+    containerRef: scrollContainerRef,
+    dependency: visibleMessages.length,
+    smooth: 'auto',
+  });
+
+  // Notify parent when debug paused state changes
+  useEffect(() => {
+    onDebugPausedChange?.(debugState.isPaused && debugState.isEnabled);
+  }, [debugState.isPaused, debugState.isEnabled, onDebugPausedChange]);
 
   if (!visible) return null;
 
@@ -137,7 +154,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence 
           </div>
 
           {/* Terminal content */}
-          <div className='max-h-[60vh] space-y-0.5 overflow-y-auto p-4 font-mono text-xs'>
+          <div ref={scrollContainerRef} onScroll={handleScroll} className='max-h-[60vh] space-y-0.5 overflow-y-auto p-4 font-mono text-xs'>
             {/* Boot messages */}
             {visibleMessages.map((msg, i) => {
               const isCurrentLine = debugState.isEnabled && i === visibleMessages.length - 1;

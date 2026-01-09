@@ -23,10 +23,11 @@ export interface PhaseState {
 interface UsePhaseControllerOptions {
   skipToAftermath?: boolean; // For reduced motion
   onPhaseChange?: (phase: Phase) => void;
+  debugPaused?: boolean; // Block auto-advance when debug mode is paused
 }
 
 export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
-  const { skipToAftermath = false, onPhaseChange } = options;
+  const { skipToAftermath = false, onPhaseChange, debugPaused = false } = options;
 
   const [state, setState] = useState<PhaseState>(() => ({
     current: skipToAftermath ? 'aftermath' : 'boot',
@@ -39,6 +40,12 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
   const phaseStartTimeRef = useRef<number>(0);
   const animationRef = useRef<number>(0);
   const phaseRef = useRef<Phase>(state.current);
+  const debugPausedRef = useRef(debugPaused);
+
+  // Keep debugPaused ref in sync (must be in effect, not render)
+  useEffect(() => {
+    debugPausedRef.current = debugPaused;
+  }, [debugPaused]);
 
   const advancePhase = useCallback(() => {
     const config = PHASE_CONFIG[phaseRef.current];
@@ -95,8 +102,8 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
         totalElapsed,
       }));
 
-      // Auto-advance to next phase
-      if (config.duration > 0 && phaseElapsed >= config.duration && config.next) {
+      // Auto-advance to next phase (blocked when debug mode is paused)
+      if (config.duration > 0 && phaseElapsed >= config.duration && config.next && !debugPausedRef.current) {
         phaseRef.current = config.next;
         setState(prev => ({
           ...prev,

@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
@@ -13,6 +13,9 @@ import { usePhaseController } from './usePhaseController';
 const NotFound: FC = () => {
   const reducedMotion = useReducedMotion();
 
+  // Track debug pause state from BootSequence to block phase transitions
+  const [debugPaused, setDebugPaused] = useState(false);
+
   const {
     current: phase,
     progress,
@@ -20,6 +23,7 @@ const NotFound: FC = () => {
     isPhase,
   } = usePhaseController({
     skipToAftermath: reducedMotion,
+    debugPaused,
     onPhaseChange: useCallback((newPhase: string) => {
       // Could add analytics or effects here
       console.log(`[NOT_FOUND] Phase transition: ${newPhase}`);
@@ -42,6 +46,7 @@ const NotFound: FC = () => {
         progress={progress}
         mouseInfluence={mouseInfluence}
         visible={isPhase('boot') || (isPhase('corruption') && progress < 0.3)}
+        onDebugPausedChange={setDebugPaused}
       />
 
       {/* Phase 2: Corruption Overlay */}
