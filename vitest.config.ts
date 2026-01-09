@@ -5,6 +5,16 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    // Suppress TanStack Router's Transitioner act() warnings globally.
+    // Root cause: Transitioner performs async state updates via React.startTransition()
+    // that happen outside of act() boundaries. This is a known limitation of testing
+    // with TanStack Router's internal components.
+    onConsoleLog(log) {
+      if (log.includes('Transitioner') && log.includes('was not wrapped in act')) {
+        return false; // Suppress
+      }
+      return true;
+    },
     coverage: {
       enabled: true,
       provider: 'istanbul',
