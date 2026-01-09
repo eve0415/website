@@ -348,6 +348,63 @@ describe('useDebugMode', () => {
     });
   });
 
+  describe('localStorage sync on mount (Bug 1 regression)', () => {
+    test('syncs debugIndex to visibleCountRef when loaded from localStorage', async () => {
+      // Set up localStorage to indicate debug mode was previously enabled
+      localStorage.setItem(DEBUG_STORAGE_KEY, 'true');
+
+      // Simulate messages already visible when component mounts
+      const visibleCountRef = { current: 15 };
+      await render(<TestComponent visibleCountRef={visibleCountRef} />);
+
+      // Initial state loads from localStorage with debugIndex=0
+      await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
+      await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
+
+      // After mount effect runs, debugIndex should sync to visibleCountRef - 1
+      // The effect uses requestAnimationFrame polling, and React needs to re-render
+      // Use expect.element polling to wait for the state update
+      await expect.element(page.getByTestId('debug-index')).toHaveTextContent('14');
+    });
+
+    test('keeps polling if visibleCountRef starts low and increases', async () => {
+      localStorage.setItem(DEBUG_STORAGE_KEY, 'true');
+
+      // Start with 0 messages - sync should poll until messages appear
+      const visibleCountRef = { current: 0 };
+      await render(<TestComponent visibleCountRef={visibleCountRef} />);
+
+      await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
+
+      // debugIndex should stay at 0 while visibleCountRef is 0
+      await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
+
+      // Simulate messages becoming visible
+      visibleCountRef.current = 8;
+
+      // Give the RAF polling time to pick up the new value
+      await new Promise(resolve => requestAnimationFrame(resolve));
+      await new Promise(resolve => requestAnimationFrame(resolve));
+
+      // Now debugIndex should sync to 7 (8 - 1)
+      await expect.element(page.getByTestId('debug-index')).toHaveTextContent('7');
+    });
+
+    test('does not sync if not loaded from localStorage', async () => {
+      // No localStorage value set
+      const visibleCountRef = { current: 10 };
+      await render(<TestComponent visibleCountRef={visibleCountRef} />);
+
+      await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('false');
+
+      // Enable via F5 - this uses enableDebugMode which has its own sync logic
+      await userEvent.keyboard('{F5}');
+
+      // Should use enableDebugMode's sync, not localStorage sync
+      await expect.element(page.getByTestId('debug-index')).toHaveTextContent('9');
+    });
+  });
+
   describe('persistence', () => {
     test('Saves enabled state to localStorage', async () => {
       await render(<TestComponent />);

@@ -16,6 +16,9 @@ const NotFound: FC = () => {
   // Track debug pause state from BootSequence to block phase transitions
   const [debugPaused, setDebugPaused] = useState(false);
 
+  // Track boot sequence completion to prevent early phase transition when exiting debug mode
+  const [bootComplete, setBootComplete] = useState(false);
+
   const {
     current: phase,
     progress,
@@ -24,6 +27,7 @@ const NotFound: FC = () => {
   } = usePhaseController({
     skipToAftermath: reducedMotion,
     debugPaused,
+    bootComplete,
     onPhaseChange: useCallback((newPhase: string) => {
       // Could add analytics or effects here
       console.log(`[NOT_FOUND] Phase transition: ${newPhase}`);
@@ -47,6 +51,7 @@ const NotFound: FC = () => {
         mouseInfluence={mouseInfluence}
         visible={isPhase('boot') || (isPhase('corruption') && progress < 0.3)}
         onDebugPausedChange={setDebugPaused}
+        onBootComplete={setBootComplete}
       />
 
       {/* Phase 2: Corruption Overlay */}

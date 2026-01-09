@@ -38,6 +38,8 @@ interface BootAnimationState {
   cursorVisible: boolean;
   // Boot context for display
   context: BootContext;
+  // Whether all messages have been displayed
+  allMessagesDisplayed: boolean;
 }
 
 interface UseBootAnimationOptions {
@@ -160,6 +162,9 @@ export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimatio
     return () => clearInterval(interval);
   }, [enabled]);
 
+  // Check if all messages have been displayed
+  const allMessagesDisplayed = visibleMessages.length >= allMessages.length;
+
   return {
     visibleMessages,
     allMessages,
@@ -168,5 +173,6 @@ export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimatio
     overallProgress,
     cursorVisible,
     context,
+    allMessagesDisplayed,
   };
 };

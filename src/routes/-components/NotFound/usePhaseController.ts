@@ -24,10 +24,11 @@ interface UsePhaseControllerOptions {
   skipToAftermath?: boolean; // For reduced motion
   onPhaseChange?: (phase: Phase) => void;
   debugPaused?: boolean; // Block auto-advance when debug mode is paused
+  bootComplete?: boolean; // Whether boot sequence has displayed all messages
 }
 
 export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
-  const { skipToAftermath = false, onPhaseChange, debugPaused = false } = options;
+  const { skipToAftermath = false, onPhaseChange, debugPaused = false, bootComplete = false } = options;
 
   const [state, setState] = useState<PhaseState>(() => ({
     current: skipToAftermath ? 'aftermath' : 'boot',
@@ -41,12 +42,18 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
   const animationRef = useRef<number>(0);
   const phaseRef = useRef<Phase>(state.current);
   const debugPausedRef = useRef(debugPaused);
+  const bootCompleteRef = useRef(bootComplete);
 
   // Pause time tracking for elapsed freeze/resume
   const pauseOffsetRef = useRef<number>(0); // Accumulated pause duration
   const pausedAtElapsedRef = useRef<number | null>(null); // Elapsed time when pause started
   const phasePauseOffsetRef = useRef<number>(0); // Pause offset for current phase
   const phasePausedAtRef = useRef<number | null>(null); // Phase elapsed when pause started
+
+  // Keep bootComplete ref in sync
+  useEffect(() => {
+    bootCompleteRef.current = bootComplete;
+  }, [bootComplete]);
 
   // Keep debugPaused ref in sync and track pause transitions
   useEffect(() => {
@@ -89,6 +96,9 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
         elapsed: 0,
       }));
       phaseStartTimeRef.current = performance.now();
+      // Reset phase pause offset to prevent accumulated pause time from affecting new phase
+      phasePauseOffsetRef.current = 0;
+      phasePausedAtRef.current = null;
       onPhaseChange?.(config.next);
     }
   }, [onPhaseChange]);
@@ -104,6 +114,9 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
         elapsed: 0,
       }));
       phaseStartTimeRef.current = performance.now();
+      // Reset phase pause offset to prevent accumulated pause time from affecting new phase
+      phasePauseOffsetRef.current = 0;
+      phasePausedAtRef.current = null;
       onPhaseChange?.(phase);
     },
     [onPhaseChange],
@@ -135,8 +148,10 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
         totalElapsed,
       }));
 
-      // Auto-advance to next phase (blocked when debug mode is paused)
-      if (config.duration > 0 && phaseElapsed >= config.duration && config.next && !debugPausedRef.current) {
+      // Auto-advance to next phase (blocked when debug mode is paused or boot not complete)
+      // For boot phase, require bootComplete to prevent premature transition when exiting debug mode
+      const canAdvanceFromBoot = currentPhase !== 'boot' || bootCompleteRef.current;
+      if (config.duration > 0 && phaseElapsed >= config.duration && config.next && !debugPausedRef.current && canAdvanceFromBoot) {
         phaseRef.current = config.next;
         setState(prev => ({
           ...prev,

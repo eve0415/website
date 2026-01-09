@@ -18,6 +18,7 @@ interface BootSequenceProps {
   mouseInfluence: MouseInfluence;
   visible: boolean;
   onDebugPausedChange?: (isPaused: boolean) => void;
+  onBootComplete?: (isComplete: boolean) => void;
 }
 
 // Default connection info for initial render
@@ -35,7 +36,7 @@ const DEFAULT_CONNECTION: ConnectionInfo = {
   colo: null,
 };
 
-const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence, onDebugPausedChange }) => {
+const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence, onDebugPausedChange, onBootComplete }) => {
   // Get real browser data
   const timing = useNavigationTiming();
   const dom = useDOMScan();
@@ -82,7 +83,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   );
 
   // Boot animation with debug state
-  const { visibleMessages, allMessages, currentProgress, overallProgress, cursorVisible } = useBootAnimation({
+  const { visibleMessages, allMessages, currentProgress, overallProgress, cursorVisible, allMessagesDisplayed } = useBootAnimation({
     enabled: visible,
     elapsed,
     timing,
@@ -111,6 +112,11 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   useEffect(() => {
     onDebugPausedChange?.(debugState.isPaused && debugState.isEnabled);
   }, [debugState.isPaused, debugState.isEnabled, onDebugPausedChange]);
+
+  // Notify parent when boot sequence completes
+  useEffect(() => {
+    onBootComplete?.(allMessagesDisplayed);
+  }, [allMessagesDisplayed, onBootComplete]);
 
   if (!visible) return null;
 

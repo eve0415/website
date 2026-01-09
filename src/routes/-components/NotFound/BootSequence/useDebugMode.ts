@@ -1,6 +1,6 @@
 import type { RefObject } from 'react';
 
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 const DEBUG_STORAGE_KEY = '404-debug';
 
@@ -66,6 +66,43 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
     }
     return DEFAULT_STATE;
   });
+
+  // Track if we need to sync debugIndex (loaded from localStorage with debugIndex=0)
+  const needsSyncRef = useRef(typeof window !== 'undefined' && localStorage.getItem(DEBUG_STORAGE_KEY) === 'true');
+
+  // Sync debugIndex after mount when loaded from localStorage
+  // This prevents the flash where messages appear then reset to index 0
+  // Uses polling to wait for visibleCountRef to be populated
+  useEffect(() => {
+    if (!needsSyncRef.current) return;
+
+    let rafId: number;
+    let cancelled = false;
+
+    const checkAndSync = () => {
+      if (cancelled) return;
+
+      const currentCount = visibleCountRef?.current ?? 0;
+      if (currentCount > 1) {
+        // Sync successful - set debugIndex and mark as done
+        needsSyncRef.current = false;
+        setDebugState(prev => ({
+          ...prev,
+          debugIndex: Math.max(0, currentCount - 1),
+        }));
+      } else {
+        // Keep polling until visibleCountRef is populated
+        rafId = requestAnimationFrame(checkAndSync);
+      }
+    };
+
+    rafId = requestAnimationFrame(checkAndSync);
+
+    return () => {
+      cancelled = true;
+      cancelAnimationFrame(rafId);
+    };
+  }, [visibleCountRef]);
 
   // Persist debug mode to localStorage
   const persistDebugMode = useCallback((enabled: boolean) => {
