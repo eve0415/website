@@ -1,0 +1,113 @@
+import type { FC } from 'react';
+
+interface DebugToolbarProps {
+  isPaused: boolean;
+  currentIndex: number;
+  totalMessages: number;
+  onContinue: () => void;
+  onStepOver: () => void;
+  onStepInto: () => void;
+  onStop: () => void;
+}
+
+/**
+ * VS Code-style debug toolbar with stepping controls.
+ * Shows at top of boot sequence when debug mode is active.
+ */
+export const DebugToolbar: FC<DebugToolbarProps> = ({ isPaused, currentIndex, totalMessages, onContinue, onStepOver, onStepInto, onStop }) => {
+  return (
+    <div className='fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-lg border border-amber-500/30 bg-neutral-900/95 px-2 py-1.5 font-mono text-xs shadow-amber-500/10 shadow-lg backdrop-blur-sm'>
+      {/* Debug indicator */}
+      <div className='mr-2 flex items-center gap-1.5'>
+        <span className={`size-2 rounded-full ${isPaused ? 'animate-pulse bg-amber-500' : 'bg-green-500'}`} />
+        <span className='text-neutral-400'>DEBUG</span>
+      </div>
+
+      {/* Progress indicator */}
+      <div className='mr-3 border-neutral-700 border-l pl-3 text-neutral-500'>
+        <span className='text-neutral-300 tabular-nums'>{currentIndex + 1}</span>
+        <span className='mx-0.5'>/</span>
+        <span className='tabular-nums'>{totalMessages}</span>
+      </div>
+
+      {/* Continue button */}
+      <button
+        type='button'
+        onClick={onContinue}
+        disabled={!isPaused}
+        className='flex items-center gap-1 rounded px-2 py-1 text-green-400 transition-colors hover:bg-green-500/20 disabled:cursor-not-allowed disabled:opacity-50'
+        title='Continue (F5)'
+      >
+        <ContinueIcon />
+        <span className='hidden sm:inline'>Continue</span>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F5</kbd>
+      </button>
+
+      {/* Step Over button */}
+      <button
+        type='button'
+        onClick={onStepOver}
+        disabled={!isPaused}
+        className='flex items-center gap-1 rounded px-2 py-1 text-cyan-400 transition-colors hover:bg-cyan-500/20 disabled:cursor-not-allowed disabled:opacity-50'
+        title='Step Over (F10)'
+      >
+        <StepOverIcon />
+        <span className='hidden sm:inline'>Step Over</span>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F10</kbd>
+      </button>
+
+      {/* Step Into button */}
+      <button
+        type='button'
+        onClick={onStepInto}
+        disabled={!isPaused}
+        className='flex items-center gap-1 rounded px-2 py-1 text-blue-400 transition-colors hover:bg-blue-500/20 disabled:cursor-not-allowed disabled:opacity-50'
+        title='Step Into (F11)'
+      >
+        <StepIntoIcon />
+        <span className='hidden sm:inline'>Step Into</span>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F11</kbd>
+      </button>
+
+      {/* Stop button */}
+      <button
+        type='button'
+        onClick={onStop}
+        className='flex items-center gap-1 rounded px-2 py-1 text-red-400 transition-colors hover:bg-red-500/20'
+        title='Stop (Esc)'
+      >
+        <StopIcon />
+        <span className='hidden sm:inline'>Stop</span>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>Esc</kbd>
+      </button>
+    </div>
+  );
+};
+
+// VS Code-style icons
+
+const ContinueIcon: FC = () => (
+  <svg className='size-4' viewBox='0 0 16 16' fill='currentColor'>
+    <path d='M3 2v12l10-6L3 2z' />
+  </svg>
+);
+
+const StepOverIcon: FC = () => (
+  <svg className='size-4' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'>
+    <circle cx='8' cy='12' r='2.5' />
+    <path d='M4 5h8M8 5V2M12 5l-2-2M12 5l-2 2' />
+  </svg>
+);
+
+const StepIntoIcon: FC = () => (
+  <svg className='size-4' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'>
+    <circle cx='8' cy='12' r='2.5' />
+    <path d='M8 2v6M5 5l3 3 3-3' />
+  </svg>
+);
+
+const StopIcon: FC = () => (
+  <svg className='size-4' viewBox='0 0 16 16' fill='currentColor'>
+    <rect x='3' y='3' width='10' height='10' rx='1' />
+  </svg>
+);

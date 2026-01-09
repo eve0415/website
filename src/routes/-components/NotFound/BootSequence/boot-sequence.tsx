@@ -1,9 +1,15 @@
 import type { MouseInfluence } from '../useMouseInfluence';
+import type { ConnectionInfo } from './connection-info';
 import type { FC } from 'react';
 
-import { useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
+import { getConnectionInfo } from './connection-info';
+import { DebugToolbar } from './DebugToolbar/debug-toolbar';
 import { useBootAnimation } from './useBootAnimation';
+import { useDebugMode } from './useDebugMode';
+import { useDOMScan } from './useDOMScan';
+import { useNavigationTiming } from './useNavigationTiming';
 
 interface BootSequenceProps {
   elapsed: number;
@@ -12,27 +18,70 @@ interface BootSequenceProps {
   visible: boolean;
 }
 
-const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence }) => {
-  const { visibleMessages, currentProgress, cursorVisible } = useBootAnimation({
-    enabled: visible,
-    elapsed,
-  });
+// Default connection info for initial render
+const DEFAULT_CONNECTION: ConnectionInfo = {
+  serverIp: '...',
+  tlsVersion: 'TLSv1.3',
+  tlsCipher: 'TLS_AES_128_GCM_SHA256',
+  certIssuer: "Let's Encrypt",
+  certCN: 'eve0415.net',
+  certValidFrom: '...',
+  certValidTo: '...',
+  certChain: ["Let's Encrypt R3", 'ISRG Root X1'],
+  httpVersion: 'h2',
+  cfRay: null,
+  colo: null,
+};
 
-  // Get current path for display
+const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence }) => {
+  // Get real browser data
+  const timing = useNavigationTiming();
+  const dom = useDOMScan();
+
+  // Fetch server-side connection info
+  const [connection, setConnection] = useState<ConnectionInfo>(DEFAULT_CONNECTION);
+  useEffect(() => {
+    if (!visible) return;
+    getConnectionInfo().then(setConnection).catch(console.error);
+  }, [visible]);
+
+  // Current path
   const currentPath = useMemo(() => {
     if (typeof window === 'undefined') return '/unknown';
     return window.location.pathname;
   }, []);
 
-  // Replace [path] placeholder in messages with actual path
-  const displayMessages = useMemo(
-    () =>
-      visibleMessages.map(msg => ({
-        ...msg,
-        text: msg.text.replace('[path]', currentPath),
-      })),
-    [visibleMessages, currentPath],
-  );
+  // We need to get allMessages first to pass depths to useDebugMode
+  // Use a preliminary calculation with default debug state
+  const preliminaryAnimation = useBootAnimation({
+    enabled: visible,
+    elapsed,
+    timing,
+    dom,
+    connection,
+    path: currentPath,
+    isDebugMode: false,
+    isPaused: false,
+    debugIndex: 0,
+    maxVisibleDepth: Infinity,
+  });
+
+  // Debug mode with message info for keyboard navigation
+  const { debugState, stepContinue, stepOver, stepInto, stopDebug } = useDebugMode(preliminaryAnimation.messageDepths, preliminaryAnimation.allMessages.length);
+
+  // Boot animation with debug state
+  const { visibleMessages, allMessages, currentProgress, overallProgress, cursorVisible } = useBootAnimation({
+    enabled: visible,
+    elapsed,
+    timing,
+    dom,
+    connection,
+    path: currentPath,
+    isDebugMode: debugState.isEnabled,
+    isPaused: debugState.isPaused,
+    debugIndex: debugState.debugIndex,
+    maxVisibleDepth: debugState.maxVisibleDepth,
+  });
 
   if (!visible) return null;
 
@@ -41,8 +90,40 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence 
     background: `radial-gradient(circle at ${mouseInfluence.position.x}px ${mouseInfluence.position.y}px, rgba(0, 212, 255, ${mouseInfluence.glowIntensity * 0.1}) 0%, transparent 300px)`,
   };
 
+  // Get status label based on progress
+  const getStatusLabel = () => {
+    if (overallProgress > 90) return 'HYDRATION_ERROR';
+    if (overallProgress > 80) return 'EXECUTING';
+    if (overallProgress > 60) return 'RENDERING';
+    if (overallProgress > 40) return 'PARSING';
+    return 'CONNECTING';
+  };
+
+  const getStatusColor = () => {
+    if (overallProgress > 90) return 'text-red-400';
+    if (overallProgress > 80) return 'text-orange';
+    return 'text-neon';
+  };
+
+  // Handlers that pass required data
+  const handleStepOver = () => stepOver(preliminaryAnimation.messageDepths);
+  const handleStepInto = () => stepInto(allMessages.length);
+
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-background' style={glowStyle}>
+      {/* Debug toolbar */}
+      {debugState.isEnabled && (
+        <DebugToolbar
+          isPaused={debugState.isPaused}
+          currentIndex={debugState.debugIndex}
+          totalMessages={allMessages.length}
+          onContinue={stepContinue}
+          onStepOver={handleStepOver}
+          onStepInto={handleStepInto}
+          onStop={stopDebug}
+        />
+      )}
+
       <div className='w-full max-w-2xl px-6'>
         {/* Terminal window */}
         <div className='rounded-lg border border-line/50 bg-surface/90 shadow-2xl backdrop-blur-sm'>
@@ -52,27 +133,59 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence 
             <div className='size-3 rounded-full bg-yellow-500/80' />
             <div className='size-3 rounded-full bg-green-500/80' />
             <span className='ml-4 text-muted-foreground text-xs'>browser://network-inspector</span>
+            {debugState.isEnabled && <span className='ml-auto rounded bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-400'>DEBUG</span>}
           </div>
 
           {/* Terminal content */}
-          <div className='space-y-1 p-4 font-mono text-sm'>
+          <div className='max-h-[60vh] space-y-0.5 overflow-y-auto p-4 font-mono text-xs'>
             {/* Boot messages */}
-            {displayMessages.map((msg, i) => (
-              <div
-                key={i}
-                className={`transition-opacity duration-150 ${
-                  msg.type === 'error' ? 'text-red-400' : msg.type === 'warning' ? 'text-orange' : msg.type === 'success' ? 'text-neon' : 'text-foreground/80'
-                }`}
-              >
-                {msg.text}
-              </div>
-            ))}
+            {visibleMessages.map((msg, i) => {
+              const isCurrentLine = debugState.isEnabled && i === visibleMessages.length - 1;
+              const indent = msg.depth * 16; // 1rem per depth level
+
+              return (
+                <div
+                  key={msg.id}
+                  className={`flex items-start transition-all duration-150 ${isCurrentLine && debugState.isPaused ? 'rounded bg-amber-500/10' : ''}`}
+                  style={{ paddingLeft: `${indent}px` }}
+                >
+                  {/* Breakpoint indicator */}
+                  {debugState.isEnabled && (
+                    <span className='mr-2 w-3 shrink-0'>
+                      {isCurrentLine && debugState.isPaused && <span className='inline-block size-2 rounded-full bg-amber-500' />}
+                    </span>
+                  )}
+
+                  {/* Hierarchy indicator */}
+                  {msg.depth > 0 && <span className='mr-1.5 text-line/50'>{msg.type === 'group' ? '▼' : '├'}</span>}
+
+                  {/* Message text */}
+                  <span
+                    className={
+                      msg.type === 'error'
+                        ? 'text-red-400'
+                        : msg.type === 'warning'
+                          ? 'text-orange'
+                          : msg.type === 'success'
+                            ? 'text-neon'
+                            : msg.type === 'group'
+                              ? 'font-medium text-cyan'
+                              : 'text-foreground/80'
+                    }
+                  >
+                    {msg.resolvedText}
+                  </span>
+                </div>
+              );
+            })}
 
             {/* Cursor line */}
-            <div className='flex items-center gap-1 text-foreground/60'>
-              <span>{'>'}</span>
-              <span className={`h-4 w-2 bg-cyan ${cursorVisible ? 'opacity-100' : 'opacity-0'}`} />
-            </div>
+            {!debugState.isPaused && (
+              <div className='flex items-center gap-1 text-foreground/60'>
+                <span>{'>'}</span>
+                <span className={`h-4 w-2 bg-cyan ${cursorVisible ? 'opacity-100' : 'opacity-0'}`} />
+              </div>
+            )}
           </div>
 
           {/* Progress bar */}
@@ -80,7 +193,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence 
             <div className='border-line/30 border-t px-4 py-3'>
               <div className='mb-1 flex justify-between text-muted-foreground text-xs'>
                 <span>{currentProgress.stage.label}</span>
-                <span>{Math.round(currentProgress.progress * 100)}%</span>
+                <span className='tabular-nums'>{Math.round(currentProgress.progress * 100)}%</span>
               </div>
               <div className='h-1.5 overflow-hidden rounded-full bg-line/30'>
                 <div
@@ -95,10 +208,12 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence 
         {/* Status line below terminal */}
         <div className='mt-4 text-center text-muted-foreground text-xs'>
           <span className='opacity-60'>STATUS: </span>
-          <span className={elapsed > 6000 ? 'text-red-400' : elapsed > 4400 ? 'text-orange' : 'text-neon'}>
-            {elapsed > 6400 ? 'HYDRATION_ERROR' : elapsed > 5500 ? 'EXECUTING' : elapsed > 4400 ? 'RENDERING' : elapsed > 2200 ? 'PARSING' : 'CONNECTING'}
-          </span>
+          <span className={getStatusColor()}>{getStatusLabel()}</span>
+          {debugState.isEnabled && debugState.isPaused && <span className='ml-2 text-amber-500/80'>(PAUSED)</span>}
         </div>
+
+        {/* Debug hint */}
+        {!debugState.isEnabled && <div className='mt-2 text-center text-[10px] text-muted-foreground/40'>Press F5 to enter debug mode</div>}
       </div>
     </div>
   );
