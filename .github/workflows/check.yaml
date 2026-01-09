@@ -123,5 +123,5 @@ jobs:
       - name: Generate types
         run: pnpm generate
 
-      - name: Build website
+      - name: Test
         run: pnpm test
