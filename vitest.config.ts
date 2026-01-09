@@ -51,7 +51,7 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' } }), storybookTest()],
+        plugins: [storybookTest()],
         test: {
           name: 'storybook',
           testTimeout: 60000,
