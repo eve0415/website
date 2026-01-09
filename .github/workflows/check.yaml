@@ -23,7 +23,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: package.json
+          node-version-file: .node-version
           cache: pnpm
 
       - name: Install dependencies
@@ -48,11 +48,19 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: package.json
+          node-version-file: .node-version
           cache: pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
+
+      - name: Generate .dev.vars
+        run: |
+          echo GITHUB_PAT=test >> .dev.vars
+          echo MAIL_ADDRESS=test >> .dev.vars
+
+      - name: Generate types
+        run: pnpm generate
 
       - name: Build website
         run: pnpm oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously --report-unused-disable-directives --deny-warnings
@@ -73,7 +81,7 @@ jobs:
       - name: Set up Node.js
         uses: actions/setup-node@v6
         with:
-          node-version-file: package.json
+          node-version-file: .node-version
           cache: pnpm
 
       - name: Install dependencies
