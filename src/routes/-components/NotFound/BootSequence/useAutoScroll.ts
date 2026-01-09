@@ -33,6 +33,10 @@ export const useAutoScroll = ({ containerRef, dependency, smooth = 'auto' }: Use
   const [isAtBottom, setIsAtBottom] = useState(true);
   // Track previous dependency to detect changes (accessed only in effect)
   const prevDependencyRef = useRef(dependency);
+  // Track programmatic scrolls to ignore scroll events during animation
+  const isProgrammaticScrollRef = useRef(false);
+  // Track pending timeout to cancel on rapid clicks
+  const scrollTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   /**
    * Check if scroll position is at the exact bottom.
@@ -46,8 +50,12 @@ export const useAutoScroll = ({ containerRef, dependency, smooth = 'auto' }: Use
 
   /**
    * Handle scroll events to track user position.
+   * Ignores events fired during programmatic scrolling.
    */
   const handleScroll = useCallback(() => {
+    // Ignore scroll events during our own programmatic scrolls
+    if (isProgrammaticScrollRef.current) return;
+
     const container = containerRef.current;
     if (!container) return;
 
@@ -85,11 +93,32 @@ export const useAutoScroll = ({ containerRef, dependency, smooth = 'auto' }: Use
       scrollBehavior = smooth ? 'smooth' : 'instant';
     }
 
+    // Cancel any pending timeout from previous scroll (prevents race condition on rapid clicks)
+    if (scrollTimeoutRef.current) {
+      clearTimeout(scrollTimeoutRef.current);
+      scrollTimeoutRef.current = null;
+    }
+
+    // Mark that we're programmatically scrolling to ignore scroll events
+    isProgrammaticScrollRef.current = true;
+
     // Scroll to bottom
     container.scrollTo({
       top: container.scrollHeight,
       behavior: scrollBehavior,
     });
+
+    // Clear the flag after scroll completes
+    if (scrollBehavior === 'smooth') {
+      // Smooth scroll animation typically takes ~300ms
+      scrollTimeoutRef.current = setTimeout(() => {
+        isProgrammaticScrollRef.current = false;
+        scrollTimeoutRef.current = null;
+      }, 300);
+    } else {
+      // Instant scroll completes immediately
+      isProgrammaticScrollRef.current = false;
+    }
   }, [dependency, isAtBottom, containerRef, smooth]);
 
   return {

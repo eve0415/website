@@ -72,7 +72,10 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   });
 
   // Debug mode with message info for keyboard navigation
-  const { debugState, stepContinue, stepOver, stepInto, stopDebug } = useDebugMode(preliminaryAnimation.messageDepths, preliminaryAnimation.allMessages.length);
+  const { debugState, stepContinue, pause, stepOver, stepInto, stepOut, stopDebug } = useDebugMode(
+    preliminaryAnimation.messageDepths,
+    preliminaryAnimation.allMessages.length,
+  );
 
   // Boot animation with debug state
   const { visibleMessages, allMessages, currentProgress, overallProgress, cursorVisible } = useBootAnimation({
@@ -125,6 +128,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   // Handlers that pass required data
   const handleStepOver = () => stepOver(preliminaryAnimation.messageDepths);
   const handleStepInto = () => stepInto(allMessages.length);
+  const handleStepOut = () => stepOut(preliminaryAnimation.messageDepths);
 
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-background' style={glowStyle}>
@@ -135,8 +139,10 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
           currentIndex={debugState.debugIndex}
           totalMessages={allMessages.length}
           onContinue={stepContinue}
+          onPause={pause}
           onStepOver={handleStepOver}
           onStepInto={handleStepInto}
+          onStepOut={handleStepOut}
           onStop={stopDebug}
         />
       )}

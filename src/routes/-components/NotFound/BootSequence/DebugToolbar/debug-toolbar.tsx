@@ -5,8 +5,10 @@ interface DebugToolbarProps {
   currentIndex: number;
   totalMessages: number;
   onContinue: () => void;
+  onPause: () => void;
   onStepOver: () => void;
   onStepInto: () => void;
+  onStepOut: () => void;
   onStop: () => void;
 }
 
@@ -14,7 +16,17 @@ interface DebugToolbarProps {
  * VS Code-style debug toolbar with stepping controls.
  * Shows at top of boot sequence when debug mode is active.
  */
-export const DebugToolbar: FC<DebugToolbarProps> = ({ isPaused, currentIndex, totalMessages, onContinue, onStepOver, onStepInto, onStop }) => {
+export const DebugToolbar: FC<DebugToolbarProps> = ({
+  isPaused,
+  currentIndex,
+  totalMessages,
+  onContinue,
+  onPause,
+  onStepOver,
+  onStepInto,
+  onStepOut,
+  onStop,
+}) => {
   return (
     <div className='fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-lg border border-amber-500/30 bg-neutral-900/95 px-2 py-1.5 font-mono text-xs shadow-amber-500/10 shadow-lg backdrop-blur-sm'>
       {/* Debug indicator */}
@@ -30,18 +42,30 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({ isPaused, currentIndex, to
         <span className='tabular-nums'>{totalMessages}</span>
       </div>
 
-      {/* Continue button */}
-      <button
-        type='button'
-        onClick={onContinue}
-        disabled={!isPaused}
-        className='flex items-center gap-1 rounded px-2 py-1 text-green-400 transition-colors hover:bg-green-500/20 disabled:cursor-not-allowed disabled:opacity-50'
-        title='Continue (F5)'
-      >
-        <ContinueIcon />
-        <span className='hidden sm:inline'>Continue</span>
-        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F5</kbd>
-      </button>
+      {/* Continue/Pause toggle */}
+      {isPaused ? (
+        <button
+          type='button'
+          onClick={onContinue}
+          className='flex items-center gap-1 rounded px-2 py-1 text-green-400 transition-colors hover:bg-green-500/20'
+          title='Continue (F5)'
+        >
+          <ContinueIcon />
+          <span className='hidden sm:inline'>Continue</span>
+          <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F5</kbd>
+        </button>
+      ) : (
+        <button
+          type='button'
+          onClick={onPause}
+          className='flex items-center gap-1 rounded px-2 py-1 text-amber-400 transition-colors hover:bg-amber-500/20'
+          title='Pause (F6)'
+        >
+          <PauseIcon />
+          <span className='hidden sm:inline'>Pause</span>
+          <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F6</kbd>
+        </button>
+      )}
 
       {/* Step Over button */}
       <button
@@ -69,6 +93,19 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({ isPaused, currentIndex, to
         <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F11</kbd>
       </button>
 
+      {/* Step Out button */}
+      <button
+        type='button'
+        onClick={onStepOut}
+        disabled={!isPaused}
+        className='flex items-center gap-1 rounded px-2 py-1 text-purple-400 transition-colors hover:bg-purple-500/20 disabled:cursor-not-allowed disabled:opacity-50'
+        title='Step Out (Shift+F11)'
+      >
+        <StepOutIcon />
+        <span className='hidden sm:inline'>Step Out</span>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>⇧F11</kbd>
+      </button>
+
       {/* Stop button */}
       <button
         type='button'
@@ -92,6 +129,13 @@ const ContinueIcon: FC = () => (
   </svg>
 );
 
+const PauseIcon: FC = () => (
+  <svg className='size-4' viewBox='0 0 16 16' fill='currentColor'>
+    <rect x='3' y='2' width='4' height='12' rx='1' />
+    <rect x='9' y='2' width='4' height='12' rx='1' />
+  </svg>
+);
+
 const StepOverIcon: FC = () => (
   <svg className='size-4' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'>
     <circle cx='8' cy='12' r='2.5' />
@@ -103,6 +147,13 @@ const StepIntoIcon: FC = () => (
   <svg className='size-4' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'>
     <circle cx='8' cy='12' r='2.5' />
     <path d='M8 2v6M5 5l3 3 3-3' />
+  </svg>
+);
+
+const StepOutIcon: FC = () => (
+  <svg className='size-4' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'>
+    <circle cx='8' cy='4' r='2.5' />
+    <path d='M8 14V8M5 11l3-3 3 3' />
   </svg>
 );
 

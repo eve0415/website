@@ -21,8 +21,10 @@ export interface UseDebugModeReturn {
   toggleDebugMode: () => void;
   // Stepping controls (need message count and depths to calculate next index)
   stepContinue: () => void;
+  pause: () => void;
   stepOver: (messageDepths: number[]) => void;
   stepInto: (totalMessages: number) => void;
+  stepOut: (messageDepths: number[]) => void;
   stopDebug: () => void;
   // State updates
   setDebugIndex: (index: number) => void;
@@ -42,9 +44,11 @@ const DEFAULT_STATE: DebugState = {
  * Hook for IDE-style debug mode with stepping controls.
  *
  * Keyboard shortcuts:
- * - F5 or Ctrl+Shift+D: Toggle debug mode
- * - F10: Step Over (skip children)
- * - F11: Step Into (enter children)
+ * - F5 or Ctrl+Shift+D: Toggle debug mode / Continue
+ * - F6: Pause (when running)
+ * - F10: Step Over (skip children at current depth)
+ * - F11: Step Into (next message) - Note: may trigger fullscreen on some browsers
+ * - Shift+F11: Step Out (run until returning to shallower depth)
  * - Escape: Stop debugging
  */
 export const useDebugMode = (messageDepths: number[] = [], totalMessages: number = 0): UseDebugModeReturn => {
@@ -115,6 +119,13 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
     });
   }, []);
 
+  const pause = useCallback(() => {
+    setDebugState(prev => {
+      if (!prev.isEnabled || prev.isPaused) return prev;
+      return { ...prev, isPaused: true };
+    });
+  }, []);
+
   const stepOver = useCallback((depths: number[]) => {
     setDebugState(prev => {
       if (!prev.isEnabled || !prev.isPaused) return prev;
@@ -144,6 +155,30 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       if (!prev.isEnabled || !prev.isPaused) return prev;
 
       const nextIndex = Math.min(prev.debugIndex + 1, total - 1);
+      return {
+        ...prev,
+        debugIndex: nextIndex,
+      };
+    });
+  }, []);
+
+  const stepOut = useCallback((depths: number[]) => {
+    setDebugState(prev => {
+      if (!prev.isEnabled || !prev.isPaused) return prev;
+
+      // Move to next message at a shallower depth (lower depth number)
+      const currentDepth = depths[prev.debugIndex] ?? 0;
+      let nextIndex = prev.debugIndex + 1;
+
+      // Skip until we find a shallower depth
+      while (nextIndex < depths.length && depths[nextIndex]! >= currentDepth) {
+        nextIndex++;
+      }
+
+      if (nextIndex >= depths.length) {
+        nextIndex = prev.debugIndex; // Stay at current if no shallower level found
+      }
+
       return {
         ...prev,
         debugIndex: nextIndex,
@@ -200,6 +235,13 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       // Only handle other keys if debug mode is enabled
       if (!debugState.isEnabled) return;
 
+      // F6 - Pause (when running)
+      if (e.key === 'F6') {
+        e.preventDefault();
+        pause();
+        return;
+      }
+
       // F10 - Step Over
       if (e.key === 'F10') {
         e.preventDefault();
@@ -207,7 +249,14 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
         return;
       }
 
-      // F11 - Step Into
+      // Shift+F11 - Step Out (run until shallower depth)
+      if (e.shiftKey && e.key === 'F11') {
+        e.preventDefault();
+        stepOut(messageDepths);
+        return;
+      }
+
+      // F11 - Step Into (note: may trigger fullscreen on some browsers)
       if (e.key === 'F11') {
         e.preventDefault();
         stepInto(totalMessages);
@@ -224,7 +273,7 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [debugState.isEnabled, debugState.isPaused, enableDebugMode, stepContinue, stepOver, stepInto, stopDebug, messageDepths, totalMessages]);
+  }, [debugState.isEnabled, debugState.isPaused, enableDebugMode, stepContinue, pause, stepOver, stepInto, stepOut, stopDebug, messageDepths, totalMessages]);
 
   return {
     debugState,
@@ -232,8 +281,10 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
     disableDebugMode,
     toggleDebugMode,
     stepContinue,
+    pause,
     stepOver,
     stepInto,
+    stepOut,
     stopDebug,
     setDebugIndex,
     setPaused,
