@@ -8,7 +8,12 @@
   "upload_source_maps": true,
   "placement": { "mode": "smart" },
 
-  "route": "eve0415.net",
+  "routes": [
+    {
+      "pattern": "eve0415.net",
+      "custom_domain": true
+    }
+  ],
 
   "main": "./src/server.ts",
   "assets": { "directory": "./dist/client" },
