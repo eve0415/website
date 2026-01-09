@@ -6,8 +6,8 @@ import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
 
 import { printConsoleArt } from './-index/console-art';
-import Logo from './-index/Logo';
-import TerminalText from './-index/TerminalText';
+import Logo from './-index/logo';
+import TerminalText from './-index/terminal-text';
 import { useKonamiCode } from './-index/useKonamiCode';
 
 // Simplified IndexPage for testing (without router dependencies)

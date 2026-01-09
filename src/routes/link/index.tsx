@@ -1,15 +1,15 @@
-import type { SocialLink } from './-components/SocialLinkCard/SocialLinkCard';
+import type { SocialLink } from './-components/SocialLinkCard/social-link-card';
 import type { FC } from 'react';
 
 import { Link, createFileRoute } from '@tanstack/react-router';
 
-import ContactForm from './-components/ContactForm/ContactForm';
-import CurrentTime from './-components/CurrentTime/CurrentTime';
-import BlueskyIcon from './-components/icons/BlueskyIcon';
-import DiscordIcon from './-components/icons/DiscordIcon';
-import GitHubIcon from './-components/icons/GitHubIcon';
-import XIcon from './-components/icons/XIcon';
-import SocialLinkCard from './-components/SocialLinkCard/SocialLinkCard';
+import ContactForm from './-components/ContactForm/contact-form';
+import CurrentTime from './-components/CurrentTime/current-time';
+import BlueskyIcon from './-components/icons/bluesky-icon';
+import DiscordIcon from './-components/icons/discord-icon';
+import GitHubIcon from './-components/icons/github-icon';
+import XIcon from './-components/icons/x-icon';
+import SocialLinkCard from './-components/SocialLinkCard/social-link-card';
 
 const socialLinks: SocialLink[] = [
   {

@@ -19,9 +19,9 @@ src/routes/
 ├── index.tsx           # / route
 ├── -index/            # Colocated (legacy naming, kept for compatibility)
 │   ├── Background/
-│   │   ├── Background.tsx
+│   │   ├── background.tsx
 │   │   └── useMousePosition.ts
-│   ├── Logo.tsx
+│   ├── logo.tsx
 │   └── useKonamiCode.ts
 ```
 
@@ -35,41 +35,41 @@ src/routes/
 │   ├── index.tsx           # /sys route
 │   ├── -components/        # Colocated components
 │   │   ├── CodeRadar/
-│   │   │   └── CodeRadar.tsx
+│   │   │   └── code-radar.tsx
 │   │   ├── StatsPanel/
-│   │   │   ├── StatsPanel.tsx
+│   │   │   ├── stats-panel.tsx
 │   │   │   ├── StatRow/
-│   │   │   │   └── StatRow.tsx
+│   │   │   │   └── stat-row.tsx
 │   │   │   └── useDecryptAnimation.ts
 │   │   └── LanguageStack/
-│   │       ├── LanguageStack.tsx
+│   │       ├── language-stack.tsx
 │   │       └── LanguageBar/
-│   │           └── LanguageBar.tsx
+│   │           └── language-bar.tsx
 │   └── -utils/
 │       └── github-stats.ts
 ├── skills/
 │   ├── index.tsx
 │   ├── -components/
 │   │   ├── SkillCard/
-│   │   │   └── SkillCard.tsx
+│   │   │   └── skill-card.tsx
 │   │   └── SkillsVisualization/
-│   │       └── SkillsVisualization.tsx
+│   │       └── skills-visualization.tsx
 │   └── -config/
 │       └── skills-config.ts
 ├── projects/
 │   ├── index.tsx
 │   └── -components/
 │       ├── AnimatedCounter/
-│       │   └── AnimatedCounter.tsx
+│       │   └── animated-counter.tsx
 │       └── ProjectCard/
-│           └── ProjectCard.tsx
+│           └── project-card.tsx
 └── link/
     ├── index.tsx
     └── -components/
         ├── SocialLinkCard/
-        │   └── SocialLinkCard.tsx
+        │   └── social-link-card.tsx
         └── CurrentTime/
-            └── CurrentTime.tsx
+            └── current-time.tsx
 ```
 
 **CRITICAL**: Do NOT create `-_routename/` as a sibling at the `routes/` level. That pattern only applies to the root route because it has no parent directory.
@@ -87,15 +87,16 @@ src/routes/
 
 ## Component File Rule
 
-Extract all React components to separate files.
+Extract all React components to separate files. Each file contains one component.
 
 **Exception**: Route-bound components (passed to `createFileRoute`, `createRootRoute`, etc.) stay in route files.
 
-**Pattern**: `ComponentName/ComponentName.tsx`
+**Pattern**: `ComponentName/component-name.tsx` (PascalCase folder, kebab-case file)
 
-- Tests: `ComponentName/ComponentName.test.tsx`
-- Stories: `ComponentName/ComponentName.stories.tsx`
-- Hooks: `ComponentName/useHookName.ts` (if single-consumer)
+- Tests: `ComponentName/component-name.test.tsx`
+- Stories: `ComponentName/component-name.stories.tsx`
+- Fixtures: `ComponentName/component-name.fixtures.tsx`
+- Hooks: `ComponentName/useHookName.ts` (camelCase, single-consumer only)
 
 **Interfaces**: Live with the component that defines the visual representation.
 
@@ -116,9 +117,12 @@ Extract all React components to separate files.
 ## Naming
 
 - **Component directories**: PascalCase (`Background/`)
-- **Component files**: PascalCase, same as directory (`Background/Background.tsx`)
+- **Component files**: kebab-case (`background.tsx`, `skill-card.tsx`)
+- **Test files**: kebab-case matching component (`background.test.tsx`, `skill-card.browser.test.tsx`)
+- **Story files**: kebab-case matching component (`background.stories.tsx`)
+- **Fixture files**: kebab-case matching component (`skill-card.fixtures.tsx`)
 - **Hooks**: camelCase with `use` prefix (`useMousePosition.ts`)
-- **Utilities**: camelCase (`console-art.ts`)
+- **Utilities**: kebab-case (`console-art.ts`, `github-stats.ts`)
 - **Non-route directories**: Single dash `-` prefix (`-components/`, `-utils/`)
 
 ## Shared Code Location
@@ -150,16 +154,16 @@ Configured in `package.json` (imports) and `tsconfig.json` (paths).
 
 Fixtures are reusable test data objects. Location depends on usage scope:
 
-| Scope          | Location                       | Example                              |
-| -------------- | ------------------------------ | ------------------------------------ |
-| Single file    | Inline in test/story file      | Form data in ContactForm.stories.tsx |
-| Same directory | `ComponentName.fixtures.tsx`   | SkillCard.fixtures.tsx               |
-| Cross-route    | `src/fixtures/fixture-name.ts` | (when needed)                        |
+| Scope          | Location                       | Example                               |
+| -------------- | ------------------------------ | ------------------------------------- |
+| Single file    | Inline in test/story file      | Form data in contact-form.stories.tsx |
+| Same directory | `component-name.fixtures.tsx`  | skill-card.fixtures.tsx               |
+| Cross-route    | `src/fixtures/fixture-name.ts` | (when needed)                         |
 
 **Pattern**: Export named constants with descriptive scenario names.
 
 ```typescript
-// SkillCard.fixtures.tsx
+// skill-card.fixtures.tsx
 export const expertSkill: Skill = { ... };
 export const learningSkill: Skill = { ... };
 ```

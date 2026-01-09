@@ -3,8 +3,8 @@ import type { FC } from 'react';
 
 import { Link, createFileRoute } from '@tanstack/react-router';
 
-import SkillCard from './-components/SkillCard/SkillCard';
-import SkillsVisualization from './-components/SkillsVisualization/SkillsVisualization';
+import SkillCard from './-components/SkillCard/skill-card';
+import SkillsVisualization from './-components/SkillsVisualization/skills-visualization';
 import { categoryIcons, categoryLabels, levelConfig, skills } from './-config/skills-config';
 
 const SkillsPage: FC = () => {

@@ -3,10 +3,10 @@ import type { FC } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useState } from 'react';
 
-import CodeRadar from './-components/CodeRadar/CodeRadar';
-import LanguageStack from './-components/LanguageStack/LanguageStack';
-import StatsPanel from './-components/StatsPanel/StatsPanel';
-import Terminal from './-components/Terminal/Terminal';
+import CodeRadar from './-components/CodeRadar/code-radar';
+import LanguageStack from './-components/LanguageStack/language-stack';
+import StatsPanel from './-components/StatsPanel/stats-panel';
+import Terminal from './-components/Terminal/terminal';
 import { getGitHubStats } from './-utils/github-stats';
 
 const SysPage: FC = () => {

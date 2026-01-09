@@ -1,10 +1,10 @@
-import type { Project } from './-components/ProjectCard/ProjectCard';
+import type { Project } from './-components/ProjectCard/project-card';
 import type { FC } from 'react';
 
 import { Link, createFileRoute } from '@tanstack/react-router';
 
-import AnimatedCounter from './-components/AnimatedCounter/AnimatedCounter';
-import ProjectCard from './-components/ProjectCard/ProjectCard';
+import AnimatedCounter from './-components/AnimatedCounter/animated-counter';
+import ProjectCard from './-components/ProjectCard/project-card';
 
 const projects: Project[] = [
   {

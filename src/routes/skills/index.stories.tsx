@@ -5,8 +5,8 @@ import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 
-import SkillCard from './-components/SkillCard/SkillCard';
-import SkillsVisualization from './-components/SkillsVisualization/SkillsVisualization';
+import SkillCard from './-components/SkillCard/skill-card';
+import SkillsVisualization from './-components/SkillsVisualization/skills-visualization';
 import { categoryIcons, categoryLabels, levelConfig, skills } from './-config/skills-config';
 
 const SkillsPage: FC = () => {

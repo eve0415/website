@@ -4,7 +4,7 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
-import BSODError from './-components/BSODError/BSODError';
+import BSODError from './-components/BSODError/bsod-error';
 import rootCss from './__root.css?url';
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {

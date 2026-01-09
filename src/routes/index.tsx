@@ -3,10 +3,10 @@ import type { FC } from 'react';
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useEffect, useState } from 'react';
 
-import Background from './-index/Background/Background';
+import Background from './-index/Background/background';
 import { printConsoleArt } from './-index/console-art';
-import Logo from './-index/Logo';
-import TerminalText from './-index/TerminalText';
+import Logo from './-index/logo';
+import TerminalText from './-index/terminal-text';
 import { useKonamiCode } from './-index/useKonamiCode';
 
 const IndexPage: FC = () => {

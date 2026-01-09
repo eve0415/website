@@ -1,12 +1,12 @@
-import type { Project } from './-components/ProjectCard/ProjectCard';
+import type { Project } from './-components/ProjectCard/project-card';
 import type { FC } from 'react';
 
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 
-import AnimatedCounter from './-components/AnimatedCounter/AnimatedCounter';
-import ProjectCard from './-components/ProjectCard/ProjectCard';
+import AnimatedCounter from './-components/AnimatedCounter/animated-counter';
+import ProjectCard from './-components/ProjectCard/project-card';
 
 const projects: Project[] = [
   {

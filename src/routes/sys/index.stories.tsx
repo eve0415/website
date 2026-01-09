@@ -5,10 +5,10 @@ import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 
-import CodeRadar from './-components/CodeRadar/CodeRadar';
-import LanguageStack from './-components/LanguageStack/LanguageStack';
-import StatsPanel from './-components/StatsPanel/StatsPanel';
-import { sampleStats } from './-components/StatsPanel/StatsPanel.fixtures';
+import CodeRadar from './-components/CodeRadar/code-radar';
+import LanguageStack from './-components/LanguageStack/language-stack';
+import StatsPanel from './-components/StatsPanel/stats-panel';
+import { sampleStats } from './-components/StatsPanel/stats-panel.fixtures';
 import { getRelativeTimeJapanese } from './-utils/github-stats-utils';
 
 // Recreate the SysPage component with injectable stats (for Storybook)

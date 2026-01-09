@@ -1,7 +1,7 @@
 import { describe, expect, test, vi } from 'vitest';
 
 import { COMMANDS, COMMAND_NAMES, type CommandContext, SudoRmRfError, executeCommand } from './commands';
-import { mockCommandContext, mockGitHubStats } from './Terminal.fixtures';
+import { mockCommandContext, mockGitHubStats } from './terminal.fixtures';
 
 describe('SudoRmRfError', () => {
   test('creates error with correct name', () => {
