@@ -81,9 +81,12 @@ export const submitContactForm = createServerFn({ method: 'POST' })
     return { success: true };
   });
 
-// Atomically check and increment rate limit to prevent race conditions
-// Increments first, then checks if over limit - this ensures concurrent requests are counted correctly
-async function checkAndIncrementRateLimit(ip: string): Promise<{ allowed: boolean; remaining: number }> {
+/**
+ * Atomically check and increment rate limit to prevent race conditions.
+ * Increments first, then checks if over limit - this ensures concurrent requests are counted correctly.
+ * @internal Exported for testing purposes only
+ */
+export async function checkAndIncrementRateLimit(ip: string): Promise<{ allowed: boolean; remaining: number }> {
   const kv = env.CONTACT_RATE_LIMIT;
   const key = `rate:${ip}`;
 
@@ -102,7 +105,11 @@ async function checkAndIncrementRateLimit(ip: string): Promise<{ allowed: boolea
   };
 }
 
-async function sendContactEmail(formData: ContactFormData): Promise<void> {
+/**
+ * Send contact form email.
+ * @internal Exported for testing purposes only
+ */
+export async function sendContactEmail(formData: ContactFormData): Promise<void> {
   const msg = createMimeMessage();
   msg.setSender({ name: 'Contact Form', addr: SENDER_ADDRESS });
   msg.setRecipient(RECIPIENT_ADDRESS);
