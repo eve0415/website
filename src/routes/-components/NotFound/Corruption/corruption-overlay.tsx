@@ -3,7 +3,8 @@ import type { FC } from 'react';
 
 import { useMemo } from 'react';
 
-import { getErrorColorClass, useCorruptionEffects } from './useCorruptionEffects';
+import ErrorCascade from './ErrorCascade/error-cascade';
+import { useCorruptionEffects } from './useCorruptionEffects';
 
 interface CorruptionOverlayProps {
   progress: number;
@@ -18,7 +19,7 @@ const seededRandom = (seed: number): number => {
 };
 
 const CorruptionOverlay: FC<CorruptionOverlayProps> = ({ progress, mouseInfluence, visible }) => {
-  const { intensity, glitchLines, staticOpacity, scanlineOffset, currentError, errorOpacity } = useCorruptionEffects({
+  const { intensity, glitchLines, staticOpacity, scanlineOffset } = useCorruptionEffects({
     enabled: visible,
     progress,
   });
@@ -99,15 +100,8 @@ const CorruptionOverlay: FC<CorruptionOverlayProps> = ({ progress, mouseInfluenc
         }}
       />
 
-      {/* Real error message display */}
-      {currentError && (
-        <div
-          className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 font-mono text-lg transition-opacity duration-100 sm:text-2xl'
-          style={{ opacity: errorOpacity }}
-        >
-          <span className={getErrorColorClass(currentError.language)}>{currentError.text}</span>
-        </div>
-      )}
+      {/* Cascading error messages with stack traces */}
+      <ErrorCascade progress={progress} enabled={visible} />
 
       {/* Corner glitch artifacts */}
       {intensity > 0.5 && (

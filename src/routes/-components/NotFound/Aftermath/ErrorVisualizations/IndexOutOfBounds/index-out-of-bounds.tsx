@@ -48,7 +48,7 @@ const IndexOutOfBounds: FC = () => {
         {/* Title */}
         <div className='mb-12 text-center'>
           <div className='font-mono text-[#666] text-xs tracking-wider'>ARRAY BOUNDS ERROR</div>
-          <div className='mt-2 font-semibold text-3xl text-[#1a1a1a]'>IndexOutOfBoundsException</div>
+          <div className='mt-2 font-semibold text-3xl text-muted'>IndexOutOfBoundsException</div>
         </div>
 
         {/* Array visualization */}
@@ -65,7 +65,7 @@ const IndexOutOfBounds: FC = () => {
                     ? 'border-[#3b82f6] bg-[#3b82f6]/10 ring-2 ring-[#3b82f6]/30'
                     : cursorPosition > i
                       ? 'border-[#22c55e]/50 bg-[#22c55e]/5'
-                      : 'border-[#e5e5e5] bg-white'
+                      : 'border-foreground bg-white'
                 }`}
               >
                 <span className='text-[#666] text-xs sm:text-sm'>{i * 10}</span>
@@ -81,7 +81,7 @@ const IndexOutOfBounds: FC = () => {
             {/* Invalid access cell */}
             <div
               className={`relative flex size-14 flex-col items-center justify-center rounded-lg border-2 border-dashed font-mono transition-all duration-200 sm:size-16 ${
-                cursorPosition >= arraySize ? 'animate-pulse border-[#ef4444] bg-[#ef4444]/10' : 'border-[#e5e5e5] bg-[#f5f5f5]'
+                cursorPosition >= arraySize ? 'animate-pulse border-[#ef4444] bg-[#ef4444]/10' : 'border-foreground bg-[#f5f5f5]'
               }`}
             >
               <span className={`text-xs sm:text-sm ${cursorPosition >= arraySize ? 'text-[#ef4444]' : 'text-[#ccc]'}`}>???</span>
@@ -95,7 +95,7 @@ const IndexOutOfBounds: FC = () => {
 
           {/* Index indicator */}
           <div className='relative mt-4 h-2'>
-            <div className='absolute inset-x-0 h-0.5 bg-[#e5e5e5]' />
+            <div className='absolute inset-x-0 h-0.5 bg-foreground' />
             {cursorPosition >= 0 && (
               <div
                 className={`absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 ${
@@ -125,7 +125,7 @@ const IndexOutOfBounds: FC = () => {
         )}
 
         {/* Code snippet */}
-        <div className='mb-8 w-full max-w-lg rounded-lg border border-[#e5e5e5] bg-[#f9f9f9] p-4'>
+        <div className='mb-8 w-full max-w-lg rounded-lg border border-foreground bg-[#f9f9f9] p-4'>
           <div className='font-mono text-xs'>
             <div className='text-[#999]'>// Line 404</div>
             <div>
@@ -136,7 +136,7 @@ const IndexOutOfBounds: FC = () => {
         </div>
 
         {/* Fix action */}
-        <Link to='/' className='inline-flex items-center gap-2 rounded-lg bg-[#1a1a1a] px-6 py-3 font-mono text-sm text-white transition-all hover:bg-[#333]'>
+        <Link to='/' className='inline-flex items-center gap-2 rounded-lg bg-muted px-6 py-3 font-mono text-sm text-white transition-all hover:bg-[#333]'>
           <span className='text-[#22c55e]'>✓</span>
           境界を修正 → ホームへ戻る
         </Link>

@@ -49,7 +49,7 @@ const NotFound: FC = () => {
         elapsed={elapsed}
         progress={progress}
         mouseInfluence={mouseInfluence}
-        visible={isPhase('boot') || (isPhase('corruption') && progress < 0.3)}
+        visible={isPhase('boot')}
         onDebugPausedChange={setDebugPaused}
         onBootComplete={setBootComplete}
       />
