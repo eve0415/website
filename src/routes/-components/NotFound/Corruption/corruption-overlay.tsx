@@ -113,14 +113,14 @@ const CorruptionOverlay: FC<CorruptionOverlayProps> = ({ progress, mouseInfluenc
       {intensity > 0.5 && (
         <>
           <div
-            className='absolute top-0 left-0 h-20 w-40 bg-gradient-to-br from-cyan/20 to-transparent'
+            className='absolute top-0 left-0 h-20 w-40 bg-linear-to-br from-cyan/20 to-transparent'
             style={{
               clipPath: 'polygon(0 0, 100% 0, 70% 100%, 0 60%)',
               opacity: (intensity - 0.5) * 2,
             }}
           />
           <div
-            className='absolute right-0 bottom-0 h-32 w-48 bg-gradient-to-tl from-orange/20 to-transparent'
+            className='absolute right-0 bottom-0 h-32 w-48 bg-linear-to-tl from-orange/20 to-transparent'
             style={{
               clipPath: 'polygon(30% 0, 100% 40%, 100% 100%, 0 100%)',
               opacity: (intensity - 0.5) * 2,
