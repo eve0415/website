@@ -230,10 +230,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
                 <span className='tabular-nums'>{Math.round(currentProgress.progress * 100)}%</span>
               </div>
               <div className='h-1.5 overflow-hidden rounded-full bg-line/30'>
-                <div
-                  className='h-full rounded-full bg-linear-to-r from-cyan to-neon transition-all duration-100'
-                  style={{ width: `${currentProgress.progress * 100}%` }}
-                />
+                <div className='h-full rounded-full bg-linear-to-r from-cyan to-neon' style={{ width: `${currentProgress.progress * 100}%` }} />
               </div>
             </div>
           )}
