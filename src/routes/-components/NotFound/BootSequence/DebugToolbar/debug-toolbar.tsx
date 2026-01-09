@@ -9,6 +9,7 @@ interface DebugToolbarProps {
   onStepOver: () => void;
   onStepInto: () => void;
   onStepOut: () => void;
+  onStepBack: () => void;
   onStop: () => void;
 }
 
@@ -25,6 +26,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
   onStepOver,
   onStepInto,
   onStepOut,
+  onStepBack,
   onStop,
 }) => {
   return (
@@ -78,6 +80,19 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
         <StepOverIcon />
         <span className='hidden sm:inline'>Step Over</span>
         <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F10</kbd>
+      </button>
+
+      {/* Step Back button */}
+      <button
+        type='button'
+        onClick={onStepBack}
+        disabled={!isPaused || currentIndex === 0}
+        className='flex items-center gap-1 rounded px-2 py-1 text-orange-400 transition-colors hover:bg-orange-500/20 disabled:cursor-not-allowed disabled:opacity-50'
+        title='Step Back (Shift+F10)'
+      >
+        <StepBackIcon />
+        <span className='hidden sm:inline'>Step Back</span>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>⇧F10</kbd>
       </button>
 
       {/* Step Into button */}
@@ -147,6 +162,13 @@ const StepIntoIcon: FC = () => (
   <svg className='size-4' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'>
     <circle cx='8' cy='12' r='2.5' />
     <path d='M8 2v6M5 5l3 3 3-3' />
+  </svg>
+);
+
+const StepBackIcon: FC = () => (
+  <svg className='size-4' viewBox='0 0 16 16' fill='none' stroke='currentColor' strokeWidth='1.5'>
+    <circle cx='8' cy='12' r='2.5' />
+    <path d='M8 2v6M5 8l3-3 3 3' />
   </svg>
 );
 

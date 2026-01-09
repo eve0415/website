@@ -27,6 +27,7 @@ export interface UseDebugModeReturn {
   stepOver: (messageDepths: number[]) => void;
   stepInto: (totalMessages: number) => void;
   stepOut: (messageDepths: number[]) => void;
+  stepBack: () => void;
   stopDebug: () => void;
   // State updates
   setDebugIndex: (index: number) => void;
@@ -49,6 +50,7 @@ const DEFAULT_STATE: DebugState = {
  * - F5 or Ctrl+Shift+D: Toggle debug mode / Continue
  * - F6: Pause (when running)
  * - F10: Step Over (skip children at current depth)
+ * - Shift+F10: Step Back (go to previous message)
  * - F11: Step Into (next message) - Note: may trigger fullscreen on some browsers
  * - Shift+F11: Step Out (run until returning to shallower depth)
  * - Escape: Stop debugging
@@ -194,6 +196,19 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
     });
   }, []);
 
+  const stepBack = useCallback(() => {
+    setDebugState(prev => {
+      if (!prev.isEnabled || !prev.isPaused) return prev;
+
+      // Decrement debugIndex by 1, stay at 0 if already at start
+      const prevIndex = Math.max(0, prev.debugIndex - 1);
+      return {
+        ...prev,
+        debugIndex: prevIndex,
+      };
+    });
+  }, []);
+
   const stopDebug = useCallback(() => {
     setDebugState(prev => ({
       ...prev,
@@ -250,6 +265,14 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
         return;
       }
 
+      // Shift+F10 - Step Back (go to previous message)
+      // Must be checked before F10 (Step Over)
+      if (e.shiftKey && e.key === 'F10') {
+        e.preventDefault();
+        stepBack();
+        return;
+      }
+
       // F10 - Step Over
       if (e.key === 'F10') {
         e.preventDefault();
@@ -258,6 +281,7 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       }
 
       // Shift+F11 - Step Out (run until shallower depth)
+      // Must be checked before F11 (Step Into)
       if (e.shiftKey && e.key === 'F11') {
         e.preventDefault();
         stepOut(messageDepths);
@@ -265,9 +289,14 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       }
 
       // F11 - Step Into (note: may trigger fullscreen on some browsers)
+      // At last message, continue instead of stepping
       if (e.key === 'F11') {
         e.preventDefault();
-        stepInto(totalMessages);
+        if (debugState.debugIndex >= totalMessages - 1) {
+          stepContinue();
+        } else {
+          stepInto(totalMessages);
+        }
         return;
       }
 
@@ -281,7 +310,21 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [debugState.isEnabled, debugState.isPaused, enableDebugMode, stepContinue, pause, stepOver, stepInto, stepOut, stopDebug, messageDepths, totalMessages]);
+  }, [
+    debugState.isEnabled,
+    debugState.isPaused,
+    enableDebugMode,
+    stepContinue,
+    pause,
+    stepOver,
+    stepInto,
+    stepOut,
+    stepBack,
+    stopDebug,
+    messageDepths,
+    totalMessages,
+    debugState.debugIndex,
+  ]);
 
   return {
     debugState,
@@ -293,6 +336,7 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
     stepOver,
     stepInto,
     stepOut,
+    stepBack,
     stopDebug,
     setDebugIndex,
     setPaused,
