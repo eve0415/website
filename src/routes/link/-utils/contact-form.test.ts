@@ -8,6 +8,7 @@ vi.mock('@tanstack/react-start', () => ({
       handler: vi.fn(),
     })),
   })),
+  createServerOnlyFn: vi.fn(fn => fn),
 }));
 
 vi.mock('@tanstack/react-start/server', () => ({
