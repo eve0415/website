@@ -136,8 +136,18 @@ export const Interactive = meta.story({
 
 /**
  * Typing state - Shows typing animation in progress
+ * Requires animations to be enabled (disables reduced motion override)
  */
 export const Typing = meta.story({
+  decorators: [
+    Story => {
+      // Disable reduced motion to allow typing animation
+      if (typeof window !== 'undefined') {
+        window.__FORCE_REDUCED_MOTION__ = false;
+      }
+      return <Story />;
+    },
+  ],
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 

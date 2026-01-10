@@ -1,7 +1,7 @@
 import { expect, fn, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
-import { testAllViewports, withDisabledAnimations } from '#.storybook/viewports';
+import { testAllViewports } from '#.storybook/viewports';
 
 import CodeRadar from './code-radar';
 import { emptyContributions, highActivityContributions, sampleContributions, sparseContributions } from './code-radar.fixtures';
@@ -29,7 +29,6 @@ export const Static = meta.story({
   args: {
     contributionCalendar: sampleContributions,
   },
-  decorators: [withDisabledAnimations],
   play: async context => {
     const canvas = within(context.canvasElement);
     // Wait for radar to render with reduced motion (instant render)

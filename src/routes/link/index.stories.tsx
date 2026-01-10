@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
-import { testAllViewports, withDisabledAnimations } from '#.storybook/viewports';
+import { testAllViewports } from '#.storybook/viewports';
 
 import BlueskyIcon from './-components/icons/bluesky-icon';
 import DiscordIcon from './-components/icons/discord-icon';
@@ -184,7 +184,6 @@ const meta = preview.meta({
   tags: ['autodocs'],
   parameters: { layout: 'fullscreen' },
   decorators: [
-    withDisabledAnimations,
     Story => {
       const rootRoute = createRootRoute({
         component: Story,

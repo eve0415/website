@@ -26,4 +26,4 @@ src/generated/
 coverage/
 *storybook.log
 storybook-static/
-**/__screenshots__/
+.vitest-attachments/

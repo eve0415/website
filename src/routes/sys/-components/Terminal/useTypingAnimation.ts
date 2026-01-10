@@ -95,7 +95,9 @@ export const useTypingAnimation = (targetText: string, options: UseTypingAnimati
   const [state, dispatch] = useReducer(animationReducer, initialState);
 
   const onCompleteRef = useRef(onComplete);
-  const hasCalledCompleteRef = useRef(!shouldAnimate);
+  // Track whether onComplete has been called to prevent duplicates
+  // Must start as false so the effect can call onComplete when animation is skipped
+  const hasCalledCompleteRef = useRef(false);
 
   // Keep onComplete ref updated
   useEffect(() => {
@@ -143,6 +145,7 @@ export const useTypingAnimation = (targetText: string, options: UseTypingAnimati
 
       if (currentIndex >= targetText.length) {
         dispatch({ type: 'COMPLETE' });
+        hasCalledCompleteRef.current = true;
         onCompleteRef.current?.();
         return;
       }

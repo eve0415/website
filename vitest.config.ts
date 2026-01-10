@@ -71,6 +71,15 @@ export default defineConfig({
             headless: true,
             provider: playwright({}),
             instances: [{ browser: 'chromium' }, { browser: 'firefox' }, { browser: 'webkit' }],
+            expect: {
+              toMatchScreenshot: {
+                comparatorName: 'pixelmatch',
+                comparatorOptions: {
+                  allowedMismatchedPixelRatio: 0.001, // 0.1% threshold
+                  threshold: 0.1, // Color perception threshold
+                },
+              },
+            },
           },
           setupFiles: ['.storybook/vitest.setup.ts'],
           server: {

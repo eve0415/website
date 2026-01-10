@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
-import { testAllViewports, withDisabledAnimations } from '#.storybook/viewports';
+import { testAllViewports } from '#.storybook/viewports';
 
 import { hasErrors, validateContactForm } from '../../-utils/validation';
 
@@ -246,7 +246,6 @@ const meta = preview.meta({
   tags: ['autodocs'],
   parameters: { layout: 'centered' },
   decorators: [
-    withDisabledAnimations,
     Story => (
       <div className='w-100 bg-bg-primary p-8'>
         <Story />

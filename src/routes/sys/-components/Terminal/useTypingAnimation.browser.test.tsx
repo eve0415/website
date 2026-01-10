@@ -37,6 +37,9 @@ const TestComponent: FC<TestProps> = ({ text, minDelay, maxDelay, onComplete, en
 describe('useTypingAnimation', () => {
   beforeEach(() => {
     vi.useFakeTimers();
+    // Clear global reduced motion override set by vitest.setup.ts
+    // so tests can control behavior via matchMedia mocks
+    delete window.__FORCE_REDUCED_MOTION__;
   });
 
   afterEach(() => {
@@ -150,8 +153,9 @@ describe('useTypingAnimation', () => {
       await expect.element(page.getByTestId('is-typing')).toHaveTextContent('false');
       await expect.element(page.getByTestId('is-complete')).toHaveTextContent('true');
 
-      // onComplete should not be called when disabled from start
-      expect(onComplete).not.toHaveBeenCalled();
+      // onComplete should be called when animation is skipped
+      // This allows callers to know the typing is "complete" even when skipped
+      await expect.poll(() => onComplete.mock.calls.length).toBe(1);
     });
   });
 
@@ -173,9 +177,9 @@ describe('useTypingAnimation', () => {
       await expect.element(page.getByTestId('is-typing')).toHaveTextContent('false');
       await expect.element(page.getByTestId('is-complete')).toHaveTextContent('true');
 
-      // onComplete should not be called when animation is skipped from start
-      // This is consistent with enabled=false behavior
-      expect(onComplete).not.toHaveBeenCalled();
+      // onComplete should be called when animation is skipped
+      // This allows callers (like Terminal) to transition state correctly
+      await expect.poll(() => onComplete.mock.calls.length).toBe(1);
     });
 
     test('cursor is visible when reduced motion enabled', async () => {

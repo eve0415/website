@@ -4,7 +4,7 @@ import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } fr
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
-import { testAllViewports, withDisabledAnimations } from '#.storybook/viewports';
+import { testAllViewports } from '#.storybook/viewports';
 
 import Background from './-index/Background/background';
 import Logo from './-index/logo';
@@ -92,7 +92,6 @@ const meta = preview.meta({
     showKonami: { control: 'boolean' },
   },
   decorators: [
-    withDisabledAnimations,
     Story => {
       const rootRoute = createRootRoute({
         component: Story,

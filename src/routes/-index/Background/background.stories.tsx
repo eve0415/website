@@ -1,5 +1,5 @@
 import preview from '#.storybook/preview';
-import { testAllViewports, withDisabledAnimations } from '#.storybook/viewports';
+import { testAllViewports } from '#.storybook/viewports';
 
 import Background from './background';
 
@@ -24,7 +24,6 @@ const meta = preview.meta({
 export const Default = meta.story({});
 
 export const Static = meta.story({
-  decorators: [withDisabledAnimations],
   play: async context => {
     await testAllViewports(context);
   },
