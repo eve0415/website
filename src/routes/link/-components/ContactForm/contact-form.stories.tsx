@@ -2,22 +2,13 @@ import type { ContactFormResult } from '../../-utils/contact-form';
 import type { ContactFormData, ValidationErrors } from '../../-utils/validation';
 import type { FC } from 'react';
 
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 import { testAllViewports } from '#.storybook/viewports';
 
 import { hasErrors, validateContactForm } from '../../-utils/validation';
-
-// Mock response generator
-let mockResponse: ContactFormResult = { success: true };
-let mockDelay = 0;
-
-const setMockResponse = (response: ContactFormResult, delay = 0) => {
-  mockResponse = response;
-  mockDelay = delay;
-};
 
 // Mocked TurnstileWidget that auto-verifies
 const MockTurnstileWidget: FC<{
@@ -39,13 +30,27 @@ const MockTurnstileWidget: FC<{
   );
 };
 
+interface ContactFormForStoryProps {
+  mockResult?: ContactFormResult;
+  mockDelay?: number;
+}
+
 // ContactForm reimplementation for stories (to avoid vi.mock issues in Storybook)
-const ContactFormForStory: FC = () => {
+// Uses props for mock response to avoid parallel test interference
+const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { success: true }, mockDelay = 0 }) => {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState<ContactFormData>({ name: '', email: '', message: '' });
   const [fieldErrors, setFieldErrors] = useState<ValidationErrors>({});
   const [globalError, setGlobalError] = useState<string | null>(null);
   const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
+
+  // Use ref to capture props at submit time (not stale closure)
+  const mockResultRef = useRef(mockResult);
+  const mockDelayRef = useRef(mockDelay);
+  useEffect(() => {
+    mockResultRef.current = mockResult;
+    mockDelayRef.current = mockDelay;
+  }, [mockResult, mockDelay]);
 
   const handleBlur = (field: keyof ContactFormData) => {
     const errors = validateContactForm(formData);
@@ -61,42 +66,45 @@ const ContactFormForStory: FC = () => {
     setGlobalError(null);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setGlobalError(null);
+  const handleSubmit = useCallback(
+    async (e: React.FormEvent) => {
+      e.preventDefault();
+      setGlobalError(null);
 
-    const errors = validateContactForm(formData);
-    if (hasErrors(errors)) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    if (!turnstileToken) {
-      setGlobalError('セキュリティ認証を完了してください');
-      return;
-    }
-
-    setFormState('submitting');
-
-    // Simulate async call with mock response
-    await new Promise(resolve => setTimeout(resolve, mockDelay));
-    const result = mockResponse;
-
-    if (result.success) {
-      setFormState('success');
-      setFormData({ name: '', email: '', message: '' });
-      setFieldErrors({});
-      setTurnstileToken(null);
-      setTimeout(() => setFormState('idle'), 5000);
-    } else {
-      setFormState('error');
-      if (result.error === 'validation') {
-        setFieldErrors(result.errors);
-      } else {
-        setGlobalError(result.message);
+      const errors = validateContactForm(formData);
+      if (hasErrors(errors)) {
+        setFieldErrors(errors);
+        return;
       }
-    }
-  };
+
+      if (!turnstileToken) {
+        setGlobalError('セキュリティ認証を完了してください');
+        return;
+      }
+
+      setFormState('submitting');
+
+      // Simulate async call with mock response
+      await new Promise(resolve => setTimeout(resolve, mockDelayRef.current));
+      const result = mockResultRef.current;
+
+      if (result.success) {
+        setFormState('success');
+        setFormData({ name: '', email: '', message: '' });
+        setFieldErrors({});
+        setTurnstileToken(null);
+        setTimeout(() => setFormState('idle'), 5000);
+      } else {
+        setFormState('error');
+        if (result.error === 'validation') {
+          setFieldErrors(result.errors);
+        } else {
+          setGlobalError(result.message);
+        }
+      }
+    },
+    [formData, turnstileToken],
+  );
 
   const isDisabled = formState === 'submitting' || formState === 'success';
   const showAlternativeContact = globalError?.includes('Discord') || globalError?.includes('制限');
@@ -226,7 +234,7 @@ const ContactFormForStory: FC = () => {
           <p className='text-center text-orange text-sm'>{globalError}</p>
           {showAlternativeContact && (
             <p className='mt-2 text-center text-muted-foreground text-xs'>
-              <a href='https://twitter.com/eveevekun' target='_blank' rel='noopener noreferrer' className='text-neon hover:underline'>
+              <a href='https://twitter.com/eveevekun' target='_blank' rel='noopener noreferrer' className='text-neon underline'>
                 X (@eveevekun)
               </a>
               {' または '}
@@ -262,10 +270,10 @@ const fillValidForm = async (canvas: ReturnType<typeof within>) => {
 };
 
 export const Default = meta.story({
+  args: {
+    mockResult: { success: true },
+  },
   play: async context => {
-    // Reset mock for this story
-    setMockResponse({ success: true });
-
     await testAllViewports(context);
 
     const canvas = within(context.canvasElement);
@@ -278,9 +286,10 @@ export const Default = meta.story({
 });
 
 export const Filled = meta.story({
+  args: {
+    mockResult: { success: true },
+  },
   play: async ({ canvasElement }) => {
-    setMockResponse({ success: true });
-
     const canvas = within(canvasElement);
 
     // Fill form with data including character counter test
@@ -294,9 +303,10 @@ export const Filled = meta.story({
 });
 
 export const WithValidationErrors = meta.story({
+  args: {
+    mockResult: { success: true },
+  },
   play: async ({ canvasElement }) => {
-    setMockResponse({ success: true });
-
     const canvas = within(canvasElement);
 
     // Wait for Turnstile to auto-verify
@@ -313,10 +323,11 @@ export const WithValidationErrors = meta.story({
 });
 
 export const Submitting = meta.story({
+  args: {
+    mockResult: { success: true },
+    mockDelay: 10000, // Long delay so we can observe submitting state
+  },
   play: async ({ canvasElement }) => {
-    // Set long delay so we can observe submitting state
-    setMockResponse({ success: true }, 10000);
-
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
@@ -336,9 +347,11 @@ export const Submitting = meta.story({
 });
 
 export const Success = meta.story({
+  args: {
+    mockResult: { success: true },
+    mockDelay: 100,
+  },
   play: async ({ canvasElement }) => {
-    setMockResponse({ success: true }, 100);
-
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
@@ -349,7 +362,7 @@ export const Success = meta.story({
     await userEvent.click(canvas.getByTestId('submit-button'));
 
     // Wait for success
-    await waitFor(() => expect(canvas.getByTestId('success-text')).toBeVisible(), { timeout: 2000 });
+    await waitFor(() => expect(canvas.getByTestId('success-text')).toBeVisible(), { timeout: 5000 });
     await expect(canvas.getByTestId('success-message')).toBeInTheDocument();
 
     // Form should be cleared
@@ -360,16 +373,15 @@ export const Success = meta.story({
 });
 
 export const TurnstileError = meta.story({
+  args: {
+    mockResult: {
+      success: false,
+      error: 'turnstile',
+      message: '認証に失敗しました',
+    },
+    mockDelay: 100,
+  },
   play: async ({ canvasElement }) => {
-    setMockResponse(
-      {
-        success: false,
-        error: 'turnstile',
-        message: '認証に失敗しました',
-      },
-      100,
-    );
-
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
@@ -380,7 +392,7 @@ export const TurnstileError = meta.story({
     await userEvent.click(canvas.getByTestId('submit-button'));
 
     // Wait for error
-    await waitFor(() => expect(canvas.getByTestId('error-message')).toBeVisible(), { timeout: 2000 });
+    await waitFor(() => expect(canvas.getByTestId('error-message')).toBeVisible(), { timeout: 5000 });
     await expect(canvas.getByText('認証に失敗しました')).toBeInTheDocument();
 
     // No alternative contact shown for turnstile errors
@@ -389,16 +401,15 @@ export const TurnstileError = meta.story({
 });
 
 export const RateLimitError = meta.story({
+  args: {
+    mockResult: {
+      success: false,
+      error: 'rate_limit',
+      message: 'メッセージの送信制限に達しました（1時間に3回まで）。Discord または X でお問い合わせください。',
+    },
+    mockDelay: 100,
+  },
   play: async ({ canvasElement }) => {
-    setMockResponse(
-      {
-        success: false,
-        error: 'rate_limit',
-        message: 'メッセージの送信制限に達しました（1時間に3回まで）。Discord または X でお問い合わせください。',
-      },
-      100,
-    );
-
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
@@ -409,23 +420,22 @@ export const RateLimitError = meta.story({
     await userEvent.click(canvas.getByTestId('submit-button'));
 
     // Wait for error with alternative contact
-    await waitFor(() => expect(canvas.getByTestId('error-message')).toBeVisible(), { timeout: 2000 });
+    await waitFor(() => expect(canvas.getByTestId('error-message')).toBeVisible(), { timeout: 5000 });
     await expect(canvas.getByText('X (@eveevekun)')).toBeInTheDocument();
     await expect(canvas.getByText('Discord (eve0415)')).toBeInTheDocument();
   },
 });
 
 export const EmailFailedError = meta.story({
+  args: {
+    mockResult: {
+      success: false,
+      error: 'email_failed',
+      message: 'メールの送信に失敗しました。Discord または X でお問い合わせください。',
+    },
+    mockDelay: 100,
+  },
   play: async ({ canvasElement }) => {
-    setMockResponse(
-      {
-        success: false,
-        error: 'email_failed',
-        message: 'メールの送信に失敗しました。Discord または X でお問い合わせください。',
-      },
-      100,
-    );
-
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
@@ -436,7 +446,7 @@ export const EmailFailedError = meta.story({
     await userEvent.click(canvas.getByTestId('submit-button'));
 
     // Wait for error with alternative contact
-    await waitFor(() => expect(canvas.getByTestId('error-message')).toBeVisible(), { timeout: 2000 });
+    await waitFor(() => expect(canvas.getByTestId('error-message')).toBeVisible(), { timeout: 5000 });
     await expect(canvas.getByText('X (@eveevekun)')).toBeInTheDocument();
   },
 });

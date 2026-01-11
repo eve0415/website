@@ -3,6 +3,8 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 interface Particle {
   id: number;
   x: number;
@@ -36,15 +38,19 @@ const createInitialParticles = (): Particle[] =>
 
 // Abstract/artistic particle visualization for OutOfMemoryError
 const OutOfMemory: FC = () => {
-  const [memoryUsage, setMemoryUsage] = useState(0);
+  const reducedMotion = useReducedMotion();
+
   // Initialize particles via useMemo to avoid setState in effect
   const initialParticles = useMemo(() => createInitialParticles(), []);
+  const [memoryUsage, setMemoryUsage] = useState(() => (reducedMotion ? 100 : 0));
   const [particles, setParticles] = useState<Particle[]>(initialParticles);
-  const [overflow, setOverflow] = useState(false);
+  const [overflow, setOverflow] = useState(() => reducedMotion);
   const canvasRef = useRef<HTMLDivElement>(null);
 
   // Animate memory filling up
   useEffect(() => {
+    if (reducedMotion) return;
+
     const interval = setInterval(() => {
       setMemoryUsage(prev => {
         if (prev >= 100) {
@@ -80,10 +86,12 @@ const OutOfMemory: FC = () => {
     }, 80);
 
     return () => clearInterval(interval);
-  }, [memoryUsage]);
+  }, [memoryUsage, reducedMotion]);
 
   // Animate particles
   useEffect(() => {
+    if (reducedMotion) return;
+
     const interval = setInterval(() => {
       setParticles(prev =>
         prev.map(p => ({
@@ -95,7 +103,7 @@ const OutOfMemory: FC = () => {
     }, 50);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <div className='fixed inset-0 overflow-hidden bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'>
@@ -143,14 +151,14 @@ const OutOfMemory: FC = () => {
           >
             OUT OF MEMORY
           </div>
-          <div className='mt-2 font-mono text-sm text-white/50'>Heap allocation failed</div>
+          <div className='mt-2 font-mono text-sm text-white/80'>Heap allocation failed</div>
         </div>
 
         {/* Memory visualization */}
         <div className='mb-8 w-full max-w-md'>
           <div className='mb-2 flex justify-between font-mono text-xs'>
-            <span className='text-white/60'>HEAP MEMORY</span>
-            <span className={overflow ? 'text-[#ff6b6b]' : 'text-white/60'}>{memoryUsage.toFixed(0)}%</span>
+            <span className='text-white/80'>HEAP MEMORY</span>
+            <span className={overflow ? 'text-[#ff6b6b]' : 'text-white/80'}>{memoryUsage.toFixed(0)}%</span>
           </div>
 
           {/* Memory bar container */}
@@ -177,16 +185,16 @@ const OutOfMemory: FC = () => {
           {/* Memory stats */}
           <div className='mt-4 grid grid-cols-3 gap-4 font-mono text-xs'>
             <div className='text-center'>
-              <div className='text-white/40'>USED</div>
+              <div className='text-white/80'>USED</div>
               <div className='text-[#ff6b6b]'>{(memoryUsage * 2.048).toFixed(0)} MB</div>
             </div>
             <div className='text-center'>
-              <div className='text-white/40'>FREE</div>
+              <div className='text-white/80'>FREE</div>
               <div className='text-[#4ecdc4]'>{((100 - memoryUsage) * 2.048).toFixed(0)} MB</div>
             </div>
             <div className='text-center'>
-              <div className='text-white/40'>OBJECTS</div>
-              <div className='text-white/70'>{particles.length}</div>
+              <div className='text-white/80'>OBJECTS</div>
+              <div className='text-white/80'>{particles.length}</div>
             </div>
           </div>
         </div>

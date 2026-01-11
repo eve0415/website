@@ -12,10 +12,11 @@ const meta = preview.meta({
 });
 
 export const Default = meta.story({
+  args: { fixedTime: '00:00:00' },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    // Time format should be HH:MM:SS or --:--:--
-    const timeElement = canvas.getByText(/\d{2}:\d{2}:\d{2}|--:--:--/);
+    // Time format should be HH:MM:SS
+    const timeElement = canvas.getByText('00:00:00');
     await expect(timeElement).toBeInTheDocument();
     await expect(timeElement).toHaveClass('font-mono');
   },

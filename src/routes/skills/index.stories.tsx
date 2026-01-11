@@ -37,7 +37,7 @@ const SkillsPage: FC = () => {
             <div key={level} className='flex items-center gap-2'>
               <span className={`size-3 rounded-full ${colors[config.color]}`} />
               <span className='text-sm text-subtle-foreground'>{config.label}</span>
-              <span className='font-mono text-subtle-foreground text-xs opacity-50'>({config.progress}%)</span>
+              <span className='font-mono text-subtle-foreground text-xs'>({config.progress}%)</span>
             </div>
           );
         })}

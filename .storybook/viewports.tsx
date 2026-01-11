@@ -53,6 +53,30 @@ export function disableReducedMotion(): void {
 }
 
 /**
+ * Injects CSS to disable all animations for stable visual regression tests.
+ * This is called before each screenshot to ensure animations are disabled.
+ */
+function ensureReducedMotionCSS(): void {
+  if (typeof document === 'undefined') return;
+  if (document.getElementById('vitest-reduced-motion-override')) return;
+
+  const style = document.createElement('style');
+  style.id = 'vitest-reduced-motion-override';
+  style.textContent = `
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+    /* Hide cursor blink in input fields */
+    input, textarea {
+      caret-color: transparent !important;
+    }
+  `;
+  document.head.appendChild(style);
+}
+
+/**
  * Tests a story across all viewports with visual regression snapshots.
  * Snapshots stored at: __screenshots__/{browser}/{test-file}/{story-id}-{viewport}.png
  *
@@ -64,9 +88,17 @@ export async function testAllViewports(context: StoryContext): Promise<void> {
   const { page } = await import('vitest/browser');
   const { expect } = await import('vitest');
 
+  // Enable reduced motion for JavaScript animations (canvas, timers, etc.)
+  enableReducedMotion();
+
+  // Ensure reduced motion CSS is injected before taking screenshots
+  ensureReducedMotionCSS();
+
   for (const [viewport, { width, height }] of Object.entries(testViewports)) {
     await page.viewport(width, height);
-    await new Promise(resolve => setTimeout(resolve, 100));
+    // Wait for layout to stabilize after viewport change
+    // 1000ms needed for complex components with canvas/animations to fully stabilize
+    await new Promise(resolve => setTimeout(resolve, 1000));
 
     const locator = page.elementLocator(context.canvasElement);
     await expect.element(locator).toMatchScreenshot(`${context.id}-${viewport}`);

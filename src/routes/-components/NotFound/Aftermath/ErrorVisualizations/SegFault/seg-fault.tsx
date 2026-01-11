@@ -3,6 +3,8 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useMemo, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 interface MemorySegment {
   name: string;
   start: string;
@@ -19,8 +21,10 @@ const seededRandom = (seed: number): number => {
 
 // Glitchy/broken aesthetic visualization for Segmentation Fault
 const SegFault: FC = () => {
+  const reducedMotion = useReducedMotion();
+
   const [glitchPhase, setGlitchPhase] = useState(0);
-  const [showCoreDump, setShowCoreDump] = useState(false);
+  const [showCoreDump, setShowCoreDump] = useState(() => reducedMotion);
 
   const memorySegments = useMemo((): MemorySegment[] => {
     return [
@@ -45,6 +49,8 @@ const SegFault: FC = () => {
   }, []);
 
   useEffect(() => {
+    if (reducedMotion) return;
+
     // Cycle through glitch phases
     const interval = setInterval(() => {
       setGlitchPhase(prev => (prev + 1) % 10);
@@ -57,7 +63,7 @@ const SegFault: FC = () => {
       clearInterval(interval);
       clearTimeout(timer);
     };
-  }, []);
+  }, [reducedMotion]);
 
   return (
     <div className='fixed inset-0 overflow-hidden bg-[#0a0a0a]'>
@@ -133,7 +139,7 @@ const SegFault: FC = () => {
 
         {/* Memory segment visualization */}
         <div className='mb-8 w-full max-w-2xl'>
-          <div className='mb-2 font-mono text-[#666] text-xs'>MEMORY SEGMENTS</div>
+          <div className='mb-2 font-mono text-[#999] text-xs'>MEMORY SEGMENTS</div>
           <div className='overflow-hidden rounded border border-[#333] bg-[#111]'>
             {memorySegments.map(seg => (
               <div
@@ -145,11 +151,11 @@ const SegFault: FC = () => {
                   transform: seg.isViolated && glitchPhase % 2 === 0 ? 'translateX(3px)' : 'none',
                 }}
               >
-                <div className={`w-16 ${seg.isViolated ? 'text-[#ff0040]' : 'text-[#888]'}`}>{seg.name}</div>
-                <div className='flex-1 text-[#666]'>
+                <div className={`w-16 ${seg.isViolated ? 'text-[#ff0040]' : 'text-[#aaa]'}`}>{seg.name}</div>
+                <div className='flex-1 text-[#999]'>
                   {seg.start} - {seg.end}
                 </div>
-                <div className={`font-mono ${seg.isViolated ? 'text-[#ff0040]' : 'text-[#4a9'}`}>{seg.permissions}</div>
+                <div className={`font-mono ${seg.isViolated ? 'text-[#ff0040]' : 'text-[#5fb]'}`}>{seg.permissions}</div>
                 {seg.isViolated && <div className='ml-4 rounded bg-[#ff0040] px-2 py-0.5 text-white text-xs'>VIOLATION</div>}
               </div>
             ))}
@@ -160,7 +166,7 @@ const SegFault: FC = () => {
         {showCoreDump && (
           <div className='mb-8 max-w-2xl animate-pulse rounded border border-[#ff0040]/50 bg-[#ff0040]/10 p-4 text-center'>
             <div className='font-mono text-[#ff0040] text-sm'>Segmentation fault (core dumped)</div>
-            <div className='mt-1 font-mono text-[#666] text-xs'>Signal 11 (SIGSEGV) at address 0x00000000</div>
+            <div className='mt-1 font-mono text-[#999] text-xs'>Signal 11 (SIGSEGV) at address 0x00000000</div>
           </div>
         )}
 

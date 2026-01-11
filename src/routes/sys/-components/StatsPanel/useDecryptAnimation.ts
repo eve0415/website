@@ -1,5 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
 
 interface UseDecryptAnimationOptions {
@@ -10,15 +12,17 @@ interface UseDecryptAnimationOptions {
 
 export function useDecryptAnimation(finalValue: string | number, options: UseDecryptAnimationOptions = {}): string {
   const { duration = 1500, delay = 0, enabled = true } = options;
+  const reducedMotion = useReducedMotion();
+  const shouldAnimate = enabled && !reducedMotion;
   const finalStr = String(finalValue);
 
-  // Initialize with final value if not enabled, otherwise show encrypted
-  const [displayValue, setDisplayValue] = useState<string>(() => (enabled ? '[ENCRYPTED]' : finalStr));
+  // Initialize with final value if reduced motion or not enabled, otherwise show encrypted
+  const [displayValue, setDisplayValue] = useState<string>(() => (shouldAnimate ? '[ENCRYPTED]' : finalStr));
   const hasAnimatedRef = useRef(false);
 
   useEffect(() => {
-    // Skip if not enabled or already animated
-    if (!enabled || hasAnimatedRef.current) return;
+    // Skip if not animating or already animated
+    if (!shouldAnimate || hasAnimatedRef.current) return;
 
     const timeoutId = setTimeout(() => {
       hasAnimatedRef.current = true;
@@ -57,7 +61,7 @@ export function useDecryptAnimation(finalValue: string | number, options: UseDec
     }, delay);
 
     return () => clearTimeout(timeoutId);
-  }, [finalStr, duration, delay, enabled]);
+  }, [finalStr, duration, delay, shouldAnimate]);
 
   return displayValue;
 }

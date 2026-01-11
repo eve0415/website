@@ -4,6 +4,8 @@ import type { NavigationTimingData } from './useNavigationTiming';
 
 import { useEffect, useMemo, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 import {
   BASE_BOOT_DURATION,
   type BootContext,
@@ -82,6 +84,7 @@ const calculateScaleFactor = (timing: NavigationTimingData): number => {
  */
 export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimationState => {
   const { enabled, elapsed, timing, dom, connection, path, isDebugMode, isPaused, debugIndex, maxVisibleDepth } = options;
+  const reducedMotion = useReducedMotion();
 
   const [cursorVisible, setCursorVisible] = useState(true);
 
@@ -151,16 +154,16 @@ export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimatio
   // Overall progress (0-100)
   const overallProgress = Math.min(100, (adjustedElapsed / scaledDuration) * 100);
 
-  // Cursor blink effect
+  // Cursor blink effect (skip when reduced motion)
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || reducedMotion) return;
 
     const interval = setInterval(() => {
       setCursorVisible(prev => !prev);
     }, 530);
 
     return () => clearInterval(interval);
-  }, [enabled]);
+  }, [enabled, reducedMotion]);
 
   // Check if all messages have been displayed
   const allMessagesDisplayed = visibleMessages.length >= allMessages.length;

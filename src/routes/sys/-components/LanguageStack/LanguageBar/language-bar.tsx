@@ -3,6 +3,8 @@ import type { FC } from 'react';
 
 import { useEffect, useRef, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 export interface LanguageBarProps {
   language: LanguageStat;
   index: number;
@@ -23,13 +25,16 @@ const generateBar = (percentage: number, totalChars: number): string => {
 };
 
 const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = false, isLoading = false }) => {
+  const reducedMotion = useReducedMotion();
+  const shouldAnimate = animate && !reducedMotion;
+
   // Initialize state based on animate prop directly, avoiding setState in effect
-  const [progress, setProgress] = useState(() => (animate ? 0 : language.percentage));
-  const [visible, setVisible] = useState(() => !animate);
+  const [progress, setProgress] = useState(() => (shouldAnimate ? 0 : language.percentage));
+  const [visible, setVisible] = useState(() => !shouldAnimate);
   const hasAnimatedRef = useRef(false);
 
   useEffect(() => {
-    if (!animate || hasAnimatedRef.current) return;
+    if (!shouldAnimate || hasAnimatedRef.current) return;
     hasAnimatedRef.current = true;
 
     // Stagger appearance
@@ -64,7 +69,7 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
       clearTimeout(showTimeout);
       clearTimeout(animateTimeout);
     };
-  }, [animate, index, language.percentage]);
+  }, [shouldAnimate, index, language.percentage]);
 
   // Generate responsive bars
   const barMobile = isLoading ? '░'.repeat(10) : generateBar(progress, 10);
@@ -104,7 +109,7 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
           <span className='text-subtle-foreground sm:hidden'>│</span>
           {/* Growing dashed line */}
           <span className='ml-2 grow border-subtle-foreground/30 border-b sm:mx-1 sm:ml-0' />
-          <span className='text-subtle-foreground/50'>┤</span>
+          <span className='text-subtle-foreground'>┤</span>
           {/* Responsive bars - only bar length differs, decorative so OK to toggle visibility */}
           <span className='sm:hidden' style={{ color: barColor }}>
             {barMobile}
@@ -115,11 +120,11 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
           <span className='hidden lg:inline' style={{ color: barColor }}>
             {barDesktop}
           </span>
-          <span className='text-subtle-foreground/50'>│</span>
+          <span className='text-subtle-foreground'>│</span>
           <span className='ml-1 text-subtle-foreground tabular-nums'>
             {isLoading ? '---' : `${progress.toFixed(1)}%`}
             {/* Hex value - desktop only, supplementary info */}
-            {!isLoading && <span className='ml-1 hidden text-subtle-foreground/50 lg:inline'>[{hexValue}]</span>}
+            {!isLoading && <span className='ml-1 hidden text-subtle-foreground lg:inline'>[{hexValue}]</span>}
           </span>
         </div>
       </div>

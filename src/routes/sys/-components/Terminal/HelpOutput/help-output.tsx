@@ -35,7 +35,7 @@ const HelpOutput: FC = () => (
     </div>
 
     <div className='mt-4 mb-2 text-subtle-foreground'>EASTER EGGS</div>
-    <div className='pl-4 text-subtle-foreground/50'>Try some dangerous commands... if you dare.</div>
+    <div className='pl-4 text-subtle-foreground'>Try some dangerous commands... if you dare.</div>
   </div>
 );
 

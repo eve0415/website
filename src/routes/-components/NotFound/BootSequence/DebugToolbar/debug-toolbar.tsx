@@ -38,7 +38,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
       </div>
 
       {/* Progress indicator */}
-      <div className='mr-3 border-neutral-700 border-l pl-3 text-neutral-500'>
+      <div className='mr-3 border-neutral-700 border-l pl-3 text-neutral-400'>
         <span className='text-neutral-300 tabular-nums'>{currentIndex + 1}</span>
         <span className='mx-0.5'>/</span>
         <span className='tabular-nums'>{totalMessages}</span>
@@ -54,7 +54,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
         >
           <ContinueIcon />
           <span className='hidden sm:inline'>Continue</span>
-          <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F5</kbd>
+          <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-400'>F5</kbd>
         </button>
       ) : (
         <button
@@ -65,7 +65,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
         >
           <PauseIcon />
           <span className='hidden sm:inline'>Pause</span>
-          <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F6</kbd>
+          <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-400'>F6</kbd>
         </button>
       )}
 
@@ -79,7 +79,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
       >
         <StepOverIcon />
         <span className='hidden sm:inline'>Step Over</span>
-        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F10</kbd>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-400'>F10</kbd>
       </button>
 
       {/* Step Back button */}
@@ -92,7 +92,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
       >
         <StepBackIcon />
         <span className='hidden sm:inline'>Step Back</span>
-        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>⇧F10</kbd>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-400'>⇧F10</kbd>
       </button>
 
       {/* Step Into button */}
@@ -105,7 +105,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
       >
         <StepIntoIcon />
         <span className='hidden sm:inline'>Step Into</span>
-        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>F11</kbd>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-400'>F11</kbd>
       </button>
 
       {/* Step Out button */}
@@ -118,7 +118,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
       >
         <StepOutIcon />
         <span className='hidden sm:inline'>Step Out</span>
-        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>⇧F11</kbd>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-400'>⇧F11</kbd>
       </button>
 
       {/* Stop button */}
@@ -130,7 +130,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
       >
         <StopIcon />
         <span className='hidden sm:inline'>Stop</span>
-        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-500'>Esc</kbd>
+        <kbd className='ml-1 rounded bg-neutral-800 px-1 text-[10px] text-neutral-400'>Esc</kbd>
       </button>
     </div>
   );

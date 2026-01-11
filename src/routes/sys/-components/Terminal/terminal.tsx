@@ -249,7 +249,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
           </h1>
           {showContent && (
             <div className='font-mono text-subtle-foreground text-xs'>
-              <span className='opacity-70'>最終更新: </span>
+              <span>最終更新: </span>
               <span>{new Date(stats.cachedAt).toLocaleDateString('ja-JP')}</span>
             </div>
           )}
@@ -302,7 +302,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
 
       {/* Footer hint - only in prompt mode */}
       {state === 'prompt' && !isTouchDevice && (
-        <footer data-testid='terminal-footer' className='mt-8 flex items-center justify-center gap-2 text-subtle-foreground text-xs opacity-50'>
+        <footer data-testid='terminal-footer' className='mt-8 flex items-center justify-center gap-2 text-subtle-foreground text-xs'>
           <span className='font-mono'># type 'help' for commands</span>
         </footer>
       )}

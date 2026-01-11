@@ -5,6 +5,7 @@ import { expect, fn, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 import { testAllViewports } from '#.storybook/viewports';
+import { useReducedMotion } from '#hooks/useReducedMotion';
 
 // Mock the Turnstile component for stories - simulates Cloudflare Turnstile widget
 const MockTurnstile: FC<{
@@ -13,6 +14,7 @@ const MockTurnstile: FC<{
   onExpire: () => void;
 }> = ({ onVerify, onError, onExpire }) => {
   const [status, setStatus] = useState<'pending' | 'verified' | 'error' | 'expired'>('pending');
+  const prefersReducedMotion = useReducedMotion();
 
   const handleVerify = () => {
     setStatus('verified');
@@ -34,7 +36,7 @@ const MockTurnstile: FC<{
       <div className='flex items-center gap-2'>
         {status === 'pending' && (
           <>
-            <div className='size-5 animate-spin rounded-full border-2 border-neon border-t-transparent' />
+            <div className={`size-5 rounded-full border-2 border-neon border-t-transparent ${prefersReducedMotion ? '' : 'animate-spin'}`} />
             <span className='text-muted-foreground text-sm'>認証中...</span>
           </>
         )}

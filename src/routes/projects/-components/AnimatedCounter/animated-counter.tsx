@@ -2,6 +2,8 @@ import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 interface AnimatedCounterProps {
   end: number;
   duration?: number;
@@ -9,11 +11,15 @@ interface AnimatedCounterProps {
 }
 
 const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffix = '' }) => {
-  const [count, setCount] = useState(0);
-  const [hasAnimated, setHasAnimated] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const shouldSkipAnimation = reducedMotion || duration === 0;
+  const [count, setCount] = useState(shouldSkipAnimation ? end : 0);
+  const [hasAnimated, setHasAnimated] = useState(shouldSkipAnimation);
 
   useEffect(() => {
-    if (hasAnimated) return;
+    // Skip animation entirely if reduced motion or duration is 0
+    // Initial state already handles this case
+    if (shouldSkipAnimation || hasAnimated) return;
 
     const observer = new IntersectionObserver(
       entries => {
@@ -42,7 +48,7 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
     if (element) observer.observe(element);
 
     return () => observer.disconnect();
-  }, [end, duration, hasAnimated]);
+  }, [end, duration, hasAnimated, shouldSkipAnimation]);
 
   return (
     <span data-counter={end} className='font-mono text-3xl text-neon'>

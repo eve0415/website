@@ -3,6 +3,8 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 interface FileNode {
   name: string;
   type: 'folder' | 'file';
@@ -12,8 +14,11 @@ interface FileNode {
 
 // Blueprint/schematic style visualization for 404 / ENOENT
 const FileNotFound: FC = () => {
-  const [searchPath, setSearchPath] = useState<string[]>([]);
-  const [searchComplete, setSearchComplete] = useState(false);
+  const reducedMotion = useReducedMotion();
+  const paths = ['/', '/src', '/src/routes', '/src/routes/???'];
+
+  const [searchPath, setSearchPath] = useState<string[]>(() => (reducedMotion ? paths : []));
+  const [searchComplete, setSearchComplete] = useState(() => reducedMotion);
 
   const fileTree: FileNode = {
     name: '/',
@@ -43,7 +48,8 @@ const FileNotFound: FC = () => {
   const indexRef = useRef(0);
 
   useEffect(() => {
-    const paths = ['/', '/src', '/src/routes', '/src/routes/???'];
+    if (reducedMotion) return;
+
     indexRef.current = 0;
 
     const interval = setInterval(() => {
@@ -56,7 +62,7 @@ const FileNotFound: FC = () => {
       }
     }, 600);
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedMotion, paths.length, paths]);
 
   const renderTree = (node: FileNode, depth: number = 0, isLast: boolean = true): React.ReactNode => {
     const prefix = depth === 0 ? '' : '│  '.repeat(depth - 1) + (isLast ? '└─ ' : '├─ ');
@@ -64,7 +70,7 @@ const FileNotFound: FC = () => {
     return (
       <div key={node.name + depth}>
         <div className={`font-mono text-sm ${node.missing ? 'animate-pulse text-[#ff6b6b]' : node.type === 'folder' ? 'text-[#64b5f6]' : 'text-[#90a4ae]'}`}>
-          <span className='text-[#546e7a]'>{prefix}</span>
+          <span className='text-[#8fa9b5]'>{prefix}</span>
           <span>
             {node.type === 'folder' ? '📁 ' : '📄 '}
             {node.name}
@@ -99,7 +105,7 @@ const FileNotFound: FC = () => {
       <div className='flex h-full flex-col items-center justify-center p-6'>
         {/* Schematic header */}
         <div className='mb-8 text-center'>
-          <div className='font-mono text-[#64b5f6]/60 text-xs tracking-[0.3em]'>FILE SYSTEM SCHEMATIC</div>
+          <div className='font-mono text-[#64b5f6] text-xs tracking-[0.3em]'>FILE SYSTEM SCHEMATIC</div>
           <div className='mt-2 border-[#ff6b6b]/30 border-t border-b py-2'>
             <span className='font-mono text-2xl text-[#ff6b6b] tracking-wide'>ENOENT: FILE NOT FOUND</span>
           </div>
@@ -109,7 +115,7 @@ const FileNotFound: FC = () => {
         <div className='flex w-full max-w-4xl gap-8'>
           {/* File tree visualization */}
           <div className='flex-1 rounded border border-[#546e7a]/30 bg-[#1e272c] p-6'>
-            <div className='mb-4 flex items-center gap-2 text-[#64b5f6]/60 text-xs'>
+            <div className='mb-4 flex items-center gap-2 text-[#64b5f6] text-xs'>
               <span>DIRECTORY STRUCTURE</span>
               <div className='flex-1 border-[#546e7a]/30 border-t' />
             </div>
@@ -118,7 +124,7 @@ const FileNotFound: FC = () => {
 
           {/* Search path visualization */}
           <div className='w-72 rounded border border-[#546e7a]/30 bg-[#1e272c] p-6'>
-            <div className='mb-4 flex items-center gap-2 text-[#64b5f6]/60 text-xs'>
+            <div className='mb-4 flex items-center gap-2 text-[#64b5f6] text-xs'>
               <span>SEARCH PATH</span>
               <div className='flex-1 border-[#546e7a]/30 border-t' />
             </div>
@@ -146,9 +152,9 @@ const FileNotFound: FC = () => {
           <div className='font-mono text-[#90a4ae] text-xs'>
             <span className='text-[#ff6b6b]'>Error:</span> ENOENT: no such file or directory
             <br />
-            <span className='text-[#546e7a]'>Path:</span> {typeof window !== 'undefined' ? window.location.pathname : '/unknown'}
+            <span className='text-[#8fa9b5]'>Path:</span> {typeof window !== 'undefined' ? window.location.pathname : '/unknown'}
             <br />
-            <span className='text-[#546e7a]'>Code:</span> 404 NOT_FOUND
+            <span className='text-[#8fa9b5]'>Code:</span> 404 NOT_FOUND
           </div>
         </div>
 

@@ -22,37 +22,33 @@ const SkillsVisualization: FC<Props> = ({ animate = true }) => {
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    const resize = () => {
-      canvas.width = canvas.offsetWidth * window.devicePixelRatio;
-      canvas.height = canvas.offsetHeight * window.devicePixelRatio;
-      ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
-    };
-    resize();
-    window.addEventListener('resize', resize);
-
-    // Create nodes for each skill
-    const nodes = skills.map((skill, i) => {
-      const angle = (i / skills.length) * Math.PI * 2;
-      const radiusBase = Math.min(canvas.offsetWidth, canvas.offsetHeight) * 0.35;
-      const categoryOffset = skill.category === 'language' ? 0 : skill.category === 'infrastructure' ? 0.1 : 0.2;
-      const levelOffset = skill.level === 'expert' ? 0 : skill.level === 'proficient' ? 0.15 : 0.3;
-      const radius = radiusBase * (0.8 + categoryOffset - levelOffset);
-
-      return {
-        x: canvas.offsetWidth / 2 + Math.cos(angle) * radius,
-        y: canvas.offsetHeight / 2 + Math.sin(angle) * radius,
-        skill,
-      };
-    });
-
-    let animationId: number;
+    let animationId = 0;
     let time = 0;
 
     const draw = () => {
-      if (!ctx || !canvas) return;
-
+      const dpr = window.devicePixelRatio || 1;
       const width = canvas.offsetWidth;
       const height = canvas.offsetHeight;
+
+      // Size canvas for high DPI
+      canvas.width = width * dpr;
+      canvas.height = height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Create nodes for each skill based on current canvas size
+      const nodes = skills.map((skill, i) => {
+        const angle = (i / skills.length) * Math.PI * 2;
+        const radiusBase = Math.min(width, height) * 0.35;
+        const categoryOffset = skill.category === 'language' ? 0 : skill.category === 'infrastructure' ? 0.1 : 0.2;
+        const levelOffset = skill.level === 'expert' ? 0 : skill.level === 'proficient' ? 0.15 : 0.3;
+        const radius = radiusBase * (0.8 + categoryOffset - levelOffset);
+
+        return {
+          x: width / 2 + Math.cos(angle) * radius,
+          y: height / 2 + Math.sin(angle) * radius,
+          skill,
+        };
+      });
 
       ctx.clearRect(0, 0, width, height);
 
@@ -116,10 +112,18 @@ const SkillsVisualization: FC<Props> = ({ animate = true }) => {
       }
     };
 
+    // Initial draw
     draw();
 
+    // Use ResizeObserver to handle viewport changes
+    const resizeObserver = new ResizeObserver(() => {
+      cancelAnimationFrame(animationId);
+      draw();
+    });
+    resizeObserver.observe(canvas);
+
     return () => {
-      window.removeEventListener('resize', resize);
+      resizeObserver.disconnect();
       cancelAnimationFrame(animationId);
     };
   }, [shouldAnimate]);

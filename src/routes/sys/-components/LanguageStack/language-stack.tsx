@@ -23,7 +23,7 @@ const LanguageStack: FC<LanguageStackProps> = ({ languages, animate }) => {
         <span className='text-neon'>[</span>
         <span>STACK_ANALYSIS</span>
         <span className='text-neon'>]</span>
-        <span className='ml-2 opacity-50'>// リポジトリ言語分布</span>
+        <span className='ml-2'>// リポジトリ言語分布</span>
       </div>
 
       <div className='space-y-1 rounded border border-line bg-surface/50 p-4'>
@@ -34,7 +34,7 @@ const LanguageStack: FC<LanguageStackProps> = ({ languages, animate }) => {
         {/* Footer tree end */}
         <div className='font-mono text-sm text-subtle-foreground'>
           <span>└── </span>
-          <span className='opacity-50'>EOF</span>
+          <span>EOF</span>
         </div>
       </div>
     </div>

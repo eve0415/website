@@ -1,20 +1,16 @@
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+
+import { useReducedMotion } from '#hooks/useReducedMotion';
 
 // Retro terminal (green phosphor CRT) visualization for StackOverflowError
 const StackOverflow: FC = () => {
-  const [stackFrames, setStackFrames] = useState<string[]>([]);
-  const [overflowing, setOverflowing] = useState(false);
-  const [crashed, setCrashed] = useState(false);
+  const reducedMotion = useReducedMotion();
 
-  // Use ref to avoid React Compiler issues with captured variables
-  const currentIndexRef = useRef(0);
-
-  // Animate stack frames piling up
-  useEffect(() => {
-    const frames = [
+  const frames = useMemo(
+    () => [
       'recurse(n=404)',
       'recurse(n=403)',
       'recurse(n=402)',
@@ -33,7 +29,20 @@ const StackOverflow: FC = () => {
       'recurse(n=2)',
       'recurse(n=1)',
       'main()',
-    ];
+    ],
+    [],
+  );
+
+  const [stackFrames, setStackFrames] = useState<string[]>(() => (reducedMotion ? [...frames].reverse() : []));
+  const [overflowing, setOverflowing] = useState(() => reducedMotion);
+  const [crashed, setCrashed] = useState(() => reducedMotion);
+
+  // Use ref to avoid React Compiler issues with captured variables
+  const currentIndexRef = useRef(0);
+
+  // Animate stack frames piling up
+  useEffect(() => {
+    if (reducedMotion) return;
 
     currentIndexRef.current = 0;
     const interval = setInterval(() => {
@@ -48,7 +57,7 @@ const StackOverflow: FC = () => {
     }, 100);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedMotion, frames]);
 
   return (
     <div className='fixed inset-0 overflow-hidden bg-background'>

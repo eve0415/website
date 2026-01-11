@@ -9,6 +9,30 @@ if (typeof window !== 'undefined') {
   window.__FORCE_REDUCED_MOTION__ = true;
 }
 
+// Inject CSS to disable all animations for visual regression testing stability
+// This is necessary because CSS media queries are evaluated by the browser engine,
+// not through JavaScript's matchMedia, so mocking matchMedia doesn't affect them.
+const injectReducedMotionCSS = () => {
+  if (typeof document === 'undefined') return;
+  const existingStyle = document.getElementById('vitest-reduced-motion-override');
+  if (existingStyle) return;
+
+  const style = document.createElement('style');
+  style.id = 'vitest-reduced-motion-override';
+  style.textContent = `
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+    /* Hide cursor blink in input fields */
+    input, textarea {
+      caret-color: transparent !important;
+    }
+  `;
+  document.head.appendChild(style);
+};
+
 // Mock matchMedia to simulate desktop environment for all Storybook tests
 // This is needed because browser test environments may report touch device
 const mockDesktopMatchMedia = () => {
@@ -31,12 +55,14 @@ const mockDesktopMatchMedia = () => {
   };
 };
 
-// Apply mock immediately at module load
+// Apply mocks immediately at module load
 mockDesktopMatchMedia();
+injectReducedMotionCSS();
 
 // Also apply before each test to ensure it's in place after any resets
 beforeEach(() => {
   mockDesktopMatchMedia();
+  injectReducedMotionCSS();
   // Reset reduced motion to enabled for visual regression stability
   if (typeof window !== 'undefined') {
     window.__FORCE_REDUCED_MOTION__ = true;

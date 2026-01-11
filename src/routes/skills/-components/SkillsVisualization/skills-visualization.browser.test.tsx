@@ -56,30 +56,16 @@ describe('SkillsVisualization', () => {
     window.matchMedia = originalMatchMedia;
   });
 
-  test('responds to window resize', async () => {
-    const { container } = await render(<SkillsVisualization />);
-
-    const canvas = container.querySelector('canvas');
-    expect(canvas).not.toBeNull();
-
-    // Trigger resize
-    window.dispatchEvent(new Event('resize'));
-
-    expect(container.querySelector('canvas')).not.toBeNull();
-  });
-
   test('cleans up on unmount', async () => {
-    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
     const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
 
     const screen = await render(<SkillsVisualization animate={true} />);
 
     await screen.unmount();
 
-    expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
+    // ResizeObserver disconnect is called internally, cancelAnimationFrame for animation cleanup
     expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
-    removeEventListenerSpy.mockRestore();
     cancelAnimationFrameSpy.mockRestore();
   });
 

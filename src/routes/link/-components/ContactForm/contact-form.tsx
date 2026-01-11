@@ -227,7 +227,7 @@ const ContactForm: FC = () => {
           <p className='text-center text-orange text-sm'>{globalError}</p>
           {showAlternativeContact && (
             <p className='mt-2 text-center text-muted-foreground text-xs'>
-              <a href='https://twitter.com/eveevekun' target='_blank' rel='noopener noreferrer' className='text-neon hover:underline'>
+              <a href='https://twitter.com/eveevekun' target='_blank' rel='noopener noreferrer' className='text-neon underline'>
                 X (@eveevekun)
               </a>
               {' または '}

@@ -28,7 +28,7 @@ const SysPageWithStats: FC<{ stats: typeof sampleStats }> = ({ stats }) => {
           sys.diagnostic --user=eve0415
         </h1>
         <div className='font-mono text-subtle-foreground text-xs'>
-          <span className='opacity-70'>最終更新: </span>
+          <span>最終更新: </span>
           <span>{getRelativeTimeJapanese(stats.cachedAt)}</span>
         </div>
       </header>
@@ -52,7 +52,7 @@ const SysPageWithStats: FC<{ stats: typeof sampleStats }> = ({ stats }) => {
       </section>
 
       {/* Footer with keyboard hint */}
-      <footer className='mt-16 flex items-center justify-center gap-2 text-subtle-foreground text-xs opacity-50'>
+      <footer className='mt-16 flex items-center justify-center gap-2 text-subtle-foreground text-xs'>
         <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
         <span>で戻る</span>
       </footer>

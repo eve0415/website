@@ -2,6 +2,8 @@ import type { FC } from 'react';
 
 import { useMemo } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 import { getErrorColorClass } from '../useCorruptionEffects';
 
 interface CascadeError {
@@ -107,6 +109,8 @@ interface ErrorCascadeProps {
 }
 
 const ErrorCascade: FC<ErrorCascadeProps> = ({ progress, enabled }) => {
+  const prefersReducedMotion = useReducedMotion();
+
   // Calculate visible errors using exponential curve (slow start, rapid end)
   const visibleErrors = useMemo(() => {
     if (!enabled || progress < 0.05) return [];
@@ -132,11 +136,15 @@ const ErrorCascade: FC<ErrorCascadeProps> = ({ progress, enabled }) => {
           <div
             key={error.id}
             className='rounded border border-line/30 bg-background/80 p-3 backdrop-blur-sm'
-            style={{
-              animation: 'error-cascade-in 200ms ease-out forwards',
-              animationDelay: `${errorIndex * 30}ms`,
-              opacity: 0,
-            }}
+            style={
+              prefersReducedMotion
+                ? { opacity: 1 }
+                : {
+                    animation: 'error-cascade-in 200ms ease-out forwards',
+                    animationDelay: `${errorIndex * 30}ms`,
+                    opacity: 0,
+                  }
+            }
           >
             {/* Error message */}
             <div className={`font-semibold ${getErrorColorClass(error.language)}`}>{error.message}</div>
@@ -146,12 +154,16 @@ const ErrorCascade: FC<ErrorCascadeProps> = ({ progress, enabled }) => {
               {error.stack.map((line, lineIndex) => (
                 <div
                   key={lineIndex}
-                  className='text-muted-foreground/70'
-                  style={{
-                    animation: 'error-cascade-in 150ms ease-out forwards',
-                    animationDelay: `${errorIndex * 30 + (lineIndex + 1) * 20}ms`,
-                    opacity: 0,
-                  }}
+                  className='text-muted-foreground'
+                  style={
+                    prefersReducedMotion
+                      ? { opacity: 1 }
+                      : {
+                          animation: 'error-cascade-in 150ms ease-out forwards',
+                          animationDelay: `${errorIndex * 30 + (lineIndex + 1) * 20}ms`,
+                          opacity: 0,
+                        }
+                  }
                 >
                   {line}
                 </div>

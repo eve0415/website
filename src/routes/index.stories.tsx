@@ -59,7 +59,7 @@ const IndexPageForStory: FC<{ showKonami?: boolean }> = ({ showKonami = false })
               <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
             </a>
           </div>
-          <div className='mt-4 flex items-center gap-2 text-subtle-foreground text-xs opacity-50'>
+          <div className='mt-4 flex items-center gap-2 text-subtle-foreground text-xs'>
             <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>1</kbd>
             <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>2</kbd>
             <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>3</kbd>
@@ -71,13 +71,13 @@ const IndexPageForStory: FC<{ showKonami?: boolean }> = ({ showKonami = false })
 
       {/* Footer coordinates */}
       <div className='absolute bottom-6 left-6 text-subtle-foreground text-xs'>
-        <span className='opacity-50'>位置: </span>
+        <span>位置: </span>
         <span>35.6762°N, 139.6503°E</span>
       </div>
 
       {/* Version indicator */}
       <div className='absolute right-6 bottom-6 text-subtle-foreground text-xs'>
-        <span className='opacity-50'>v</span>
+        <span>v</span>
         <span>4.0.0</span>
       </div>
     </main>

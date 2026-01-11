@@ -67,14 +67,14 @@ const NullPointer: FC<NullPointerProps> = () => {
         {/* Error header */}
         <div className='mb-8 rounded border-[#f14c4c]/30 border-l-4 bg-[#f14c4c]/10 p-4'>
           <div className='font-mono text-[#f14c4c] text-sm'>Exception in thread "main" java.lang.NullPointerException</div>
-          <div className='mt-1 font-mono text-[#808080] text-xs'>at Main.processPage(Main.java:404)</div>
+          <div className='mt-1 font-mono text-[#a0a0a0] text-xs'>at Main.processPage(Main.java:404)</div>
         </div>
 
         {/* Memory visualization */}
         <div className='mb-6 rounded-lg border border-[#3c3c3c] bg-[#252526] p-6'>
           <div className='mb-4 flex items-center gap-2 text-[#4fc1ff] text-xs'>
             <span className='font-mono'>VARIABLES</span>
-            <span className='text-[#808080]'>- Memory Layout</span>
+            <span className='text-[#a0a0a0]'>- Memory Layout</span>
           </div>
 
           {/* Memory grid */}
@@ -114,11 +114,11 @@ const NullPointer: FC<NullPointerProps> = () => {
           <div className='mt-4 flex gap-6 text-[10px]'>
             <div className='flex items-center gap-2'>
               <div className='size-3 rounded border border-[#f14c4c] bg-[#f14c4c]/20' />
-              <span className='text-[#808080]'>Null Reference</span>
+              <span className='text-[#a0a0a0]'>Null Reference</span>
             </div>
             <div className='flex items-center gap-2'>
               <div className='size-3 rounded border border-[#4fc1ff] bg-[#4fc1ff]/10' />
-              <span className='text-[#808080]'>Valid Memory</span>
+              <span className='text-[#a0a0a0]'>Valid Memory</span>
             </div>
           </div>
         </div>
@@ -128,9 +128,9 @@ const NullPointer: FC<NullPointerProps> = () => {
           <div className='mb-3 text-[#4fc1ff] text-xs'>CALL STACK</div>
           <div className='space-y-1 font-mono text-[11px]'>
             <div className='text-[#f14c4c]'>→ processPage(null)</div>
-            <div className='text-[#808080] opacity-60'>{'  '}renderContent()</div>
-            <div className='text-[#808080] opacity-40'>{'    '}handleRequest()</div>
-            <div className='text-[#808080] opacity-20'>{'      '}main()</div>
+            <div className='text-[#a0a0a0]'>{'  '}renderContent()</div>
+            <div className='text-[#959595]'>{'    '}handleRequest()</div>
+            <div className='text-[#8a8a8a]'>{'      '}main()</div>
           </div>
         </div>
 

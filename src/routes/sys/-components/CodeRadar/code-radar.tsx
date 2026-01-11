@@ -57,7 +57,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
   }, [contributionCalendar]);
 
   const draw = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number, height: number, time: number) => {
+    (ctx: CanvasRenderingContext2D, width: number, height: number, time: number, skipAnimation: boolean) => {
       const centerX = width / 2;
       const centerY = height / 2;
       const maxRadius = Math.min(width, height) / 2 - 20;
@@ -148,8 +148,8 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         ctx.beginPath();
         ctx.arc(centerX, centerY, maxRadius * 0.8, scanAngle - 0.3, scanAngle);
         ctx.stroke();
-      } else {
-        // Idle: subtle pulse from center
+      } else if (!skipAnimation) {
+        // Idle: subtle pulse from center (skipped when reduced motion is enabled)
         const pulseRadius = innerRadius + Math.sin(time * 0.002) * 10;
         const pulseAlpha = 0.3 + Math.sin(time * 0.002) * 0.1;
 
@@ -200,13 +200,16 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
 
-    // Set canvas size for high DPI
-    const dpr = window.devicePixelRatio || 1;
-    const rect = canvas.getBoundingClientRect();
-    canvas.width = rect.width * dpr;
-    canvas.height = rect.height * dpr;
-    ctx.scale(dpr, dpr);
+    const setupCanvas = () => {
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return rect;
+    };
 
+    let rect = setupCanvas();
     let startTime: number | null = null;
     const bootDuration = 2000; // 2 seconds boot animation
 
@@ -226,14 +229,14 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         }
       }
 
-      draw(ctx, rect.width, rect.height, timestamp);
+      draw(ctx, rect.width, rect.height, timestamp, false);
       animationRef.current = requestAnimationFrame(animate);
     };
 
     // For reduced motion, just draw once
     if (prefersReducedMotion) {
       bootProgressRef.current = 1;
-      draw(ctx, rect.width, rect.height, 0);
+      draw(ctx, rect.width, rect.height, 0, true);
       if (!bootCompleteCalledRef.current) {
         bootCompleteCalledRef.current = true;
         onBootComplete?.();
@@ -242,8 +245,18 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
       animationRef.current = requestAnimationFrame(animate);
     }
 
+    // Handle viewport/resize changes
+    const resizeObserver = new ResizeObserver(() => {
+      rect = setupCanvas();
+      if (prefersReducedMotion) {
+        draw(ctx, rect.width, rect.height, 0, true);
+      }
+    });
+    resizeObserver.observe(canvas);
+
     return () => {
       cancelAnimationFrame(animationRef.current);
+      resizeObserver.disconnect();
     };
   }, [draw, bootPhase, prefersReducedMotion, onBootComplete]);
 
@@ -273,7 +286,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         <span className='text-neon'>[</span>
         <span>CODE_RADAR</span>
         <span className='text-neon'>]</span>
-        <span className='ml-2 text-subtle-foreground opacity-50'>// 52週間の活動</span>
+        <span className='ml-2 text-subtle-foreground'>// 52週間の活動</span>
       </div>
 
       <div className='relative aspect-square w-full rounded border border-line bg-surface/50'>

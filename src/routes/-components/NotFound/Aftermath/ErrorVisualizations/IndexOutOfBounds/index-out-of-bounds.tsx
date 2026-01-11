@@ -3,17 +3,21 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 // Hex values for array corruption effect (outside component to avoid re-creation)
 const CORRUPTION_VALUES = ['0xDEAD', '0xBEEF', '0xCAFE', '0xBABE', '0xFACE', '???', '0x????'] as const;
 
 // Memory debugger themed visualization for IndexOutOfBoundsException
 const IndexOutOfBounds: FC = () => {
-  const [cursorPosition, setCursorPosition] = useState(-1);
-  const [showError, setShowError] = useState(false);
-  const [corruptedText, setCorruptedText] = useState('???');
+  const reducedMotion = useReducedMotion();
 
   const arraySize = 10;
   const targetIndex = 404;
+
+  const [cursorPosition, setCursorPosition] = useState(() => (reducedMotion ? arraySize : -1));
+  const [showError, setShowError] = useState(() => reducedMotion);
+  const [corruptedText, setCorruptedText] = useState('0xDEAD');
 
   // Use ref to avoid React Compiler issues with captured variables
   const positionRef = useRef(-1);
@@ -23,6 +27,8 @@ const IndexOutOfBounds: FC = () => {
 
   // Animate cursor moving through array then past boundary
   useEffect(() => {
+    if (reducedMotion) return;
+
     positionRef.current = -1;
     const interval = setInterval(() => {
       positionRef.current += 1;
@@ -35,10 +41,11 @@ const IndexOutOfBounds: FC = () => {
     }, 200);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedMotion]);
 
-  // Corruption text cycling effect for error cell
+  // Corruption text cycling effect for error cell (skip when reduced motion)
   useEffect(() => {
+    if (reducedMotion) return;
     if (cursorPosition < arraySize) return;
 
     const corruptionInterval = setInterval(() => {
@@ -47,7 +54,7 @@ const IndexOutOfBounds: FC = () => {
     }, 150);
 
     return () => clearInterval(corruptionInterval);
-  }, [cursorPosition]);
+  }, [cursorPosition, reducedMotion]);
 
   return (
     <div className='fixed inset-0 overflow-hidden bg-background'>
@@ -138,9 +145,7 @@ const IndexOutOfBounds: FC = () => {
                   : undefined
               }
             >
-              <span
-                className={`text-xs sm:text-sm ${cursorPosition >= arraySize ? 'animate-[glitch_0.3s_infinite] text-red-400' : 'text-muted-foreground/50'}`}
-              >
+              <span className={`text-xs sm:text-sm ${cursorPosition >= arraySize ? 'animate-[glitch_0.3s_infinite] text-red-400' : 'text-muted-foreground'}`}>
                 {cursorPosition >= arraySize ? corruptedText : '???'}
               </span>
               <span className='text-[10px] text-muted-foreground sm:text-xs'>[{targetIndex}]</span>
@@ -176,7 +181,7 @@ const IndexOutOfBounds: FC = () => {
               <div className='flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white text-xs'>!</div>
               <div>
                 <div className='font-semibold text-red-400 text-sm'>java.lang.IndexOutOfBoundsException</div>
-                <div className='mt-1 font-mono text-red-300/80 text-xs'>
+                <div className='mt-1 font-mono text-red-300 text-xs'>
                   Index {targetIndex} out of bounds for length {arraySize}
                 </div>
               </div>
@@ -190,7 +195,7 @@ const IndexOutOfBounds: FC = () => {
             <div className='text-muted-foreground'>// Line 404</div>
             <div className='text-foreground'>
               <span className='text-cyan'>int</span> value = data[
-              <span className='text-red-400'>{targetIndex}</span>]; <span className='text-red-400/70'>// ← Exception here</span>
+              <span className='text-red-400'>{targetIndex}</span>]; <span className='text-red-400'>// ← Exception here</span>
             </div>
           </div>
         </div>

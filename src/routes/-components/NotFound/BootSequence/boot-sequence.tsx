@@ -244,13 +244,13 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
 
         {/* Status line below terminal */}
         <div className='mt-4 text-center text-muted-foreground text-xs'>
-          <span className='opacity-60'>STATUS: </span>
+          <span>STATUS: </span>
           <span className={getStatusColor()}>{getStatusLabel()}</span>
-          {debugState.isEnabled && debugState.isPaused && <span className='ml-2 text-amber-500/80'>(PAUSED)</span>}
+          {debugState.isEnabled && debugState.isPaused && <span className='ml-2 text-amber-500'>(PAUSED)</span>}
         </div>
 
         {/* Debug hint */}
-        {!debugState.isEnabled && <div className='mt-2 text-center text-[10px] text-muted-foreground/40'>Press F5 to enter debug mode</div>}
+        {!debugState.isEnabled && <div className='mt-2 text-center text-[10px] text-subtle-foreground'>Press F5 to enter debug mode</div>}
       </div>
     </div>
   );

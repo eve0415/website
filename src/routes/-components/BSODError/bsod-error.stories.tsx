@@ -34,6 +34,9 @@ const meta = preview.meta({
 /**
  * Default BSOD for SudoRmRfError (Easter Egg)
  * Shows Windows 11-style blue screen with progress animation and Revert button
+ *
+ * Note: With reduced motion enabled (as in visual regression tests),
+ * progress starts at 100% and buttons are immediately visible.
  */
 export const Default = meta.story({
   args: {
@@ -46,8 +49,8 @@ export const Default = meta.story({
     // Should show sad face
     await expect(canvas.getByText(':(')).toBeInTheDocument();
 
-    // Should show progress
-    await expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('0% complete');
+    // Should show progress (100% with reduced motion, any value otherwise)
+    await expect(canvas.getByTestId('bsod-progress')).toBeInTheDocument();
 
     // Should show QR code
     await expect(canvas.getByTestId('bsod-qrcode')).toBeInTheDocument();

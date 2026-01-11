@@ -2,6 +2,8 @@ import type { FC, ReactNode } from 'react';
 
 import { useEffect, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 export interface SocialLink {
   name: string;
   url: string;
@@ -18,13 +20,15 @@ interface SocialLinkCardProps {
 }
 
 const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
-  const [isVisible, setIsVisible] = useState(false);
+  const prefersReducedMotion = useReducedMotion();
+  const [isVisible, setIsVisible] = useState(prefersReducedMotion);
   const [isCopied, setIsCopied] = useState(false);
 
   useEffect(() => {
+    if (prefersReducedMotion) return; // Skip entrance animation when reduced motion is enabled
     const timer = setTimeout(() => setIsVisible(true), index * 100);
     return () => clearTimeout(timer);
-  }, [index]);
+  }, [index, prefersReducedMotion]);
 
   const handleCopy = async () => {
     try {

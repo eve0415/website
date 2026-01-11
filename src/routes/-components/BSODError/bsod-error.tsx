@@ -4,6 +4,7 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
 import { SudoRmRfError } from '#routes/sys/-components/Terminal/commands';
 
 import { QR_DESTINATIONS, REPO_LABEL, REPO_URL } from './destinations';
@@ -12,6 +13,7 @@ import QRCode from './qr-code';
 
 const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
   const isEasterEgg = error instanceof SudoRmRfError;
+  const reducedMotion = useReducedMotion();
 
   // Random selections (stable per render)
   const [qrDestination] = useState(() => {
@@ -20,12 +22,15 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
   });
   const [message] = useState(() => getRandomMessage(isEasterEgg));
 
-  // Progress animation
-  const [progress, setProgress] = useState(0);
+  // Progress animation - skip if reduced motion
+  const [progress, setProgress] = useState(() => (reducedMotion ? 100 : 0));
   const isComplete = progress >= 100;
 
   // Progress animation effect
   useEffect(() => {
+    // Skip animation if reduced motion preference is enabled
+    if (reducedMotion) return;
+
     const interval = setInterval(() => {
       setProgress(p => {
         if (p >= 100) {
@@ -36,7 +41,7 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
       });
     }, 200);
     return () => clearInterval(interval);
-  }, []);
+  }, [reducedMotion]);
 
   // Keypress listener (only when complete)
   useEffect(() => {
@@ -63,7 +68,7 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
         {/* Main message */}
         <div className='mb-6 max-w-2xl text-center'>
           <p className='mb-4 text-lg md:text-2xl'>{message.main}</p>
-          <p className='text-sm opacity-80 md:text-base'>{message.sub}</p>
+          <p className='text-sm md:text-base'>{message.sub}</p>
         </div>
 
         {/* Progress */}
@@ -77,15 +82,15 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
             <QRCode url={qrDestination.url} size={80} />
           </div>
           <div className='text-left text-sm'>
-            <p className='mb-2 opacity-80'>For more information about this issue and possible fixes, visit:</p>
-            <a href={REPO_URL} target='_blank' rel='noopener noreferrer' className='text-white/90 underline decoration-white/50 hover:decoration-white'>
+            <p className='mb-2'>For more information about this issue and possible fixes, visit:</p>
+            <a href={REPO_URL} target='_blank' rel='noopener noreferrer' className='text-white underline decoration-white/50 hover:decoration-white'>
               {REPO_LABEL}
             </a>
           </div>
         </div>
 
         {/* Stop code (real error message) */}
-        <div data-testid='bsod-stopcode' className='mt-8 max-w-xl font-mono text-xs opacity-60'>
+        <div data-testid='bsod-stopcode' className='mt-8 max-w-xl font-mono text-xs'>
           <p className='whitespace-pre-wrap'>Stop code: {error.message || 'UNKNOWN_ERROR'}</p>
         </div>
 

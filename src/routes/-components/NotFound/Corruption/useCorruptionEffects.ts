@@ -1,5 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 // Real programming error messages organized by stage
 // Stage 1: 404/Not Found errors (slow, readable)
 // Stage 2: Escalating errors (medium speed)
@@ -85,6 +87,7 @@ const getErrorForProgress = (progress: number): ErrorMessage | null => {
 
 export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): CorruptionState => {
   const { enabled, progress } = options;
+  const reducedMotion = useReducedMotion();
 
   const [glitchLines, setGlitchLines] = useState<GlitchLine[]>([]);
   const [scanlineOffset, setScanlineOffset] = useState(0);
@@ -122,7 +125,7 @@ export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): Corr
 
   // Generate glitch lines - only update via interval callback, not synchronously
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || reducedMotion) return;
 
     const generateLines = () => {
       const lineCount = Math.floor(intensity * 8) + 1;
@@ -147,14 +150,14 @@ export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): Corr
     const interval = setInterval(generateLines, Math.max(50, baseInterval));
 
     return () => clearInterval(interval);
-  }, [enabled, intensity]);
+  }, [enabled, intensity, reducedMotion]);
 
   // Return empty lines when disabled (derived, not via setState)
   const effectiveGlitchLines = enabled ? glitchLines : [];
 
   // Animate scanline
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || reducedMotion) return;
 
     const animate = () => {
       setScanlineOffset(prev => (prev + 2) % 100);
@@ -162,7 +165,7 @@ export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): Corr
 
     const interval = setInterval(animate, 50);
     return () => clearInterval(interval);
-  }, [enabled]);
+  }, [enabled, reducedMotion]);
 
   return {
     intensity,
