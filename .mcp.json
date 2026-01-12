@@ -5,10 +5,6 @@
       "command": "codex",
       "args": ["mcp-server"]
     },
-    "playwright": {
-      "command": "pnpx",
-      "args": ["@playwright/mcp", "--headless", "--save-session", "--browser", "chromium", "--isolated", "--no-sandbox"]
-    },
     "storybook": {
       "type": "http",
       "url": "http://localhost:6006/mcp"

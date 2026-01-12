@@ -13,9 +13,6 @@ dist/
 # AI
 .claude/settings.local.json
 
-# mcp
-.playwright-mcp/
-
 # env
 .env
 

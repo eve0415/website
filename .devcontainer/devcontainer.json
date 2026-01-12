@@ -156,11 +156,6 @@
             "type": "http",
             "url": "https://mcp.context7.com/mcp"
           },
-          "playwright": {
-            "type": "stdio",
-            "command": "pnpx",
-            "args": ["@playwright/mcp", "--headless", "--save-session", "--browser", "chromium", "--isolated", "--no-sandbox"]
-          },
           "github": {
             "type": "http",
             "url": "https://api.githubcopilot.com/mcp/"
