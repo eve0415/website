@@ -110,7 +110,13 @@ jobs:
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
-      pull-requests: write
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - unit
+          - browser
+          - storybook
 
     steps:
       - name: Checkout repository
@@ -129,6 +135,7 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Install Playwright Browsers
+        if: matrix.project == 'browser' || matrix.project == 'storybook'
         run: pnpm playwright install --with-deps
 
       - name: Generate .dev.vars
@@ -141,10 +148,75 @@ jobs:
         run: pnpm generate
 
       - name: Run tests
-        run: pnpm test --reporter=verbose --reporter=github-actions --coverage.reporter=json-summary --coverage.reporter=json
+        run: |
+          pnpm vitest run \
+            --project=${{ matrix.project }} \
+            --reporter=verbose \
+            --reporter=github-actions \
+            --coverage.reportsDirectory="./coverage/${{ matrix.project }}" \
+            --coverage.reporter=json \
+            --coverage.reporter=json-summary
 
       - name: Upload coverage artifact
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage-${{ matrix.project }}
+          path: coverage/${{ matrix.project }}/
+          retention-days: 1
+
+  coverage-merge:
+    name: Merge Coverage
+    runs-on: ubuntu-24.04-arm
+    needs: test
+    if: always() && !cancelled()
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v7
+        with:
+          pattern: coverage-*
+          path: coverage-parts/
+          merge-multiple: false
+
+      - name: Merge coverage reports
+        run: |
+          mkdir -p coverage .nyc_output
+          # Copy coverage-final.json files with unique names for nyc merge
+          i=1
+          for f in coverage-parts/*/coverage-final.json; do
+            if [ -f "$f" ]; then
+              cp "$f" ".nyc_output/coverage-$i.json"
+              i=$((i+1))
+            fi
+          done
+          # Merge all coverage files
+          pnpm nyc merge .nyc_output coverage/coverage-final.json
+          # Generate summary report
+          pnpm nyc report \
+            --reporter=json-summary \
+            --temp-dir=coverage \
+            --report-dir=coverage
+
+      - name: Upload merged coverage artifact
+        uses: actions/upload-artifact@v6
         with:
           name: coverage-${{ github.ref_name }}
           path: coverage/
