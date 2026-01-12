@@ -91,6 +91,10 @@ Extract all React components to separate files. Each file contains one component
 
 **Exception**: Route-bound components (passed to `createFileRoute`, `createRootRoute`, etc.) stay in route files.
 
+Route components must use the `const Name: FC = () => {}` pattern (named, typed arrow functions).
+
+**Extraction trigger**: If a route component grows complex enough to require tests or stories, extract it to a separate file. Testability determines extraction - 1 Storybook = 1 component file.
+
 **Pattern**: `ComponentName/component-name.tsx` (PascalCase folder, kebab-case file)
 
 - Tests: `ComponentName/component-name.test.tsx`
