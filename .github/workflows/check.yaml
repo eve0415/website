@@ -223,6 +223,7 @@ jobs:
           retention-days: 7
 
       - name: Download base coverage
+        id: download-base
         if: github.event_name == 'pull_request'
         uses: dawidd6/action-download-artifact@0bd50d53a6d7fb5cb921e607957e9cc12b4ce392
         with:
@@ -238,5 +239,5 @@ jobs:
         with:
           json-summary-path: coverage/coverage-summary.json
           json-final-path: coverage/coverage-final.json
-          json-summary-compare-path: coverage-base/coverage-summary.json
+          json-summary-compare-path: ${{ steps.download-base.outcome == 'success' && 'coverage-base/coverage-summary.json' || '' }}
           file-coverage-mode: changes
