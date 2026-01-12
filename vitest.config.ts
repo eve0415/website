@@ -25,7 +25,7 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' } })],
+        plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' } }), tailwindcss()],
         test: {
           name: 'unit',
           include: ['src/**/*.test.ts'],
