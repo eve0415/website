@@ -63,8 +63,9 @@ jobs:
       - name: Generate types
         run: pnpm generate
 
-      - name: Build website
-        run: pnpm oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously --report-unused-disable-directives --deny-warnings
+      - name: Run oxlint
+        run: |
+          pnpm oxlint --type-aware --type-check --report-unused-disable-directives --deny-warnings --format github
 
   format:
     name: Format Check
@@ -88,20 +89,28 @@ jobs:
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
 
-      - name: Build website
-        run: pnpm oxfmt --check
+      - name: Check formatting
+        id: format
+        run: |
+          set +e
+          output=$(pnpm oxfmt --check 2>&1)
+          exit_code=$?
+          echo "$output"
+
+          # Parse filenames and emit annotations for each file that needs formatting
+          echo "$output" | grep -E "^Would format:" | while read -r line; do
+            file=$(echo "$line" | sed 's/Would format: //')
+            echo "::error file=$file::File needs formatting. Run 'pnpm oxfmt' to fix."
+          done
+
+          exit $exit_code
 
   test:
     name: Test
     runs-on: ubuntu-24.04-arm
-    strategy:
-      matrix:
-        test-type:
-          - unit
-          - browser
-          - storybook
     permissions:
       contents: read
+      pull-requests: write
 
     steps:
       - name: Checkout repository
@@ -131,5 +140,31 @@ jobs:
       - name: Generate types
         run: pnpm generate
 
-      - name: Test
-        run: pnpm test --project=${{ matrix.test-type }}
+      - name: Run tests
+        run: pnpm test --reporter=verbose --reporter=github-actions --coverage.reporter=json-summary --coverage.reporter=json
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-${{ github.ref_name }}
+          path: coverage/
+          retention-days: 7
+
+      - name: Download base coverage
+        if: github.event_name == 'pull_request'
+        uses: dawidd6/action-download-artifact@0bd50d53a6d7fb5cb921e607957e9cc12b4ce392
+        with:
+          workflow: check.yaml
+          branch: ${{ github.base_ref }}
+          name: coverage-${{ github.base_ref }}
+          path: coverage-base/
+        continue-on-error: true
+
+      - name: Coverage Report
+        if: github.event_name == 'pull_request'
+        uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d
+        with:
+          json-summary-path: coverage/coverage-summary.json
+          json-final-path: coverage/coverage-final.json
+          json-summary-compare-path: coverage-base/coverage-summary.json
+          file-coverage-mode: changes
