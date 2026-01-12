@@ -27,7 +27,7 @@
     "@cloudflare/vite-plugin": "^1.20.1",
     "@cloudflare/vitest-pool-workers": "https://pkg.pr.new/@cloudflare/vitest-pool-workers@11632",
     "@fontsource-variable/jetbrains-mono": "^5.2.8",
-    "@graphql-codegen/cli": "^6.1.0",
+    "@graphql-codegen/cli": "^6.1.1",
     "@graphql-codegen/typescript": "^5.0.7",
     "@graphql-codegen/typescript-operations": "^5.0.7",
     "@marsidev/react-turnstile": "^1.4.1",
@@ -44,13 +44,13 @@
     "@tanstack/devtools-vite": "^0.4.1",
     "@tanstack/eslint-plugin-router": "^1.141.0",
     "@tanstack/react-devtools": "^0.9.2",
-    "@tanstack/react-router": "^1.146.2",
-    "@tanstack/react-router-devtools": "^1.146.2",
-    "@tanstack/react-start": "^1.146.3",
-    "@types/node": "^25.0.3",
+    "@tanstack/react-router": "^1.147.3",
+    "@tanstack/react-router-devtools": "^1.149.0",
+    "@tanstack/react-start": "^1.149.1",
+    "@types/node": "^25.0.6",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@typescript/native-preview": "7.0.0-dev.20260109.1",
+    "@typescript/native-preview": "7.0.0-dev.20260111.1",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/browser-playwright": "^4.0.16",
     "@vitest/coverage-istanbul": "^4.0.16",
@@ -77,14 +77,14 @@
   "devEngines": {
     "packageManager": {
       "name": "pnpm",
-      "version": "10.27.0"
+      "version": "10.28.0"
     },
     "runtime": {
       "name": "node",
       "version": "24.12.x"
     }
   },
-  "packageManager": "pnpm@10.27.0",
+  "packageManager": "pnpm@10.28.0",
   "pnpm": {
     "overrides": {
       "vite": "8.0.0-beta.7"
