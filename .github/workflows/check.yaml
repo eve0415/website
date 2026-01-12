@@ -218,7 +218,7 @@ jobs:
       - name: Upload merged coverage artifact
         uses: actions/upload-artifact@v6
         with:
-          name: coverage-${{ github.ref_name }}
+          name: ${{ github.event_name == 'pull_request' && format('coverage-pr-{0}', github.event.pull_request.number) || format('coverage-{0}', github.ref_name) }}
           path: coverage/
           retention-days: 7
 
