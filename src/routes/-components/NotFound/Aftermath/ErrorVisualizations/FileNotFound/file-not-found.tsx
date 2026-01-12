@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 
-import { Link } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { Link, useLocation } from '@tanstack/react-router';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
@@ -12,37 +12,71 @@ interface FileNode {
   missing?: boolean;
 }
 
+// Detect if a URL segment looks like a parameter (numeric ID or UUID)
+const isParameter = (segment: string): boolean => {
+  return /^[0-9a-f-]{36}$/i.test(segment) || /^\d+$/.test(segment);
+};
+
 // Blueprint/schematic style visualization for 404 / ENOENT
 const FileNotFound: FC = () => {
   const reducedMotion = useReducedMotion();
-  const paths = ['/', '/src', '/src/routes', '/src/routes/???'];
+  const { pathname } = useLocation();
+
+  // Derive search paths from actual URL
+  const paths = useMemo(() => {
+    const segments = pathname.split('/').filter(Boolean);
+    const result = ['/'];
+    let current = '';
+    for (const segment of segments) {
+      current += '/' + segment;
+      result.push(current);
+    }
+    return result;
+  }, [pathname]);
 
   const [searchPath, setSearchPath] = useState<string[]>(() => (reducedMotion ? paths : []));
   const [searchComplete, setSearchComplete] = useState(() => reducedMotion);
 
-  const fileTree: FileNode = {
-    name: '/',
-    type: 'folder',
-    children: [
-      {
-        name: 'src',
-        type: 'folder',
-        children: [
-          {
-            name: 'routes',
-            type: 'folder',
-            children: [
-              { name: 'index.tsx', type: 'file' },
-              { name: '???', type: 'file', missing: true },
-            ],
-          },
-          { name: 'components', type: 'folder' },
-        ],
-      },
-      { name: 'public', type: 'folder' },
-      { name: 'package.json', type: 'file' },
-    ],
-  };
+  // Reset state when pathname changes (React docs recommended pattern for syncing with props)
+  const [prevPathname, setPrevPathname] = useState(pathname);
+  if (pathname !== prevPathname) {
+    setPrevPathname(pathname);
+    setSearchPath(reducedMotion ? paths : []);
+    setSearchComplete(reducedMotion);
+  }
+
+  // Generate file tree dynamically from URL path
+  const fileTree = useMemo((): FileNode => {
+    const segments = pathname.split('/').filter(Boolean);
+    if (segments.length === 0) {
+      // Edge case: root path 404 (shouldn't happen but handle gracefully)
+      return { name: '/', type: 'folder', children: [{ name: '???', type: 'file', missing: true }] };
+    }
+
+    // Build nested tree structure from segments
+    const buildTree = (segs: string[], index: number): FileNode[] => {
+      if (index >= segs.length) return [];
+
+      const segment = segs[index]!;
+      const isLast = index === segs.length - 1;
+      const nodeType = isParameter(segment) ? 'file' : 'folder';
+
+      const node: FileNode = {
+        name: segment,
+        type: isLast ? 'file' : nodeType,
+        missing: isLast,
+        ...(isLast ? {} : { children: buildTree(segs, index + 1) }),
+      };
+
+      return [node];
+    };
+
+    return {
+      name: '/',
+      type: 'folder',
+      children: buildTree(segments, 0),
+    };
+  }, [pathname]);
 
   // Animate search path using ref to avoid React Compiler issues with captured variables
   const indexRef = useRef(0);
@@ -50,6 +84,7 @@ const FileNotFound: FC = () => {
   useEffect(() => {
     if (reducedMotion) return;
 
+    // Reset index for new animation cycle
     indexRef.current = 0;
 
     const interval = setInterval(() => {
@@ -62,7 +97,7 @@ const FileNotFound: FC = () => {
       }
     }, 600);
     return () => clearInterval(interval);
-  }, [reducedMotion, paths.length, paths]);
+  }, [reducedMotion, paths]);
 
   const renderTree = (node: FileNode, depth: number = 0, isLast: boolean = true): React.ReactNode => {
     const prefix = depth === 0 ? '' : '│  '.repeat(depth - 1) + (isLast ? '└─ ' : '├─ ');
@@ -152,7 +187,7 @@ const FileNotFound: FC = () => {
           <div className='font-mono text-[#90a4ae] text-xs'>
             <span className='text-[#ff6b6b]'>Error:</span> ENOENT: no such file or directory
             <br />
-            <span className='text-[#8fa9b5]'>Path:</span> {typeof window !== 'undefined' ? window.location.pathname : '/unknown'}
+            <span className='text-[#8fa9b5]'>Path:</span> {pathname}
             <br />
             <span className='text-[#8fa9b5]'>Code:</span> 404 NOT_FOUND
           </div>
