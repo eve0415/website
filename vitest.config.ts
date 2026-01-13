@@ -1,3 +1,5 @@
+import path from 'node:path';
+
 import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
 import storybookTest from '@storybook/addon-vitest/vitest-plugin';
 import tailwindcss from '@tailwindcss/vite';
@@ -41,14 +43,30 @@ export default defineConfig({
       },
       {
         extends: true,
+        resolve: {
+          dedupe: ['react', 'react-dom'],
+          alias: {
+            '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
+            '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
+          },
+        },
+        optimizeDeps: {
+          noDiscovery: true,
+          include: [
+            'react',
+            'react-dom',
+            'react/jsx-runtime',
+            'react/jsx-dev-runtime',
+            'react-dom/client',
+            '@tanstack/react-router',
+            '@tanstack/react-store',
+            'qrcode.react',
+          ],
+          exclude: ['@tanstack/react-start', '@tanstack/start-client-core', '@tanstack/start-server-core', '@tanstack/start-static-server-functions'],
+        },
         test: {
           name: 'browser',
           include: ['src/**/*.browser.test.{ts,tsx}'],
-          deps: {
-            optimizer: {
-              client: { enabled: false },
-            },
-          },
           browser: {
             enabled: true,
             headless: true,
