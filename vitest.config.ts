@@ -54,6 +54,7 @@ export default defineConfig({
             '@tanstack/react-start',
             'qrcode.react',
           ],
+          force: true,
         },
         test: {
           name: 'browser',
