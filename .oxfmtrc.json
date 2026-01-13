@@ -1,0 +1,13 @@
+{
+  "$schema": "./node_modules/oxfmt/configuration_schema.json",
+  "ignorePatterns": [".wrangler", "dist", "worker-configuration.d.ts", "src/routeTree.gen.ts", "src/generated/*"],
+  "arrowParens": "avoid",
+  "singleQuote": true,
+  "jsxSingleQuote": true,
+  "printWidth": 160,
+  "experimentalTailwindcss": {},
+  "experimentalSortImports": {
+    "order": "asc",
+    "groups": [["type"], ["builtin"], ["external"], ["subpath", "internal"], ["parent"], ["sibling"], ["index"]]
+  }
+}

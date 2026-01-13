@@ -1,0 +1,250 @@
+name: Check
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+jobs:
+  build:
+    name: Build Check
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build website
+        run: pnpm build
+
+  lint:
+    name: Lint Check
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Generate .dev.vars
+        run: |
+          echo GITHUB_PAT=test >> .dev.vars
+          echo MAIL_ADDRESS=test >> .dev.vars
+          echo TURNSTILE_SECRET_KEY=test >> .dev.vars
+          echo CLOUDFLARE_API_TOKEN=test >> .dev.vars
+          echo CLOUDFLARE_ZONE_ID=test >> .dev.vars
+
+      - name: Generate types
+        run: pnpm generate
+
+      - name: Run oxlint
+        run: |
+          pnpm oxlint --type-aware --type-check --report-unused-disable-directives --deny-warnings --format github
+
+  format:
+    name: Format Check
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Check formatting
+        run: |
+          set +e
+          output=$(pnpm oxfmt --check 2>&1)
+          exit_code=$?
+          echo "$output"
+
+          # Parse filenames and emit annotations for each file that needs formatting
+          echo "$output" | grep -E "^Would format:" | while read -r line; do
+            file=$(echo "$line" | sed 's/Would format: //')
+            echo "::error file=$file::File needs formatting. Run 'pnpm oxfmt' to fix."
+          done
+
+          exit $exit_code
+
+  test:
+    name: Test
+    runs-on: ubuntu-24.04-arm
+    permissions:
+      contents: read
+    strategy:
+      fail-fast: false
+      matrix:
+        project:
+          - unit
+          - browser
+          - storybook
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Install Playwright Browsers
+        if: matrix.project == 'browser' || matrix.project == 'storybook'
+        run: pnpm playwright install --with-deps
+
+      - name: Generate .dev.vars
+        run: |
+          echo GITHUB_PAT=test >> .dev.vars
+          echo MAIL_ADDRESS=test >> .dev.vars
+          echo TURNSTILE_SECRET_KEY=test >> .dev.vars
+          echo CLOUDFLARE_API_TOKEN=test >> .dev.vars
+          echo CLOUDFLARE_ZONE_ID=test >> .dev.vars
+
+      - name: Generate types
+        run: pnpm generate
+
+      - name: Build website
+        if: matrix.project == 'unit'
+        run: pnpm build
+
+      - name: Run tests
+        run: |
+          pnpm vitest run \
+            --project=${{ matrix.project }} \
+            --reporter=verbose \
+            --reporter=github-actions \
+            --coverage.reportsDirectory="./coverage/${{ matrix.project }}" \
+            --coverage.reporter=json \
+            --coverage.reporter=json-summary
+
+      - name: Upload coverage artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: coverage-${{ matrix.project }}
+          path: coverage/${{ matrix.project }}/
+          retention-days: 1
+
+  coverage-merge:
+    name: Merge Coverage
+    runs-on: ubuntu-24.04-arm
+    needs: test
+    if: always() && !cancelled()
+    permissions:
+      contents: read
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Set up pnpm
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Download all coverage artifacts
+        uses: actions/download-artifact@v7
+        with:
+          pattern: coverage-*
+          path: coverage-parts/
+          merge-multiple: false
+
+      - name: Merge coverage reports
+        run: |
+          mkdir -p coverage .nyc_output
+          # Copy coverage-final.json files with unique names for nyc merge
+          i=1
+          for f in coverage-parts/*/coverage-final.json; do
+            if [ -f "$f" ]; then
+              cp "$f" ".nyc_output/coverage-$i.json"
+              i=$((i+1))
+            fi
+          done
+          # Merge all coverage files
+          pnpm nyc merge .nyc_output coverage/coverage-final.json
+          # Generate summary report
+          pnpm nyc report \
+            --reporter=json-summary \
+            --temp-dir=coverage \
+            --report-dir=coverage
+
+      - name: Upload merged coverage artifact
+        uses: actions/upload-artifact@v6
+        with:
+          name: ${{ github.event_name == 'pull_request' && format('coverage-pr-{0}', github.event.pull_request.number) || format('coverage-{0}', github.ref_name) }}
+          path: coverage/
+          retention-days: 7
+
+      - name: Download base coverage
+        id: download-base
+        if: github.event_name == 'pull_request'
+        uses: dawidd6/action-download-artifact@0bd50d53a6d7fb5cb921e607957e9cc12b4ce392
+        with:
+          workflow: check.yaml
+          branch: ${{ github.base_ref }}
+          name: coverage-${{ github.base_ref }}
+          path: coverage-base/
+        continue-on-error: true
+
+      - name: Coverage Report
+        if: github.event_name == 'pull_request'
+        uses: davelosert/vitest-coverage-report-action@5b6122e3a819a3be7b27fc961b7faafb3bf00e4d
+        with:
+          json-summary-path: coverage/coverage-summary.json
+          json-final-path: coverage/coverage-final.json
+          json-summary-compare-path: ${{ steps.download-base.outcome == 'success' && 'coverage-base/coverage-summary.json' || '' }}
+          file-coverage-mode: changes

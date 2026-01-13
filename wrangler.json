@@ -1,0 +1,46 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "website",
+  "compatibility_date": "2026-01-07",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "preview_urls": true,
+  "upload_source_maps": true,
+  "placement": { "mode": "smart" },
+
+  "routes": [
+    {
+      "pattern": "eve0415.net",
+      "custom_domain": true
+    }
+  ],
+
+  "main": "./src/server.ts",
+  "assets": { "directory": "./dist/client" },
+
+  "observability": {
+    "enabled": true,
+    "traces": { "enabled": true }
+  },
+
+  "triggers": {
+    "crons": ["0 * * * *"]
+  },
+
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "7c81378ba627479abce566995492eda0"
+    },
+    {
+      "binding": "CONTACT_RATE_LIMIT",
+      "id": "fa789c815279403293672ad135db0a3f"
+    }
+  ],
+
+  "send_email": [
+    {
+      "name": "CONTACT_EMAIL"
+    }
+  ]
+}

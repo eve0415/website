@@ -1,51 +1,94 @@
 {
-  "name": "website",
-  "packageManager": "yarn@4.2.2",
-  "engines": {
-    "node": ">=20.13.0"
+  "type": "module",
+  "imports": {
+    "#*": [
+      "./src/*",
+      "./src/*.ts",
+      "./src/*.tsx"
+    ],
+    "#.storybook/*": [
+      "./.storybook/*",
+      "./.storybook/*.ts",
+      "./.storybook/*.tsx"
+    ]
   },
-  "private": true,
   "scripts": {
-    "panda": "turbo panda:turbo",
-    "panda:turbo": "panda codegen",
-    "dev": "turbo dev:turbo",
-    "dev:turbo": "next dev",
-    "build": "turbo build:turbo",
-    "build:turbo": "next build",
-    "start": "next start",
-    "lint": "turbo lint:fix",
-    "lint:fix": "next lint --fix . & prettier --write . --cache",
-    "lint:ci": "next lint . && prettier --check . --cache",
-    "sdk": "yarn dlx @yarnpkg/sdks"
+    "dev": "vite dev --host",
+    "build": "vite build",
+    "generate": "wrangler types && graphql-codegen",
+    "lint": "oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously --report-unused-disable-directives && oxfmt",
+    "test": "vitest run --typecheck",
+    "test:update": "vitest run --typecheck --update",
+    "storybook": "(find src -type d -name '__screenshots__' -exec rm -rf {} + 2>/dev/null || true) && storybook dev --port 6006"
   },
   "devDependencies": {
-    "@cloudflare/workers-types": "^4.20240502.0",
-    "@pandacss/dev": "^0.39.1",
-    "@types/github-script": "github:actions/github-script",
-    "@types/node": "^20.12.11",
-    "@types/react": "^18.3.1",
-    "@types/react-dom": "^18.3.0",
-    "@typescript-eslint/eslint-plugin": "^7.8.0",
-    "@typescript-eslint/parser": "^7.8.0",
-    "@yarnpkg/sdks": "^3.1.2",
-    "esbuild": "^0.21.1",
-    "eslint": "^8",
-    "eslint-config-next": "^14.2.3",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-import-resolver-typescript": "^3.6.1",
-    "eslint-plugin-import": "^2.29.1",
-    "gzip-size": "^7.0.0",
-    "million": "^3.0.6",
-    "next": "^14.2.3",
-    "prettier": "^3.2.5",
-    "pretty-bytes": "^6.1.1",
-    "react": "^18.3.1",
-    "react-dom": "^18.3.1",
-    "react-icons": "^5.2.1",
-    "react-textarea-autosize": "^8.5.3",
-    "rimraf": "^5.0.5",
-    "turbo": "^1.13.3",
-    "typescript": "^5.4.5",
-    "wrangler": "^3.55.0"
+    "@browser-echo/vite": "^1.1.0",
+    "@cloudflare/vite-plugin": "^1.20.1",
+    "@cloudflare/vitest-pool-workers": "https://pkg.pr.new/@cloudflare/vitest-pool-workers@11632",
+    "@fontsource-variable/jetbrains-mono": "^5.2.8",
+    "@graphql-codegen/cli": "^6.1.1",
+    "@graphql-codegen/typescript": "^5.0.7",
+    "@graphql-codegen/typescript-operations": "^5.0.7",
+    "@marsidev/react-turnstile": "^1.4.1",
+    "@octokit/core": "^7.0.6",
+    "@octokit/graphql-schema": "^15.26.1",
+    "@octokit/plugin-retry": "^8.0.3",
+    "@octokit/plugin-throttling": "^11.0.3",
+    "@storybook/addon-a11y": "^10.1.11",
+    "@storybook/addon-docs": "^10.1.11",
+    "@storybook/addon-mcp": "^0.1.8",
+    "@storybook/addon-vitest": "^10.1.11",
+    "@storybook/react-vite": "^10.1.11",
+    "@tailwindcss/vite": "^4.1.18",
+    "@tanstack/devtools-vite": "^0.4.1",
+    "@tanstack/eslint-plugin-router": "^1.141.0",
+    "@tanstack/react-devtools": "^0.9.2",
+    "@tanstack/react-router": "^1.147.3",
+    "@tanstack/react-router-devtools": "^1.149.0",
+    "@tanstack/react-start": "^1.149.2",
+    "@types/node": "^25.0.7",
+    "@types/react": "^19.2.7",
+    "@types/react-dom": "^19.2.3",
+    "@typescript/native-preview": "7.0.0-dev.20260112.1",
+    "@vitejs/plugin-react": "^5.1.2",
+    "@vitest/browser-playwright": "^4.0.17",
+    "@vitest/coverage-istanbul": "^4.0.17",
+    "babel-plugin-react-compiler": "^1.0.0",
+    "cloudflare": "^5.2.0",
+    "eslint-plugin-react-hooks": "^7.0.1",
+    "eslint-plugin-storybook": "^10.1.11",
+    "mimetext": "^3.0.27",
+    "msw": "^2.12.7",
+    "nyc": "^17.1.0",
+    "oxfmt": "^0.24.0",
+    "oxlint": "^1.39.0",
+    "oxlint-tsgolint": "^0.11.0",
+    "playwright": "^1.57.0",
+    "qrcode.react": "^4.2.0",
+    "react": "^19.2.3",
+    "react-dom": "^19.2.3",
+    "storybook": "^10.1.11",
+    "tailwindcss": "^4.1.18",
+    "vite": "8.0.0-beta.7",
+    "vite-plugin-devtools-json": "^1.0.0",
+    "vitest": "^4.0.17",
+    "vitest-browser-react": "^2.0.2",
+    "wrangler": "^4.58.0"
+  },
+  "devEngines": {
+    "packageManager": {
+      "name": "pnpm",
+      "version": "10.28.0"
+    },
+    "runtime": {
+      "name": "node",
+      "version": "24.12.x"
+    }
+  },
+  "packageManager": "pnpm@10.28.0",
+  "pnpm": {
+    "overrides": {
+      "vite": "8.0.0-beta.7"
+    }
   }
 }

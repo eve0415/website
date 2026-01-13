@@ -1,0 +1,10 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["./worker-configuration.d.ts", "vite/client"]
+  },
+  "include": ["src/**/*"],
+  "exclude": ["src/**/*.stories.tsx", "src/**/*.test.tsx", "src/**/*.test.ts", "src/**/*.browser.test.tsx", "src/**/*.browser.test.ts"]
+}

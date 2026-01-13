@@ -1,0 +1,43 @@
+query GetGitHubStats($cursor: String) {
+  viewer {
+    login
+    publicRepos: repositories(privacy: PUBLIC) {
+      totalCount
+    }
+    privateRepos: repositories(privacy: PRIVATE) {
+      totalCount
+    }
+    followers {
+      totalCount
+    }
+    following {
+      totalCount
+    }
+    repositories(first: 100, ownerAffiliations: OWNER, orderBy: { field: PUSHED_AT, direction: DESC }, after: $cursor) {
+      totalCount
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+      nodes {
+        name
+        isFork
+        diskUsage
+      }
+    }
+    contributionsCollection {
+      totalCommitContributions
+      totalPullRequestContributions
+      totalIssueContributions
+      contributionCalendar {
+        weeks {
+          contributionDays {
+            date
+            contributionCount
+            contributionLevel
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,9 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "composite": true,
+    "lib": ["ESNext", "DOM", "DOM.Iterable"],
+    "types": ["./worker-configuration.d.ts", "vite/client", "vitest/config", "@vitest/browser-playwright", "@cloudflare/vitest-pool-workers/types"]
+  },
+  "include": [".storybook/*", "src/**/*"]
+}

@@ -1,0 +1,30 @@
+import preview from '#.storybook/preview';
+import { testAllViewports } from '#.storybook/viewports';
+
+import SkillsVisualization from './skills-visualization';
+
+const meta = preview.meta({
+  component: SkillsVisualization,
+  tags: ['autodocs'],
+  parameters: {
+    layout: 'fullscreen',
+  },
+  decorators: [
+    Story => (
+      <div className='bg-bg-primary flex h-screen w-full items-center justify-center p-8'>
+        <div className='w-full max-w-2xl'>
+          <Story />
+        </div>
+      </div>
+    ),
+  ],
+});
+
+export const Default = meta.story({});
+
+export const Static = meta.story({
+  args: { animate: false },
+  play: async context => {
+    await testAllViewports(context);
+  },
+});
