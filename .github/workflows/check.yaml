@@ -151,6 +151,10 @@ jobs:
       - name: Generate types
         run: pnpm generate
 
+      - name: Build website
+        if: matrix.project == 'unit'
+        run: pnpm build
+
       - name: Run tests
         run: |
           pnpm vitest run \
