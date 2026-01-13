@@ -16,16 +16,29 @@ const MockTurnstileWidget: FC<{
   onError: () => void;
   onExpire: () => void;
 }> = ({ onVerify }) => {
+  const [verified, setVerified] = useState(false);
+
   useEffect(() => {
     // Auto-verify after short delay
-    const timer = setTimeout(() => onVerify('mock-token'), 50);
+    const timer = setTimeout(() => {
+      setVerified(true);
+      onVerify('mock-token');
+    }, 50);
     return () => clearTimeout(timer);
   }, [onVerify]);
 
   return (
     <div data-testid='turnstile-mock' className='border-line bg-surface flex h-16.25 items-center gap-2 rounded-lg border p-3'>
-      <span className='text-neon'>✓</span>
-      <span className='text-neon text-sm'>認証完了</span>
+      {verified ? (
+        <>
+          <span className='text-neon'>✓</span>
+          <span className='text-neon text-sm' data-testid='turnstile-verified'>
+            認証完了
+          </span>
+        </>
+      ) : (
+        <span className='text-muted-foreground text-sm'>認証中...</span>
+      )}
     </div>
   );
 };
@@ -310,7 +323,7 @@ export const WithValidationErrors = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for Turnstile to auto-verify
-    await waitFor(() => expect(canvas.getByTestId('turnstile-mock')).toBeInTheDocument(), { timeout: 500 });
+    await waitFor(() => expect(canvas.getByTestId('turnstile-verified')).toBeInTheDocument(), { timeout: 500 });
 
     // Submit empty form
     await userEvent.click(canvas.getByTestId('submit-button'));
@@ -331,7 +344,7 @@ export const Submitting = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
-    await waitFor(() => expect(canvas.getByTestId('turnstile-mock')).toBeInTheDocument(), { timeout: 500 });
+    await waitFor(() => expect(canvas.getByTestId('turnstile-verified')).toBeInTheDocument(), { timeout: 500 });
 
     // Fill and submit
     await fillValidForm(canvas);
@@ -355,7 +368,7 @@ export const Success = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
-    await waitFor(() => expect(canvas.getByTestId('turnstile-mock')).toBeInTheDocument(), { timeout: 500 });
+    await waitFor(() => expect(canvas.getByTestId('turnstile-verified')).toBeInTheDocument(), { timeout: 500 });
 
     // Fill and submit
     await fillValidForm(canvas);
@@ -385,7 +398,7 @@ export const TurnstileError = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
-    await waitFor(() => expect(canvas.getByTestId('turnstile-mock')).toBeInTheDocument(), { timeout: 500 });
+    await waitFor(() => expect(canvas.getByTestId('turnstile-verified')).toBeInTheDocument(), { timeout: 500 });
 
     // Fill and submit
     await fillValidForm(canvas);
@@ -413,7 +426,7 @@ export const RateLimitError = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
-    await waitFor(() => expect(canvas.getByTestId('turnstile-mock')).toBeInTheDocument(), { timeout: 500 });
+    await waitFor(() => expect(canvas.getByTestId('turnstile-verified')).toBeInTheDocument(), { timeout: 500 });
 
     // Fill and submit
     await fillValidForm(canvas);
@@ -439,7 +452,7 @@ export const EmailFailedError = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for Turnstile
-    await waitFor(() => expect(canvas.getByTestId('turnstile-mock')).toBeInTheDocument(), { timeout: 500 });
+    await waitFor(() => expect(canvas.getByTestId('turnstile-verified')).toBeInTheDocument(), { timeout: 500 });
 
     // Fill and submit
     await fillValidForm(canvas);

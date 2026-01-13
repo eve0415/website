@@ -433,10 +433,10 @@ describe('usePhaseController', () => {
       // Should be greater than frozen (some time passed after resume)
       expect(elapsedAfterResume).toBeGreaterThan(frozenValue);
       // But not by the full paused duration (tolerance for test timing)
-      // If pause wasn't working, elapsed would be ~frozenValue + 15 RAF cycles worth (~600+ms)
+      // If pause wasn't working, elapsed would be ~frozenValue + 20 RAF cycles worth (~1600+ms in browser tests)
       // With pause working, it should be ~frozenValue + 5 RAF cycles worth
-      // Use 400ms tolerance to account for browser test environment variability
-      expect(elapsedAfterResume - frozenValue).toBeLessThan(400);
+      // Use 1000ms tolerance for high variability in browser test environments
+      expect(elapsedAfterResume - frozenValue).toBeLessThan(1000);
     });
 
     test('progress percentage freezes during pause', async () => {

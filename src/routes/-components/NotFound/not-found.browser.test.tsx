@@ -19,6 +19,21 @@ vi.mock('#hooks/useReducedMotion', () => ({
   useReducedMotion: vi.fn(() => false),
 }));
 
+// Mock connection-info module (imports cloudflare:workers which isn't available in browser)
+vi.mock('./BootSequence/connection-info', () => ({
+  getConnectionInfo: vi.fn(() =>
+    Promise.resolve({
+      serverIp: '127.0.0.1',
+      tlsVersion: 'TLSv1.3',
+      tlsCipher: 'TLS_AES_128_GCM_SHA256',
+      httpVersion: 'h2',
+      cfRay: 'mock-ray-id',
+      colo: 'NRT',
+      certificatePack: null,
+    }),
+  ),
+}));
+
 // Create a router wrapper
 const createTestRouter = () => {
   const rootRoute = createRootRoute({

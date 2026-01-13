@@ -97,7 +97,7 @@ describe('__root Route', () => {
       expect(Array.isArray(head.links)).toBe(true);
 
       const faviconLink = head.links.find((l: { rel?: string }) => l.rel === 'icon');
-      expect(faviconLink).toEqual({ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' });
+      expect(faviconLink).toEqual({ rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon-96x96.png' });
 
       const canonicalLink = head.links.find((l: { rel?: string }) => l.rel === 'canonical');
       expect(canonicalLink).toEqual({ rel: 'canonical', href: 'https://eve0415.net' });

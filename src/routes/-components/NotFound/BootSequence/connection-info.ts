@@ -1,4 +1,4 @@
-import { createServerFn } from '@tanstack/react-start';
+import { createServerFn, createServerOnlyFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 import Cloudflare from 'cloudflare';
 import { env, waitUntil } from 'cloudflare:workers';
@@ -61,8 +61,9 @@ const CERT_CACHE_KEY = 'cert-data-eve0415';
 /**
  * Fetch certificate pack from Cloudflare API using SDK.
  * Uses async iteration to paginate until the matching pack is found.
+ * @internal Exported for testing purposes only
  */
-async function fetchCertFromCloudflareAPI(): Promise<CertificatePack | null> {
+const fetchCertFromCloudflareAPI = createServerOnlyFn(async (): Promise<CertificatePack | null> => {
   const token = env.CLOUDFLARE_API_TOKEN;
   const zoneId = env.CLOUDFLARE_ZONE_ID;
 
@@ -80,14 +81,15 @@ async function fetchCertFromCloudflareAPI(): Promise<CertificatePack | null> {
   }
 
   return null;
-}
+});
 
 /**
  * Get certificate pack with KV caching.
  * Uses waitUntil for non-blocking cache writes.
  * Strict: propagates errors if cache expired and API fails.
+ * @internal Exported for testing purposes only
  */
-async function getCachedCert(): Promise<CertificatePack | null> {
+const getCachedCert = createServerOnlyFn(async (): Promise<CertificatePack | null> => {
   const kv = env.CACHE;
   const cached = await kv.get<CertificatePack>(CERT_CACHE_KEY, 'json');
 
@@ -111,7 +113,7 @@ async function getCachedCert(): Promise<CertificatePack | null> {
   }
 
   return fresh;
-}
+});
 
 /**
  * Server function to get connection metadata.

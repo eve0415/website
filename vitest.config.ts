@@ -76,7 +76,7 @@ export default defineConfig({
             instances: [{ browser: 'chromium' }, { browser: 'webkit' }],
             expect: {
               toMatchScreenshot: {
-                timeout: 10000, // Wait up to 10s for stable screenshots
+                timeout: 20000, // Wait up to 20s for stable screenshots (webkit needs more time)
                 comparatorName: 'pixelmatch',
                 comparatorOptions: {
                   allowedMismatchedPixelRatio: 0.01, // 1% threshold for animation artifacts
