@@ -41,6 +41,19 @@ export default defineConfig({
       },
       {
         extends: true,
+        optimizeDeps: {
+          include: [
+            'vitest',
+            'vitest/browser',
+            'vitest-browser-react',
+            'vitest-browser-react/pure',
+            'react',
+            'react/jsx-dev-runtime',
+            '@tanstack/react-router',
+            '@tanstack/react-start',
+            'qrcode.react',
+          ],
+        },
         test: {
           name: 'browser',
           include: ['src/**/*.browser.test.{ts,tsx}'],
