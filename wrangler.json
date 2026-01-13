@@ -29,7 +29,7 @@
 
   "kv_namespaces": [
     {
-      "binding": "GITHUB_STATS_CACHE",
+      "binding": "CACHE",
       "id": "7c81378ba627479abce566995492eda0"
     },
     {

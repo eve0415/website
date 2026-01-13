@@ -10,7 +10,7 @@ TanStack Start SSR on Cloudflare Workers edge runtime.
 import { env } from 'cloudflare:workers';
 
 // Inside createServerFn handler
-const kv = env.GITHUB_STATS_CACHE;
+const kv = env.CACHE;
 const secret = env.GITHUB_PAT;
 ```
 

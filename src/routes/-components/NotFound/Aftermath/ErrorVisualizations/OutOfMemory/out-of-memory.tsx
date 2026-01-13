@@ -65,7 +65,6 @@ const OutOfMemory: FC = () => {
       if (memoryUsage < 100) {
         setParticles(prev => {
           if (prev.length >= 200) return prev;
-          const colors = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7'];
           const seed = prev.length + Date.now();
           return [
             ...prev,
@@ -74,7 +73,7 @@ const OutOfMemory: FC = () => {
               x: seededRandom(seed) * 100,
               y: seededRandom(seed + 50) * 100,
               size: 6 + seededRandom(seed + 75) * 16,
-              color: colors[prev.length % colors.length]!,
+              color: PARTICLE_COLORS[prev.length % PARTICLE_COLORS.length]!,
               velocity: {
                 x: (seededRandom(seed + 100) - 0.5) * 0.3,
                 y: (seededRandom(seed + 125) - 0.5) * 0.3,

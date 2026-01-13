@@ -441,7 +441,7 @@ describe('refreshGitHubStats', () => {
     await refreshGitHubStats(env);
 
     // Check KV was updated by reading from it
-    const storedValue = await env.GITHUB_STATS_CACHE.get('github_stats_eve0415', 'json');
+    const storedValue = await env.CACHE.get('github_stats_eve0415', 'json');
     expect(storedValue).toBeDefined();
     expect(storedValue).toHaveProperty('user');
     expect(storedValue).toHaveProperty('contributions');
@@ -458,7 +458,7 @@ describe('refreshGitHubStats', () => {
 
     await refreshGitHubStats(env);
 
-    const storedValue = await env.GITHUB_STATS_CACHE.get<{ languages: unknown[] }>('github_stats_eve0415', 'json');
+    const storedValue = await env.CACHE.get<{ languages: unknown[] }>('github_stats_eve0415', 'json');
 
     expect(storedValue).toBeDefined();
     expect(storedValue?.languages).toEqual([]);

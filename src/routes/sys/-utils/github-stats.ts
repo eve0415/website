@@ -93,7 +93,7 @@ const GET_GITHUB_STATS_QUERY = /* GraphQL */ `
 
 // Route handler: Read-only from KV
 export const getGitHubStats = createServerFn().handler(async (): Promise<GitHubStats> => {
-  const kv = env.GITHUB_STATS_CACHE;
+  const kv = env.CACHE;
   const cached = await kv.get<GitHubStats>(CACHE_KEY, 'json');
   return cached ?? FALLBACK_STATS;
 });
@@ -101,7 +101,7 @@ export const getGitHubStats = createServerFn().handler(async (): Promise<GitHubS
 // Cron handler: Fetch from GitHub and store in KV
 export async function refreshGitHubStats(workerEnv: Env): Promise<void> {
   const pat = workerEnv.GITHUB_PAT;
-  const kv = workerEnv.GITHUB_STATS_CACHE;
+  const kv = workerEnv.CACHE;
 
   // Create Octokit instance with plugins
   const octokit = new MyOctokit({

@@ -53,7 +53,7 @@ export const ERROR_VISUALIZATIONS: ErrorVisualization[] = [
   },
 ];
 
-// Get random error type (seeded by current minute for variety but consistency within page load)
+// Get random error type (seeded by current second for variety but consistency within page load)
 export const getRandomError = (): ErrorVisualization => {
   // Use a simple hash of the current second to pick an error
   // This gives variety on each visit but consistency during the visit

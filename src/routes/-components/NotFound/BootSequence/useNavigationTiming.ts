@@ -43,7 +43,7 @@ const DEFAULT_DATA: NavigationTimingData = {
   transferSize: 0,
   encodedBodySize: 0,
   decodedBodySize: 0,
-  protocol: 'h2',
+  protocol: 'loading...',
   resources: [],
   raw: null,
 };

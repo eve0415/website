@@ -160,7 +160,7 @@ export const createBootMessages = (): BootMessage[] => [
           },
           {
             id: 'tls-cert-inter',
-            text: ctx => `Intermediate: ${ctx.connection.certChain[0]}`,
+            text: ctx => `Intermediate: ${ctx.connection.certChain[0] ?? 'none'}`,
             type: 'info',
             baseDelay: 1260,
           },
@@ -336,7 +336,8 @@ export const createBootMessages = (): BootMessage[] => [
         id: 'res-js',
         text: ctx => {
           const totalSize = ctx.timing.resources.filter(r => r.initiatorType === 'script').reduce((sum, r) => sum + r.decodedBodySize, 0);
-          return `JavaScript 取得完了: ${(totalSize / 1024).toFixed(0) || '???'} KB`;
+          const sizeKb = totalSize > 0 ? (totalSize / 1024).toFixed(0) : '???';
+          return `JavaScript 取得完了: ${sizeKb} KB`;
         },
         type: 'info',
         baseDelay: 3000,

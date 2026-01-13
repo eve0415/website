@@ -59,6 +59,8 @@ jobs:
           echo GITHUB_PAT=test >> .dev.vars
           echo MAIL_ADDRESS=test >> .dev.vars
           echo TURNSTILE_SECRET_KEY=test >> .dev.vars
+          echo CLOUDFLARE_API_TOKEN=test >> .dev.vars
+          echo CLOUDFLARE_ZONE_ID=test >> .dev.vars
 
       - name: Generate types
         run: pnpm generate
@@ -143,6 +145,8 @@ jobs:
           echo GITHUB_PAT=test >> .dev.vars
           echo MAIL_ADDRESS=test >> .dev.vars
           echo TURNSTILE_SECRET_KEY=test >> .dev.vars
+          echo CLOUDFLARE_API_TOKEN=test >> .dev.vars
+          echo CLOUDFLARE_ZONE_ID=test >> .dev.vars
 
       - name: Generate types
         run: pnpm generate
