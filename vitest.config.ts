@@ -43,11 +43,6 @@ export default defineConfig({
         extends: true,
         optimizeDeps: {
           include: [
-            'vitest',
-            'vitest/browser',
-            'vitest-browser-react',
-            'vitest-browser-react/pure',
-            '@vitest/browser',
             'react',
             'react-dom',
             'react-dom/client',
@@ -57,6 +52,7 @@ export default defineConfig({
             '@tanstack/react-start',
             'qrcode.react',
           ],
+          exclude: ['vitest', 'vitest/browser', '@vitest/browser', '@vitest/browser-playwright', 'vitest-browser-react', 'vitest-browser-react/pure'],
           force: true,
         },
         test: {
