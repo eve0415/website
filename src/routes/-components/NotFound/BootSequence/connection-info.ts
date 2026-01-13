@@ -1,6 +1,36 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
+import Cloudflare from 'cloudflare';
 import { env, waitUntil } from 'cloudflare:workers';
+
+/**
+ * Certificate info from Cloudflare API.
+ * SDK types are incomplete (list/get return `unknown`), so we define our own.
+ */
+export interface Certificate {
+  id?: string;
+  hosts?: string[];
+  issuer?: string;
+  signature?: string;
+  uploaded_on?: string;
+  expires_on?: string;
+  bundle_method?: string;
+}
+
+/**
+ * Certificate pack from Cloudflare SSL API.
+ * Based on actual API response structure (SDK lacks proper typing for list responses).
+ */
+export interface CertificatePack {
+  id?: string;
+  type?: string;
+  hosts?: string[];
+  status?: string;
+  certificates?: Certificate[];
+  certificate_authority?: string;
+  validation_method?: string;
+  validity_days?: number;
+}
 
 /**
  * Connection info that cannot be obtained from browser APIs.
@@ -14,146 +44,73 @@ export interface ConnectionInfo {
   tlsVersion: string;
   tlsCipher: string;
 
-  // Certificate info (from Cloudflare API)
-  certIssuer: string;
-  certCN: string;
-  certValidFrom: string;
-  certValidTo: string;
-  certChain: string[];
-
   // HTTP protocol detected
   httpVersion: string;
 
   // Cloudflare specific
   cfRay: string | null;
   colo: string | null;
+
+  // Certificate pack from Cloudflare API (full SDK type)
+  certificatePack: CertificatePack | null;
 }
 
 // KV cache key for certificate data
 const CERT_CACHE_KEY = 'cert-data-eve0415';
 
-interface CertificateData {
-  issuer: string;
-  cn: string;
-  validFrom: string;
-  validTo: string;
-  chain: string[];
-}
-
-// Fallback certificate data when API is unavailable
-const FALLBACK_CERT: CertificateData = {
-  issuer: 'Cloudflare',
-  cn: 'eve0415.net',
-  validFrom: 'unknown',
-  validTo: 'unknown',
-  chain: [],
-};
-
 /**
- * Fetch certificate data from Cloudflare API.
- * Requires CLOUDFLARE_API_TOKEN and CLOUDFLARE_ZONE_ID secrets.
+ * Fetch certificate pack from Cloudflare API using SDK.
+ * Uses async iteration to paginate until the matching pack is found.
  */
-async function fetchCertFromCloudflareAPI(): Promise<CertificateData | null> {
+async function fetchCertFromCloudflareAPI(): Promise<CertificatePack | null> {
   const token = env.CLOUDFLARE_API_TOKEN;
   const zoneId = env.CLOUDFLARE_ZONE_ID;
 
-  if (!token || !zoneId) {
-    return null;
+  // No fallback - let errors propagate if secrets missing
+  const client = new Cloudflare({ apiToken: token });
+
+  // Use SDK async iterator - paginate until found
+  // SDK types list response as `unknown`, so we assert to our interface
+  for await (const rawPack of client.ssl.certificatePacks.list({ zone_id: zoneId })) {
+    const pack = rawPack as CertificatePack;
+    const hosts = pack.hosts ?? [];
+    if (hosts.includes('eve0415.net') || hosts.includes('*.eve0415.net')) {
+      return pack;
+    }
   }
 
-  try {
-    const response = await fetch(`https://api.cloudflare.com/client/v4/zones/${zoneId}/ssl/certificate_packs`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    if (!response.ok) {
-      console.error(`Cloudflare API error: ${response.status}`);
-      return null;
-    }
-
-    const data = (await response.json()) as {
-      success: boolean;
-      result?: Array<{
-        primary_certificate?: string;
-        certificates?: Array<{
-          issuer?: string;
-          hosts?: string[];
-          uploaded_on?: string;
-          expires_on?: string;
-        }>;
-      }>;
-    };
-
-    if (!data.success || !data.result?.length) {
-      return null;
-    }
-
-    // Find the active certificate pack for eve0415.net
-    const pack = data.result.find(p => p.certificates?.some(c => c.hosts?.includes('eve0415.net') || c.hosts?.includes('*.eve0415.net')));
-
-    if (!pack?.certificates?.length) {
-      return null;
-    }
-
-    const primaryCert = pack.certificates[0];
-    const chain = pack.certificates.slice(1).map(c => c.issuer ?? 'Unknown');
-
-    return {
-      issuer: primaryCert?.issuer ?? 'Cloudflare',
-      cn: 'eve0415.net',
-      validFrom: primaryCert?.uploaded_on?.split('T')[0] ?? 'unknown',
-      validTo: primaryCert?.expires_on?.split('T')[0] ?? 'unknown',
-      chain,
-    };
-  } catch (error) {
-    console.error('Failed to fetch certificate from Cloudflare API:', error);
-    return null;
-  }
+  return null;
 }
 
 /**
- * Get certificate data with KV caching.
+ * Get certificate pack with KV caching.
  * Uses waitUntil for non-blocking cache writes.
+ * Strict: propagates errors if cache expired and API fails.
  */
-async function getCachedCert(): Promise<CertificateData> {
+async function getCachedCert(): Promise<CertificatePack | null> {
   const kv = env.CACHE;
-
-  // Try to get from cache
-  const cached = await kv.get<CertificateData>(CERT_CACHE_KEY, 'json');
+  const cached = await kv.get<CertificatePack>(CERT_CACHE_KEY, 'json');
 
   if (cached) {
-    // Check if still valid (has expiry date and not expired)
-    if (cached.validTo !== 'unknown') {
-      const expiry = new Date(cached.validTo);
-      if (expiry > new Date()) {
-        return cached;
-      }
-    } else {
-      // No expiry info but has data - use it
+    // Check validity using SDK type's expires_on field
+    const expiresOn = cached.certificates?.[0]?.expires_on;
+    if (expiresOn && new Date(expiresOn) > new Date()) {
       return cached;
     }
   }
 
-  // Cache miss or expired - fetch fresh data
+  // Strict: propagate errors, no fallback for stale cache
   const fresh = await fetchCertFromCloudflareAPI();
 
   if (fresh) {
-    // Calculate TTL based on certificate expiry
-    let ttl = 86400; // Default 24 hours
-    if (fresh.validTo !== 'unknown') {
-      const expiry = new Date(fresh.validTo);
-      const secondsUntilExpiry = Math.floor((expiry.getTime() - Date.now()) / 1000);
-      // Use expiry-based TTL, but cap at 7 days and minimum 1 hour
-      ttl = Math.max(3600, Math.min(secondsUntilExpiry, 604800));
-    }
+    const expiresOn = fresh.certificates?.[0]?.expires_on;
+    const ttl = expiresOn ? Math.max(3600, Math.min(Math.floor((new Date(expiresOn).getTime() - Date.now()) / 1000), 604800)) : 86400;
 
     // Write to cache without blocking the response
     waitUntil(kv.put(CERT_CACHE_KEY, JSON.stringify(fresh), { expirationTtl: ttl }));
-
-    return fresh;
   }
 
-  return FALLBACK_CERT;
+  return fresh;
 }
 
 /**
@@ -162,7 +119,7 @@ async function getCachedCert(): Promise<CertificateData> {
  */
 export const getConnectionInfo = createServerFn().handler(async (): Promise<ConnectionInfo> => {
   const headers = getRequestHeaders();
-  const cert = await getCachedCert();
+  const certificatePack = await getCachedCert();
 
   return {
     // Cloudflare edge IP (static - could be enhanced with DNS lookup)
@@ -172,18 +129,14 @@ export const getConnectionInfo = createServerFn().handler(async (): Promise<Conn
     tlsVersion: headers.get('X-CF-TLS-Version') ?? 'TLSv1.3',
     tlsCipher: headers.get('X-CF-TLS-Cipher') ?? 'unknown',
 
-    // Real certificate data from Cloudflare API
-    certIssuer: cert.issuer,
-    certCN: cert.cn,
-    certValidFrom: cert.validFrom,
-    certValidTo: cert.validTo,
-    certChain: cert.chain,
-
     // Real HTTP protocol from injected header
     httpVersion: headers.get('X-CF-HTTP-Protocol') ?? 'loading...',
 
     // Real Cloudflare metadata
     cfRay: headers.get('CF-Ray'),
     colo: headers.get('X-CF-Colo'),
+
+    // Full certificate pack from Cloudflare API
+    certificatePack,
   };
 });

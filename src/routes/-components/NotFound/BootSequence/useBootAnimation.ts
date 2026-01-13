@@ -102,9 +102,9 @@ export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimatio
   // Calculate scale factor for adaptive timing
   const scaleFactor = useMemo(() => calculateScaleFactor(timing), [timing]);
 
-  // Create and flatten messages
+  // Create and flatten messages (pass connection for dynamic cert messages)
   const allMessages: FlattenedMessage[] = useMemo(() => {
-    const messages = createBootMessages();
+    const messages = createBootMessages(connection);
     const flattened = flattenMessages(messages);
 
     // Scale delays and resolve text
@@ -113,7 +113,7 @@ export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimatio
       baseDelay: msg.baseDelay * scaleFactor,
       resolvedText: resolveMessageText(msg, context),
     }));
-  }, [context, scaleFactor]);
+  }, [connection, context, scaleFactor]);
 
   // Extract depths array for step-over calculation
   const messageDepths = useMemo(() => allMessages.map(msg => msg.depth), [allMessages]);

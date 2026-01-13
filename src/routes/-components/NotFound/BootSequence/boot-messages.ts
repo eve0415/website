@@ -1,4 +1,4 @@
-import type { ConnectionInfo } from './connection-info';
+import type { Certificate, CertificatePack, ConnectionInfo } from './connection-info';
 import type { DOMScanData } from './useDOMScan';
 import type { NavigationTimingData } from './useNavigationTiming';
 
@@ -46,11 +46,73 @@ export const resolveMessageText = (msg: BootMessage, ctx: BootContext): string =
   return typeof msg.text === 'function' ? msg.text(ctx) : msg.text;
 };
 
+// Helper to slugify string for message ID
+const slugify = (str: string): string =>
+  str
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '');
+
+/**
+ * Generate certificate verification messages dynamically based on certificate chain.
+ * Each certificate gets its own verification block with appropriate checks.
+ */
+const createCertMessages = (certPack: CertificatePack | null, baseDelay: number): BootMessage[] => {
+  if (!certPack?.certificates?.length) {
+    return [{ id: 'tls-cert-none', text: 'No certificates received', type: 'warning', baseDelay }];
+  }
+
+  return certPack.certificates.map((cert: Certificate, i: number) => {
+    const cn = cert.hosts?.[0] ?? cert.issuer ?? `cert-${i}`;
+    const slug = slugify(cn);
+    const isLeaf = i === 0;
+    const delay = baseDelay + i * 100;
+
+    return {
+      id: `tls-cert-${slug}`,
+      text: isLeaf ? `Leaf: CN=${cn}` : `Intermediate: ${cert.issuer ?? 'Unknown'}`,
+      type: 'info' as const,
+      baseDelay: delay,
+      children: [
+        { id: `tls-cert-${slug}-sig`, text: 'Signature validation: ✓', type: 'success' as const, baseDelay: delay + 20 },
+        {
+          id: `tls-cert-${slug}-validity`,
+          text: `Validity: ${cert.uploaded_on?.split('T')[0] ?? 'unknown'} - ${cert.expires_on?.split('T')[0] ?? 'unknown'}`,
+          type: 'info' as const,
+          baseDelay: delay + 40,
+        },
+        ...(isLeaf
+          ? [
+              { id: `tls-cert-${slug}-san`, text: `SAN check: ${cn} ✓`, type: 'success' as const, baseDelay: delay + 60 },
+              { id: `tls-cert-${slug}-ku`, text: 'Key usage: serverAuth ✓', type: 'success' as const, baseDelay: delay + 80 },
+              { id: `tls-cert-${slug}-ocsp`, text: 'OCSP status: good', type: 'success' as const, baseDelay: delay + 100 },
+              { id: `tls-cert-${slug}-ct`, text: 'CT SCTs: verified', type: 'success' as const, baseDelay: delay + 120 },
+            ]
+          : [
+              { id: `tls-cert-${slug}-ca`, text: 'Basic Constraints: CA:TRUE ✓', type: 'success' as const, baseDelay: delay + 60 },
+              { id: `tls-cert-${slug}-keycertsign`, text: 'Key usage: keyCertSign ✓', type: 'success' as const, baseDelay: delay + 80 },
+            ]),
+      ],
+    };
+  });
+};
+
+/**
+ * Build certificate chain display string from certificate pack.
+ */
+const buildChainString = (certPack: CertificatePack | null): string => {
+  if (!certPack?.certificates?.length) return 'no chain';
+  const leaf = certPack.certificates[0]?.hosts?.[0] ?? 'leaf';
+  const intermediates = certPack.certificates.slice(1).map((c: Certificate) => c.issuer ?? 'Unknown');
+  return [leaf, ...intermediates].join(' → ');
+};
+
 /**
  * Hierarchical boot messages with real data interpolation.
  * Each group can be "stepped into" in debug mode.
+ * Certificate verification messages are dynamically generated based on the actual chain.
  */
-export const createBootMessages = (): BootMessage[] => [
+export const createBootMessages = (connection: ConnectionInfo): BootMessage[] => [
   // Navigation group
   {
     id: 'nav',
@@ -151,50 +213,22 @@ export const createBootMessages = (): BootMessage[] => [
         text: 'Certificate 受信',
         type: 'group',
         baseDelay: 1200,
-        children: [
-          {
-            id: 'tls-cert-leaf',
-            text: ctx => `Leaf: CN=${ctx.connection.certCN}`,
-            type: 'info',
-            baseDelay: 1220,
-          },
-          {
-            id: 'tls-cert-inter',
-            text: ctx => `Intermediate: ${ctx.connection.certChain[0] ?? 'none'}`,
-            type: 'info',
-            baseDelay: 1260,
-          },
-          { id: 'tls-cert-ocsp', text: 'OCSP staple: present', type: 'info', baseDelay: 1300 },
-        ],
+        // Dynamic certificate messages based on actual chain
+        children: createCertMessages(connection.certificatePack, 1220),
       },
       {
         id: 'tls-verify',
         text: '証明書検証',
         type: 'group',
-        baseDelay: 1340,
+        baseDelay: 1500,
         children: [
           {
             id: 'tls-v-chain',
-            text: ctx => `Chain: leaf → ${ctx.connection.certChain.join(' → ')}`,
+            text: `Chain: ${buildChainString(connection.certificatePack)}`,
             type: 'info',
-            baseDelay: 1360,
+            baseDelay: 1520,
           },
-          { id: 'tls-v-sig', text: 'Signature validation: ✓', type: 'success', baseDelay: 1400 },
-          {
-            id: 'tls-v-validity',
-            text: ctx => `Validity: ${ctx.connection.certValidFrom} - ${ctx.connection.certValidTo}`,
-            type: 'info',
-            baseDelay: 1440,
-          },
-          {
-            id: 'tls-v-san',
-            text: ctx => `SAN check: ${ctx.connection.certCN} ✓`,
-            type: 'success',
-            baseDelay: 1480,
-          },
-          { id: 'tls-v-ku', text: 'Key usage: serverAuth ✓', type: 'success', baseDelay: 1520 },
-          { id: 'tls-v-ocsp', text: 'OCSP status: good', type: 'success', baseDelay: 1560 },
-          { id: 'tls-v-ct', text: 'CT SCTs: 2 verified', type: 'success', baseDelay: 1600 },
+          { id: 'tls-v-sig', text: 'Signature validation: ✓', type: 'success', baseDelay: 1560 },
         ],
       },
       {

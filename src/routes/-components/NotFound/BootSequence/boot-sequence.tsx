@@ -26,14 +26,10 @@ const DEFAULT_CONNECTION: ConnectionInfo = {
   serverIp: '...',
   tlsVersion: 'TLSv1.3',
   tlsCipher: 'TLS_AES_128_GCM_SHA256',
-  certIssuer: "Let's Encrypt",
-  certCN: 'eve0415.net',
-  certValidFrom: '...',
-  certValidTo: '...',
-  certChain: ["Let's Encrypt R3", 'ISRG Root X1'],
   httpVersion: 'h2',
   cfRay: null,
   colo: null,
+  certificatePack: null, // Will be populated from Cloudflare API
 };
 
 const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence, onDebugPausedChange, onBootComplete }) => {

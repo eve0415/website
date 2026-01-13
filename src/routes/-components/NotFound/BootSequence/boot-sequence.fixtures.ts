@@ -210,21 +210,57 @@ export const heavyDOMScan: DOMScanData = {
 
 // --- Connection Info Fixtures ---
 
+import type { CertificatePack } from './connection-info';
+
 /**
- * Standard Cloudflare connection
+ * Helper to create mock certificate pack with specified number of certs
+ */
+const createMockCertPack = (certCount: number): CertificatePack | null => {
+  if (certCount === 0) return null;
+
+  return {
+    id: 'mock-cert-pack-id',
+    type: 'universal',
+    hosts: ['eve0415.net', '*.eve0415.net'],
+    status: 'active',
+    certificates: Array.from({ length: certCount }, (_, i) => ({
+      id: `cert-${i}`,
+      hosts: i === 0 ? ['eve0415.net', '*.eve0415.net'] : undefined,
+      issuer: i === 0 ? 'Cloudflare Inc' : `Intermediate CA ${i}`,
+      uploaded_on: '2024-01-01T00:00:00Z',
+      expires_on: '2025-03-01T00:00:00Z',
+      signature: 'SHA256WithRSA',
+      bundle_method: 'ubiquitous',
+    })),
+  } as CertificatePack;
+};
+
+/**
+ * 1-certificate chain (leaf only)
+ */
+export const singleCertPack = createMockCertPack(1);
+
+/**
+ * 2-certificate chain (leaf + 1 intermediate)
+ */
+export const twoCertPack = createMockCertPack(2);
+
+/**
+ * 3-certificate chain (leaf + 2 intermediates)
+ */
+export const threeCertPack = createMockCertPack(3);
+
+/**
+ * Standard Cloudflare connection with 2-cert chain
  */
 export const mockConnection: ConnectionInfo = {
   serverIp: '104.21.48.170',
   tlsVersion: 'TLSv1.3',
   tlsCipher: 'TLS_AES_128_GCM_SHA256',
-  certIssuer: "Let's Encrypt",
-  certCN: 'eve0415.net',
-  certValidFrom: '2024-12-01',
-  certValidTo: '2025-03-01',
-  certChain: ["Let's Encrypt R3", 'ISRG Root X1'],
   httpVersion: 'h2',
   cfRay: '8abc123def456789-NRT',
   colo: 'NRT',
+  certificatePack: twoCertPack,
 };
 
 /**
@@ -234,14 +270,10 @@ export const basicConnection: ConnectionInfo = {
   serverIp: '192.168.1.1',
   tlsVersion: 'TLSv1.2',
   tlsCipher: 'TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384',
-  certIssuer: 'DigiCert',
-  certCN: 'example.com',
-  certValidFrom: '2024-01-01',
-  certValidTo: '2025-01-01',
-  certChain: ['DigiCert Global CA G2'],
   httpVersion: 'http/1.1',
   cfRay: null,
   colo: null,
+  certificatePack: singleCertPack,
 };
 
 /**
@@ -251,14 +283,23 @@ export const http3Connection: ConnectionInfo = {
   serverIp: '104.21.48.170',
   tlsVersion: 'TLSv1.3',
   tlsCipher: 'TLS_AES_256_GCM_SHA384',
-  certIssuer: "Let's Encrypt",
-  certCN: 'eve0415.net',
-  certValidFrom: '2024-12-01',
-  certValidTo: '2025-03-01',
-  certChain: ["Let's Encrypt R3", 'ISRG Root X1'],
   httpVersion: 'h3',
   cfRay: '8abc123def456789-NRT',
   colo: 'NRT',
+  certificatePack: threeCertPack,
+};
+
+/**
+ * Connection with no certificate pack (null)
+ */
+export const noCertConnection: ConnectionInfo = {
+  serverIp: '104.21.48.170',
+  tlsVersion: 'TLSv1.3',
+  tlsCipher: 'TLS_AES_128_GCM_SHA256',
+  httpVersion: 'h2',
+  cfRay: null,
+  colo: null,
+  certificatePack: null,
 };
 
 // --- Resource Timing Fixtures ---

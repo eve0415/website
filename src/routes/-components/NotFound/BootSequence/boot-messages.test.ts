@@ -3,7 +3,7 @@ import type { BootContext, BootMessage } from './boot-messages';
 import { describe, expect, it } from 'vitest';
 
 import { BASE_BOOT_DURATION, PROGRESS_STAGES, createBootMessages, flattenMessages, resolveMessageText } from './boot-messages';
-import { fastTiming, mockConnection, mockDOMScan } from './boot-sequence.fixtures';
+import { basicConnection, fastTiming, http3Connection, mockConnection, mockDOMScan, noCertConnection } from './boot-sequence.fixtures';
 
 // Standard test context using fixtures
 const createTestContext = (overrides: Partial<BootContext> = {}): BootContext => ({
@@ -182,27 +182,30 @@ describe('boot-messages', () => {
       expect(resolveMessageText(msg, ctx)).toBe('Protocol: h2');
     });
 
-    it('handles certificate chain interpolation', () => {
+    it('handles certificatePack interpolation', () => {
       const msg: BootMessage = {
         id: 'test',
-        text: c => `Chain: ${c.connection.certChain.join(' → ')}`,
+        text: c => {
+          const hosts = c.connection.certificatePack?.hosts?.join(', ') ?? 'none';
+          return `Hosts: ${hosts}`;
+        },
         type: 'info',
         baseDelay: 0,
       };
 
-      expect(resolveMessageText(msg, ctx)).toBe("Chain: Let's Encrypt R3 → ISRG Root X1");
+      expect(resolveMessageText(msg, ctx)).toBe('Hosts: eve0415.net, *.eve0415.net');
     });
   });
 
   describe('createBootMessages', () => {
     it('returns non-empty message array', () => {
-      const messages = createBootMessages();
+      const messages = createBootMessages(mockConnection);
 
       expect(messages.length).toBeGreaterThan(0);
     });
 
     it('all messages have valid types', () => {
-      const messages = createBootMessages();
+      const messages = createBootMessages(mockConnection);
       const flat = flattenMessages(messages);
       const validTypes = ['info', 'success', 'warning', 'error', 'group'];
 
@@ -212,7 +215,7 @@ describe('boot-messages', () => {
     });
 
     it('all messages have required properties', () => {
-      const messages = createBootMessages();
+      const messages = createBootMessages(mockConnection);
       const flat = flattenMessages(messages);
 
       for (const msg of flat) {
@@ -226,7 +229,7 @@ describe('boot-messages', () => {
     });
 
     it('all message IDs are unique', () => {
-      const messages = createBootMessages();
+      const messages = createBootMessages(mockConnection);
       const flat = flattenMessages(messages);
       const ids = flat.map(m => m.id);
       const uniqueIds = new Set(ids);
@@ -235,7 +238,7 @@ describe('boot-messages', () => {
     });
 
     it('root level baseDelay values are monotonically increasing', () => {
-      const messages = createBootMessages();
+      const messages = createBootMessages(mockConnection);
       let lastDelay = -1;
 
       for (const msg of messages) {
@@ -245,7 +248,7 @@ describe('boot-messages', () => {
     });
 
     it('contains expected major sections', () => {
-      const messages = createBootMessages();
+      const messages = createBootMessages(mockConnection);
       const rootIds = messages.map(m => m.id);
 
       expect(rootIds).toContain('nav');
@@ -257,7 +260,7 @@ describe('boot-messages', () => {
     });
 
     it('hydration section ends with error messages', () => {
-      const messages = createBootMessages();
+      const messages = createBootMessages(mockConnection);
       const hydrate = messages.find(m => m.id === 'hydrate');
       const hydrateChildren = hydrate?.children ?? [];
       const lastTwo = hydrateChildren.slice(-2);
@@ -267,13 +270,90 @@ describe('boot-messages', () => {
     });
 
     it('all dynamic text functions resolve without error', () => {
-      const messages = createBootMessages();
+      const messages = createBootMessages(mockConnection);
       const flat = flattenMessages(messages);
       const ctx = createTestContext();
 
       for (const msg of flat) {
         expect(() => resolveMessageText(msg, ctx)).not.toThrow();
       }
+    });
+  });
+
+  describe('dynamic certificate messages', () => {
+    const findCertGroup = (messages: BootMessage[]) => {
+      const tlsGroup = messages.find(m => m.id === 'tls');
+      return tlsGroup?.children?.find(m => m.id === 'tls-cert');
+    };
+
+    it('generates 1 cert message for single-cert chain', () => {
+      const messages = createBootMessages(basicConnection);
+      const certGroup = findCertGroup(messages);
+
+      expect(certGroup?.children).toHaveLength(1);
+      expect(certGroup?.children?.[0]?.id).toBe('tls-cert-eve0415-net');
+    });
+
+    it('generates 2 cert messages for two-cert chain', () => {
+      const messages = createBootMessages(mockConnection);
+      const certGroup = findCertGroup(messages);
+
+      expect(certGroup?.children).toHaveLength(2);
+      expect(certGroup?.children?.[0]?.id).toBe('tls-cert-eve0415-net');
+      expect(certGroup?.children?.[1]?.id).toBe('tls-cert-intermediate-ca-1');
+    });
+
+    it('generates 3 cert messages for three-cert chain', () => {
+      const messages = createBootMessages(http3Connection);
+      const certGroup = findCertGroup(messages);
+
+      expect(certGroup?.children).toHaveLength(3);
+      expect(certGroup?.children?.[0]?.id).toBe('tls-cert-eve0415-net');
+      expect(certGroup?.children?.[1]?.id).toBe('tls-cert-intermediate-ca-1');
+      expect(certGroup?.children?.[2]?.id).toBe('tls-cert-intermediate-ca-2');
+    });
+
+    it('handles null certificatePack gracefully', () => {
+      const messages = createBootMessages(noCertConnection);
+      const certGroup = findCertGroup(messages);
+
+      expect(certGroup?.children).toHaveLength(1);
+      expect(certGroup?.children?.[0]?.id).toBe('tls-cert-none');
+      expect(certGroup?.children?.[0]?.type).toBe('warning');
+    });
+
+    it('leaf cert has SAN, serverAuth, OCSP, and CT checks', () => {
+      const messages = createBootMessages(mockConnection);
+      const certGroup = findCertGroup(messages);
+      const leafCert = certGroup?.children?.[0];
+      const leafChildIds = leafCert?.children?.map(c => c.id) ?? [];
+
+      expect(leafChildIds).toContain('tls-cert-eve0415-net-san');
+      expect(leafChildIds).toContain('tls-cert-eve0415-net-ku');
+      expect(leafChildIds).toContain('tls-cert-eve0415-net-ocsp');
+      expect(leafChildIds).toContain('tls-cert-eve0415-net-ct');
+    });
+
+    it('intermediate cert has CA:TRUE and keyCertSign checks', () => {
+      const messages = createBootMessages(mockConnection);
+      const certGroup = findCertGroup(messages);
+      const intermediateCert = certGroup?.children?.[1];
+      const intermediateChildIds = intermediateCert?.children?.map(c => c.id) ?? [];
+
+      expect(intermediateChildIds).toContain('tls-cert-intermediate-ca-1-ca');
+      expect(intermediateChildIds).toContain('tls-cert-intermediate-ca-1-keycertsign');
+      // Should NOT have leaf-specific checks
+      expect(intermediateChildIds).not.toContain('tls-cert-intermediate-ca-1-san');
+      expect(intermediateChildIds).not.toContain('tls-cert-intermediate-ca-1-ocsp');
+    });
+
+    it('all cert messages have unique IDs', () => {
+      const messages = createBootMessages(http3Connection);
+      const flat = flattenMessages(messages);
+      const certIds = flat.filter(m => m.id.startsWith('tls-cert')).map(m => m.id);
+      const uniqueIds = new Set(certIds);
+
+      expect(uniqueIds.size).toBe(certIds.length);
     });
   });
 
