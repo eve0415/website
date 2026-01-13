@@ -5,6 +5,10 @@
       "command": "codex",
       "args": ["mcp-server"]
     },
+    "tanstack": {
+      "type": "http",
+      "url": "https://tanstack.com/api/mcp"
+    },
     "storybook": {
       "type": "http",
       "url": "http://localhost:6006/mcp"
