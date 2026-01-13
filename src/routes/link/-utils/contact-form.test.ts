@@ -1,4 +1,4 @@
-import { env } from 'cloudflare:workers';
+import { env, withEnv } from 'cloudflare:workers';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 // Mock @tanstack/react-start before importing contact-form
@@ -48,6 +48,9 @@ vi.mock('cloudflare:email', () => ({
 }));
 
 import { checkAndIncrementRateLimit, sendContactEmail } from './contact-form';
+
+// Test environment values - used with withEnv to override env bindings
+const TEST_MAIL_ADDRESS = 'test@example.com';
 
 describe('checkAndIncrementRateLimit', () => {
   const testIp = '192.168.1.100';
@@ -187,14 +190,16 @@ describe('sendContactEmail', () => {
       message: 'Hello, this is a test.',
     };
 
-    await sendContactEmail(formData);
+    await withEnv({ MAIL_ADDRESS: TEST_MAIL_ADDRESS, CONTACT_EMAIL: { send: mockSend } }, async () => {
+      await sendContactEmail(formData);
 
-    // Check the message passed to mockSend has correct from/to
-    expect(mockSend).toHaveBeenCalledTimes(1);
-    const sentMessage = mockSend.mock.calls[0]?.[0] as { from: string; to: string; raw: string } | undefined;
-    expect(sentMessage).toBeDefined();
-    expect(sentMessage?.from).toBe('noreply@eve0415.net');
-    expect(sentMessage?.to).toBe('contact@eve0415.net');
+      // Check the message passed to mockSend has correct from/to
+      expect(mockSend).toHaveBeenCalledTimes(1);
+      const sentMessage = mockSend.mock.calls[0]?.[0] as { from: string; to: string; raw: string } | undefined;
+      expect(sentMessage).toBeDefined();
+      expect(sentMessage?.from).toBe('noreply@eve0415.net');
+      expect(sentMessage?.to).toBe(TEST_MAIL_ADDRESS);
+    });
   });
 
   test('calls env.CONTACT_EMAIL.send with the message', async () => {
@@ -237,9 +242,11 @@ describe('sendContactEmail', () => {
       message: 'Hello',
     };
 
-    await sendContactEmail(formData);
+    await withEnv({ MAIL_ADDRESS: TEST_MAIL_ADDRESS, CONTACT_EMAIL: { send: mockSend } }, async () => {
+      await sendContactEmail(formData);
 
-    expect(mockSetRecipient).toHaveBeenCalledWith('contact@eve0415.net');
+      expect(mockSetRecipient).toHaveBeenCalledWith(TEST_MAIL_ADDRESS);
+    });
   });
 
   test('sets subject with name', async () => {
