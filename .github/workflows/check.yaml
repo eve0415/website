@@ -92,7 +92,6 @@ jobs:
         run: pnpm install --frozen-lockfile
 
       - name: Check formatting
-        id: format
         run: |
           set +e
           output=$(pnpm oxfmt --check 2>&1)
