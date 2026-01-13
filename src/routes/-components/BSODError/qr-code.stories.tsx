@@ -109,15 +109,15 @@ export const SizeComparison = meta.story({
     <div className='flex items-end gap-4'>
       <div className='text-center'>
         <QRCode url='https://eve0415.net' size={40} />
-        <p className='mt-2 text-black text-xs'>40px</p>
+        <p className='mt-2 text-xs text-black'>40px</p>
       </div>
       <div className='text-center'>
         <QRCode url='https://eve0415.net' size={80} />
-        <p className='mt-2 text-black text-xs'>80px (default)</p>
+        <p className='mt-2 text-xs text-black'>80px (default)</p>
       </div>
       <div className='text-center'>
         <QRCode url='https://eve0415.net' size={120} />
-        <p className='mt-2 text-black text-xs'>120px</p>
+        <p className='mt-2 text-xs text-black'>120px</p>
       </div>
     </div>
   ),

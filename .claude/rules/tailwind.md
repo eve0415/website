@@ -95,7 +95,7 @@ The `bg-gradient-to-*` utilities are now `bg-linear-to-*`:
 **DO**: Use `bg-linear-to-*`
 
 ```tsx
-<div className='bg-linear-to-r from-cyan to-neon' />
+<div className='from-cyan to-neon bg-linear-to-r' />
 ```
 
 Same pattern applies to all directions: `-to-l`, `-to-t`, `-to-b`, `-to-tr`, `-to-tl`, `-to-br`, `-to-bl`.

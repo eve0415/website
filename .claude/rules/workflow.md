@@ -10,7 +10,6 @@ pnpm lint
 
 This catches:
 
-- Biome formatting/linting issues
 - oxlint errors (including React Compiler violations)
 - oxfmt formatting issues
 

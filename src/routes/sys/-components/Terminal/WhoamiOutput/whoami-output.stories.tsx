@@ -14,7 +14,7 @@ const meta = preview.meta({
   },
   decorators: [
     Story => (
-      <div className='rounded border border-line bg-bg-primary p-4'>
+      <div className='border-line bg-bg-primary rounded border p-4'>
         <Story />
       </div>
     ),

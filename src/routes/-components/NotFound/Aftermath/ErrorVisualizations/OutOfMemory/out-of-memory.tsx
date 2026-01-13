@@ -144,7 +144,7 @@ const OutOfMemory: FC = () => {
         {/* Title */}
         <div className='mb-8 text-center'>
           <div
-            className={`font-bold text-4xl tracking-wide sm:text-6xl ${overflow ? 'animate-pulse text-[#ff6b6b]' : 'text-white'}`}
+            className={`text-4xl font-bold tracking-wide sm:text-6xl ${overflow ? 'animate-pulse text-[#ff6b6b]' : 'text-white'}`}
             style={{
               textShadow: overflow ? '0 0 30px rgba(255, 107, 107, 0.8)' : '0 0 20px rgba(255, 255, 255, 0.3)',
             }}
@@ -202,7 +202,7 @@ const OutOfMemory: FC = () => {
         {/* Error message */}
         {overflow && (
           <div className='mb-8 animate-pulse rounded-lg border border-[#ff6b6b]/30 bg-[#ff6b6b]/10 px-6 py-3'>
-            <div className='font-mono text-[#ff6b6b] text-sm'>FATAL ERROR: Allocation failed - JavaScript heap out of memory</div>
+            <div className='font-mono text-sm text-[#ff6b6b]'>FATAL ERROR: Allocation failed - JavaScript heap out of memory</div>
           </div>
         )}
 

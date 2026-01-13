@@ -84,7 +84,7 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
 
   return (
     <div
-      className={`group cursor-pointer border-l-2 border-l-transparent font-mono text-sm transition-all duration-fast hover:translate-x-0.5 hover:border-l-neon hover:bg-neon/5 ${visible ? 'opacity-100' : 'opacity-0'}`}
+      className={`group duration-fast hover:border-l-neon hover:bg-neon/5 cursor-pointer border-l-2 border-l-transparent font-mono text-sm transition-all hover:translate-x-0.5 ${visible ? 'opacity-100' : 'opacity-0'}`}
       style={{ transitionDelay: `${index * 50}ms` }}
     >
       {/* Unified layout: flex-wrap allows stacking on mobile, inline on tablet+ */}
@@ -108,7 +108,7 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
           {/* Mobile: vertical tree connector */}
           <span className='text-subtle-foreground sm:hidden'>│</span>
           {/* Growing dashed line */}
-          <span className='ml-2 grow border-subtle-foreground/30 border-b sm:mx-1 sm:ml-0' />
+          <span className='border-subtle-foreground/30 ml-2 grow border-b sm:mx-1 sm:ml-0' />
           <span className='text-subtle-foreground'>┤</span>
           {/* Responsive bars - only bar length differs, decorative so OK to toggle visibility */}
           <span className='sm:hidden' style={{ color: barColor }}>
@@ -121,10 +121,10 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
             {barDesktop}
           </span>
           <span className='text-subtle-foreground'>│</span>
-          <span className='ml-1 text-subtle-foreground tabular-nums'>
+          <span className='text-subtle-foreground ml-1 tabular-nums'>
             {isLoading ? '---' : `${progress.toFixed(1)}%`}
             {/* Hex value - desktop only, supplementary info */}
-            {!isLoading && <span className='ml-1 hidden text-subtle-foreground lg:inline'>[{hexValue}]</span>}
+            {!isLoading && <span className='text-subtle-foreground ml-1 hidden lg:inline'>[{hexValue}]</span>}
           </span>
         </div>
       </div>

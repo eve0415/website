@@ -16,7 +16,7 @@ const meta = preview.meta({
   },
   decorators: [
     Story => (
-      <div className='min-h-24 bg-background p-8'>
+      <div className='bg-background min-h-24 p-8'>
         <Story />
       </div>
     ),

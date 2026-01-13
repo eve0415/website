@@ -147,7 +147,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   const handleStepBack = () => stepBack();
 
   return (
-    <div className='fixed inset-0 flex items-center justify-center bg-background' style={glowStyle}>
+    <div className='bg-background fixed inset-0 flex items-center justify-center' style={glowStyle}>
       {/* Debug toolbar */}
       {debugState.isEnabled && (
         <DebugToolbar
@@ -166,13 +166,13 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
 
       <div className='w-full max-w-2xl px-6'>
         {/* Terminal window */}
-        <div className='rounded-lg border border-line/50 bg-surface/90 shadow-2xl backdrop-blur-sm'>
+        <div className='border-line/50 bg-surface/90 rounded-lg border shadow-2xl backdrop-blur-sm'>
           {/* Window header */}
-          <div className='flex items-center gap-2 border-line/30 border-b px-4 py-2'>
+          <div className='border-line/30 flex items-center gap-2 border-b px-4 py-2'>
             <div className='size-3 rounded-full bg-red-500/80' />
             <div className='size-3 rounded-full bg-yellow-500/80' />
             <div className='size-3 rounded-full bg-green-500/80' />
-            <span className='ml-4 text-muted-foreground text-xs'>browser://network-inspector</span>
+            <span className='text-muted-foreground ml-4 text-xs'>browser://network-inspector</span>
             {debugState.isEnabled && <span className='ml-auto rounded bg-amber-500/20 px-2 py-0.5 text-[10px] text-amber-400'>DEBUG</span>}
           </div>
 
@@ -197,7 +197,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
                   )}
 
                   {/* Hierarchy indicator */}
-                  {msg.depth > 0 && <span className='mr-1.5 text-line/50'>{msg.type === 'group' ? '▼' : '├'}</span>}
+                  {msg.depth > 0 && <span className='text-line/50 mr-1.5'>{msg.type === 'group' ? '▼' : '├'}</span>}
 
                   {/* Message text */}
                   <span
@@ -209,7 +209,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
                           : msg.type === 'success'
                             ? 'text-neon'
                             : msg.type === 'group'
-                              ? 'font-medium text-cyan'
+                              ? 'text-cyan font-medium'
                               : 'text-foreground/80'
                     }
                   >
@@ -221,9 +221,9 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
 
             {/* Cursor line */}
             {!debugState.isPaused && (
-              <div className='flex items-center gap-1 text-foreground/60'>
+              <div className='text-foreground/60 flex items-center gap-1'>
                 <span>{'>'}</span>
-                <span className={`h-4 w-2 bg-cyan ${cursorVisible ? 'opacity-100' : 'opacity-0'}`} />
+                <span className={`bg-cyan h-4 w-2 ${cursorVisible ? 'opacity-100' : 'opacity-0'}`} />
               </div>
             )}
           </div>
@@ -231,26 +231,26 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
           {/* Progress bar */}
           {currentProgress.stage && (
             <div className='border-line/30 border-t px-4 py-3'>
-              <div className='mb-1 flex justify-between text-muted-foreground text-xs'>
+              <div className='text-muted-foreground mb-1 flex justify-between text-xs'>
                 <span>{currentProgress.stage.label}</span>
                 <span className='tabular-nums'>{Math.round(currentProgress.progress * 100)}%</span>
               </div>
-              <div className='h-1.5 overflow-hidden rounded-full bg-line/30'>
-                <div className='h-full rounded-full bg-linear-to-r from-cyan to-neon' style={{ width: `${currentProgress.progress * 100}%` }} />
+              <div className='bg-line/30 h-1.5 overflow-hidden rounded-full'>
+                <div className='from-cyan to-neon h-full rounded-full bg-linear-to-r' style={{ width: `${currentProgress.progress * 100}%` }} />
               </div>
             </div>
           )}
         </div>
 
         {/* Status line below terminal */}
-        <div className='mt-4 text-center text-muted-foreground text-xs'>
+        <div className='text-muted-foreground mt-4 text-center text-xs'>
           <span>STATUS: </span>
           <span className={getStatusColor()}>{getStatusLabel()}</span>
           {debugState.isEnabled && debugState.isPaused && <span className='ml-2 text-amber-500'>(PAUSED)</span>}
         </div>
 
         {/* Debug hint */}
-        {!debugState.isEnabled && <div className='mt-2 text-center text-[10px] text-subtle-foreground'>Press F5 to enter debug mode</div>}
+        {!debugState.isEnabled && <div className='text-subtle-foreground mt-2 text-center text-[10px]'>Press F5 to enter debug mode</div>}
       </div>
     </div>
   );

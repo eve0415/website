@@ -23,7 +23,7 @@
 
 ## Do NOT Comment On
 
-- Code style or formatting (handled by Biome, oxlint, oxfmt)
+- Code style or formatting (handled by oxlint, oxfmt)
 - React patterns (handled by oxlint-plugin-react-compiler)
 - Tailwind class ordering (handled by tooling)
 

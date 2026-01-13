@@ -40,7 +40,7 @@ const NotFound: FC = () => {
   });
 
   return (
-    <main role='main' aria-label='ページが見つかりません' className='relative min-h-screen overflow-hidden bg-background'>
+    <main role='main' aria-label='ページが見つかりません' className='bg-background relative min-h-screen overflow-hidden'>
       {/* Screen reader content */}
       <div className='sr-only'>ページが見つかりません。ホームに戻るにはページ下部のリンクをクリックしてください。</div>
 
@@ -69,7 +69,7 @@ const NotFound: FC = () => {
 // Static version for reduced motion preference
 const StaticAftermath: FC = () => {
   return (
-    <div className='fixed inset-0 flex flex-col items-center justify-center bg-background'>
+    <div className='bg-background fixed inset-0 flex flex-col items-center justify-center'>
       {/* Static glow effect */}
       <div
         className='absolute top-1/2 left-1/2 size-32 -translate-x-1/2 -translate-y-1/2 rounded-full'
@@ -79,22 +79,22 @@ const StaticAftermath: FC = () => {
       />
 
       {/* 404 text */}
-      <div className='relative z-10 mb-8 font-bold font-mono text-8xl text-foreground/30 tracking-tight'>404</div>
+      <div className='text-foreground/30 relative z-10 mb-8 font-mono text-8xl font-bold tracking-tight'>404</div>
 
       {/* Message */}
       <div className='relative z-10 text-center'>
-        <div className='text-muted-foreground text-xs uppercase tracking-widest'>[ERROR_CONTAINED]</div>
-        <div className='mt-2 text-foreground/60 text-sm'>次元境界に異常が発生しました</div>
+        <div className='text-muted-foreground text-xs tracking-widest uppercase'>[ERROR_CONTAINED]</div>
+        <div className='text-foreground/60 mt-2 text-sm'>次元境界に異常が発生しました</div>
       </div>
 
       {/* Home link */}
       <a
         href='/'
-        className='relative z-10 mt-8 flex items-center gap-3 rounded-lg border border-line/50 bg-surface/80 px-5 py-3 transition-all duration-300 hover:border-cyan/50 hover:shadow-[0_0_20px_rgba(0,212,255,0.2)]'
+        className='border-line/50 bg-surface/80 hover:border-cyan/50 relative z-10 mt-8 flex items-center gap-3 rounded-lg border px-5 py-3 transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,212,255,0.2)]'
       >
-        <div className='size-3 rounded-full bg-neon' style={{ boxShadow: '0 0 8px rgba(0, 255, 136, 0.5)' }} />
+        <div className='bg-neon size-3 rounded-full' style={{ boxShadow: '0 0 8px rgba(0, 255, 136, 0.5)' }} />
         <span className='text-foreground text-sm'>ホームに戻る</span>
-        <svg className='size-4 text-muted-foreground' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
+        <svg className='text-muted-foreground size-4' fill='none' stroke='currentColor' viewBox='0 0 24 24' aria-hidden='true'>
           <path strokeLinecap='round' strokeLinejoin='round' strokeWidth={2} d='M17 8l4 4m0 0l-4 4m4-4H3' />
         </svg>
       </a>

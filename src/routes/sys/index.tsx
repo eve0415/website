@@ -18,7 +18,7 @@ const SysPage: FC = () => {
   };
 
   return (
-    <main className='relative bg-background px-4 py-8 md:px-8 lg:px-16'>
+    <main className='bg-background relative px-4 py-8 md:px-8 lg:px-16'>
       <Terminal stats={stats} onBootComplete={handleBootComplete}>
         {/* Main content grid */}
         <div className='grid gap-8 lg:grid-cols-2 lg:gap-12'>

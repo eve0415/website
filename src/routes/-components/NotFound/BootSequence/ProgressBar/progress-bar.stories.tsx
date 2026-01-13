@@ -11,7 +11,7 @@ const meta = preview.meta({
   parameters: { layout: 'centered' },
   decorators: [
     Story => (
-      <div className='w-96 rounded-lg border border-line/50 bg-surface/90'>
+      <div className='border-line/50 bg-surface/90 w-96 rounded-lg border'>
         <Story />
       </div>
     ),

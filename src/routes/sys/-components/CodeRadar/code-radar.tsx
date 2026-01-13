@@ -282,14 +282,14 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
   return (
     <div className='relative w-full max-w-md'>
       {/* ASCII border decoration */}
-      <div className='mb-2 font-mono text-subtle-foreground text-xs'>
+      <div className='text-subtle-foreground mb-2 font-mono text-xs'>
         <span className='text-neon'>[</span>
         <span>CODE_RADAR</span>
         <span className='text-neon'>]</span>
-        <span className='ml-2 text-subtle-foreground'>// 52週間の活動</span>
+        <span className='text-subtle-foreground ml-2'>// 52週間の活動</span>
       </div>
 
-      <div className='relative aspect-square w-full rounded border border-line bg-surface/50'>
+      <div className='border-line bg-surface/50 relative aspect-square w-full rounded border'>
         <canvas
           ref={canvasRef}
           role='img'
@@ -301,7 +301,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         {/* Boot status overlay */}
         {bootPhase === 'booting' && !prefersReducedMotion && (
           <div className='pointer-events-none absolute inset-0 flex items-end justify-center pb-4'>
-            <span className='animate-pulse font-mono text-neon text-xs'>SCANNING...</span>
+            <span className='text-neon animate-pulse font-mono text-xs'>SCANNING...</span>
           </div>
         )}
       </div>

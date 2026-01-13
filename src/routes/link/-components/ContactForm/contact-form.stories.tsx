@@ -23,7 +23,7 @@ const MockTurnstileWidget: FC<{
   }, [onVerify]);
 
   return (
-    <div data-testid='turnstile-mock' className='flex h-16.25 items-center gap-2 rounded-lg border border-line bg-surface p-3'>
+    <div data-testid='turnstile-mock' className='border-line bg-surface flex h-16.25 items-center gap-2 rounded-lg border p-3'>
       <span className='text-neon'>✓</span>
       <span className='text-neon text-sm'>認証完了</span>
     </div>
@@ -112,7 +112,7 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
   return (
     <form data-testid='contact-form' onSubmit={handleSubmit} className='space-y-6'>
       <div className='group'>
-        <label htmlFor='name' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
+        <label htmlFor='name' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
           お名前
         </label>
         <input
@@ -123,7 +123,7 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
           onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
           onBlur={() => handleBlur('name')}
           onFocus={() => handleFocus('name')}
-          className={`w-full rounded-lg border bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:outline-none focus:ring-1 ${
+          className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
             fieldErrors.name ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
           }`}
           placeholder='山田太郎'
@@ -131,14 +131,14 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
           maxLength={100}
         />
         {fieldErrors.name && (
-          <p data-testid='name-error' className='mt-1 text-orange text-sm'>
+          <p data-testid='name-error' className='text-orange mt-1 text-sm'>
             {fieldErrors.name}
           </p>
         )}
       </div>
 
       <div className='group'>
-        <label htmlFor='email' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
+        <label htmlFor='email' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
           メールアドレス
         </label>
         <input
@@ -149,21 +149,21 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
           onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
           onBlur={() => handleBlur('email')}
           onFocus={() => handleFocus('email')}
-          className={`w-full rounded-lg border bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:outline-none focus:ring-1 ${
+          className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
             fieldErrors.email ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
           }`}
           placeholder='you@example.com'
           disabled={isDisabled}
         />
         {fieldErrors.email && (
-          <p data-testid='email-error' className='mt-1 text-orange text-sm'>
+          <p data-testid='email-error' className='text-orange mt-1 text-sm'>
             {fieldErrors.email}
           </p>
         )}
       </div>
 
       <div className='group'>
-        <label htmlFor='message' className='mb-2 block text-muted-foreground text-sm transition-colors group-focus-within:text-neon'>
+        <label htmlFor='message' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
           メッセージ
         </label>
         <textarea
@@ -174,14 +174,14 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
           onChange={e => setFormData(prev => ({ ...prev, message: e.target.value }))}
           onBlur={() => handleBlur('message')}
           onFocus={() => handleFocus('message')}
-          className={`w-full resize-none rounded-lg border bg-surface px-4 py-3 text-foreground transition-all duration-fast placeholder:text-subtle-foreground focus:outline-none focus:ring-1 ${
+          className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full resize-none rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
             fieldErrors.message ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
           }`}
           placeholder='ご用件をお書きください...'
           disabled={isDisabled}
           maxLength={2000}
         />
-        <div className='mt-1 flex justify-between text-subtle-foreground text-xs'>
+        <div className='text-subtle-foreground mt-1 flex justify-between text-xs'>
           {fieldErrors.message ? (
             <p data-testid='message-error' className='text-orange'>
               {fieldErrors.message}
@@ -205,14 +205,14 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
         type='submit'
         data-testid='submit-button'
         disabled={isDisabled}
-        className={`group relative w-full overflow-hidden rounded-lg px-6 py-3 font-medium transition-all duration-fast ${
+        className={`group duration-fast relative w-full overflow-hidden rounded-lg px-6 py-3 font-medium transition-all ${
           formState === 'success' ? 'bg-neon/20 text-neon' : 'bg-neon text-background hover:shadow-glow/20 hover:shadow-lg'
         } disabled:cursor-not-allowed disabled:opacity-50`}
       >
         <span className='relative z-10'>
           {formState === 'submitting' ? (
             <span data-testid='submitting-text' className='flex items-center justify-center gap-2'>
-              <span className='size-4 animate-spin rounded-full border-2 border-background border-t-transparent' />
+              <span className='border-background size-4 animate-spin rounded-full border-2 border-t-transparent' />
               送信中...
             </span>
           ) : formState === 'success' ? (
@@ -224,16 +224,16 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
       </button>
 
       {formState === 'success' && (
-        <p data-testid='success-message' className='animate-fade-in-up text-center text-neon text-sm'>
+        <p data-testid='success-message' className='animate-fade-in-up text-neon text-center text-sm'>
           メッセージが送信されました。ありがとうございます!
         </p>
       )}
 
       {globalError && (
-        <div data-testid='error-message' className='animate-fade-in-up rounded-lg border border-orange/30 bg-orange/10 p-4'>
-          <p className='text-center text-orange text-sm'>{globalError}</p>
+        <div data-testid='error-message' className='animate-fade-in-up border-orange/30 bg-orange/10 rounded-lg border p-4'>
+          <p className='text-orange text-center text-sm'>{globalError}</p>
           {showAlternativeContact && (
-            <p className='mt-2 text-center text-muted-foreground text-xs'>
+            <p className='text-muted-foreground mt-2 text-center text-xs'>
               <a href='https://twitter.com/eveevekun' target='_blank' rel='noopener noreferrer' className='text-neon underline'>
                 X (@eveevekun)
               </a>
@@ -255,7 +255,7 @@ const meta = preview.meta({
   parameters: { layout: 'centered' },
   decorators: [
     Story => (
-      <div className='w-100 bg-bg-primary p-8'>
+      <div className='bg-bg-primary w-100 p-8'>
         <Story />
       </div>
     ),

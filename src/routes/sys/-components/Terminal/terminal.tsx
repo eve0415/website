@@ -229,7 +229,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
       {/* Terminal header with command (hidden after clear) */}
       {bootCommandVisible && (
         <header data-testid='terminal-header' className='mb-8 flex flex-col gap-2 md:flex-row md:items-center md:justify-between'>
-          <h1 className='font-mono text-lg text-neon md:text-xl'>
+          <h1 className='text-neon font-mono text-lg md:text-xl'>
             <span className='text-subtle-foreground'>&gt; </span>
             {state === 'typing' ? (
               <>
@@ -248,7 +248,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
             )}
           </h1>
           {showContent && (
-            <div className='font-mono text-subtle-foreground text-xs'>
+            <div className='text-subtle-foreground font-mono text-xs'>
               <span>最終更新: </span>
               <span>{new Date(stats.cachedAt).toLocaleDateString('ja-JP')}</span>
             </div>
@@ -270,7 +270,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
 
           {/* Autocomplete suggestions */}
           {suggestions.length > 0 && (
-            <div className='mt-2 text-subtle-foreground'>
+            <div className='text-subtle-foreground mt-2'>
               {suggestions.map(s => (
                 <span key={s} className='mr-4'>
                   {s}
@@ -302,7 +302,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
 
       {/* Footer hint - only in prompt mode */}
       {state === 'prompt' && !isTouchDevice && (
-        <footer data-testid='terminal-footer' className='mt-8 flex items-center justify-center gap-2 text-subtle-foreground text-xs'>
+        <footer data-testid='terminal-footer' className='text-subtle-foreground mt-8 flex items-center justify-center gap-2 text-xs'>
           <span className='font-mono'># type 'help' for commands</span>
         </footer>
       )}

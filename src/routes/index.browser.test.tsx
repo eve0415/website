@@ -58,30 +58,30 @@ const TestIndexPage: FC = () => {
   return (
     <main
       data-testid='main'
-      className={`relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 transition-all duration-slow ${konamiActivated ? 'animate-glitch' : ''}`}
+      className={`duration-slow relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 transition-all ${konamiActivated ? 'animate-glitch' : ''}`}
     >
       {konamiActivated && (
-        <div data-testid='konami-overlay' className='pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-background/80'>
+        <div data-testid='konami-overlay' className='bg-background/80 pointer-events-none fixed inset-0 z-50 flex items-center justify-center'>
           <div className='animate-fade-in-scale text-center'>
-            <span className='block font-mono text-neon text-xl'>SECRET_UNLOCKED</span>
+            <span className='text-neon block font-mono text-xl'>SECRET_UNLOCKED</span>
           </div>
         </div>
       )}
 
       <div className='flex flex-col items-center gap-8'>
-        <div className='w-48 text-foreground md:w-64 lg:w-80'>
+        <div className='text-foreground w-48 md:w-64 lg:w-80'>
           <Logo animate />
         </div>
-        <h1 className='font-bold text-3xl tracking-tight md:text-4xl lg:text-5xl'>
+        <h1 className='text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl'>
           <TerminalText text='eve0415' speed={50} />
         </h1>
         {showTagline && (
-          <p data-testid='tagline' className='animate-fade-in-up text-center text-muted-foreground'>
+          <p data-testid='tagline' className='animate-fade-in-up text-muted-foreground text-center'>
             <TerminalText text='エンジニア' delay={0} speed={30} />
           </p>
         )}
         {showNav && (
-          <nav data-testid='nav' className='mt-12 flex animate-fade-in-up flex-col items-center gap-6 text-sm text-subtle-foreground'>
+          <nav data-testid='nav' className='animate-fade-in-up text-subtle-foreground mt-12 flex flex-col items-center gap-6 text-sm'>
             <div className='flex gap-6'>
               <span className='font-mono'>[Projects]</span>
               <span className='font-mono'>[Skills]</span>

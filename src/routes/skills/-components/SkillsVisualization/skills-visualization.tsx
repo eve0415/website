@@ -129,7 +129,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true }) => {
   }, [shouldAnimate]);
 
   return (
-    <div className='relative h-100 rounded-lg border border-line bg-surface/30'>
+    <div className='border-line bg-surface/30 relative h-100 rounded-lg border'>
       <canvas ref={canvasRef} className='size-full' />
       {/* Legend overlay */}
       <div className='pointer-events-none absolute bottom-4 left-4 flex flex-wrap gap-3'>
@@ -140,7 +140,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true }) => {
             orange: 'bg-orange',
           };
           return (
-            <span key={level} className='flex items-center gap-1.5 text-subtle-foreground text-xs'>
+            <span key={level} className='text-subtle-foreground flex items-center gap-1.5 text-xs'>
               <span className={`size-2 rounded-full ${colors[config.color]}`} />
               <span>{config.label}</span>
             </span>

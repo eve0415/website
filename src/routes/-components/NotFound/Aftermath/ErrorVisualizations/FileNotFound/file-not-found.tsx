@@ -132,17 +132,17 @@ const FileNotFound: FC = () => {
       />
 
       {/* Corner markers */}
-      <div className='pointer-events-none absolute top-4 left-4 size-8 border-[#64b5f6]/30 border-t-2 border-l-2' />
-      <div className='pointer-events-none absolute top-4 right-4 size-8 border-[#64b5f6]/30 border-t-2 border-r-2' />
-      <div className='pointer-events-none absolute bottom-4 left-4 size-8 border-[#64b5f6]/30 border-b-2 border-l-2' />
-      <div className='pointer-events-none absolute right-4 bottom-4 size-8 border-[#64b5f6]/30 border-r-2 border-b-2' />
+      <div className='pointer-events-none absolute top-4 left-4 size-8 border-t-2 border-l-2 border-[#64b5f6]/30' />
+      <div className='pointer-events-none absolute top-4 right-4 size-8 border-t-2 border-r-2 border-[#64b5f6]/30' />
+      <div className='pointer-events-none absolute bottom-4 left-4 size-8 border-b-2 border-l-2 border-[#64b5f6]/30' />
+      <div className='pointer-events-none absolute right-4 bottom-4 size-8 border-r-2 border-b-2 border-[#64b5f6]/30' />
 
       <div className='flex h-full flex-col items-center justify-center p-6'>
         {/* Schematic header */}
         <div className='mb-8 text-center'>
-          <div className='font-mono text-[#64b5f6] text-xs tracking-[0.3em]'>FILE SYSTEM SCHEMATIC</div>
-          <div className='mt-2 border-[#ff6b6b]/30 border-t border-b py-2'>
-            <span className='font-mono text-2xl text-[#ff6b6b] tracking-wide'>ENOENT: FILE NOT FOUND</span>
+          <div className='font-mono text-xs tracking-[0.3em] text-[#64b5f6]'>FILE SYSTEM SCHEMATIC</div>
+          <div className='mt-2 border-t border-b border-[#ff6b6b]/30 py-2'>
+            <span className='font-mono text-2xl tracking-wide text-[#ff6b6b]'>ENOENT: FILE NOT FOUND</span>
           </div>
         </div>
 
@@ -150,18 +150,18 @@ const FileNotFound: FC = () => {
         <div className='flex w-full max-w-4xl gap-8'>
           {/* File tree visualization */}
           <div className='flex-1 rounded border border-[#546e7a]/30 bg-[#1e272c] p-6'>
-            <div className='mb-4 flex items-center gap-2 text-[#64b5f6] text-xs'>
+            <div className='mb-4 flex items-center gap-2 text-xs text-[#64b5f6]'>
               <span>DIRECTORY STRUCTURE</span>
-              <div className='flex-1 border-[#546e7a]/30 border-t' />
+              <div className='flex-1 border-t border-[#546e7a]/30' />
             </div>
             {renderTree(fileTree)}
           </div>
 
           {/* Search path visualization */}
           <div className='w-72 rounded border border-[#546e7a]/30 bg-[#1e272c] p-6'>
-            <div className='mb-4 flex items-center gap-2 text-[#64b5f6] text-xs'>
+            <div className='mb-4 flex items-center gap-2 text-xs text-[#64b5f6]'>
               <span>SEARCH PATH</span>
-              <div className='flex-1 border-[#546e7a]/30 border-t' />
+              <div className='flex-1 border-t border-[#546e7a]/30' />
             </div>
 
             <div className='space-y-2'>
@@ -176,7 +176,7 @@ const FileNotFound: FC = () => {
               ))}
 
               {searchComplete && (
-                <div className='mt-4 animate-pulse border-[#ff6b6b]/30 border-t pt-4 text-center font-mono text-[#ff6b6b] text-xs'>PATH RESOLUTION FAILED</div>
+                <div className='mt-4 animate-pulse border-t border-[#ff6b6b]/30 pt-4 text-center font-mono text-xs text-[#ff6b6b]'>PATH RESOLUTION FAILED</div>
               )}
             </div>
           </div>
@@ -184,7 +184,7 @@ const FileNotFound: FC = () => {
 
         {/* Error details */}
         <div className='mt-8 w-full max-w-4xl rounded border border-[#546e7a]/30 bg-[#1e272c] p-4'>
-          <div className='font-mono text-[#90a4ae] text-xs'>
+          <div className='font-mono text-xs text-[#90a4ae]'>
             <span className='text-[#ff6b6b]'>Error:</span> ENOENT: no such file or directory
             <br />
             <span className='text-[#8fa9b5]'>Path:</span> {pathname}
@@ -197,7 +197,7 @@ const FileNotFound: FC = () => {
         <div className='mt-8'>
           <Link
             to='/'
-            className='inline-flex items-center gap-3 rounded border border-[#64b5f6]/30 bg-[#1e272c] px-6 py-3 font-mono text-[#64b5f6] text-sm transition-all hover:border-[#64b5f6] hover:bg-[#64b5f6]/10'
+            className='inline-flex items-center gap-3 rounded border border-[#64b5f6]/30 bg-[#1e272c] px-6 py-3 font-mono text-sm text-[#64b5f6] transition-all hover:border-[#64b5f6] hover:bg-[#64b5f6]/10'
           >
             <span className='text-[#81c784]'>+</span>
             ファイルを作成 → ホームへ戻る

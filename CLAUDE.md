@@ -13,7 +13,7 @@ Personal website (eve0415.net) built with TanStack Start, React 19, and deployed
 ```bash
 pnpm dev          # Start dev server with hot reload
 pnpm build        # Production build
-pnpm lint         # Run Biome + oxlint + oxfmt (auto-fixes enabled)
+pnpm lint         # Ru+ oxfmt (auto-fixes enabled)
 pnpm generate     # Generate Cloudflare Worker types
 ```
 

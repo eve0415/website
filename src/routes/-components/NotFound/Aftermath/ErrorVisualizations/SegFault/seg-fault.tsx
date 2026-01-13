@@ -113,7 +113,7 @@ const SegFault: FC = () => {
         {/* Glitchy title */}
         <div className='relative mb-8 text-center'>
           <div
-            className='font-bold font-mono text-5xl text-[#ff0040] sm:text-7xl'
+            className='font-mono text-5xl font-bold text-[#ff0040] sm:text-7xl'
             style={{
               textShadow: `
                 ${glitchPhase % 2 === 0 ? 2 : -2}px 0 #00ffff,
@@ -126,7 +126,7 @@ const SegFault: FC = () => {
           </div>
           {glitchPhase % 3 === 0 && (
             <div
-              className='absolute top-1/2 left-0 w-full font-bold font-mono text-5xl text-[#00ffff] sm:text-7xl'
+              className='absolute top-1/2 left-0 w-full font-mono text-5xl font-bold text-[#00ffff] sm:text-7xl'
               style={{
                 transform: 'translateX(5px)',
                 clipPath: 'polygon(0 55%, 100% 55%, 100% 100%, 0 100%)',
@@ -139,12 +139,12 @@ const SegFault: FC = () => {
 
         {/* Memory segment visualization */}
         <div className='mb-8 w-full max-w-2xl'>
-          <div className='mb-2 font-mono text-[#999] text-xs'>MEMORY SEGMENTS</div>
+          <div className='mb-2 font-mono text-xs text-[#999]'>MEMORY SEGMENTS</div>
           <div className='overflow-hidden rounded border border-[#333] bg-[#111]'>
             {memorySegments.map(seg => (
               <div
                 key={seg.name}
-                className={`flex items-center border-[#333] border-b p-3 font-mono text-sm last:border-b-0 ${
+                className={`flex items-center border-b border-[#333] p-3 font-mono text-sm last:border-b-0 ${
                   seg.isViolated ? 'animate-pulse bg-[#ff0040]/20' : ''
                 }`}
                 style={{
@@ -156,7 +156,7 @@ const SegFault: FC = () => {
                   {seg.start} - {seg.end}
                 </div>
                 <div className={`font-mono ${seg.isViolated ? 'text-[#ff0040]' : 'text-[#5fb]'}`}>{seg.permissions}</div>
-                {seg.isViolated && <div className='ml-4 rounded bg-[#ff0040] px-2 py-0.5 text-white text-xs'>VIOLATION</div>}
+                {seg.isViolated && <div className='ml-4 rounded bg-[#ff0040] px-2 py-0.5 text-xs text-white'>VIOLATION</div>}
               </div>
             ))}
           </div>
@@ -165,15 +165,15 @@ const SegFault: FC = () => {
         {/* Core dump message */}
         {showCoreDump && (
           <div className='mb-8 max-w-2xl animate-pulse rounded border border-[#ff0040]/50 bg-[#ff0040]/10 p-4 text-center'>
-            <div className='font-mono text-[#ff0040] text-sm'>Segmentation fault (core dumped)</div>
-            <div className='mt-1 font-mono text-[#999] text-xs'>Signal 11 (SIGSEGV) at address 0x00000000</div>
+            <div className='font-mono text-sm text-[#ff0040]'>Segmentation fault (core dumped)</div>
+            <div className='mt-1 font-mono text-xs text-[#999]'>Signal 11 (SIGSEGV) at address 0x00000000</div>
           </div>
         )}
 
         {/* Fix action */}
         <Link
           to='/'
-          className='inline-flex items-center gap-2 rounded border border-[#ff0040]/50 bg-[#ff0040]/10 px-6 py-3 font-mono text-[#ff0040] text-sm transition-all hover:border-[#ff0040] hover:bg-[#ff0040]/20'
+          className='inline-flex items-center gap-2 rounded border border-[#ff0040]/50 bg-[#ff0040]/10 px-6 py-3 font-mono text-sm text-[#ff0040] transition-all hover:border-[#ff0040] hover:bg-[#ff0040]/20'
           style={{
             textShadow: '0 0 10px rgba(255, 0, 64, 0.5)',
           }}

@@ -31,22 +31,22 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index }) => {
   const featuredClasses = project.featured ? 'col-span-full md:p-8' : '';
 
   return (
-    <article className={`${baseClasses} ${visibilityClasses} ${featuredClasses} transition-all duration-normal`}>
+    <article className={`${baseClasses} ${visibilityClasses} ${featuredClasses} duration-normal transition-all`}>
       <div className={project.featured ? 'flex flex-col gap-4 md:flex-row md:items-start md:justify-between' : ''}>
         <div>
-          <h2 className={`font-bold text-foreground group-hover:text-neon ${project.featured ? 'text-2xl' : 'text-xl'}`}>{project.title}</h2>
-          <p className={`mt-2 text-muted-foreground ${project.featured ? '' : 'text-sm'}`}>{project.description}</p>
+          <h2 className={`text-foreground group-hover:text-neon font-bold ${project.featured ? 'text-2xl' : 'text-xl'}`}>{project.title}</h2>
+          <p className={`text-muted-foreground mt-2 ${project.featured ? '' : 'text-sm'}`}>{project.description}</p>
         </div>
         {project.highlight && (
           <div className='flex flex-col items-end gap-1'>
-            <span className='rounded-full bg-neon/10 px-3 py-1 font-mono text-neon text-sm'>{project.highlight}</span>
+            <span className='bg-neon/10 text-neon rounded-full px-3 py-1 font-mono text-sm'>{project.highlight}</span>
             {project.highlightSub && <span className='text-subtle-foreground text-xs'>{project.highlightSub}</span>}
           </div>
         )}
       </div>
       <div className='mt-4 flex flex-wrap gap-2'>
         {project.tags.map(tag => (
-          <span key={tag} className='rounded-md border border-line px-2 py-1 text-subtle-foreground text-xs transition-colors group-hover:border-input'>
+          <span key={tag} className='border-line text-subtle-foreground group-hover:border-input rounded-md border px-2 py-1 text-xs transition-colors'>
             {tag}
           </span>
         ))}
@@ -58,7 +58,7 @@ const ProjectCard: FC<ProjectCardProps> = ({ project, index }) => {
             href={link.url}
             target='_blank'
             rel='noopener noreferrer'
-            className='group/link relative text-muted-foreground text-sm transition-colors hover:text-neon'
+            className='group/link text-muted-foreground hover:text-neon relative text-sm transition-colors'
           >
             {link.label}
             <span className='ml-1 inline-block transition-transform group-hover/link:translate-x-0.5'>→</span>

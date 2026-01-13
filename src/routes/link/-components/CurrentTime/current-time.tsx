@@ -29,7 +29,7 @@ const CurrentTime: FC<Props> = ({ fixedTime }) => {
     return () => clearInterval(interval);
   }, [fixedTime]);
 
-  return <span className='font-mono text-neon tabular-nums'>{time || '--:--:--'}</span>;
+  return <span className='text-neon font-mono tabular-nums'>{time || '--:--:--'}</span>;
 };
 
 export default CurrentTime;

@@ -24,7 +24,7 @@ const meta = preview.meta({
   parameters: { layout: 'fullscreen' },
   decorators: [
     Story => (
-      <div className='relative h-screen w-full bg-background'>
+      <div className='bg-background relative h-screen w-full'>
         <Story />
       </div>
     ),

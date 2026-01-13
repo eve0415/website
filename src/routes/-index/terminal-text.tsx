@@ -87,7 +87,7 @@ const AnimatedTerminalText: FC<Props> = ({ text, delay = 0, speed = 50, classNam
   return (
     <span className={`inline-block ${className}`}>
       {displayedText}
-      {!isComplete && <span className='ml-0.5 inline-block h-[1em] w-[0.5em] animate-blink bg-accent-primary' />}
+      {!isComplete && <span className='animate-blink bg-accent-primary ml-0.5 inline-block h-[1em] w-[0.5em]' />}
     </span>
   );
 };

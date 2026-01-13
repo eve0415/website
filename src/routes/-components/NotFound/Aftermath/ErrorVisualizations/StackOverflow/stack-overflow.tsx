@@ -60,7 +60,7 @@ const StackOverflow: FC = () => {
   }, [reducedMotion, frames]);
 
   return (
-    <div className='fixed inset-0 overflow-hidden bg-background'>
+    <div className='bg-background fixed inset-0 overflow-hidden'>
       {/* CRT scan line effect */}
       <div
         className='pointer-events-none absolute inset-0 opacity-10'
@@ -94,8 +94,8 @@ const StackOverflow: FC = () => {
       <div className='relative flex h-full flex-col p-6 font-mono'>
         {/* Terminal header */}
         <div className='mb-4 flex items-center gap-4'>
-          <span className='text-[#00ff00] text-xs'>STACK MONITOR v1.0</span>
-          <span className='text-[#00ff00]/50 text-xs'>|</span>
+          <span className='text-xs text-[#00ff00]'>STACK MONITOR v1.0</span>
+          <span className='text-xs text-[#00ff00]/50'>|</span>
           <span className={`text-xs ${crashed ? 'animate-pulse text-[#ff0000]' : 'text-[#00ff00]/70'}`}>
             {crashed ? '███ OVERFLOW DETECTED ███' : 'MONITORING...'}
           </span>
@@ -106,7 +106,7 @@ const StackOverflow: FC = () => {
           {/* Stack frames scrolling area */}
           <div className='absolute inset-0 flex flex-col-reverse overflow-hidden p-4'>
             {/* Bottom marker */}
-            <div className='mb-2 border-[#00ff00]/30 border-t pt-2 text-center text-[#00ff00]/50 text-[10px]'>─── STACK BOTTOM ───</div>
+            <div className='mb-2 border-t border-[#00ff00]/30 pt-2 text-center text-[10px] text-[#00ff00]/50'>─── STACK BOTTOM ───</div>
 
             {/* Stack frames */}
             <div className='space-y-1'>
@@ -136,10 +136,10 @@ const StackOverflow: FC = () => {
           {overflowing && (
             <div className='absolute inset-0 flex items-center justify-center bg-[#ff0000]/10'>
               <div className='text-center'>
-                <div className='font-bold text-4xl text-[#ff0000] sm:text-6xl' style={{ textShadow: '0 0 20px rgba(255, 0, 0, 0.8)' }}>
+                <div className='text-4xl font-bold text-[#ff0000] sm:text-6xl' style={{ textShadow: '0 0 20px rgba(255, 0, 0, 0.8)' }}>
                   STACK OVERFLOW
                 </div>
-                <div className='mt-4 animate-pulse text-[#ff0000]/80 text-sm'>Maximum call stack size exceeded</div>
+                <div className='mt-4 animate-pulse text-sm text-[#ff0000]/80'>Maximum call stack size exceeded</div>
               </div>
             </div>
           )}
@@ -147,7 +147,7 @@ const StackOverflow: FC = () => {
 
         {/* Memory meter */}
         <div className='mt-4 space-y-2'>
-          <div className='flex justify-between text-[#00ff00]/70 text-[10px]'>
+          <div className='flex justify-between text-[10px] text-[#00ff00]/70'>
             <span>STACK MEMORY</span>
             <span className={crashed ? 'text-[#ff0000]' : ''}>{crashed ? '100%' : `${Math.min(stackFrames.length * 5.5, 99).toFixed(0)}%`}</span>
           </div>
@@ -161,7 +161,7 @@ const StackOverflow: FC = () => {
 
         {/* Terminal input area */}
         <div className='mt-4 rounded border border-[#00ff00]/30 bg-[#001100] p-3'>
-          <div className='flex items-center gap-2 text-[#00ff00] text-xs'>
+          <div className='flex items-center gap-2 text-xs text-[#00ff00]'>
             <span className='animate-pulse'>▌</span>
             <Link to='/' className='transition-opacity hover:opacity-80' style={{ textShadow: '0 0 8px rgba(0, 255, 0, 0.5)' }}>
               &gt; スタックをクリア &amp;&amp; ホームへ戻る_

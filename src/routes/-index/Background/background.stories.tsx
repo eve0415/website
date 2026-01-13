@@ -11,10 +11,10 @@ const meta = preview.meta({
   },
   decorators: [
     Story => (
-      <div className='relative h-screen w-screen bg-bg-primary'>
+      <div className='bg-bg-primary relative h-screen w-screen'>
         <Story />
         <div className='absolute inset-0 flex items-center justify-center'>
-          <span className='rounded bg-surface px-4 py-2 font-mono text-foreground'>Move mouse to see reactive grid dots</span>
+          <span className='bg-surface text-foreground rounded px-4 py-2 font-mono'>Move mouse to see reactive grid dots</span>
         </div>
       </div>
     ),

@@ -46,7 +46,7 @@ export const placeholderLink: SocialLink = {
   name: 'Coming Soon',
   url: '#',
   handle: 'TBD',
-  icon: <span className='text-sm text-subtle-foreground'>?</span>,
+  icon: <span className='text-subtle-foreground text-sm'>?</span>,
   color: 'hover:border-muted/50',
   iconHover: 'group-hover:bg-muted/20',
 };

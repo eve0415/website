@@ -46,14 +46,14 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
 
   const content = (
     <>
-      <span className={`flex size-12 items-center justify-center rounded-lg bg-muted transition-all duration-normal group-hover:scale-105 ${link.iconHover}`}>
+      <span className={`bg-muted duration-normal flex size-12 items-center justify-center rounded-lg transition-all group-hover:scale-105 ${link.iconHover}`}>
         {link.icon}
       </span>
       <div>
-        <span className='block font-medium text-foreground group-hover:text-neon'>{link.name}</span>
-        <span className='font-mono text-sm text-subtle-foreground'>{isCopied ? 'Copied!' : link.handle}</span>
+        <span className='text-foreground group-hover:text-neon block font-medium'>{link.name}</span>
+        <span className='text-subtle-foreground font-mono text-sm'>{isCopied ? 'Copied!' : link.handle}</span>
       </div>
-      <span className='ml-auto text-subtle-foreground transition-transform group-hover:translate-x-1'>→</span>
+      <span className='text-subtle-foreground ml-auto transition-transform group-hover:translate-x-1'>→</span>
     </>
   );
 

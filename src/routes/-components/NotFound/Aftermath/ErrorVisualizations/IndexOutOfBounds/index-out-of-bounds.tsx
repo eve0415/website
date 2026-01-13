@@ -57,7 +57,7 @@ const IndexOutOfBounds: FC = () => {
   }, [cursorPosition, reducedMotion]);
 
   return (
-    <div className='fixed inset-0 overflow-hidden bg-background'>
+    <div className='bg-background fixed inset-0 overflow-hidden'>
       {/* Memory address grid background */}
       <div
         className='pointer-events-none absolute inset-0 opacity-[0.04]'
@@ -82,7 +82,7 @@ const IndexOutOfBounds: FC = () => {
       />
 
       {/* Faint hex address overlay */}
-      <div className='pointer-events-none absolute inset-0 flex flex-wrap gap-20 overflow-hidden p-4 font-mono text-[8px] text-neon/6'>
+      <div className='text-neon/6 pointer-events-none absolute inset-0 flex flex-wrap gap-20 overflow-hidden p-4 font-mono text-[8px]'>
         {Array.from({ length: 50 }).map((_, i) => (
           <span key={i}>0x{(i * 0x100).toString(16).toUpperCase().padStart(4, '0')}</span>
         ))}
@@ -91,13 +91,13 @@ const IndexOutOfBounds: FC = () => {
       <div className='flex h-full flex-col items-center justify-center p-6'>
         {/* Title */}
         <div className='mb-12 text-center'>
-          <div className='font-mono text-neon text-xs tracking-wider'>[ARRAY_BOUNDS_ERROR]</div>
-          <div className='mt-2 font-semibold text-3xl text-red-400'>IndexOutOfBoundsException</div>
+          <div className='text-neon font-mono text-xs tracking-wider'>[ARRAY_BOUNDS_ERROR]</div>
+          <div className='mt-2 text-3xl font-semibold text-red-400'>IndexOutOfBoundsException</div>
         </div>
 
         {/* Array visualization */}
         <div className='mb-8'>
-          <div className='mb-4 font-mono text-muted-foreground text-xs'>
+          <div className='text-muted-foreground mb-4 font-mono text-xs'>
             <span className='text-cyan'>int</span>[] data = <span className='text-cyan'>new</span> <span className='text-cyan'>int</span>[{arraySize}];
           </div>
 
@@ -115,19 +115,19 @@ const IndexOutOfBounds: FC = () => {
                 }`}
               >
                 <span className='text-foreground text-xs sm:text-sm'>{toHexValue(i)}</span>
-                <span className='text-[10px] text-muted-foreground sm:text-xs'>[{i}]</span>
+                <span className='text-muted-foreground text-[10px] sm:text-xs'>[{i}]</span>
               </div>
             ))}
 
             {/* Out of bounds indicator */}
             <div className='flex items-center px-2'>
-              <span className='text-lg text-muted-foreground'>→</span>
+              <span className='text-muted-foreground text-lg'>→</span>
             </div>
 
             {/* Invalid access cell with corruption effect */}
             <div
               className={`relative flex size-14 flex-col items-center justify-center rounded-lg border-2 border-dashed font-mono transition-all duration-200 sm:size-16 ${
-                cursorPosition >= arraySize ? 'animate-pulse border-red-500 bg-red-500/10 shadow-[0_0_20px_rgba(255,0,0,0.4)]' : 'border-red-500/30 bg-surface'
+                cursorPosition >= arraySize ? 'animate-pulse border-red-500 bg-red-500/10 shadow-[0_0_20px_rgba(255,0,0,0.4)]' : 'bg-surface border-red-500/30'
               }`}
               style={
                 cursorPosition >= arraySize
@@ -148,10 +148,10 @@ const IndexOutOfBounds: FC = () => {
               <span className={`text-xs sm:text-sm ${cursorPosition >= arraySize ? 'animate-[glitch_0.3s_infinite] text-red-400' : 'text-muted-foreground'}`}>
                 {cursorPosition >= arraySize ? corruptedText : '???'}
               </span>
-              <span className='text-[10px] text-muted-foreground sm:text-xs'>[{targetIndex}]</span>
+              <span className='text-muted-foreground text-[10px] sm:text-xs'>[{targetIndex}]</span>
 
               {cursorPosition >= arraySize && (
-                <div className='absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-red-500 text-white text-xs shadow-[0_0_10px_rgba(255,0,0,0.6)]'>
+                <div className='absolute -top-2 -right-2 flex size-5 items-center justify-center rounded-full bg-red-500 text-xs text-white shadow-[0_0_10px_rgba(255,0,0,0.6)]'>
                   !
                 </div>
               )}
@@ -160,7 +160,7 @@ const IndexOutOfBounds: FC = () => {
 
           {/* Index indicator */}
           <div className='relative mt-4 h-2'>
-            <div className='absolute inset-x-0 h-0.5 bg-line' />
+            <div className='bg-line absolute inset-x-0 h-0.5' />
             {cursorPosition >= 0 && (
               <div
                 className={`absolute top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full transition-all duration-200 ${
@@ -178,10 +178,10 @@ const IndexOutOfBounds: FC = () => {
         {showError && (
           <div className='mb-8 w-full max-w-lg animate-[fadeIn_0.3s_ease-out] rounded-lg border border-red-500/50 bg-red-900/20 p-4'>
             <div className='flex items-start gap-3'>
-              <div className='flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-white text-xs'>!</div>
+              <div className='flex size-6 shrink-0 items-center justify-center rounded-full bg-red-500 text-xs text-white'>!</div>
               <div>
-                <div className='font-semibold text-red-400 text-sm'>java.lang.IndexOutOfBoundsException</div>
-                <div className='mt-1 font-mono text-red-300 text-xs'>
+                <div className='text-sm font-semibold text-red-400'>java.lang.IndexOutOfBoundsException</div>
+                <div className='mt-1 font-mono text-xs text-red-300'>
                   Index {targetIndex} out of bounds for length {arraySize}
                 </div>
               </div>
@@ -190,7 +190,7 @@ const IndexOutOfBounds: FC = () => {
         )}
 
         {/* Code snippet - dark theme with syntax highlighting */}
-        <div className='mb-8 w-full max-w-lg rounded-lg border border-line bg-surface p-4'>
+        <div className='border-line bg-surface mb-8 w-full max-w-lg rounded-lg border p-4'>
           <div className='font-mono text-xs'>
             <div className='text-muted-foreground'>// Line 404</div>
             <div className='text-foreground'>
@@ -203,9 +203,9 @@ const IndexOutOfBounds: FC = () => {
         {/* System Recovery button */}
         <Link
           to='/'
-          className='group inline-flex items-center gap-3 border border-neon bg-transparent px-6 py-3 font-mono text-neon text-sm tracking-wider transition-all duration-300 hover:bg-neon/10 hover:shadow-[0_0_20px_rgba(0,255,136,0.4)] focus:ring-2 focus:ring-neon focus:ring-offset-2 focus:ring-offset-background'
+          className='group border-neon text-neon hover:bg-neon/10 focus:ring-neon focus:ring-offset-background inline-flex items-center gap-3 border bg-transparent px-6 py-3 font-mono text-sm tracking-wider transition-all duration-300 hover:shadow-[0_0_20px_rgba(0,255,136,0.4)] focus:ring-2 focus:ring-offset-2'
         >
-          <span className='block size-2 animate-pulse rounded-full bg-neon' />
+          <span className='bg-neon block size-2 animate-pulse rounded-full' />
           <span>
             <span className='text-muted-foreground'>CONFIRM:</span> 境界を修正 → ホームへ戻る
           </span>

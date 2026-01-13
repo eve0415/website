@@ -101,7 +101,7 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
               data-testid='bsod-reset'
               type='button'
               onClick={handleReset}
-              className='w-full rounded bg-white px-8 py-2.5 font-semibold text-[#0078d4] shadow-sm transition-all hover:bg-gray-50 focus:outline-hidden focus:ring-2 focus:ring-white/50 active:scale-95 sm:w-auto'
+              className='w-full rounded bg-white px-8 py-2.5 font-semibold text-[#0078d4] shadow-sm transition-all hover:bg-gray-50 focus:ring-2 focus:ring-white/50 focus:outline-hidden active:scale-95 sm:w-auto'
             >
               Restart
             </button>
@@ -109,7 +109,7 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
             <Link
               data-testid='bsod-home'
               to='/'
-              className='flex w-full items-center justify-center rounded border border-white/40 bg-transparent px-8 py-2.5 text-center text-white backdrop-blur-sm transition-all hover:bg-white/10 focus:outline-hidden focus:ring-2 focus:ring-white/50 active:scale-95 sm:w-auto'
+              className='flex w-full items-center justify-center rounded border border-white/40 bg-transparent px-8 py-2.5 text-center text-white backdrop-blur-sm transition-all hover:bg-white/10 focus:ring-2 focus:ring-white/50 focus:outline-hidden active:scale-95 sm:w-auto'
             >
               Home
             </Link>
@@ -118,7 +118,7 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
               <Link
                 data-testid='bsod-revert'
                 to='/sys'
-                className='flex w-full items-center justify-center rounded border border-white/40 bg-transparent px-8 py-2.5 text-center text-white backdrop-blur-sm transition-all hover:bg-white/10 focus:outline-hidden focus:ring-2 focus:ring-white/50 active:scale-95 sm:w-auto'
+                className='flex w-full items-center justify-center rounded border border-white/40 bg-transparent px-8 py-2.5 text-center text-white backdrop-blur-sm transition-all hover:bg-white/10 focus:ring-2 focus:ring-white/50 focus:outline-hidden active:scale-95 sm:w-auto'
               >
                 Revert
               </Link>

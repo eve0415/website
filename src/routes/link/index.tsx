@@ -52,18 +52,18 @@ const LinkPage: FC = () => {
     <main className='min-h-dvh px-6 py-24 md:px-12'>
       {/* Header */}
       <header className='mb-16'>
-        <Link to='/' className='group mb-8 inline-flex items-center gap-2 text-sm text-subtle-foreground transition-colors hover:text-neon'>
+        <Link to='/' className='group text-subtle-foreground hover:text-neon mb-8 inline-flex items-center gap-2 text-sm transition-colors'>
           <span className='transition-transform group-hover:-translate-x-1'>←</span>
           <span>Index</span>
         </Link>
-        <h1 className='animate-fade-in-up font-bold text-4xl tracking-tight md:text-5xl'>Link</h1>
-        <p className='mt-4 text-muted-foreground'>連絡先 / SNS</p>
+        <h1 className='animate-fade-in-up text-4xl font-bold tracking-tight md:text-5xl'>Link</h1>
+        <p className='text-muted-foreground mt-4'>連絡先 / SNS</p>
       </header>
 
       <div className='grid gap-16 lg:grid-cols-2'>
         {/* Social Links */}
         <section>
-          <h2 className='mb-8 font-mono text-sm text-subtle-foreground uppercase tracking-wider'>// Social</h2>
+          <h2 className='text-subtle-foreground mb-8 font-mono text-sm tracking-wider uppercase'>// Social</h2>
           <div className='grid gap-4'>
             {socialLinks.map((link, index) => (
               <SocialLinkCard key={link.name} link={link} index={index} />
@@ -73,34 +73,34 @@ const LinkPage: FC = () => {
 
         {/* Contact Form */}
         <section>
-          <h2 className='mb-8 font-mono text-sm text-subtle-foreground uppercase tracking-wider'>// Contact</h2>
+          <h2 className='text-subtle-foreground mb-8 font-mono text-sm tracking-wider uppercase'>// Contact</h2>
           <ContactForm />
         </section>
       </div>
 
       {/* Location / Time */}
-      <section className='mt-24 border-line border-t pt-12'>
-        <div className='flex flex-wrap gap-8 text-sm text-subtle-foreground md:gap-12'>
+      <section className='border-line mt-24 border-t pt-12'>
+        <div className='text-subtle-foreground flex flex-wrap gap-8 text-sm md:gap-12'>
           <div>
-            <span className='block font-mono text-xs uppercase tracking-wider'>Location</span>
-            <span className='mt-1 block text-muted-foreground'>Tokyo, Japan</span>
+            <span className='block font-mono text-xs tracking-wider uppercase'>Location</span>
+            <span className='text-muted-foreground mt-1 block'>Tokyo, Japan</span>
           </div>
           <div>
-            <span className='block font-mono text-xs uppercase tracking-wider'>Timezone</span>
-            <span className='mt-1 block text-muted-foreground'>UTC+9 (JST)</span>
+            <span className='block font-mono text-xs tracking-wider uppercase'>Timezone</span>
+            <span className='text-muted-foreground mt-1 block'>UTC+9 (JST)</span>
           </div>
           <div>
-            <span className='block font-mono text-xs uppercase tracking-wider'>Current Time</span>
+            <span className='block font-mono text-xs tracking-wider uppercase'>Current Time</span>
             <span className='mt-1 block'>
               <CurrentTime />
             </span>
           </div>
           <div>
-            <span className='block font-mono text-xs uppercase tracking-wider'>Status</span>
-            <span className='mt-1 flex items-center gap-2 text-muted-foreground'>
+            <span className='block font-mono text-xs tracking-wider uppercase'>Status</span>
+            <span className='text-muted-foreground mt-1 flex items-center gap-2'>
               <span className='relative flex size-2'>
-                <span className='absolute inline-flex size-full animate-ping rounded-full bg-neon opacity-75' />
-                <span className='relative inline-flex size-2 rounded-full bg-neon' />
+                <span className='bg-neon absolute inline-flex size-full animate-ping rounded-full opacity-75' />
+                <span className='bg-neon relative inline-flex size-2 rounded-full' />
               </span>
               Available
             </span>
@@ -110,7 +110,7 @@ const LinkPage: FC = () => {
 
       {/* Navigation hint */}
       <div className='mt-16 flex justify-center'>
-        <Link to='/skills' className='group flex items-center gap-2 text-sm text-subtle-foreground transition-colors hover:text-neon'>
+        <Link to='/skills' className='group text-subtle-foreground hover:text-neon flex items-center gap-2 text-sm transition-colors'>
           <span className='transition-transform group-hover:-translate-x-1'>←</span>
           <span>Skills Matrix</span>
         </Link>

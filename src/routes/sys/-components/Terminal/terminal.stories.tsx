@@ -10,9 +10,9 @@ import { mockGitHubStats } from './terminal.fixtures';
 
 // Default content displayed after boot
 const DefaultContent = () => (
-  <div className='rounded border border-line/30 bg-background/30 p-6'>
-    <h2 className='mb-4 font-mono text-neon'>System Diagnostics</h2>
-    <div className='space-y-2 font-mono text-sm text-subtle-foreground'>
+  <div className='border-line/30 bg-background/30 rounded border p-6'>
+    <h2 className='text-neon mb-4 font-mono'>System Diagnostics</h2>
+    <div className='text-subtle-foreground space-y-2 font-mono text-sm'>
       <p>User: {mockGitHubStats.user.login}</p>
       <p>Repos: {mockGitHubStats.user.totalRepos}</p>
       <p>Commits: {mockGitHubStats.contributions.totalCommits}</p>
@@ -99,7 +99,7 @@ const meta = preview.meta({
       // Force desktop mode for all stories (except TouchDevice which overrides)
       mockDesktopMatchMedia();
       return (
-        <div className='min-h-dvh bg-bg-primary p-8'>
+        <div className='bg-bg-primary min-h-dvh p-8'>
           <Story />
         </div>
       );

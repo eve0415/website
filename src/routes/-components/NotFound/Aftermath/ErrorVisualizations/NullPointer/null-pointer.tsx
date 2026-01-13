@@ -54,25 +54,25 @@ const NullPointer: FC<NullPointerProps> = () => {
   return (
     <div className='fixed inset-0 flex items-center justify-center bg-[#1e1e1e]'>
       {/* VS Code-style title bar */}
-      <div className='absolute inset-x-0 top-0 flex h-8 items-center border-[#3c3c3c] border-b bg-[#323233] px-4'>
+      <div className='absolute inset-x-0 top-0 flex h-8 items-center border-b border-[#3c3c3c] bg-[#323233] px-4'>
         <div className='flex gap-2'>
           <div className='size-3 rounded-full bg-[#ff5f57]' />
           <div className='size-3 rounded-full bg-[#febc2e]' />
           <div className='size-3 rounded-full bg-[#28c840]' />
         </div>
-        <span className='ml-4 text-[#cccccc] text-xs'>Debug Console - NullPointerException</span>
+        <span className='ml-4 text-xs text-[#cccccc]'>Debug Console - NullPointerException</span>
       </div>
 
       <div className='mt-8 w-full max-w-4xl px-6'>
         {/* Error header */}
-        <div className='mb-8 rounded border-[#f14c4c]/30 border-l-4 bg-[#f14c4c]/10 p-4'>
-          <div className='font-mono text-[#f14c4c] text-sm'>Exception in thread "main" java.lang.NullPointerException</div>
-          <div className='mt-1 font-mono text-[#a0a0a0] text-xs'>at Main.processPage(Main.java:404)</div>
+        <div className='mb-8 rounded border-l-4 border-[#f14c4c]/30 bg-[#f14c4c]/10 p-4'>
+          <div className='font-mono text-sm text-[#f14c4c]'>Exception in thread "main" java.lang.NullPointerException</div>
+          <div className='mt-1 font-mono text-xs text-[#a0a0a0]'>at Main.processPage(Main.java:404)</div>
         </div>
 
         {/* Memory visualization */}
         <div className='mb-6 rounded-lg border border-[#3c3c3c] bg-[#252526] p-6'>
-          <div className='mb-4 flex items-center gap-2 text-[#4fc1ff] text-xs'>
+          <div className='mb-4 flex items-center gap-2 text-xs text-[#4fc1ff]'>
             <span className='font-mono'>VARIABLES</span>
             <span className='text-[#a0a0a0]'>- Memory Layout</span>
           </div>
@@ -92,7 +92,7 @@ const NullPointer: FC<NullPointerProps> = () => {
                 onMouseEnter={() => handleCellHover(i)}
                 onMouseLeave={handleCellLeave}
               >
-                <div className='text-[#569cd6] text-[10px]'>{cell.address}</div>
+                <div className='text-[10px] text-[#569cd6]'>{cell.address}</div>
                 <div className={`mt-1 ${cell.value === 'null' || (cell.isPointer && cell.pointsTo === null) ? 'text-[#f14c4c]' : 'text-[#ce9178]'}`}>
                   {cell.value}
                   {cell.isPointer && cell.pointsTo === null && <span className='ml-1 text-[#f14c4c]'>NULL</span>}
@@ -102,8 +102,8 @@ const NullPointer: FC<NullPointerProps> = () => {
                 {showPointerPath && i === 4 && (
                   <div className='absolute top-1/2 right-0 flex translate-x-full -translate-y-1/2 items-center'>
                     <div className='h-0.5 w-8 bg-[#f14c4c]' />
-                    <div className='size-2 rotate-45 border-[#f14c4c] border-t-2 border-r-2' />
-                    <div className='ml-2 text-[#f14c4c] text-[10px]'>❌</div>
+                    <div className='size-2 rotate-45 border-t-2 border-r-2 border-[#f14c4c]' />
+                    <div className='ml-2 text-[10px] text-[#f14c4c]'>❌</div>
                   </div>
                 )}
               </div>
@@ -125,7 +125,7 @@ const NullPointer: FC<NullPointerProps> = () => {
 
         {/* Call stack */}
         <div className='mb-8 rounded-lg border border-[#3c3c3c] bg-[#252526] p-4'>
-          <div className='mb-3 text-[#4fc1ff] text-xs'>CALL STACK</div>
+          <div className='mb-3 text-xs text-[#4fc1ff]'>CALL STACK</div>
           <div className='space-y-1 font-mono text-[11px]'>
             <div className='text-[#f14c4c]'>→ processPage(null)</div>
             <div className='text-[#a0a0a0]'>{'  '}renderContent()</div>

@@ -32,11 +32,11 @@ const MockTurnstile: FC<{
   };
 
   return (
-    <div data-testid='turnstile-widget' className='flex min-h-16.25 w-75 items-center justify-between rounded-lg border border-line bg-surface p-3'>
+    <div data-testid='turnstile-widget' className='border-line bg-surface flex min-h-16.25 w-75 items-center justify-between rounded-lg border p-3'>
       <div className='flex items-center gap-2'>
         {status === 'pending' && (
           <>
-            <div className={`size-5 rounded-full border-2 border-neon border-t-transparent ${prefersReducedMotion ? '' : 'animate-spin'}`} />
+            <div className={`border-neon size-5 rounded-full border-2 border-t-transparent ${prefersReducedMotion ? '' : 'animate-spin'}`} />
             <span className='text-muted-foreground text-sm'>認証中...</span>
           </>
         )}
@@ -62,17 +62,17 @@ const MockTurnstile: FC<{
 
       {status === 'pending' && (
         <div className='flex gap-1'>
-          <button type='button' data-testid='verify-btn' onClick={handleVerify} className='rounded bg-neon/20 px-2 py-1 text-neon text-xs hover:bg-neon/30'>
+          <button type='button' data-testid='verify-btn' onClick={handleVerify} className='bg-neon/20 text-neon hover:bg-neon/30 rounded px-2 py-1 text-xs'>
             Verify
           </button>
-          <button type='button' data-testid='error-btn' onClick={handleError} className='rounded bg-orange/20 px-2 py-1 text-orange text-xs hover:bg-orange/30'>
+          <button type='button' data-testid='error-btn' onClick={handleError} className='bg-orange/20 text-orange hover:bg-orange/30 rounded px-2 py-1 text-xs'>
             Error
           </button>
           <button
             type='button'
             data-testid='expire-btn'
             onClick={handleExpire}
-            className='rounded bg-orange/20 px-2 py-1 text-orange text-xs hover:bg-orange/30'
+            className='bg-orange/20 text-orange hover:bg-orange/30 rounded px-2 py-1 text-xs'
           >
             Expire
           </button>

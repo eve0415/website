@@ -10,7 +10,7 @@ const meta = preview.meta({
   parameters: { layout: 'centered' },
   decorators: [
     Story => (
-      <div className='rounded-lg bg-muted p-8'>
+      <div className='bg-muted rounded-lg p-8'>
         <Story />
       </div>
     ),

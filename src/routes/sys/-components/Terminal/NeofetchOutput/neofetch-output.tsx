@@ -50,7 +50,7 @@ const NeofetchOutput: FC<NeofetchOutputProps> = ({ stats }) => {
             <span>sys.diagnostic v1.0</span>
           </div>
 
-          <div className='mt-2 text-subtle-foreground'>────────────────</div>
+          <div className='text-subtle-foreground mt-2'>────────────────</div>
 
           <div className='flex gap-2'>
             <span className='text-cyan'>Repos:</span>

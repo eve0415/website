@@ -16,7 +16,7 @@ const meta = preview.meta({
   },
   decorators: [
     Story => (
-      <div className='rounded border border-line bg-surface p-8'>
+      <div className='border-line bg-surface rounded border p-8'>
         <Story />
       </div>
     ),
@@ -76,7 +76,7 @@ export const LargeNumber = meta.story({
 
 export const MultipleCounters = meta.story({
   render: () => (
-    <div className='flex flex-col gap-4 rounded border border-line bg-surface p-8'>
+    <div className='border-line bg-surface flex flex-col gap-4 rounded border p-8'>
       <div className='flex items-center justify-between'>
         <span className='text-muted-foreground'>Downloads</span>
         <AnimatedCounter end={795000} duration={2500} suffix='+' />

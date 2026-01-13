@@ -30,7 +30,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
   onStop,
 }) => {
   return (
-    <div className='fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-lg border border-amber-500/30 bg-neutral-900/95 px-2 py-1.5 font-mono text-xs shadow-amber-500/10 shadow-lg backdrop-blur-sm'>
+    <div className='fixed top-4 left-1/2 z-50 flex -translate-x-1/2 items-center gap-1 rounded-lg border border-amber-500/30 bg-neutral-900/95 px-2 py-1.5 font-mono text-xs shadow-lg shadow-amber-500/10 backdrop-blur-sm'>
       {/* Debug indicator */}
       <div className='mr-2 flex items-center gap-1.5'>
         <span className={`size-2 rounded-full ${isPaused ? 'animate-pulse bg-amber-500' : 'bg-green-500'}`} />
@@ -38,7 +38,7 @@ export const DebugToolbar: FC<DebugToolbarProps> = ({
       </div>
 
       {/* Progress indicator */}
-      <div className='mr-3 border-neutral-700 border-l pl-3 text-neutral-400'>
+      <div className='mr-3 border-l border-neutral-700 pl-3 text-neutral-400'>
         <span className='text-neutral-300 tabular-nums'>{currentIndex + 1}</span>
         <span className='mx-0.5'>/</span>
         <span className='tabular-nums'>{totalMessages}</span>

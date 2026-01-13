@@ -48,7 +48,7 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
 
   return (
     <div
-      className={`group relative cursor-default rounded-lg border border-line bg-surface p-4 transition-all duration-normal ${colors.border} hover:shadow-lg ${
+      className={`group border-line bg-surface duration-normal relative cursor-default rounded-lg border p-4 transition-all ${colors.border} hover:shadow-lg ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
       onMouseEnter={() => setIsHovered(true)}
@@ -57,17 +57,17 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
       {/* Progress bar background */}
       <div className='absolute inset-0 overflow-hidden rounded-lg'>
         <div
-          className={`absolute bottom-0 left-0 h-1 ${colors.bar} transition-all duration-slow`}
+          className={`absolute bottom-0 left-0 h-1 ${colors.bar} duration-slow transition-all`}
           style={{ width: isHovered ? `${config.progress}%` : '0%' }}
         />
       </div>
 
       <div className='relative'>
         <div className='flex items-start justify-between gap-2'>
-          <h3 className={`font-bold font-mono text-foreground ${colors.text}`}>{skill.name}</h3>
+          <h3 className={`text-foreground font-mono font-bold ${colors.text}`}>{skill.name}</h3>
           <span className={`rounded-full ${colors.bg} px-2 py-0.5 font-mono ${colors.textColor} text-xs`}>{config.label}</span>
         </div>
-        {skill.description && <p className='mt-2 line-clamp-2 text-sm text-subtle-foreground'>{skill.description}</p>}
+        {skill.description && <p className='text-subtle-foreground mt-2 line-clamp-2 text-sm'>{skill.description}</p>}
       </div>
     </div>
   );

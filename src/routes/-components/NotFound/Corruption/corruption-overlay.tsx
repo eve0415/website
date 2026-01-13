@@ -65,7 +65,7 @@ const CorruptionOverlay: FC<CorruptionOverlayProps> = ({ progress, mouseInfluenc
       {glitchLines.map(line => (
         <div
           key={line.id}
-          className='absolute h-1 bg-cyan mix-blend-screen'
+          className='bg-cyan absolute h-1 mix-blend-screen'
           style={{
             top: `${line.y}%`,
             left: `${50 - line.width / 2 + line.offset}%`,
@@ -107,14 +107,14 @@ const CorruptionOverlay: FC<CorruptionOverlayProps> = ({ progress, mouseInfluenc
       {intensity > 0.5 && (
         <>
           <div
-            className='absolute top-0 left-0 h-20 w-40 bg-linear-to-br from-cyan/20 to-transparent'
+            className='from-cyan/20 absolute top-0 left-0 h-20 w-40 bg-linear-to-br to-transparent'
             style={{
               clipPath: 'polygon(0 0, 100% 0, 70% 100%, 0 60%)',
               opacity: (intensity - 0.5) * 2,
             }}
           />
           <div
-            className='absolute right-0 bottom-0 h-32 w-48 bg-linear-to-tl from-orange/20 to-transparent'
+            className='from-orange/20 absolute right-0 bottom-0 h-32 w-48 bg-linear-to-tl to-transparent'
             style={{
               clipPath: 'polygon(30% 0, 100% 40%, 100% 100%, 0 100%)',
               opacity: (intensity - 0.5) * 2,

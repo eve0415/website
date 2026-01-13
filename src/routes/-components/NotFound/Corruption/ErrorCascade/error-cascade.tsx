@@ -135,7 +135,7 @@ const ErrorCascade: FC<ErrorCascadeProps> = ({ progress, enabled }) => {
         {visibleErrors.map((error, errorIndex) => (
           <div
             key={error.id}
-            className='rounded border border-line/30 bg-background/80 p-3 backdrop-blur-sm'
+            className='border-line/30 bg-background/80 rounded border p-3 backdrop-blur-sm'
             style={
               prefersReducedMotion
                 ? { opacity: 1 }

@@ -65,16 +65,16 @@ const IndexPage: FC = () => {
 
   return (
     <main
-      className={`relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 transition-all duration-slow ${konamiActivated ? 'animate-glitch' : ''}`}
+      className={`duration-slow relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 transition-all ${konamiActivated ? 'animate-glitch' : ''}`}
     >
       <Background />
 
       {/* Konami code secret overlay */}
       {konamiActivated && (
-        <div className='pointer-events-none fixed inset-0 z-50 flex items-center justify-center bg-background/80'>
+        <div className='bg-background/80 pointer-events-none fixed inset-0 z-50 flex items-center justify-center'>
           <div className='animate-fade-in-scale text-center'>
-            <span className='block font-mono text-neon text-xl'>SECRET_UNLOCKED</span>
-            <span className='mt-2 block text-sm text-subtle-foreground'>// 何かを見つけた...</span>
+            <span className='text-neon block font-mono text-xl'>SECRET_UNLOCKED</span>
+            <span className='text-subtle-foreground mt-2 block text-sm'>// 何かを見つけた...</span>
           </div>
         </div>
       )}
@@ -82,49 +82,49 @@ const IndexPage: FC = () => {
       {/* Central content */}
       <div className='flex flex-col items-center gap-8'>
         {/* Logo */}
-        <div className='w-48 text-foreground md:w-64 lg:w-80'>
+        <div className='text-foreground w-48 md:w-64 lg:w-80'>
           <Logo animate />
         </div>
 
         {/* Name */}
-        <h1 className='font-bold text-3xl tracking-tight md:text-4xl lg:text-5xl'>
+        <h1 className='text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl'>
           <TerminalText text='eve0415' speed={100} />
         </h1>
 
         {/* Tagline */}
         {showTagline && (
-          <p className='animate-fade-in-up text-center text-muted-foreground'>
+          <p className='animate-fade-in-up text-muted-foreground text-center'>
             <TerminalText text='エンジニア' delay={0} speed={60} />
           </p>
         )}
 
         {/* Navigation prompt */}
         {showNav && (
-          <nav className='mt-12 flex animate-fade-in-up flex-col items-center gap-6 text-sm text-subtle-foreground'>
+          <nav className='animate-fade-in-up text-subtle-foreground mt-12 flex flex-col items-center gap-6 text-sm'>
             <span className='font-mono text-xs tracking-wider'>// 探索を始める</span>
             <div className='flex gap-6'>
-              <Link to='/projects' className='group relative px-2 py-1 text-muted-foreground transition-colors hover:text-neon'>
+              <Link to='/projects' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
                 <span className='font-mono'>[Projects]</span>
-                <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
+                <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
               </Link>
-              <Link to='/skills' className='group relative px-2 py-1 text-muted-foreground transition-colors hover:text-neon'>
+              <Link to='/skills' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
                 <span className='font-mono'>[Skills]</span>
-                <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
+                <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
               </Link>
-              <Link to='/link' className='group relative px-2 py-1 text-muted-foreground transition-colors hover:text-neon'>
+              <Link to='/link' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
                 <span className='font-mono'>[Link]</span>
-                <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
+                <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
               </Link>
-              <Link to='/sys' className='group relative px-2 py-1 text-muted-foreground transition-colors hover:text-neon'>
+              <Link to='/sys' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
                 <span className='font-mono'>[Sys]</span>
-                <span className='absolute -bottom-1 left-0 h-px w-0 bg-neon transition-all duration-normal group-hover:w-full' />
+                <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
               </Link>
             </div>
-            <div className='mt-4 flex items-center gap-2 text-subtle-foreground text-xs'>
-              <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>1</kbd>
-              <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>2</kbd>
-              <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>3</kbd>
-              <kbd className='rounded border border-line px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
+            <div className='text-subtle-foreground mt-4 flex items-center gap-2 text-xs'>
+              <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>1</kbd>
+              <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>2</kbd>
+              <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>3</kbd>
+              <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
               <span className='ml-1'>でジャンプ</span>
             </div>
           </nav>
@@ -132,13 +132,13 @@ const IndexPage: FC = () => {
       </div>
 
       {/* Footer coordinates - playful terminal element */}
-      <div className='absolute bottom-6 left-6 text-subtle-foreground text-xs'>
+      <div className='text-subtle-foreground absolute bottom-6 left-6 text-xs'>
         <span>位置: </span>
         <span>35.6762°N, 139.6503°E</span>
       </div>
 
       {/* Version indicator */}
-      <div className='absolute right-6 bottom-6 text-subtle-foreground text-xs'>
+      <div className='text-subtle-foreground absolute right-6 bottom-6 text-xs'>
         <span>v</span>
         <span>4.0.0</span>
       </div>

@@ -25,11 +25,11 @@ const StatRow: FC<StatRowProps> = ({ label, value, suffix = '', delay, animate, 
   }[color];
 
   return (
-    <div className='flex items-baseline justify-between border-line border-b py-2 last:border-b-0'>
-      <span className='font-mono text-sm text-subtle-foreground uppercase tracking-wider'>{label}</span>
+    <div className='border-line flex items-baseline justify-between border-b py-2 last:border-b-0'>
+      <span className='text-subtle-foreground font-mono text-sm tracking-wider uppercase'>{label}</span>
       <span className={`font-mono text-lg ${colorClass}`}>
         {displayValue}
-        {suffix && <span className='ml-1 text-subtle-foreground text-xs'>{suffix}</span>}
+        {suffix && <span className='text-subtle-foreground ml-1 text-xs'>{suffix}</span>}
       </span>
     </div>
   );

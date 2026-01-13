@@ -21,7 +21,7 @@ const meta = preview.meta({
   },
   decorators: [
     Story => (
-      <div className='w-96 rounded border border-line bg-surface/50 p-4'>
+      <div className='border-line bg-surface/50 w-96 rounded border p-4'>
         <Story />
       </div>
     ),
@@ -55,7 +55,7 @@ export const DifferentLanguages = meta.story({
       { name: 'Rust', percentage: 15.2, color: '#dea584' },
     ];
     return (
-      <div className='w-96 space-y-1 rounded border border-line bg-surface/50 p-4'>
+      <div className='border-line bg-surface/50 w-96 space-y-1 rounded border p-4'>
         {languages.map((lang, i) => (
           <LanguageBar key={lang.name} language={lang} index={i} animate={false} />
         ))}
@@ -68,7 +68,7 @@ export const MultipleIndices = meta.story({
   render: () => {
     const language: LanguageStat = { name: 'Python', percentage: 30.0, color: '#3572A5' };
     return (
-      <div className='w-96 space-y-1 rounded border border-line bg-surface/50 p-4'>
+      <div className='border-line bg-surface/50 w-96 space-y-1 rounded border p-4'>
         <LanguageBar language={language} index={0} animate={true} />
         <LanguageBar language={{ ...language, name: 'Go', color: '#00ADD8' }} index={1} animate={true} />
         <LanguageBar language={{ ...language, name: 'Java', color: '#b07219' }} index={2} animate={true} />
@@ -148,7 +148,7 @@ export const ExtremePercentages = meta.story({
       { name: 'Complete', percentage: 100.0, color: '#3178c6' },
     ];
     return (
-      <div className='w-96 space-y-1 rounded border border-line bg-surface/50 p-4'>
+      <div className='border-line bg-surface/50 w-96 space-y-1 rounded border p-4'>
         {languages.map((lang, i) => (
           <LanguageBar key={lang.name} language={lang} index={i} animate={false} />
         ))}
@@ -197,7 +197,7 @@ export const CircuitTrace = meta.story({
       { name: 'Shell', percentage: 3.5, color: '#89e051' },
     ];
     return (
-      <div className='w-[600px] space-y-1 rounded border border-line bg-surface/50 p-4'>
+      <div className='border-line bg-surface/50 w-[600px] space-y-1 rounded border p-4'>
         {languages.map((lang, i) => (
           <LanguageBar key={lang.name} language={lang} index={i} animate={false} isLast={i === languages.length - 1} />
         ))}
@@ -223,7 +223,7 @@ export const AlignedBars = meta.story({
       { name: 'TypeScript', percentage: 30.0, color: '#3178c6' },
     ];
     return (
-      <div className='w-[600px] space-y-1 rounded border border-line bg-surface/50 p-4'>
+      <div className='border-line bg-surface/50 w-[600px] space-y-1 rounded border p-4'>
         {languages.map((lang, i) => (
           <LanguageBar key={lang.name} language={lang} index={i} animate={false} isLast={i === languages.length - 1} />
         ))}

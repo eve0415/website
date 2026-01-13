@@ -17,7 +17,7 @@ const meta = preview.meta({
   },
   decorators: [
     Story => (
-      <div className='w-80 rounded border border-line bg-surface/50 px-4'>
+      <div className='border-line bg-surface/50 w-80 rounded border px-4'>
         <Story />
       </div>
     ),
@@ -90,7 +90,7 @@ export const Static = meta.story({
 
 export const AllColors = meta.story({
   render: () => (
-    <div className='w-80 rounded border border-line bg-surface/50 px-4'>
+    <div className='border-line bg-surface/50 w-80 rounded border px-4'>
       <StatRow label='PRIMARY' value={100} delay={0} animate={false} color='primary' />
       <StatRow label='SECONDARY' value={200} delay={0} animate={false} color='secondary' />
       <StatRow label='TERTIARY' value={300} delay={0} animate={false} color='tertiary' />
