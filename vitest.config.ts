@@ -49,6 +49,7 @@ export default defineConfig({
             'vitest-browser-react/pure',
             'react',
             'react/jsx-dev-runtime',
+            'react/jsx-runtime',
             '@tanstack/react-router',
             '@tanstack/react-start',
             'qrcode.react',
