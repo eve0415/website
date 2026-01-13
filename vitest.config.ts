@@ -41,23 +41,14 @@ export default defineConfig({
       },
       {
         extends: true,
-        optimizeDeps: {
-          include: [
-            'react',
-            'react-dom',
-            'react-dom/client',
-            'react/jsx-dev-runtime',
-            'react/jsx-runtime',
-            '@tanstack/react-router',
-            '@tanstack/react-start',
-            'qrcode.react',
-          ],
-          exclude: ['vitest', 'vitest/browser', '@vitest/browser', '@vitest/browser-playwright', 'vitest-browser-react', 'vitest-browser-react/pure'],
-          force: true,
-        },
         test: {
           name: 'browser',
           include: ['src/**/*.browser.test.{ts,tsx}'],
+          deps: {
+            optimizer: {
+              client: { enabled: false },
+            },
+          },
           browser: {
             enabled: true,
             headless: true,
