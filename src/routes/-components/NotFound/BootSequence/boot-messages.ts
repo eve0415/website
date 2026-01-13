@@ -228,7 +228,7 @@ export const createBootMessages = (connection: ConnectionInfo): BootMessage[] =>
             type: 'info',
             baseDelay: 1520,
           },
-          { id: 'tls-v-sig', text: 'Signature validation: ✓', type: 'success', baseDelay: 1560 },
+          { id: 'tls-v-sig', text: 'Hostname validation: ✓', type: 'success', baseDelay: 1560 },
         ],
       },
       {

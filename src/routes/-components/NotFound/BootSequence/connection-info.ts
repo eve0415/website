@@ -75,7 +75,7 @@ const fetchCertFromCloudflareAPI = createServerOnlyFn(async (): Promise<Certific
   for await (const rawPack of client.ssl.certificatePacks.list({ zone_id: zoneId })) {
     const pack = rawPack as CertificatePack;
     const hosts = pack.hosts ?? [];
-    if (hosts.includes('eve0415.net') || hosts.includes('*.eve0415.net')) {
+    if (hosts.some(h => h === 'eve0415.net' || h === '*.eve0415.net')) {
       return pack;
     }
   }

@@ -47,8 +47,15 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
   useEffect(() => {
     if (!isComplete) return;
     const handler = (e: KeyboardEvent) => {
-      e.preventDefault();
-      reset();
+      // Allow browser shortcuts (modifier keys) and function keys to pass through
+      if (e.metaKey || e.ctrlKey || e.altKey || e.key.startsWith('F')) {
+        return;
+      }
+      // Trigger restart on activation keys (printable, Enter, Space, Escape)
+      if (e.key.length === 1 || e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
+        e.preventDefault();
+        reset();
+      }
     };
     window.addEventListener('keydown', handler);
     return () => window.removeEventListener('keydown', handler);
