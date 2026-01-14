@@ -98,8 +98,6 @@ describe('buildCspHeader', () => {
     expect(csp).toContain("'nonce-my-secure-nonce'");
     expect(csp).toContain('report-to default');
     expect(csp).toContain('report-uri /api/csp-report');
-    expect(csp).toContain('trusted-types default');
-    expect(csp).toContain("require-trusted-types-for 'script'");
   });
 });
 

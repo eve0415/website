@@ -52,8 +52,6 @@ export function buildCspHeader(nonce: string): string {
     "form-action 'self'",
     "frame-ancestors 'none'",
     'upgrade-insecure-requests',
-    'trusted-types default',
-    "require-trusted-types-for 'script'",
     'report-to default',
     'report-uri /api/csp-report',
   ].join('; ');

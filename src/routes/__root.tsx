@@ -7,12 +7,6 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import BSODError from './-components/BSODError/bsod-error';
 import rootCss from './__root.css?url';
 
-// Trusted Types default policy script - must run before any other scripts
-// Creates a logging passthrough policy to capture all DOM mutations for analysis
-// Wrapped in try-catch because TanStack Start re-executes scripts during hydration
-// TODO: Replace with enforcing policy after analyzing logs from preview deployment
-const TRUSTED_TYPES_POLICY = `if(window.trustedTypes&&trustedTypes.createPolicy){try{trustedTypes.createPolicy('default',{createHTML:function(s){console.log('[TT:HTML]',s.slice(0,200));return s},createScript:function(s){console.log('[TT:Script]',s.slice(0,200));return s},createScriptURL:function(s){console.log('[TT:URL]',s);return s}})}catch(e){console.error('[TT:Error]',e)}}`;
-
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   return (
     <html lang='ja'>
@@ -44,7 +38,7 @@ export const Route = createRootRouteWithContext<{
 }>()({
   shellComponent: ({ children }) => <RootDocument>{children}</RootDocument>,
   errorComponent: BSODError,
-  head: ({ match }) => ({
+  head: () => ({
     meta: [
       {
         charSet: 'utf-8',
@@ -103,14 +97,5 @@ export const Route = createRootRouteWithContext<{
       { rel: 'manifest', href: '/site.webmanifest' },
       { rel: 'canonical', href: 'https://eve0415.net' },
     ],
-    // Trusted Types default policy - only in production
-    scripts: import.meta.env.DEV
-      ? []
-      : [
-          {
-            nonce: match.context.cspNonce,
-            children: TRUSTED_TYPES_POLICY,
-          },
-        ],
   }),
 });
