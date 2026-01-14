@@ -1,7 +1,7 @@
 import type { FC, PropsWithChildren } from 'react';
 
 import { TanStackDevtools } from '@tanstack/react-devtools';
-import { HeadContent, Scripts, createRootRoute } from '@tanstack/react-router';
+import { HeadContent, Scripts, createRootRouteWithContext } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 import BSODError from './-components/BSODError/bsod-error';
@@ -33,10 +33,12 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   );
 };
 
-export const Route = createRootRoute({
+export const Route = createRootRouteWithContext<{
+  cspNonce?: string;
+}>()({
   shellComponent: ({ children }) => <RootDocument>{children}</RootDocument>,
   errorComponent: BSODError,
-  head: () => ({
+  head: ({ match }) => ({
     meta: [
       {
         charSet: 'utf-8',
@@ -84,6 +86,8 @@ export const Route = createRootRoute({
         name: 'apple-mobile-web-app-title',
         content: 'eve0415',
       },
+      // CSP nonce meta tag for client-side hydration
+      ...(match.context.cspNonce ? [{ property: 'csp-nonce', content: match.context.cspNonce }] : []),
     ],
     links: [
       { rel: 'stylesheet', href: rootCss },
