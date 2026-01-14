@@ -7,6 +7,10 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import BSODError from './-components/BSODError/bsod-error';
 import rootCss from './__root.css?url';
 
+// Trusted Types default policy script - must run before any other scripts
+// Creates a passthrough policy that logs violations for debugging
+const TRUSTED_TYPES_POLICY = `if(window.trustedTypes&&trustedTypes.createPolicy){trustedTypes.createPolicy('default',{createHTML:function(s){console.warn('[TT] createHTML:',s.slice(0,100));return s},createScript:function(s){console.warn('[TT] createScript:',s.slice(0,100));return s},createScriptURL:function(s){console.warn('[TT] createScriptURL:',s);return s}})}`;
+
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   return (
     <html lang='ja'>
@@ -99,5 +103,14 @@ export const Route = createRootRouteWithContext<{
       { rel: 'manifest', href: '/site.webmanifest' },
       { rel: 'canonical', href: 'https://eve0415.net' },
     ],
+    // Trusted Types default policy - only in production
+    scripts: import.meta.env.DEV
+      ? []
+      : [
+          {
+            nonce: match.context.cspNonce,
+            children: TRUSTED_TYPES_POLICY,
+          },
+        ],
   }),
 });
