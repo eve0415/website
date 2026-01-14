@@ -8,9 +8,9 @@ import BSODError from './-components/BSODError/bsod-error';
 import rootCss from './__root.css?url';
 
 // Trusted Types default policy script - must run before any other scripts
-// Creates a passthrough policy that logs violations for debugging
+// Creates a silent passthrough policy for production (no console logging)
 // Wrapped in try-catch because TanStack Start re-executes scripts during hydration
-const TRUSTED_TYPES_POLICY = `if(window.trustedTypes&&trustedTypes.createPolicy){try{trustedTypes.createPolicy('default',{createHTML:function(s){console.warn('[TT] createHTML:',s.slice(0,100));return s},createScript:function(s){console.warn('[TT] createScript:',s.slice(0,100));return s},createScriptURL:function(s){console.warn('[TT] createScriptURL:',s);return s}})}catch(e){}}`;
+const TRUSTED_TYPES_POLICY = `if(window.trustedTypes&&trustedTypes.createPolicy){try{trustedTypes.createPolicy('default',{createHTML:function(s){return s},createScript:function(s){return s},createScriptURL:function(s){return s}})}catch(e){}}`;
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   return (
@@ -91,8 +91,6 @@ export const Route = createRootRouteWithContext<{
         name: 'apple-mobile-web-app-title',
         content: 'eve0415',
       },
-      // CSP nonce meta tag for client-side hydration
-      ...(match.context.cspNonce ? [{ property: 'csp-nonce', content: match.context.cspNonce }] : []),
     ],
     links: [
       { rel: 'stylesheet', href: rootCss },

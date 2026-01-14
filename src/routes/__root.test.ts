@@ -2,7 +2,10 @@ import { describe, expect, test } from 'vitest';
 
 import { Route } from './__root';
 
-type RouteOptions = typeof Route.options & { head: () => any };
+type HeadFn = (params: { match: { context: { cspNonce?: string } } }) => { meta: any[]; links: any[]; scripts?: any[] };
+
+// Mock match object for head() function
+const mockMatch = { context: {} as { cspNonce?: string } };
 
 describe('__root Route', () => {
   test('Route is defined', () => {
@@ -11,24 +14,24 @@ describe('__root Route', () => {
 
   describe('head()', () => {
     test('returns meta tags with correct structure', () => {
-      const headFn = (Route.options as RouteOptions).head;
+      const headFn = Route.options.head as HeadFn;
       expect(headFn).toBeDefined();
 
-      const head = headFn();
+      const head = headFn({ match: mockMatch });
 
       expect(head.meta).toBeDefined();
       expect(Array.isArray(head.meta)).toBe(true);
     });
 
     test('includes charset meta tag', () => {
-      const head = (Route.options as RouteOptions).head();
+      const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       const charsetMeta = head.meta.find((m: { charSet?: string }) => m.charSet);
       expect(charsetMeta).toEqual({ charSet: 'utf-8' });
     });
 
     test('includes viewport meta tag', () => {
-      const head = (Route.options as RouteOptions).head();
+      const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       const viewportMeta = head.meta.find((m: { name?: string }) => m.name === 'viewport');
       expect(viewportMeta).toEqual({
@@ -38,14 +41,14 @@ describe('__root Route', () => {
     });
 
     test('includes title meta tag', () => {
-      const head = (Route.options as RouteOptions).head();
+      const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       const titleMeta = head.meta.find((m: { title?: string }) => m.title);
       expect(titleMeta).toEqual({ title: 'eve0415' });
     });
 
     test('includes description meta tag', () => {
-      const head = (Route.options as RouteOptions).head();
+      const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       const descMeta = head.meta.find((m: { name?: string }) => m.name === 'description');
       expect(descMeta).toEqual({
@@ -55,7 +58,7 @@ describe('__root Route', () => {
     });
 
     test('includes theme-color meta tag', () => {
-      const head = (Route.options as RouteOptions).head();
+      const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       const themeColorMeta = head.meta.find((m: { name?: string }) => m.name === 'theme-color');
       expect(themeColorMeta).toEqual({
@@ -65,7 +68,7 @@ describe('__root Route', () => {
     });
 
     test('includes Open Graph meta tags', () => {
-      const head = (Route.options as RouteOptions).head();
+      const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       const ogTitle = head.meta.find((m: { property?: string }) => m.property === 'og:title');
       expect(ogTitle).toEqual({ property: 'og:title', content: 'eve0415' });
@@ -81,7 +84,7 @@ describe('__root Route', () => {
     });
 
     test('includes Twitter card meta tags', () => {
-      const head = (Route.options as RouteOptions).head();
+      const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       const twitterCard = head.meta.find((m: { name?: string }) => m.name === 'twitter:card');
       expect(twitterCard).toEqual({ name: 'twitter:card', content: 'summary_large_image' });
@@ -91,7 +94,7 @@ describe('__root Route', () => {
     });
 
     test('includes link tags', () => {
-      const head = (Route.options as RouteOptions).head();
+      const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       expect(head.links).toBeDefined();
       expect(Array.isArray(head.links)).toBe(true);

@@ -8,7 +8,7 @@
 export function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
-  return btoa(String.fromCharCode(...array));
+  return btoa(Array.from(array, byte => String.fromCharCode(byte)).join(''));
 }
 
 /**
@@ -52,6 +52,7 @@ export function buildCspHeader(nonce: string): string {
     'upgrade-insecure-requests',
     'trusted-types default',
     "require-trusted-types-for 'script'",
+    'report-to default',
     'report-uri /api/csp-report',
   ].join('; ');
 }
@@ -68,6 +69,11 @@ export function buildSecurityHeaders(csp: string): Record<string, string> {
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
   };
+
+  // Add Reporting-Endpoints header for report-to directive (production only)
+  if (import.meta.env.PROD) {
+    headers['Reporting-Endpoints'] = 'default="/api/csp-report"';
+  }
 
   return headers;
 }
