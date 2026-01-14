@@ -9,7 +9,8 @@ import rootCss from './__root.css?url';
 
 // Trusted Types default policy script - must run before any other scripts
 // Creates a passthrough policy that logs violations for debugging
-const TRUSTED_TYPES_POLICY = `if(window.trustedTypes&&trustedTypes.createPolicy){trustedTypes.createPolicy('default',{createHTML:function(s){console.warn('[TT] createHTML:',s.slice(0,100));return s},createScript:function(s){console.warn('[TT] createScript:',s.slice(0,100));return s},createScriptURL:function(s){console.warn('[TT] createScriptURL:',s);return s}})}`;
+// Wrapped in try-catch because TanStack Start re-executes scripts during hydration
+const TRUSTED_TYPES_POLICY = `if(window.trustedTypes&&trustedTypes.createPolicy){try{trustedTypes.createPolicy('default',{createHTML:function(s){console.warn('[TT] createHTML:',s.slice(0,100));return s},createScript:function(s){console.warn('[TT] createScript:',s.slice(0,100));return s},createScriptURL:function(s){console.warn('[TT] createScriptURL:',s);return s}})}catch(e){}}`;
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   return (
