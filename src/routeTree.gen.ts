@@ -14,6 +14,7 @@ import { Route as SysIndexRouteImport } from './routes/sys/index'
 import { Route as SkillsIndexRouteImport } from './routes/skills/index'
 import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
 import { Route as LinkIndexRouteImport } from './routes/link/index'
+import { Route as ApiCspReportRouteImport } from './routes/api/csp-report'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -40,9 +41,15 @@ const LinkIndexRoute = LinkIndexRouteImport.update({
   path: '/link/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiCspReportRoute = ApiCspReportRouteImport.update({
+  id: '/api/csp-report',
+  path: '/api/csp-report',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/api/csp-report': typeof ApiCspReportRoute
   '/link': typeof LinkIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/skills': typeof SkillsIndexRoute
@@ -50,6 +57,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/api/csp-report': typeof ApiCspReportRoute
   '/link': typeof LinkIndexRoute
   '/projects': typeof ProjectsIndexRoute
   '/skills': typeof SkillsIndexRoute
@@ -58,6 +66,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/api/csp-report': typeof ApiCspReportRoute
   '/link/': typeof LinkIndexRoute
   '/projects/': typeof ProjectsIndexRoute
   '/skills/': typeof SkillsIndexRoute
@@ -65,14 +74,28 @@ export interface FileRoutesById {
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/link' | '/projects' | '/skills' | '/sys'
+  fullPaths:
+    | '/'
+    | '/api/csp-report'
+    | '/link'
+    | '/projects'
+    | '/skills'
+    | '/sys'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/link' | '/projects' | '/skills' | '/sys'
-  id: '__root__' | '/' | '/link/' | '/projects/' | '/skills/' | '/sys/'
+  to: '/' | '/api/csp-report' | '/link' | '/projects' | '/skills' | '/sys'
+  id:
+    | '__root__'
+    | '/'
+    | '/api/csp-report'
+    | '/link/'
+    | '/projects/'
+    | '/skills/'
+    | '/sys/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ApiCspReportRoute: typeof ApiCspReportRoute
   LinkIndexRoute: typeof LinkIndexRoute
   ProjectsIndexRoute: typeof ProjectsIndexRoute
   SkillsIndexRoute: typeof SkillsIndexRoute
@@ -116,11 +139,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LinkIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/csp-report': {
+      id: '/api/csp-report'
+      path: '/api/csp-report'
+      fullPath: '/api/csp-report'
+      preLoaderRoute: typeof ApiCspReportRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ApiCspReportRoute: ApiCspReportRoute,
   LinkIndexRoute: LinkIndexRoute,
   ProjectsIndexRoute: ProjectsIndexRoute,
   SkillsIndexRoute: SkillsIndexRoute,
@@ -131,10 +162,11 @@ export const routeTree = rootRouteImport
   ._addFileTypes<FileRouteTypes>()
 
 import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
+import type { startInstance } from './start.ts'
 declare module '@tanstack/react-start' {
   interface Register {
     ssr: true
     router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
   }
 }

@@ -154,6 +154,10 @@
             "type": "http",
             "url": "https://mcp.context7.com/mcp"
           },
+          "tanstack": {
+            "type": "http",
+            "url": "https://tanstack.com/api/mcp"
+          },
           "github": {
             "type": "http",
             "url": "https://api.githubcopilot.com/mcp/"
