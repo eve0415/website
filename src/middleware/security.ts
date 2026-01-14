@@ -3,12 +3,14 @@
 
 /**
  * Generate a cryptographically secure nonce using Web Crypto API.
- * Returns a base64-encoded 16-byte random value.
+ * Returns a base64url-encoded 16-byte random value (URL-safe, no padding).
  */
 export function generateNonce(): string {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
-  return btoa(Array.from(array, byte => String.fromCharCode(byte)).join(''));
+  const base64 = btoa(Array.from(array, byte => String.fromCharCode(byte)).join(''));
+  // Convert to base64url (URL-safe, no padding)
+  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
 }
 
 /**
@@ -62,10 +64,10 @@ export function buildCspHeader(nonce: string): string {
  * Returns a record of header name to value.
  */
 export function buildSecurityHeaders(csp: string): Record<string, string> {
+  // Note: X-Frame-Options omitted - frame-ancestors 'none' in CSP supersedes it
   const headers: Record<string, string> = {
     'Content-Security-Policy': csp,
     'X-Content-Type-Options': 'nosniff',
-    'X-Frame-Options': 'DENY',
     'Referrer-Policy': 'strict-origin-when-cross-origin',
     'Permissions-Policy': 'camera=(), microphone=(), geolocation=(), payment=()',
   };

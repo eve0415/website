@@ -3,18 +3,29 @@ import { afterEach, describe, expect, test, vi } from 'vitest';
 import { buildCspHeader, buildSecurityHeaders, generateNonce } from './security';
 
 describe('generateNonce', () => {
-  test('returns a valid base64 string', () => {
+  test('returns a valid base64url string', () => {
     const nonce = generateNonce();
 
-    // Base64 characters only
-    expect(nonce).toMatch(/^[A-Za-z0-9+/]+=*$/);
+    // base64url characters only (no +, /, or = padding)
+    expect(nonce).toMatch(/^[A-Za-z0-9_-]+$/);
+  });
+
+  test('does not contain URL-unsafe characters', () => {
+    // Generate many nonces to increase chance of hitting edge cases
+    for (let i = 0; i < 100; i++) {
+      const nonce = generateNonce();
+      expect(nonce).not.toContain('+');
+      expect(nonce).not.toContain('/');
+      expect(nonce).not.toContain('=');
+    }
   });
 
   test('returns correct length for 16-byte input', () => {
     const nonce = generateNonce();
 
-    // 16 bytes = 128 bits, base64 encodes to ceil(16/3)*4 = 24 characters (with padding)
-    expect(nonce.length).toBe(24);
+    // 16 bytes = 128 bits, base64 encodes to ceil(16/3)*4 = 24 characters
+    // After removing padding (==), length is 22
+    expect(nonce.length).toBe(22);
   });
 
   test('generates unique nonces on each call', () => {
@@ -29,7 +40,11 @@ describe('generateNonce', () => {
 
   test('can be decoded back to 16 bytes', () => {
     const nonce = generateNonce();
-    const decoded = atob(nonce);
+    // Convert base64url back to base64 for decoding
+    const base64 = nonce.replace(/-/g, '+').replace(/_/g, '/');
+    // Add padding if needed
+    const padded = base64 + '=='.slice(0, (4 - (base64.length % 4)) % 4);
+    const decoded = atob(padded);
 
     expect(decoded.length).toBe(16);
   });
@@ -103,12 +118,6 @@ describe('buildSecurityHeaders', () => {
     const headers = buildSecurityHeaders('test');
 
     expect(headers['X-Content-Type-Options']).toBe('nosniff');
-  });
-
-  test('includes X-Frame-Options', () => {
-    const headers = buildSecurityHeaders('test');
-
-    expect(headers['X-Frame-Options']).toBe('DENY');
   });
 
   test('includes Referrer-Policy', () => {
