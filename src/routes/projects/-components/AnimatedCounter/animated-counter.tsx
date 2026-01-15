@@ -26,7 +26,7 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
 
   // Internal visibility state (used when isVisible prop is not provided)
   const [internalVisible, setInternalVisible] = useState(false);
-  const effectiveVisible = isVisible ?? internalVisible;
+  const shouldAnimate = isVisible ?? internalVisible;
 
   // Set up internal observer only when isVisible prop is not provided
   useEffect(() => {
@@ -54,7 +54,7 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
 
   // Animate when visible
   useEffect(() => {
-    if (shouldSkipAnimation || hasAnimatedRef.current || !effectiveVisible) return;
+    if (shouldSkipAnimation || hasAnimatedRef.current || !shouldAnimate) return;
 
     hasAnimatedRef.current = true;
     const startTime = Date.now();
@@ -73,7 +73,7 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
     };
 
     requestAnimationFrame(animate);
-  }, [effectiveVisible, end, duration, shouldSkipAnimation]);
+  }, [shouldAnimate, end, duration, shouldSkipAnimation]);
 
   return (
     <span ref={elementRef} className='text-neon font-mono text-3xl'>

@@ -2,7 +2,7 @@ import type { ContactFormResult } from '../../-utils/contact-form';
 import type { FC } from 'react';
 
 import { useForm } from '@tanstack/react-form-start';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { handleForm } from '../../-utils/contact-form';
 import { contactFormOpts } from '../../-utils/form-options';
@@ -38,18 +38,24 @@ const ContactForm: FC = () => {
         if (result.success) {
           setSubmissionState('success');
           formApi.reset();
-
-          // Auto-dismiss after 5 seconds
-          setTimeout(() => setSubmissionState('idle'), 5000);
         } else if ('error' in result) {
           handleError(result);
         }
-      } catch {
+      } catch (error) {
+        console.error('Form submission failed:', error);
         setGlobalError('予期せぬエラーが発生しました。後ほどお試しください。');
         setSubmissionState('error');
       }
     },
   });
+
+  // Auto-dismiss success message after 5 seconds (with cleanup to prevent memory leak)
+  useEffect(() => {
+    if (submissionState !== 'success') return;
+
+    const timer = setTimeout(() => setSubmissionState('idle'), 5000);
+    return () => clearTimeout(timer);
+  }, [submissionState]);
 
   const handleError = (result: Exclude<ContactFormResult, { success: true }>) => {
     setSubmissionState('error');
@@ -57,15 +63,12 @@ const ContactForm: FC = () => {
     switch (result.error) {
       case 'validation':
         // Set field errors from server response
-        if (result.errors.name) {
-          form.setFieldMeta('name', prev => ({ ...prev, errors: [result.errors.name!] }));
-        }
-        if (result.errors.email) {
-          form.setFieldMeta('email', prev => ({ ...prev, errors: [result.errors.email!] }));
-        }
-        if (result.errors.message) {
-          form.setFieldMeta('message', prev => ({ ...prev, errors: [result.errors.message!] }));
-        }
+        (['name', 'email', 'message'] as const).forEach(fieldName => {
+          const error = result.errors[fieldName];
+          if (error) {
+            form.setFieldMeta(fieldName, prev => ({ ...prev, errors: [error] }));
+          }
+        });
         break;
       case 'turnstile':
       case 'rate_limit':

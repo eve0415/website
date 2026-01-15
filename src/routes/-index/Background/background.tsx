@@ -14,10 +14,10 @@ const Background: FC = () => {
   // Store latest mouse position in ref for access in animation loop without triggering effect re-runs
   const mousePositionRef = useRef(mousePosition);
 
-  // Sync ref with latest mouse position (effect runs after render, avoids React Compiler warning)
+  // Sync ref with latest mouse position (only when mousePosition changes)
   useEffect(() => {
     mousePositionRef.current = mousePosition;
-  });
+  }, [mousePosition]);
 
   // Store static mouse position for reduced motion mode
   // This ensures stable rendering for visual regression tests
