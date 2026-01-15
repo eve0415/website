@@ -1,179 +1,151 @@
-# agent-browser
+---
+name: agent-browser
+description: Automates browser interactions for web testing, form filling, screenshots, and data extraction. Use when the user needs to navigate websites, interact with web pages, fill forms, take screenshots, test web applications, or extract information from web pages.
+---
 
-Browser automation CLI optimized for AI agents. Use `pnpx agent-browser` for all commands.
+# Browser Automation with agent-browser
 
-## When to Use
-
-- Testing websites and web applications
-- Verifying UI changes after code modifications
-- Checking for console errors and page issues
-- Taking screenshots for documentation or debugging
-- Automating form submissions and user flows
-
-## Core Workflow
-
-**Always follow this pattern: snapshot → identify refs → act → snapshot again**
+## Quick start
 
 ```bash
-pnpx agent-browser open http://localhost:4321    # Navigate
-pnpx agent-browser snapshot -i                    # Get interactive elements with refs
-pnpx agent-browser click @e2                      # Act using ref from snapshot
-pnpx agent-browser snapshot -i                    # Get updated state
+pnpx agent-browser open <url>        # Navigate to page
+pnpx agent-browser snapshot -i       # Get interactive elements with refs
+pnpx agent-browser click @e1         # Click element by ref
+pnpx agent-browser fill @e2 "text"   # Fill input by ref
+pnpx agent-browser close             # Close browser
 ```
 
-Refs (e.g., `@e1`, `@e2`) are stable element identifiers from snapshots. Always use refs over CSS selectors when possible.
+## Core workflow
 
-**Important:** Always use `snapshot -i` (interactive elements only) by default. This dramatically reduces output size by filtering to just buttons, links, inputs, and other actionable elements - which is usually all you need for browser automation. Only use full `snapshot` when you need to verify text content or page structure.
+1. Navigate: `pnpx agent-browser open <url>`
+2. Snapshot: `pnpx agent-browser snapshot -i` (returns elements with refs like `@e1`, `@e2`)
+3. Interact using refs from the snapshot
+4. Re-snapshot after navigation or significant DOM changes
 
-## Essential Commands
+## Commands
 
 ### Navigation
 
 ```bash
-pnpx agent-browser open <url>        # Navigate to URL
-pnpx agent-browser back              # Go back
-pnpx agent-browser reload            # Reload page
-pnpx agent-browser close             # Close browser
+pnpx agent-browser open <url>      # Navigate to URL
+pnpx agent-browser back            # Go back
+pnpx agent-browser forward         # Go forward
+pnpx agent-browser reload          # Reload page
+pnpx agent-browser close           # Close browser
 ```
 
-### Page Analysis
+### Snapshot (page analysis)
 
 ```bash
-pnpx agent-browser snapshot -i       # Interactive elements only (preferred default)
-pnpx agent-browser snapshot          # Full accessibility tree (when you need all content)
-pnpx agent-browser snapshot -i -c    # Interactive + compact (minimal output)
-pnpx agent-browser errors            # Check for JS errors
-pnpx agent-browser console           # View console logs
+pnpx agent-browser snapshot        # Full accessibility tree
+pnpx agent-browser snapshot -i     # Interactive elements only (recommended)
+pnpx agent-browser snapshot -c     # Compact output
+pnpx agent-browser snapshot -d 3   # Limit depth to 3
 ```
 
-### Interaction
+### Interactions (use @refs from snapshot)
 
 ```bash
-pnpx agent-browser click @e1         # Click element
-pnpx agent-browser fill @e2 "text"   # Clear field and type
-pnpx agent-browser type @e2 "text"   # Type without clearing
-pnpx agent-browser press Enter       # Press key
-pnpx agent-browser hover @e3         # Hover element
-pnpx agent-browser scroll down 500   # Scroll page
+pnpx agent-browser click @e1           # Click
+pnpx agent-browser dblclick @e1        # Double-click
+pnpx agent-browser fill @e2 "text"     # Clear and type
+pnpx agent-browser type @e2 "text"     # Type without clearing
+pnpx agent-browser press Enter         # Press key
+pnpx agent-browser press Control+a     # Key combination
+pnpx agent-browser hover @e1           # Hover
+pnpx agent-browser check @e1           # Check checkbox
+pnpx agent-browser uncheck @e1         # Uncheck checkbox
+pnpx agent-browser select @e1 "value"  # Select dropdown
+pnpx agent-browser scroll down 500     # Scroll page
+pnpx agent-browser scrollintoview @e1  # Scroll element into view
 ```
 
-### Capture
+### Get information
 
 ```bash
-pnpx agent-browser screenshot                    # Screenshot viewport
-pnpx agent-browser screenshot --full             # Full page screenshot
-pnpx agent-browser screenshot /path/to/file.png  # Save to specific path
-pnpx agent-browser pdf /path/to/file.pdf         # Save as PDF
+pnpx agent-browser get text @e1        # Get element text
+pnpx agent-browser get value @e1       # Get input value
+pnpx agent-browser get title           # Get page title
+pnpx agent-browser get url             # Get current URL
 ```
 
-### Get Information
+### Screenshots
 
 ```bash
-pnpx agent-browser get text @e1      # Get element text
-pnpx agent-browser get url           # Get current URL
-pnpx agent-browser get title         # Get page title
-pnpx agent-browser get value @e2     # Get input value
+pnpx agent-browser screenshot          # Screenshot to stdout
+pnpx agent-browser screenshot path.png # Save to file
+pnpx agent-browser screenshot --full   # Full page
 ```
 
-## Common Testing Workflows
-
-### Test a Local Dev Server
+### Wait
 
 ```bash
-# Start dev server first (in background), then:
-pnpx agent-browser open http://localhost:4321
-pnpx agent-browser snapshot -i       # Get interactive elements
-pnpx agent-browser errors            # Check for JS errors
-pnpx agent-browser screenshot /tmp/homepage.png
+pnpx agent-browser wait @e1                     # Wait for element
+pnpx agent-browser wait 2000                    # Wait milliseconds
+pnpx agent-browser wait --text "Success"        # Wait for text
+pnpx agent-browser wait --load networkidle      # Wait for network idle
 ```
 
-### Test Navigation Flow
+### Semantic locators (alternative to refs)
 
 ```bash
-pnpx agent-browser open http://localhost:4321
-pnpx agent-browser snapshot -i       # Find navigation links
-pnpx agent-browser click @e5         # Click a nav link
-pnpx agent-browser snapshot -i       # Verify new page loaded
+pnpx agent-browser find role button click --name "Submit"
+pnpx agent-browser find text "Sign In" click
+pnpx agent-browser find label "Email" fill "user@test.com"
 ```
 
-### Test Dark Mode
+## Example: Form submission
 
 ```bash
-pnpx agent-browser snapshot -i       # Find theme toggle
-pnpx agent-browser click @e1         # Toggle theme
-pnpx agent-browser screenshot /tmp/dark-mode.png
+pnpx agent-browser open https://example.com/form
+pnpx agent-browser snapshot -i
+# Output shows: textbox "Email" [ref=e1], textbox "Password" [ref=e2], button "Submit" [ref=e3]
+
+pnpx agent-browser fill @e1 "user@example.com"
+pnpx agent-browser fill @e2 "password123"
+pnpx agent-browser click @e3
+pnpx agent-browser wait --load networkidle
+pnpx agent-browser snapshot -i  # Check result
 ```
 
-### Test Form Submission
+## Example: Authentication with saved state
 
 ```bash
-pnpx agent-browser snapshot -i       # Get interactive elements
-pnpx agent-browser fill @e3 "test@example.com"
-pnpx agent-browser fill @e4 "message"
-pnpx agent-browser click @e5         # Submit button
-pnpx agent-browser snapshot -i       # Check result
+# Login once
+pnpx agent-browser open https://app.example.com/login
+pnpx agent-browser snapshot -i
+pnpx agent-browser fill @e1 "username"
+pnpx agent-browser fill @e2 "password"
+pnpx agent-browser click @e3
+pnpx agent-browser wait --url "**/dashboard"
+pnpx agent-browser state save auth.json
+
+# Later sessions: load saved state
+pnpx agent-browser state load auth.json
+pnpx agent-browser open https://app.example.com/dashboard
 ```
 
-## Snapshot Output Format
-
-```
-- document:
-  - button "Toggle theme" [ref=e1]
-  - main:
-    - heading "Title" [ref=e2] [level=1]
-    - link "About" [ref=e3]:
-      - /url: /about
-    - textbox "Email" [ref=e4]
-```
-
-- Elements have `[ref=eN]` for targeting
-- Links show `/url:` with their href
-- Headings show `[level=N]`
-- Form elements show their type (textbox, checkbox, etc.)
-
-## Snapshot Options
-
-| Flag         | Purpose                                                                            |
-| ------------ | ---------------------------------------------------------------------------------- |
-| `-i`         | **Interactive elements only (recommended default)** - dramatically reduces context |
-| `-c`         | Compact (remove empty structural elements)                                         |
-| `-d 3`       | Limit tree depth                                                                   |
-| `-s "#main"` | Scope to CSS selector                                                              |
-
-Combine flags for minimal output: `pnpx agent-browser snapshot -i -c`
-
-## Alternative Selectors
-
-When refs aren't available, use:
-
-```bash
-pnpx agent-browser click "#submit"           # CSS selector
-pnpx agent-browser click "text=Sign In"      # Text content
-pnpx agent-browser find role button click --name "Submit"  # ARIA role
-```
-
-## Sessions (Multiple Browsers)
-
-Run isolated browser instances:
+## Sessions (parallel browsers)
 
 ```bash
 pnpx agent-browser --session test1 open site-a.com
 pnpx agent-browser --session test2 open site-b.com
+pnpx agent-browser session list
 ```
 
-## Troubleshooting
+## JSON output (for parsing)
 
-**Browser not installed:**
+Add `--json` for machine-readable output:
 
 ```bash
-pnpx agent-browser install
+pnpx agent-browser snapshot -i --json
+pnpx agent-browser get text @e1 --json
 ```
 
-**Element not found:** Run `snapshot` again - refs change when page updates.
-
-**Page still loading:** Add wait:
+## Debugging
 
 ```bash
-pnpx agent-browser wait 2000                 # Wait 2 seconds
-pnpx agent-browser wait --load networkidle   # Wait for network idle
+pnpx agent-browser open example.com --headed  # Show browser window
+pnpx agent-browser console                    # View console messages
+pnpx agent-browser errors                     # View page errors
 ```
