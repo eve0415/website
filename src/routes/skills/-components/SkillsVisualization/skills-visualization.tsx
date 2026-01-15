@@ -111,10 +111,6 @@ const SkillsVisualization: FC<Props> = ({ animate = true }) => {
 
     const draw = () => {
       const { width, height } = setupCanvas();
-
-      // Update dimensions if changed (triggers node position recalculation)
-      setDimensions(prev => (prev.width !== width || prev.height !== height ? { width, height } : prev));
-
       ctx.clearRect(0, 0, width, height);
 
       if (shouldAnimate) {
@@ -173,11 +169,20 @@ const SkillsVisualization: FC<Props> = ({ animate = true }) => {
       }
     };
 
+    // Set initial dimensions
+    const { width, height } = setupCanvas();
+    setDimensions({ width, height });
+
     // Initial draw
     draw();
 
-    // Use ResizeObserver to handle viewport changes
-    const resizeObserver = new ResizeObserver(() => {
+    // Use ResizeObserver to handle viewport changes and dimension updates
+    const resizeObserver = new ResizeObserver(entries => {
+      const entry = entries[0];
+      if (entry) {
+        const rect = entry.contentRect;
+        setDimensions({ width: rect.width, height: rect.height });
+      }
       cancelAnimationFrame(animationId);
       draw();
     });

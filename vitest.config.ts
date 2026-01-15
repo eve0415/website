@@ -48,6 +48,10 @@ export default defineConfig({
           alias: {
             '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
             '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
+            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
+            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
+            'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
+            'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
           },
         },
         optimizeDeps: {
@@ -60,6 +64,9 @@ export default defineConfig({
             'react-dom/client',
             '@tanstack/react-router',
             '@tanstack/react-store',
+            '@tanstack/react-form',
+            'use-sync-external-store',
+            'use-sync-external-store/shim/with-selector',
             'qrcode.react',
           ],
           exclude: ['@tanstack/react-start', '@tanstack/start-client-core', '@tanstack/start-server-core', '@tanstack/start-static-server-functions'],

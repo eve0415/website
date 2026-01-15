@@ -63,22 +63,21 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
   const onInputChangeRef = useRef(onInputChange);
 
   // Sync state to refs (runs after every render)
+  // Group 1: User input state
   useEffect(() => {
     inputRef.current = input;
-  });
-  useEffect(() => {
     cursorPositionRef.current = cursorPosition;
   });
+
+  // Group 2: Command history state
   useEffect(() => {
     historyRef.current = history;
-  });
-  useEffect(() => {
     historyIndexRef.current = historyIndex;
   });
+
+  // Group 3: Props/callbacks
   useEffect(() => {
     commandsRef.current = commands;
-  });
-  useEffect(() => {
     onSubmitRef.current = onSubmit;
     onCtrlCRef.current = onCtrlC;
     onInputChangeRef.current = onInputChange;
