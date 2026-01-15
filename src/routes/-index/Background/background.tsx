@@ -11,6 +11,14 @@ const Background: FC = () => {
   const mousePosition = useMousePosition();
   const reducedMotion = useReducedMotion();
 
+  // Store latest mouse position in ref for access in animation loop without triggering effect re-runs
+  const mousePositionRef = useRef(mousePosition);
+
+  // Sync ref with latest mouse position (only when mousePosition changes)
+  useEffect(() => {
+    mousePositionRef.current = mousePosition;
+  }, [mousePosition]);
+
   // Store static mouse position for reduced motion mode
   // This ensures stable rendering for visual regression tests
   const staticMouseRef = useRef({ x: 0, y: 0 });
@@ -44,8 +52,8 @@ const Background: FC = () => {
       // Draw subtle grid dots
       ctx.fillStyle = 'rgba(64, 64, 64, 0.3)';
 
-      // Use static position for reduced motion, live position otherwise
-      const effectivePosition = reducedMotion ? staticMouseRef.current : mousePosition;
+      // Use static position for reduced motion, live position otherwise (read from ref for latest value)
+      const effectivePosition = reducedMotion ? staticMouseRef.current : mousePositionRef.current;
 
       for (let x = 0; x < canvas.width; x += gridSize) {
         for (let y = 0; y < canvas.height; y += gridSize) {
@@ -86,7 +94,7 @@ const Background: FC = () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationId);
     };
-  }, [mousePosition.x, mousePosition.y, reducedMotion, mousePosition]);
+  }, [reducedMotion]);
 
   return <canvas ref={canvasRef} className='pointer-events-none fixed inset-0 -z-10' aria-hidden='true' />;
 };

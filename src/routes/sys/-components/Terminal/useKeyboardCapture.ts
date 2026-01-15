@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useReducer, useRef } from 'react';
 
 interface UseKeyboardCaptureOptions {
   /** Whether keyboard capture is enabled */
@@ -26,126 +26,303 @@ interface UseKeyboardCaptureResult {
   setInput: (value: string) => void;
 }
 
+// State managed by reducer
+interface KeyboardState {
+  input: string;
+  cursorPosition: number;
+  suggestions: string[];
+  history: string[];
+  historyIndex: number; // -1 = not navigating
+  wipInput: string; // Work-in-progress input saved when navigating history
+}
+
+// Actions for state transitions
+type KeyboardAction =
+  | { type: 'TYPE_CHAR'; char: string }
+  | { type: 'BACKSPACE' }
+  | { type: 'DELETE' }
+  | { type: 'MOVE_CURSOR'; position: number }
+  | { type: 'HISTORY_UP' }
+  | { type: 'HISTORY_DOWN' }
+  | { type: 'TAB_COMPLETE'; result: string; suggestions: string[] }
+  | { type: 'SUBMIT' }
+  | { type: 'CANCEL' }
+  | { type: 'CLEAR' }
+  | { type: 'SET_INPUT'; value: string };
+
+const initialState: KeyboardState = {
+  input: '',
+  cursorPosition: 0,
+  suggestions: [],
+  history: [],
+  historyIndex: -1,
+  wipInput: '',
+};
+
+function keyboardReducer(state: KeyboardState, action: KeyboardAction): KeyboardState {
+  switch (action.type) {
+    case 'TYPE_CHAR': {
+      const newInput = state.input.slice(0, state.cursorPosition) + action.char + state.input.slice(state.cursorPosition);
+      return {
+        ...state,
+        input: newInput,
+        cursorPosition: state.cursorPosition + 1,
+        suggestions: [],
+        historyIndex: -1,
+        wipInput: '',
+      };
+    }
+
+    case 'BACKSPACE': {
+      if (state.cursorPosition === 0) return state;
+      const newInput = state.input.slice(0, state.cursorPosition - 1) + state.input.slice(state.cursorPosition);
+      return {
+        ...state,
+        input: newInput,
+        cursorPosition: state.cursorPosition - 1,
+        suggestions: [],
+        historyIndex: -1,
+        wipInput: '',
+      };
+    }
+
+    case 'DELETE': {
+      if (state.cursorPosition >= state.input.length) return state;
+      const newInput = state.input.slice(0, state.cursorPosition) + state.input.slice(state.cursorPosition + 1);
+      return {
+        ...state,
+        input: newInput,
+        suggestions: [],
+        historyIndex: -1,
+        wipInput: '',
+      };
+    }
+
+    case 'MOVE_CURSOR': {
+      const newPosition = Math.max(0, Math.min(state.input.length, action.position));
+      if (newPosition === state.cursorPosition) return state;
+      return {
+        ...state,
+        cursorPosition: newPosition,
+      };
+    }
+
+    case 'HISTORY_UP': {
+      if (state.history.length === 0) return state;
+
+      if (state.historyIndex === -1) {
+        // Starting navigation - save current input
+        const newIndex = state.history.length - 1;
+        const historyEntry = state.history[newIndex];
+        if (historyEntry === undefined) return state;
+        return {
+          ...state,
+          wipInput: state.input,
+          historyIndex: newIndex,
+          input: historyEntry,
+          cursorPosition: historyEntry.length,
+          suggestions: [],
+        };
+      }
+
+      if (state.historyIndex > 0) {
+        // Go to older entry
+        const newIndex = state.historyIndex - 1;
+        const historyEntry = state.history[newIndex];
+        if (historyEntry === undefined) return state;
+        return {
+          ...state,
+          historyIndex: newIndex,
+          input: historyEntry,
+          cursorPosition: historyEntry.length,
+          suggestions: [],
+        };
+      }
+
+      return state;
+    }
+
+    case 'HISTORY_DOWN': {
+      if (state.historyIndex === -1) return state;
+
+      if (state.historyIndex < state.history.length - 1) {
+        // Go to newer entry
+        const newIndex = state.historyIndex + 1;
+        const historyEntry = state.history[newIndex];
+        if (historyEntry === undefined) return state;
+        return {
+          ...state,
+          historyIndex: newIndex,
+          input: historyEntry,
+          cursorPosition: historyEntry.length,
+          suggestions: [],
+        };
+      }
+
+      // At newest - return to WIP
+      return {
+        ...state,
+        historyIndex: -1,
+        input: state.wipInput,
+        cursorPosition: state.wipInput.length,
+        wipInput: '',
+        suggestions: [],
+      };
+    }
+
+    case 'TAB_COMPLETE': {
+      return {
+        ...state,
+        input: action.result,
+        cursorPosition: action.result.length,
+        suggestions: action.suggestions,
+        historyIndex: -1,
+        wipInput: '',
+      };
+    }
+
+    case 'SUBMIT': {
+      const trimmed = state.input.trim();
+      if (!trimmed) {
+        return {
+          ...state,
+          input: '',
+          cursorPosition: 0,
+          suggestions: [],
+          historyIndex: -1,
+          wipInput: '',
+        };
+      }
+      return {
+        ...state,
+        input: '',
+        cursorPosition: 0,
+        suggestions: [],
+        history: [...state.history, trimmed],
+        historyIndex: -1,
+        wipInput: '',
+      };
+    }
+
+    case 'CANCEL':
+    case 'CLEAR': {
+      return {
+        ...state,
+        input: '',
+        cursorPosition: 0,
+        suggestions: [],
+        historyIndex: -1,
+        wipInput: '',
+      };
+    }
+
+    case 'SET_INPUT': {
+      return {
+        ...state,
+        input: action.value,
+        cursorPosition: action.value.length,
+        suggestions: [],
+        historyIndex: -1,
+        wipInput: '',
+      };
+    }
+
+    default:
+      return state;
+  }
+}
+
 /**
  * Hook for capturing keyboard input with tab autocomplete.
  * Only captures when enabled (desktop + prompt state).
+ *
+ * Uses useReducer for state management - cleaner than multiple useState + ref syncing.
  */
 export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeyboardCaptureResult => {
   const { enabled, commands, onSubmit, onCtrlC, onInputChange } = options;
 
-  const [input, setInputState] = useState('');
-  const [cursorPosition, setCursorPosition] = useState(0);
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+  const [state, dispatch] = useReducer(keyboardReducer, initialState);
 
-  // Command history state
-  const [history, setHistory] = useState<string[]>([]);
-  const [historyIndex, setHistoryIndex] = useState(-1); // -1 = not navigating
-  const wipInputRef = useRef(''); // Work-in-progress input saved when navigating
-
-  const tabPressCount = useRef(0);
-  const lastTabInput = useRef('');
-  // Track tab presses to handle React Strict Mode double-invocation
-  const pendingTabId = useRef(0);
-  const lastProcessedTabId = useRef(0);
-  const lastTabResult = useRef('');
-
-  // Refs for callbacks to avoid stale closures
+  // Refs for callbacks to avoid stale closures in event handler
+  const commandsRef = useRef(commands);
   const onSubmitRef = useRef(onSubmit);
   const onCtrlCRef = useRef(onCtrlC);
   const onInputChangeRef = useRef(onInputChange);
 
+  // Sync callback refs
   useEffect(() => {
+    commandsRef.current = commands;
     onSubmitRef.current = onSubmit;
     onCtrlCRef.current = onCtrlC;
     onInputChangeRef.current = onInputChange;
-  }, [onSubmit, onCtrlC, onInputChange]);
+  });
 
+  // Tab completion state (not in reducer - caching for double-invocation protection)
+  const tabPressCount = useRef(0);
+  const lastTabInput = useRef('');
+  const pendingTabId = useRef(0);
+  const lastProcessedTabId = useRef(0);
+  const lastTabResult = useRef<{ result: string; suggestions: string[] }>({ result: '', suggestions: [] });
+
+  // Tab handling function
+  const handleTab = useCallback((currentInput: string, tabId: number): { result: string; suggestions: string[] } => {
+    // If already processed, return the cached result (React Strict Mode double-call)
+    if (tabId === lastProcessedTabId.current) {
+      return lastTabResult.current;
+    }
+    lastProcessedTabId.current = tabId;
+
+    const cacheAndReturn = (result: string, suggestions: string[]): { result: string; suggestions: string[] } => {
+      lastTabResult.current = { result, suggestions };
+      return lastTabResult.current;
+    };
+
+    const trimmedInput = currentInput.trimStart();
+    const cmds = commandsRef.current;
+    const matches = cmds.filter(cmd => cmd.startsWith(trimmedInput));
+
+    if (matches.length === 0) {
+      return cacheAndReturn(currentInput, []);
+    }
+
+    if (matches.length === 1 && matches[0] !== undefined) {
+      tabPressCount.current = 0;
+      return cacheAndReturn(matches[0], []);
+    }
+
+    if (lastTabInput.current !== trimmedInput) {
+      tabPressCount.current = 0;
+      lastTabInput.current = trimmedInput;
+    }
+
+    tabPressCount.current += 1;
+
+    if (tabPressCount.current === 1) {
+      const commonPrefix = findCommonPrefix(matches);
+      if (commonPrefix.length > trimmedInput.length) {
+        lastTabInput.current = commonPrefix;
+        return cacheAndReturn(commonPrefix, []);
+      }
+      return cacheAndReturn(currentInput, []);
+    }
+
+    return cacheAndReturn(currentInput, matches);
+  }, []);
+
+  // Stable callbacks for external use
   const setInput = useCallback((value: string) => {
-    setInputState(value);
-    setCursorPosition(value.length);
+    dispatch({ type: 'SET_INPUT', value });
     onInputChangeRef.current?.(value);
-    // Reset tab state when input changes manually
-    tabPressCount.current = 0;
-    setSuggestions([]);
-    // Reset history navigation
-    setHistoryIndex(-1);
-    wipInputRef.current = '';
   }, []);
 
   const clearInput = useCallback(() => {
-    setInputState('');
-    setCursorPosition(0);
-    setSuggestions([]);
-    tabPressCount.current = 0;
+    dispatch({ type: 'CLEAR' });
     onInputChangeRef.current?.('');
-    // Reset history navigation
-    setHistoryIndex(-1);
-    wipInputRef.current = '';
   }, []);
 
-  const handleTab = useCallback(
-    (currentInput: string, tabId: number): string => {
-      // If already processed, return the cached result (React Strict Mode double-call)
-      if (tabId === lastProcessedTabId.current) {
-        return lastTabResult.current;
-      }
-      lastProcessedTabId.current = tabId;
-
-      // Helper to cache and return result
-      const cacheAndReturn = (result: string): string => {
-        lastTabResult.current = result;
-        return result;
-      };
-
-      const trimmedInput = currentInput.trimStart();
-
-      // Find matching commands
-      const matches = commands.filter(cmd => cmd.startsWith(trimmedInput));
-
-      if (matches.length === 0) {
-        return cacheAndReturn(currentInput);
-      }
-
-      if (matches.length === 1 && matches[0] !== undefined) {
-        // Single match: complete it
-        setSuggestions([]);
-        tabPressCount.current = 0;
-        return cacheAndReturn(matches[0]);
-      }
-
-      // Multiple matches
-      if (lastTabInput.current !== trimmedInput) {
-        // Input changed since last tab
-        tabPressCount.current = 0;
-        lastTabInput.current = trimmedInput;
-      }
-
-      tabPressCount.current += 1;
-
-      if (tabPressCount.current === 1) {
-        // First tab: complete common prefix
-        const commonPrefix = findCommonPrefix(matches);
-        if (commonPrefix.length > trimmedInput.length) {
-          setSuggestions([]);
-          // Update lastTabInput so next Tab continues counting instead of resetting
-          lastTabInput.current = commonPrefix;
-          return cacheAndReturn(commonPrefix);
-        }
-        // No additional prefix to complete, show suggestions on second tab
-        return cacheAndReturn(currentInput);
-      }
-
-      // Second tab: show all matches
-      setSuggestions(matches);
-      return cacheAndReturn(currentInput);
-    },
-    [commands],
-  );
-
+  // Single event listener effect - only depends on `enabled`
   useEffect(() => {
-    if (!enabled) {
-      return;
-    }
+    if (!enabled) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore if typing in an input/textarea
@@ -156,8 +333,10 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       // Ctrl+C
       if (e.ctrlKey && e.key === 'c') {
         e.preventDefault();
+        dispatch({ type: 'CANCEL' });
         onCtrlCRef.current();
-        clearInput();
+        onInputChangeRef.current?.('');
+        tabPressCount.current = 0;
         return;
       }
 
@@ -165,183 +344,137 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       if (e.key === 'Tab') {
         e.preventDefault();
         const tabId = ++pendingTabId.current;
-        setInputState(prev => {
-          const newValue = handleTab(prev, tabId);
-          setCursorPosition(newValue.length);
-          onInputChangeRef.current?.(newValue);
-          // Reset history navigation on tab
-          setHistoryIndex(-1);
-          wipInputRef.current = '';
-          return newValue;
-        });
+        const { result, suggestions } = handleTab(state.input, tabId);
+        dispatch({ type: 'TAB_COMPLETE', result, suggestions });
+        onInputChangeRef.current?.(result);
         return;
       }
 
       // Enter to submit
       if (e.key === 'Enter') {
         e.preventDefault();
-        const currentInput = input;
-        if (currentInput.trim()) {
-          // Add to history
-          setHistory(prev => [...prev, currentInput.trim()]);
-          onSubmitRef.current(currentInput.trim());
+        const trimmed = state.input.trim();
+        if (trimmed) {
+          onSubmitRef.current(trimmed);
         }
-        clearInput();
+        dispatch({ type: 'SUBMIT' });
+        onInputChangeRef.current?.('');
+        tabPressCount.current = 0;
         return;
       }
 
-      // Backspace - delete character before cursor
+      // Backspace
       if (e.key === 'Backspace') {
         e.preventDefault();
-        if (cursorPosition > 0) {
-          setInputState(prev => {
-            const newValue = prev.slice(0, cursorPosition - 1) + prev.slice(cursorPosition);
-            onInputChangeRef.current?.(newValue);
-            tabPressCount.current = 0;
-            setSuggestions([]);
-            return newValue;
-          });
-          setCursorPosition(prev => prev - 1);
-          // Reset history navigation
-          setHistoryIndex(-1);
-          wipInputRef.current = '';
+        if (state.cursorPosition > 0) {
+          const newInput = state.input.slice(0, state.cursorPosition - 1) + state.input.slice(state.cursorPosition);
+          dispatch({ type: 'BACKSPACE' });
+          onInputChangeRef.current?.(newInput);
+          tabPressCount.current = 0;
         }
         return;
       }
 
-      // Delete - delete character at cursor (forward delete)
+      // Delete
       if (e.key === 'Delete') {
         e.preventDefault();
-        if (cursorPosition < input.length) {
-          setInputState(prev => {
-            const newValue = prev.slice(0, cursorPosition) + prev.slice(cursorPosition + 1);
-            onInputChangeRef.current?.(newValue);
-            tabPressCount.current = 0;
-            setSuggestions([]);
-            return newValue;
-          });
-          // Cursor position stays the same
-          // Reset history navigation
-          setHistoryIndex(-1);
-          wipInputRef.current = '';
+        if (state.cursorPosition < state.input.length) {
+          const newInput = state.input.slice(0, state.cursorPosition) + state.input.slice(state.cursorPosition + 1);
+          dispatch({ type: 'DELETE' });
+          onInputChangeRef.current?.(newInput);
+          tabPressCount.current = 0;
         }
         return;
       }
 
-      // Arrow left - move cursor left
+      // Arrow left
       if (e.key === 'ArrowLeft') {
         e.preventDefault();
-        setCursorPosition(prev => Math.max(0, prev - 1));
+        dispatch({ type: 'MOVE_CURSOR', position: state.cursorPosition - 1 });
         return;
       }
 
-      // Arrow right - move cursor right
+      // Arrow right
       if (e.key === 'ArrowRight') {
         e.preventDefault();
-        setCursorPosition(prev => Math.min(input.length, prev + 1));
+        dispatch({ type: 'MOVE_CURSOR', position: state.cursorPosition + 1 });
         return;
       }
 
-      // Home - cursor to start
+      // Home
       if (e.key === 'Home') {
         e.preventDefault();
-        setCursorPosition(0);
+        dispatch({ type: 'MOVE_CURSOR', position: 0 });
         return;
       }
 
-      // End - cursor to end
+      // End
       if (e.key === 'End') {
         e.preventDefault();
-        setCursorPosition(input.length);
+        dispatch({ type: 'MOVE_CURSOR', position: state.input.length });
         return;
       }
 
-      // Arrow up - navigate history (older)
+      // Arrow up - history older
       if (e.key === 'ArrowUp') {
         e.preventDefault();
-        if (history.length === 0) return;
+        // Need to get history entry for onInputChange callback
+        const hist = state.history;
+        const idx = state.historyIndex;
+        if (hist.length === 0) return;
 
-        if (historyIndex === -1) {
-          // Starting navigation - save current input as WIP
-          wipInputRef.current = input;
-          const newIndex = history.length - 1;
-          setHistoryIndex(newIndex);
-          const historyEntry = history[newIndex];
-          if (historyEntry !== undefined) {
-            setInputState(historyEntry);
-            setCursorPosition(historyEntry.length);
-            onInputChangeRef.current?.(historyEntry);
-          }
-        } else if (historyIndex > 0) {
-          // Go to older entry
-          const newIndex = historyIndex - 1;
-          setHistoryIndex(newIndex);
-          const historyEntry = history[newIndex];
-          if (historyEntry !== undefined) {
-            setInputState(historyEntry);
-            setCursorPosition(historyEntry.length);
-            onInputChangeRef.current?.(historyEntry);
-          }
+        let newInput: string | undefined;
+        if (idx === -1) {
+          newInput = hist[hist.length - 1];
+        } else if (idx > 0) {
+          newInput = hist[idx - 1];
         }
-        // At oldest entry (index 0) - stay there
+
+        dispatch({ type: 'HISTORY_UP' });
+        if (newInput !== undefined) {
+          onInputChangeRef.current?.(newInput);
+        }
         tabPressCount.current = 0;
-        setSuggestions([]);
         return;
       }
 
-      // Arrow down - navigate history (newer)
+      // Arrow down - history newer
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        if (historyIndex === -1) return; // Not navigating
+        const idx = state.historyIndex;
+        if (idx === -1) return;
 
-        if (historyIndex < history.length - 1) {
-          // Go to newer entry
-          const newIndex = historyIndex + 1;
-          setHistoryIndex(newIndex);
-          const historyEntry = history[newIndex];
-          if (historyEntry !== undefined) {
-            setInputState(historyEntry);
-            setCursorPosition(historyEntry.length);
-            onInputChangeRef.current?.(historyEntry);
-          }
+        let newInput: string;
+        if (idx < state.history.length - 1) {
+          newInput = state.history[idx + 1] ?? '';
         } else {
-          // At newest entry - return to WIP
-          setHistoryIndex(-1);
-          setInputState(wipInputRef.current);
-          setCursorPosition(wipInputRef.current.length);
-          onInputChangeRef.current?.(wipInputRef.current);
-          wipInputRef.current = '';
+          newInput = state.wipInput;
         }
+
+        dispatch({ type: 'HISTORY_DOWN' });
+        onInputChangeRef.current?.(newInput);
         tabPressCount.current = 0;
-        setSuggestions([]);
         return;
       }
 
-      // Regular character input - insert at cursor position
+      // Regular character input
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
-        setInputState(prev => {
-          const newValue = prev.slice(0, cursorPosition) + e.key + prev.slice(cursorPosition);
-          onInputChangeRef.current?.(newValue);
-          tabPressCount.current = 0;
-          setSuggestions([]);
-          return newValue;
-        });
-        setCursorPosition(prev => prev + 1);
-        // Reset history navigation
-        setHistoryIndex(-1);
-        wipInputRef.current = '';
+        const newInput = state.input.slice(0, state.cursorPosition) + e.key + state.input.slice(state.cursorPosition);
+        dispatch({ type: 'TYPE_CHAR', char: e.key });
+        onInputChangeRef.current?.(newInput);
+        tabPressCount.current = 0;
       }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [enabled, handleTab, clearInput, input, cursorPosition, history, historyIndex]);
+  }, [enabled, handleTab, state]);
 
   return {
-    input,
-    cursorPosition,
-    suggestions,
+    input: state.input,
+    cursorPosition: state.cursorPosition,
+    suggestions: state.suggestions,
     clearInput,
     setInput,
   };

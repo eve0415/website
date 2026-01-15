@@ -2,9 +2,37 @@ import type { Project } from './-components/ProjectCard/project-card';
 import type { FC } from 'react';
 
 import { Link, createFileRoute } from '@tanstack/react-router';
+import { useEffect, useRef, useState } from 'react';
 
 import AnimatedCounter from './-components/AnimatedCounter/animated-counter';
 import ProjectCard from './-components/ProjectCard/project-card';
+
+// Shared IntersectionObserver for all counters in this section
+const useCounterVisibility = () => {
+  const sectionRef = useRef<HTMLElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    const section = sectionRef.current;
+    if (!section) return;
+
+    const observer = new IntersectionObserver(
+      entries => {
+        if (entries[0]?.isIntersecting) {
+          setIsVisible(true);
+          // Once visible, we don't need to observe anymore
+          observer.disconnect();
+        }
+      },
+      { threshold: 0.5 },
+    );
+
+    observer.observe(section);
+    return () => observer.disconnect();
+  }, []);
+
+  return { sectionRef, isVisible };
+};
 
 const projects: Project[] = [
   {
@@ -35,6 +63,8 @@ const projects: Project[] = [
 ];
 
 const ProjectsPage: FC = () => {
+  const { sectionRef, isVisible } = useCounterVisibility();
+
   return (
     <main className='min-h-dvh px-6 py-24 md:px-12'>
       {/* Header */}
@@ -68,15 +98,15 @@ const ProjectsPage: FC = () => {
       </div>
 
       {/* GitHub Stats Section */}
-      <section className='mt-24'>
+      <section ref={sectionRef} className='mt-24'>
         <h2 className='mb-8 text-2xl font-bold'>GitHub Activity</h2>
         <div className='grid gap-6 md:grid-cols-3'>
           <div className='group border-line bg-surface duration-normal hover:border-neon/30 rounded-lg border p-6 transition-all'>
-            <AnimatedCounter end={44} />
+            <AnimatedCounter end={44} isVisible={isVisible} />
             <span className='text-subtle-foreground mt-1 block text-sm'>Public Repositories</span>
           </div>
           <div className='group border-line bg-surface duration-normal hover:border-neon/30 rounded-lg border p-6 transition-all'>
-            <AnimatedCounter end={29} />
+            <AnimatedCounter end={29} isVisible={isVisible} />
             <span className='text-subtle-foreground mt-1 block text-sm'>Followers</span>
           </div>
           <div className='group border-line bg-surface duration-normal hover:border-neon/30 rounded-lg border p-6 transition-all'>
