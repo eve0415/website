@@ -1,5 +1,3 @@
-import type { ValidationErrors } from '../../-utils/validation';
-
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
