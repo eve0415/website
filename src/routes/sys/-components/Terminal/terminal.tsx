@@ -59,6 +59,12 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
   const [isCrashing, setIsCrashing] = useState(false);
   const [pendingError, setPendingError] = useState<Error | null>(null);
 
+  // Store callback in ref to avoid effect re-runs when callback reference changes
+  const onBootCompleteRef = useRef(onBootComplete);
+  useEffect(() => {
+    onBootCompleteRef.current = onBootComplete;
+  });
+
   // Throw pending error during render so React's error boundary catches it
   if (pendingError) {
     throw pendingError;
@@ -96,13 +102,21 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
     }
     bootTriggeredRef.current = true;
     // Notify parent that boot is complete (for animations)
-    onBootComplete();
-  }, [isTouchDevice, state, onBootComplete]);
+    onBootCompleteRef.current();
+  }, [isTouchDevice, state]);
 
   // Navigation helper
   const handleNavigateHome = useCallback(() => {
     void navigate({ to: '/' });
   }, [navigate]);
+
+  // Scroll to prompt after command execution
+  const scrollToPrompt = useCallback(() => {
+    // Use setTimeout to ensure DOM has updated before scrolling
+    setTimeout(() => {
+      promptRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }, 0);
+  }, []);
 
   // Command context for execution
   const commandContext: CommandContext = useMemo(
@@ -123,6 +137,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
         if (isYes && awaitingConfirmation === 'exit') {
           handleNavigateHome();
         }
+        scrollToPrompt();
         return;
       }
 
@@ -160,8 +175,11 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
           showDiagnostic();
           break;
       }
+
+      // Scroll to prompt after command execution
+      scrollToPrompt();
     },
-    [awaitingConfirmation, confirm, commandContext, terminalExecute, clear, awaitConfirmation, addOutput, handleNavigateHome, showDiagnostic],
+    [awaitingConfirmation, confirm, commandContext, terminalExecute, clear, awaitConfirmation, addOutput, handleNavigateHome, showDiagnostic, scrollToPrompt],
   );
 
   // Handle Ctrl+C - use ref to avoid effect re-runs during typing animation
@@ -173,12 +191,12 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
       // Dismiss content and show prompt
       onCtrlC();
       // Notify parent for any cleanup/state updates
-      onBootComplete();
+      onBootCompleteRef.current();
     } else {
       // In prompt state: just clear input
       onCtrlC();
     }
-  }, [state, onCtrlC, displayedText, onBootComplete]);
+  }, [state, onCtrlC, displayedText]);
 
   // Ref to hold current handler for use in effect
   const handleCtrlCRef = useRef(handleCtrlC);
@@ -213,13 +231,6 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isTouchDevice, state]);
-
-  // Auto-scroll to prompt after command execution
-  useEffect(() => {
-    if (state === 'prompt' && promptRef.current) {
-      promptRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [state, lines.length]);
 
   // Determine if we should show the children (boot content)
   const showContent = contentVisible;

@@ -20,7 +20,7 @@ describe('AnimatedCounter', () => {
     // This covers the default parameters: duration = 2000, suffix = ''
     await render(<AnimatedCounter end={100} />);
 
-    // Counter should render with data-counter attribute
+    // Counter should render starting at 0
     await expect.element(page.getByText('0')).toBeInTheDocument();
   });
 
@@ -37,40 +37,25 @@ describe('AnimatedCounter', () => {
     await expect.element(page.getByText('0%')).toBeInTheDocument();
   });
 
-  test('animates when element is visible', async () => {
-    // Create a proper mock IntersectionObserver class
-    type Callback = IntersectionObserverCallback;
-    let savedCallback: Callback | null = null;
-
-    class MockIntersectionObserver implements IntersectionObserver {
-      root: Element | Document | null = null;
-      rootMargin = '';
-      thresholds: readonly number[] = [];
-
-      constructor(callback: Callback) {
-        savedCallback = callback;
-      }
-
-      observe(target: Element) {
-        // Trigger intersection after a small delay
-        setTimeout(() => {
-          savedCallback?.([{ isIntersecting: true, target } as IntersectionObserverEntry], this);
-        }, 10);
-      }
-      disconnect = vi.fn();
-      unobserve = vi.fn();
-      takeRecords = vi.fn(() => []);
-    }
-
-    window.IntersectionObserver = MockIntersectionObserver;
-
-    await render(<AnimatedCounter end={100} duration={500} />);
+  test('animates when isVisible prop is true', async () => {
+    // Use isVisible prop for direct control (shared observer pattern)
+    await render(<AnimatedCounter end={100} duration={500} isVisible={true} />);
 
     // Fast-forward for animation to complete
     await vi.advanceTimersByTimeAsync(700);
 
     // Should have animated to the final value
     await expect.element(page.getByText('100')).toBeInTheDocument();
+  });
+
+  test('does not animate when isVisible prop is false', async () => {
+    await render(<AnimatedCounter end={100} duration={500} isVisible={false} />);
+
+    // Fast-forward past animation duration
+    await vi.advanceTimersByTimeAsync(700);
+
+    // Should still be at 0 since not visible
+    await expect.element(page.getByText('0')).toBeInTheDocument();
   });
 
   test('applies correct styling', async () => {
@@ -80,38 +65,42 @@ describe('AnimatedCounter', () => {
     expect(counter).not.toBeNull();
   });
 
-  test('does not re-animate after first animation', async () => {
-    // Create a proper mock IntersectionObserver class
-    type Callback = (entries: IntersectionObserverEntry[], observer: IntersectionObserver) => void;
-    let observedElement: Element | undefined;
-    let mockObserverInstance: MockIntersectionObserver | undefined;
+  test('creates internal observer when isVisible prop is not provided', async () => {
+    // Mock IntersectionObserver to verify it's created
+    const observeMock = vi.fn();
+    const disconnectMock = vi.fn();
 
     class MockIntersectionObserver implements IntersectionObserver {
       root: Element | Document | null = null;
       rootMargin = '';
       thresholds: readonly number[] = [];
-      private callback: Callback;
 
-      constructor(callback: Callback) {
-        this.callback = callback;
-        // eslint-disable-next-line ts/no-this-alias -- Required for test to access instance
-        mockObserverInstance = this;
-      }
+      constructor(_callback: IntersectionObserverCallback) {}
+      observe = observeMock;
+      disconnect = disconnectMock;
+      unobserve = vi.fn();
+      takeRecords = vi.fn(() => []);
+    }
 
-      observe(target: Element) {
-        observedElement = target;
-      }
+    window.IntersectionObserver = MockIntersectionObserver;
 
-      triggerIntersection() {
-        if (observedElement !== undefined) {
-          this.callback(
-            [
-              { isIntersecting: true, target: observedElement, boundingClientRect: {}, intersectionRatio: 1, intersectionRect: {}, rootBounds: null, time: 0 },
-            ] as unknown as IntersectionObserverEntry[],
-            this,
-          );
-        }
-      }
+    await render(<AnimatedCounter end={100} duration={500} />);
+
+    // Observer should have been created and element observed
+    expect(observeMock).toHaveBeenCalled();
+  });
+
+  test('does not create internal observer when isVisible prop is provided', async () => {
+    // Mock IntersectionObserver to verify it's NOT created
+    const observeMock = vi.fn();
+
+    class MockIntersectionObserver implements IntersectionObserver {
+      root: Element | Document | null = null;
+      rootMargin = '';
+      thresholds: readonly number[] = [];
+
+      constructor(_callback: IntersectionObserverCallback) {}
+      observe = observeMock;
       disconnect = vi.fn();
       unobserve = vi.fn();
       takeRecords = vi.fn(() => []);
@@ -119,15 +108,24 @@ describe('AnimatedCounter', () => {
 
     window.IntersectionObserver = MockIntersectionObserver;
 
-    await render(<AnimatedCounter end={100} duration={100} />);
+    await render(<AnimatedCounter end={100} duration={500} isVisible={true} />);
 
-    // Trigger first intersection manually
-    mockObserverInstance?.triggerIntersection();
+    // Observer should NOT have been created since isVisible is provided
+    expect(observeMock).not.toHaveBeenCalled();
+  });
 
+  test('does not re-animate after first animation', async () => {
+    // Use isVisible prop for direct control
+    const { rerender } = await render(<AnimatedCounter end={100} duration={100} isVisible={true} />);
+
+    // Fast-forward for animation to complete
     await vi.advanceTimersByTimeAsync(200);
 
-    // Trigger second intersection
-    mockObserverInstance?.triggerIntersection();
+    // Should have animated to the final value
+    await expect.element(page.getByText('100')).toBeInTheDocument();
+
+    // Re-render with same props - should not re-animate
+    await rerender(<AnimatedCounter end={100} duration={100} isVisible={true} />);
 
     await vi.advanceTimersByTimeAsync(200);
 

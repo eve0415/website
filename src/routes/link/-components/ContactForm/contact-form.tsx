@@ -1,88 +1,100 @@
 import type { ContactFormResult } from '../../-utils/contact-form';
-import type { ContactFormData, ValidationErrors } from '../../-utils/validation';
-import type { FC, FormEvent } from 'react';
+import type { FC } from 'react';
 
+import { useForm } from '@tanstack/react-form';
 import { useState } from 'react';
 
 import { submitContactForm } from '../../-utils/contact-form';
-import { hasErrors, validateContactForm } from '../../-utils/validation';
 import TurnstileWidget from '../TurnstileWidget/turnstile-widget';
 
-type FormState = 'idle' | 'submitting' | 'success' | 'error';
+type SubmissionState = 'idle' | 'success' | 'error';
+
+// Field validators
+const validateName = (value: string): string | undefined => {
+  const trimmed = value.trim();
+  if (!trimmed) return 'お名前を入力してください';
+  if (trimmed.length > 100) return 'お名前は100文字以内で入力してください';
+  return undefined;
+};
+
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const validateEmail = (value: string): string | undefined => {
+  const trimmed = value.trim();
+  if (!trimmed) return 'メールアドレスを入力してください';
+  if (!EMAIL_REGEX.test(trimmed)) return '有効なメールアドレスを入力してください';
+  return undefined;
+};
+
+const validateMessage = (value: string): string | undefined => {
+  const trimmed = value.trim();
+  if (!trimmed) return 'メッセージを入力してください';
+  if (trimmed.length > 2000) return 'メッセージは2000文字以内で入力してください';
+  return undefined;
+};
 
 const ContactForm: FC = () => {
-  const [formState, setFormState] = useState<FormState>('idle');
-  const [formData, setFormData] = useState<ContactFormData>({ name: '', email: '', message: '' });
-  const [fieldErrors, setFieldErrors] = useState<ValidationErrors>({});
+  const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
   const [globalError, setGlobalError] = useState<string | null>(null);
-  const [turnstileToken, setTurnstileToken] = useState<string | null>(null);
 
-  // Client-side validation on blur
-  const handleBlur = (field: keyof ContactFormData) => {
-    const errors = validateContactForm(formData);
-    setFieldErrors(prev => ({
-      ...prev,
-      [field]: errors[field],
-    }));
-  };
+  const form = useForm({
+    defaultValues: {
+      name: '',
+      email: '',
+      message: '',
+      turnstileToken: '' as string,
+    },
+    onSubmit: async ({ value }) => {
+      setGlobalError(null);
 
-  // Clear field error on focus
-  const handleFocus = (field: keyof ContactFormData) => {
-    setFieldErrors(prev => {
-      const updated = { ...prev };
-      delete updated[field];
-      return updated;
-    });
-    setGlobalError(null);
-  };
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setGlobalError(null);
-
-    // Client-side validation
-    const errors = validateContactForm(formData);
-    if (hasErrors(errors)) {
-      setFieldErrors(errors);
-      return;
-    }
-
-    // Check Turnstile token
-    if (!turnstileToken) {
-      setGlobalError('セキュリティ認証を完了してください');
-      return;
-    }
-
-    setFormState('submitting');
-
-    try {
-      const result: ContactFormResult = await submitContactForm({
-        data: { formData, turnstileToken },
-      });
-
-      if (result.success) {
-        setFormState('success');
-        setFormData({ name: '', email: '', message: '' });
-        setFieldErrors({});
-        setTurnstileToken(null);
-
-        // Auto-dismiss after 5 seconds
-        setTimeout(() => setFormState('idle'), 5000);
-      } else {
-        handleError(result);
+      // Check Turnstile token
+      if (!value.turnstileToken) {
+        setGlobalError('セキュリティ認証を完了してください');
+        return;
       }
-    } catch {
-      setGlobalError('予期せぬエラーが発生しました。後ほどお試しください。');
-      setFormState('error');
-    }
-  };
+
+      try {
+        const result: ContactFormResult = await submitContactForm({
+          data: {
+            formData: {
+              name: value.name,
+              email: value.email,
+              message: value.message,
+            },
+            turnstileToken: value.turnstileToken,
+          },
+        });
+
+        if (result.success) {
+          setSubmissionState('success');
+          form.reset();
+
+          // Auto-dismiss after 5 seconds
+          setTimeout(() => setSubmissionState('idle'), 5000);
+        } else {
+          handleError(result);
+        }
+      } catch {
+        setGlobalError('予期せぬエラーが発生しました。後ほどお試しください。');
+        setSubmissionState('error');
+      }
+    },
+  });
 
   const handleError = (result: Exclude<ContactFormResult, { success: true }>) => {
-    setFormState('error');
+    setSubmissionState('error');
 
     switch (result.error) {
       case 'validation':
-        setFieldErrors(result.errors);
+        // Set field errors from server response
+        if (result.errors.name) {
+          form.setFieldMeta('name', prev => ({ ...prev, errors: [result.errors.name!] }));
+        }
+        if (result.errors.email) {
+          form.setFieldMeta('email', prev => ({ ...prev, errors: [result.errors.email!] }));
+        }
+        if (result.errors.message) {
+          form.setFieldMeta('message', prev => ({ ...prev, errors: [result.errors.message!] }));
+        }
         break;
       case 'turnstile':
       case 'rate_limit':
@@ -92,104 +104,127 @@ const ContactForm: FC = () => {
     }
   };
 
-  const isDisabled = formState === 'submitting' || formState === 'success';
+  const isDisabled = form.state.isSubmitting || submissionState === 'success';
   const showAlternativeContact = globalError?.includes('Discord') || globalError?.includes('制限');
 
   return (
-    <form data-testid='contact-form' onSubmit={handleSubmit} className='space-y-6'>
+    <form
+      data-testid='contact-form'
+      onSubmit={e => {
+        e.preventDefault();
+        void form.handleSubmit();
+      }}
+      className='space-y-6'
+    >
       {/* Name field */}
-      <div className='group'>
-        <label htmlFor='name' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
-          お名前
-        </label>
-        <input
-          type='text'
-          id='name'
-          data-testid='name-input'
-          value={formData.name}
-          onChange={e => setFormData(prev => ({ ...prev, name: e.target.value }))}
-          onBlur={() => handleBlur('name')}
-          onFocus={() => handleFocus('name')}
-          className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
-            fieldErrors.name ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
-          }`}
-          placeholder='山田太郎'
-          disabled={isDisabled}
-          maxLength={100}
-        />
-        {fieldErrors.name && (
-          <p data-testid='name-error' className='text-orange mt-1 text-sm'>
-            {fieldErrors.name}
-          </p>
+      <form.Field name='name' validators={{ onBlur: ({ value }) => validateName(value) }}>
+        {field => (
+          <div className='group'>
+            <label htmlFor='name' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
+              お名前
+            </label>
+            <input
+              type='text'
+              id='name'
+              data-testid='name-input'
+              value={field.state.value}
+              onChange={e => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+              onFocus={() => field.setMeta(prev => ({ ...prev, errors: [] }))}
+              className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
+                field.state.meta.errors.length > 0 ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
+              }`}
+              placeholder='山田太郎'
+              disabled={isDisabled}
+              maxLength={100}
+            />
+            {field.state.meta.errors.length > 0 && (
+              <p data-testid='name-error' className='text-orange mt-1 text-sm'>
+                {field.state.meta.errors[0]}
+              </p>
+            )}
+          </div>
         )}
-      </div>
+      </form.Field>
 
       {/* Email field */}
-      <div className='group'>
-        <label htmlFor='email' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
-          メールアドレス
-        </label>
-        <input
-          type='email'
-          id='email'
-          data-testid='email-input'
-          value={formData.email}
-          onChange={e => setFormData(prev => ({ ...prev, email: e.target.value }))}
-          onBlur={() => handleBlur('email')}
-          onFocus={() => handleFocus('email')}
-          className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
-            fieldErrors.email ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
-          }`}
-          placeholder='you@example.com'
-          disabled={isDisabled}
-        />
-        {fieldErrors.email && (
-          <p data-testid='email-error' className='text-orange mt-1 text-sm'>
-            {fieldErrors.email}
-          </p>
+      <form.Field name='email' validators={{ onBlur: ({ value }) => validateEmail(value) }}>
+        {field => (
+          <div className='group'>
+            <label htmlFor='email' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
+              メールアドレス
+            </label>
+            <input
+              type='email'
+              id='email'
+              data-testid='email-input'
+              value={field.state.value}
+              onChange={e => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+              onFocus={() => field.setMeta(prev => ({ ...prev, errors: [] }))}
+              className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
+                field.state.meta.errors.length > 0 ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
+              }`}
+              placeholder='you@example.com'
+              disabled={isDisabled}
+            />
+            {field.state.meta.errors.length > 0 && (
+              <p data-testid='email-error' className='text-orange mt-1 text-sm'>
+                {field.state.meta.errors[0]}
+              </p>
+            )}
+          </div>
         )}
-      </div>
+      </form.Field>
 
       {/* Message field */}
-      <div className='group'>
-        <label htmlFor='message' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
-          メッセージ
-        </label>
-        <textarea
-          id='message'
-          data-testid='message-input'
-          rows={5}
-          value={formData.message}
-          onChange={e => setFormData(prev => ({ ...prev, message: e.target.value }))}
-          onBlur={() => handleBlur('message')}
-          onFocus={() => handleFocus('message')}
-          className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full resize-none rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
-            fieldErrors.message ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
-          }`}
-          placeholder='ご用件をお書きください...'
-          disabled={isDisabled}
-          maxLength={2000}
-        />
-        <div className='text-subtle-foreground mt-1 flex justify-between text-xs'>
-          {fieldErrors.message ? (
-            <p data-testid='message-error' className='text-orange'>
-              {fieldErrors.message}
-            </p>
-          ) : (
-            <span />
-          )}
-          <span data-testid='char-counter'>{formData.message.length}/2000</span>
-        </div>
-      </div>
+      <form.Field name='message' validators={{ onBlur: ({ value }) => validateMessage(value) }}>
+        {field => (
+          <div className='group'>
+            <label htmlFor='message' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
+              メッセージ
+            </label>
+            <textarea
+              id='message'
+              data-testid='message-input'
+              rows={5}
+              value={field.state.value}
+              onChange={e => field.handleChange(e.target.value)}
+              onBlur={field.handleBlur}
+              onFocus={() => field.setMeta(prev => ({ ...prev, errors: [] }))}
+              className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full resize-none rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
+                field.state.meta.errors.length > 0 ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
+              }`}
+              placeholder='ご用件をお書きください...'
+              disabled={isDisabled}
+              maxLength={2000}
+            />
+            <div className='text-subtle-foreground mt-1 flex justify-between text-xs'>
+              {field.state.meta.errors.length > 0 ? (
+                <p data-testid='message-error' className='text-orange'>
+                  {field.state.meta.errors[0]}
+                </p>
+              ) : (
+                <span />
+              )}
+              <span data-testid='char-counter'>{field.state.value.length}/2000</span>
+            </div>
+          </div>
+        )}
+      </form.Field>
 
-      {/* Turnstile widget */}
-      <div data-testid='turnstile-container'>
-        <TurnstileWidget
-          onVerify={setTurnstileToken}
-          onError={() => setGlobalError('セキュリティ認証に失敗しました')}
-          onExpire={() => setTurnstileToken(null)}
-        />
-      </div>
+      {/* Turnstile widget - integrated as form field */}
+      <form.Field name='turnstileToken'>
+        {field => (
+          <div data-testid='turnstile-container'>
+            <TurnstileWidget
+              onVerify={token => field.handleChange(token)}
+              onError={() => setGlobalError('セキュリティ認証に失敗しました')}
+              onExpire={() => field.handleChange('')}
+            />
+          </div>
+        )}
+      </form.Field>
 
       {/* Submit button */}
       <button
@@ -197,16 +232,16 @@ const ContactForm: FC = () => {
         data-testid='submit-button'
         disabled={isDisabled}
         className={`group duration-fast relative w-full overflow-hidden rounded-lg px-6 py-3 font-medium transition-all ${
-          formState === 'success' ? 'bg-neon/20 text-neon' : 'bg-neon text-background hover:shadow-glow/20 hover:shadow-lg'
+          submissionState === 'success' ? 'bg-neon/20 text-neon' : 'bg-neon text-background hover:shadow-glow/20 hover:shadow-lg'
         } disabled:cursor-not-allowed disabled:opacity-50`}
       >
         <span className='relative z-10'>
-          {formState === 'submitting' ? (
+          {form.state.isSubmitting ? (
             <span data-testid='submitting-text' className='flex items-center justify-center gap-2'>
               <span className='border-background size-4 animate-spin rounded-full border-2 border-t-transparent' />
               送信中...
             </span>
-          ) : formState === 'success' ? (
+          ) : submissionState === 'success' ? (
             <span data-testid='success-text'>送信完了!</span>
           ) : (
             <span data-testid='idle-text'>送信する</span>
@@ -215,7 +250,7 @@ const ContactForm: FC = () => {
       </button>
 
       {/* Success message */}
-      {formState === 'success' && (
+      {submissionState === 'success' && (
         <p data-testid='success-message' className='animate-fade-in-up text-neon text-center text-sm'>
           メッセージが送信されました。ありがとうございます!
         </p>

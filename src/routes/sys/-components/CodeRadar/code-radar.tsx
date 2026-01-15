@@ -1,7 +1,7 @@
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 import type { FC } from 'react';
 
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
@@ -52,12 +52,22 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
   const animationRef = useRef<number>(0);
   const bootCompleteCalledRef = useRef(false);
 
+  // Store callbacks in refs to avoid effect re-runs when callback references change
+  const onBootCompleteRef = useRef(onBootComplete);
+  useEffect(() => {
+    onBootCompleteRef.current = onBootComplete;
+  });
+
   const totalContributions = useMemo(() => {
     return contributionCalendar.reduce((sum, day) => sum + day.count, 0);
   }, [contributionCalendar]);
 
-  const draw = useCallback(
-    (ctx: CanvasRenderingContext2D, width: number, height: number, time: number, skipAnimation: boolean) => {
+  // Draw function stored in ref to avoid effect re-runs when it changes
+  const drawRef = useRef<(ctx: CanvasRenderingContext2D, width: number, height: number, time: number, skipAnimation: boolean) => void>(undefined);
+
+  // Update draw function ref when dependencies change
+  useEffect(() => {
+    drawRef.current = (ctx: CanvasRenderingContext2D, width: number, height: number, time: number, skipAnimation: boolean) => {
       const centerX = width / 2;
       const centerY = height / 2;
       const maxRadius = Math.min(width, height) / 2 - 20;
@@ -189,9 +199,8 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         const y = centerY + Math.sin(angle) * labelRadius;
         ctx.fillText(label, x, y);
       }
-    },
-    [bootPhase, contributionCalendar],
-  );
+    };
+  }, [bootPhase, contributionCalendar]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
@@ -224,22 +233,22 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
           setBootPhase('idle');
           if (!bootCompleteCalledRef.current) {
             bootCompleteCalledRef.current = true;
-            onBootComplete?.();
+            onBootCompleteRef.current?.();
           }
         }
       }
 
-      draw(ctx, rect.width, rect.height, timestamp, false);
+      drawRef.current?.(ctx, rect.width, rect.height, timestamp, false);
       animationRef.current = requestAnimationFrame(animate);
     };
 
     // For reduced motion, just draw once
     if (prefersReducedMotion) {
       bootProgressRef.current = 1;
-      draw(ctx, rect.width, rect.height, 0, true);
+      drawRef.current?.(ctx, rect.width, rect.height, 0, true);
       if (!bootCompleteCalledRef.current) {
         bootCompleteCalledRef.current = true;
-        onBootComplete?.();
+        onBootCompleteRef.current?.();
       }
     } else {
       animationRef.current = requestAnimationFrame(animate);
@@ -249,7 +258,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     const resizeObserver = new ResizeObserver(() => {
       rect = setupCanvas();
       if (prefersReducedMotion) {
-        draw(ctx, rect.width, rect.height, 0, true);
+        drawRef.current?.(ctx, rect.width, rect.height, 0, true);
       }
     });
     resizeObserver.observe(canvas);
@@ -258,7 +267,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
       cancelAnimationFrame(animationRef.current);
       resizeObserver.disconnect();
     };
-  }, [draw, bootPhase, prefersReducedMotion, onBootComplete]);
+  }, [bootPhase, prefersReducedMotion]);
 
   // Intersection observer to trigger animation only when visible
   useEffect(() => {
