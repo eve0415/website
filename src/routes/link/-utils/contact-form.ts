@@ -23,28 +23,36 @@ export type ContactFormResult =
   | { success: false; error: 'rate_limit'; message: string }
   | { success: false; error: 'email_failed'; message: string };
 
-interface SubmitContactFormInput {
-  formData: ContactFormData;
-  turnstileToken: string;
-}
+// Form submission handler for progressive enhancement
+export const handleForm = createServerFn({ method: 'POST' })
+  .inputValidator((data: unknown) => {
+    if (!(data instanceof FormData)) {
+      throw new Error('Invalid form data');
+    }
+    return data;
+  })
+  .handler(async ({ data: formData }): Promise<ContactFormResult> => {
+    // 1. Parse form data
+    const name = formData.get('name') as string;
+    const email = formData.get('email') as string;
+    const message = formData.get('message') as string;
+    const turnstileToken = formData.get('turnstileToken') as string;
 
-export const submitContactForm = createServerFn({ method: 'POST' })
-  .inputValidator((input: SubmitContactFormInput) => input)
-  .handler(async ({ data }): Promise<ContactFormResult> => {
-    const { formData, turnstileToken } = data;
-
-    // 1. Server-side validation
-    const validationErrors = validateContactForm(formData);
+    // 2. Server-side validation
+    const validationErrors = validateContactForm({ name, email, message });
     if (hasErrors(validationErrors)) {
       return { success: false, error: 'validation', errors: validationErrors };
     }
 
-    // 2. Get client IP from request headers
+    // 3. Get client IP from request headers
     const headers = getRequestHeaders();
     const clientIp = headers.get('CF-Connecting-IP') ?? 'unknown';
 
-    // 3. Verify Turnstile token
-    // TURNSTILE_SECRET_KEY is set via `wrangler secret put`
+    // 4. Verify Turnstile token
+    if (!turnstileToken) {
+      return { success: false, error: 'turnstile', message: 'セキュリティ認証を完了してください' };
+    }
+
     const turnstileSecretKey = env.TURNSTILE_SECRET_KEY;
     const turnstileResult = await verifyTurnstile(turnstileToken, turnstileSecretKey, clientIp);
     if (!turnstileResult.success) {
@@ -55,7 +63,7 @@ export const submitContactForm = createServerFn({ method: 'POST' })
       };
     }
 
-    // 4. Check and increment rate limit atomically (before sending email to prevent race condition)
+    // 5. Check and increment rate limit atomically
     const rateLimitResult = await checkAndIncrementRateLimit(clientIp);
     if (!rateLimitResult.allowed) {
       return {
@@ -65,9 +73,9 @@ export const submitContactForm = createServerFn({ method: 'POST' })
       };
     }
 
-    // 5. Send email
+    // 6. Send email
     try {
-      await sendContactEmail(formData);
+      await sendContactEmail({ name, email, message });
     } catch (error) {
       console.error('Email send failed:', error);
       return {

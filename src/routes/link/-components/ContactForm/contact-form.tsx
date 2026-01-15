@@ -1,49 +1,22 @@
 import type { ContactFormResult } from '../../-utils/contact-form';
 import type { FC } from 'react';
 
-import { useForm } from '@tanstack/react-form';
+import { useForm } from '@tanstack/react-form-start';
 import { useState } from 'react';
 
-import { submitContactForm } from '../../-utils/contact-form';
+import { handleForm } from '../../-utils/contact-form';
+import { contactFormOpts } from '../../-utils/form-options';
 import TurnstileWidget from '../TurnstileWidget/turnstile-widget';
 
 type SubmissionState = 'idle' | 'success' | 'error';
-
-// Field validators
-const validateName = (value: string): string | undefined => {
-  const trimmed = value.trim();
-  if (!trimmed) return 'お名前を入力してください';
-  if (trimmed.length > 100) return 'お名前は100文字以内で入力してください';
-  return undefined;
-};
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const validateEmail = (value: string): string | undefined => {
-  const trimmed = value.trim();
-  if (!trimmed) return 'メールアドレスを入力してください';
-  if (!EMAIL_REGEX.test(trimmed)) return '有効なメールアドレスを入力してください';
-  return undefined;
-};
-
-const validateMessage = (value: string): string | undefined => {
-  const trimmed = value.trim();
-  if (!trimmed) return 'メッセージを入力してください';
-  if (trimmed.length > 2000) return 'メッセージは2000文字以内で入力してください';
-  return undefined;
-};
 
 const ContactForm: FC = () => {
   const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
   const [globalError, setGlobalError] = useState<string | null>(null);
 
   const form = useForm({
-    defaultValues: {
-      name: '',
-      email: '',
-      message: '',
-      turnstileToken: '' as string,
-    },
-    onSubmit: async ({ value }) => {
+    ...contactFormOpts,
+    onSubmit: async ({ value, formApi }) => {
       setGlobalError(null);
 
       // Check Turnstile token
@@ -53,24 +26,22 @@ const ContactForm: FC = () => {
       }
 
       try {
-        const result: ContactFormResult = await submitContactForm({
-          data: {
-            formData: {
-              name: value.name,
-              email: value.email,
-              message: value.message,
-            },
-            turnstileToken: value.turnstileToken,
-          },
-        });
+        // Build FormData for server submission
+        const formData = new FormData();
+        formData.append('name', value.name);
+        formData.append('email', value.email);
+        formData.append('message', value.message);
+        formData.append('turnstileToken', value.turnstileToken);
+
+        const result: ContactFormResult = await handleForm({ data: formData });
 
         if (result.success) {
           setSubmissionState('success');
-          form.reset();
+          formApi.reset();
 
           // Auto-dismiss after 5 seconds
           setTimeout(() => setSubmissionState('idle'), 5000);
-        } else {
+        } else if ('error' in result) {
           handleError(result);
         }
       } catch {
@@ -110,6 +81,9 @@ const ContactForm: FC = () => {
   return (
     <form
       data-testid='contact-form'
+      action={handleForm.url}
+      method='post'
+      encType='multipart/form-data'
       onSubmit={e => {
         e.preventDefault();
         void form.handleSubmit();
@@ -117,7 +91,7 @@ const ContactForm: FC = () => {
       className='space-y-6'
     >
       {/* Name field */}
-      <form.Field name='name' validators={{ onBlur: ({ value }) => validateName(value) }}>
+      <form.Field name='name'>
         {field => (
           <div className='group'>
             <label htmlFor='name' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
@@ -126,6 +100,7 @@ const ContactForm: FC = () => {
             <input
               type='text'
               id='name'
+              name={field.name}
               data-testid='name-input'
               value={field.state.value}
               onChange={e => field.handleChange(e.target.value)}
@@ -148,7 +123,7 @@ const ContactForm: FC = () => {
       </form.Field>
 
       {/* Email field */}
-      <form.Field name='email' validators={{ onBlur: ({ value }) => validateEmail(value) }}>
+      <form.Field name='email'>
         {field => (
           <div className='group'>
             <label htmlFor='email' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
@@ -157,6 +132,7 @@ const ContactForm: FC = () => {
             <input
               type='email'
               id='email'
+              name={field.name}
               data-testid='email-input'
               value={field.state.value}
               onChange={e => field.handleChange(e.target.value)}
@@ -178,7 +154,7 @@ const ContactForm: FC = () => {
       </form.Field>
 
       {/* Message field */}
-      <form.Field name='message' validators={{ onBlur: ({ value }) => validateMessage(value) }}>
+      <form.Field name='message'>
         {field => (
           <div className='group'>
             <label htmlFor='message' className='text-muted-foreground group-focus-within:text-neon mb-2 block text-sm transition-colors'>
@@ -186,6 +162,7 @@ const ContactForm: FC = () => {
             </label>
             <textarea
               id='message'
+              name={field.name}
               data-testid='message-input'
               rows={5}
               value={field.state.value}
@@ -217,6 +194,7 @@ const ContactForm: FC = () => {
       <form.Field name='turnstileToken'>
         {field => (
           <div data-testid='turnstile-container'>
+            <input type='hidden' name={field.name} value={field.state.value} />
             <TurnstileWidget
               onVerify={token => field.handleChange(token)}
               onError={() => setGlobalError('セキュリティ認証に失敗しました')}

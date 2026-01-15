@@ -40,6 +40,9 @@ export default defineConfig({
             },
           },
         },
+        optimizeDeps: {
+          include: ['@tanstack/react-form-start > @tanstack/react-store'],
+        },
       },
       {
         extends: true,
@@ -52,6 +55,9 @@ export default defineConfig({
             'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
             'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
             'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
+            // Stub SSR utilities not needed in browser tests
+            'react-dom/server': path.resolve('test/stubs/react-dom-server.ts'),
+            '@tanstack/react-form-start': path.resolve('test/stubs/tanstack-react-form-start.tsx'),
           },
         },
         optimizeDeps: {
@@ -68,6 +74,7 @@ export default defineConfig({
             'use-sync-external-store',
             'use-sync-external-store/shim/with-selector',
             'qrcode.react',
+            '@tanstack/react-form-start > @tanstack/react-store',
           ],
           exclude: ['@tanstack/react-start', '@tanstack/start-client-core', '@tanstack/start-server-core', '@tanstack/start-static-server-functions'],
         },
@@ -123,6 +130,9 @@ export default defineConfig({
               inline: ['@tanstack/start-server-core', '@tanstack/react-start'],
             },
           },
+        },
+        optimizeDeps: {
+          include: ['@tanstack/react-form-start > @tanstack/react-store'],
         },
       },
     ],

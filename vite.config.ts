@@ -52,4 +52,7 @@ export default defineConfig({
   resolve: {
     tsconfigPaths: true,
   },
+  optimizeDeps: {
+    include: ['@tanstack/react-form-start > @tanstack/react-store'],
+  },
 });
