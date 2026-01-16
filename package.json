@@ -49,10 +49,10 @@
     "@tanstack/react-router": "^1.149.3",
     "@tanstack/react-router-devtools": "^1.149.3",
     "@tanstack/react-start": "^1.149.4",
-    "@types/node": "^25.0.8",
+    "@types/node": "^25.0.9",
     "@types/react": "^19.2.7",
     "@types/react-dom": "^19.2.3",
-    "@typescript/native-preview": "7.0.0-dev.20260113.1",
+    "@typescript/native-preview": "7.0.0-dev.20260115.1",
     "@vitejs/plugin-react": "^5.1.2",
     "@vitest/browser-playwright": "^4.0.17",
     "@vitest/coverage-istanbul": "^4.0.17",
@@ -65,14 +65,14 @@
     "nyc": "^17.1.0",
     "oxfmt": "^0.24.0",
     "oxlint": "^1.39.0",
-    "oxlint-tsgolint": "^0.11.0",
+    "oxlint-tsgolint": "^0.11.1",
     "playwright": "^1.57.0",
     "qrcode.react": "^4.2.0",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "storybook": "^10.1.11",
     "tailwindcss": "^4.1.18",
-    "vite": "8.0.0-beta.7",
+    "vite": "8.0.0-beta.8",
     "vite-plugin-devtools-json": "^1.0.0",
     "vitest": "^4.0.17",
     "vitest-browser-react": "^2.0.2",
@@ -91,7 +91,7 @@
   "packageManager": "pnpm@10.28.0",
   "pnpm": {
     "overrides": {
-      "vite": "8.0.0-beta.7"
+      "vite": "8.0.0-beta.8"
     }
   }
 }
