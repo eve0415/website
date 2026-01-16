@@ -57,7 +57,7 @@ const IndexOutOfBounds: FC = () => {
   }, [cursorPosition, reducedMotion]);
 
   return (
-    <div className='bg-background fixed inset-0 overflow-hidden'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* Memory address grid background */}
       <div
         className='pointer-events-none absolute inset-0 opacity-[0.04]'

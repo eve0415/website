@@ -66,7 +66,7 @@ const SegFault: FC = () => {
   }, [reducedMotion]);
 
   return (
-    <div className='fixed inset-0 overflow-hidden bg-[#0a0a0a]'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* Chromatic aberration effect */}
       <div
         className='pointer-events-none absolute inset-0 mix-blend-screen'

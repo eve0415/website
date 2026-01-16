@@ -118,7 +118,7 @@ const FileNotFound: FC = () => {
   };
 
   return (
-    <div className='fixed inset-0 overflow-hidden bg-[#263238]'>
+    <div className='fixed inset-0 overflow-x-hidden overflow-y-auto bg-[#263238]'>
       {/* Blueprint grid pattern */}
       <div
         className='pointer-events-none absolute inset-0 opacity-20'
@@ -147,9 +147,9 @@ const FileNotFound: FC = () => {
         </div>
 
         {/* Main content area */}
-        <div className='flex w-full max-w-4xl gap-8'>
+        <div className='flex w-full max-w-4xl flex-col gap-4 md:flex-row md:gap-8'>
           {/* File tree visualization */}
-          <div className='flex-1 rounded border border-[#546e7a]/30 bg-[#1e272c] p-6'>
+          <div className='flex-1 rounded border border-[#546e7a]/30 bg-[#1e272c] p-4 md:p-6'>
             <div className='mb-4 flex items-center gap-2 text-xs text-[#64b5f6]'>
               <span>DIRECTORY STRUCTURE</span>
               <div className='flex-1 border-t border-[#546e7a]/30' />
@@ -158,7 +158,7 @@ const FileNotFound: FC = () => {
           </div>
 
           {/* Search path visualization */}
-          <div className='w-72 rounded border border-[#546e7a]/30 bg-[#1e272c] p-6'>
+          <div className='w-full rounded border border-[#546e7a]/30 bg-[#1e272c] p-4 md:w-72 md:p-6'>
             <div className='mb-4 flex items-center gap-2 text-xs text-[#64b5f6]'>
               <span>SEARCH PATH</span>
               <div className='flex-1 border-t border-[#546e7a]/30' />

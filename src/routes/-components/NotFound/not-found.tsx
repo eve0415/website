@@ -58,7 +58,7 @@ const NotFound: FC = () => {
       <CorruptionOverlay progress={progress} mouseInfluence={mouseInfluence} visible={isPhase('corruption')} />
 
       {/* Phase 3: Aftermath Scene - Educational error visualizations */}
-      <AftermathScene visible={isPhase('aftermath')} />
+      <AftermathScene visible={isPhase('aftermath') && !reducedMotion} />
 
       {/* Static aftermath for reduced motion */}
       {reducedMotion && <StaticAftermath />}

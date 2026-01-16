@@ -52,7 +52,7 @@ const NullPointer: FC<NullPointerProps> = () => {
   }, []);
 
   return (
-    <div className='fixed inset-0 flex items-center justify-center bg-[#1e1e1e]'>
+    <div className='fixed inset-0 flex items-center justify-center overflow-x-hidden overflow-y-auto bg-[#1e1e1e]'>
       {/* VS Code-style title bar */}
       <div className='absolute inset-x-0 top-0 flex h-8 items-center border-b border-[#3c3c3c] bg-[#323233] px-4'>
         <div className='flex gap-2'>

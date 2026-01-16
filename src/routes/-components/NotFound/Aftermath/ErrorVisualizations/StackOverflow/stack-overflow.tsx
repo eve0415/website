@@ -60,7 +60,7 @@ const StackOverflow: FC = () => {
   }, [reducedMotion, frames]);
 
   return (
-    <div className='bg-background fixed inset-0 overflow-hidden'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* CRT scan line effect */}
       <div
         className='pointer-events-none absolute inset-0 opacity-10'

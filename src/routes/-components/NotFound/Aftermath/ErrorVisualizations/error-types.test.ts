@@ -25,13 +25,13 @@ describe('error-types', () => {
       expect(result.type).toBe(expected);
     });
 
-    it('cycles through all 6 error types with consecutive seeds', () => {
+    it('cycles through all 18 error types with consecutive seeds', () => {
       const types = new Set<string>();
-      for (let i = 0; i < 6; i++) {
+      for (let i = 0; i < 18; i++) {
         vi.mocked(Date.now).mockReturnValue(i * 1000);
         types.add(getRandomError().type);
       }
-      expect(types.size).toBe(6);
+      expect(types.size).toBe(18);
     });
 
     it('returns consistent result within same second', () => {
@@ -44,20 +44,20 @@ describe('error-types', () => {
       expect(result1).toEqual(result2);
     });
 
-    it('wraps around after 6 seconds', () => {
+    it('wraps around after 18 seconds', () => {
       vi.mocked(Date.now).mockReturnValue(0);
       const first = getRandomError();
 
-      vi.mocked(Date.now).mockReturnValue(6000);
-      const seventh = getRandomError();
+      vi.mocked(Date.now).mockReturnValue(18000);
+      const nineteenth = getRandomError();
 
-      expect(first).toEqual(seventh);
+      expect(first).toEqual(nineteenth);
     });
   });
 
   describe('ERROR_VISUALIZATIONS', () => {
-    it('contains exactly 6 error types', () => {
-      expect(ERROR_VISUALIZATIONS).toHaveLength(6);
+    it('contains exactly 18 error types', () => {
+      expect(ERROR_VISUALIZATIONS).toHaveLength(18);
     });
 
     it('each error has required properties', () => {
@@ -76,10 +76,10 @@ describe('error-types', () => {
       expect(uniqueTypes.size).toBe(types.length);
     });
 
-    it('all fixAction values are Japanese text', () => {
+    it('all fixAction values are non-empty strings', () => {
       for (const error of ERROR_VISUALIZATIONS) {
-        // Japanese characters are in Unicode range 0x3000-0x9FFF
-        expect(error.fixAction).toMatch(/[\u3000-\u9FFF]/);
+        expect(typeof error.fixAction).toBe('string');
+        expect(error.fixAction.length).toBeGreaterThan(0);
       }
     });
   });

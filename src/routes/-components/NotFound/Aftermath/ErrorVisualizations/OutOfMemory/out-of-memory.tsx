@@ -105,7 +105,7 @@ const OutOfMemory: FC = () => {
   }, [reducedMotion]);
 
   return (
-    <div className='fixed inset-0 overflow-hidden bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'>
+    <div className='fixed inset-0 overflow-x-hidden overflow-y-auto bg-linear-to-br from-[#1a1a2e] via-[#16213e] to-[#0f0f23]'>
       {/* Abstract background gradient */}
       <div
         className='pointer-events-none absolute inset-0 opacity-50'

@@ -8,6 +8,11 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
   test: {
+    clearMocks: true,
+    mockReset: true,
+    restoreMocks: true,
+    unstubEnvs: true,
+    unstubGlobals: true,
     // Suppress TanStack Router's Transitioner act() warnings globally.
     // Root cause: Transitioner performs async state updates via React.startTransition()
     // that happen outside of act() boundaries. This is a known limitation of testing

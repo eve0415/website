@@ -6,5 +6,13 @@
     "types": ["./worker-configuration.d.ts", "vite/client"]
   },
   "include": ["src/**/*"],
-  "exclude": ["src/**/*.stories.tsx", "src/**/*.test.tsx", "src/**/*.test.ts", "src/**/*.browser.test.tsx", "src/**/*.browser.test.ts"]
+  "exclude": [
+    "src/**/*.stories.tsx",
+    "src/**/story-factory.tsx",
+    "src/**/story-factory.types.ts",
+    "src/**/*.test.tsx",
+    "src/**/*.test.ts",
+    "src/**/*.browser.test.tsx",
+    "src/**/*.browser.test.ts"
+  ]
 }
