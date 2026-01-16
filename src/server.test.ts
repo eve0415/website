@@ -2,19 +2,19 @@ import { createExecutionContext, createScheduledController, waitOnExecutionConte
 import { env } from 'cloudflare:workers';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
-// Mock @tanstack/react-start/server-entry to avoid subpath import issues in Vitest
+const mockHandlerFetch = vi.hoisted(() => vi.fn());
+const mockRefreshGitHubStats = vi.hoisted(() => vi.fn());
+
 vi.mock('@tanstack/react-start/server-entry', () => ({
   default: {
-    fetch: vi.fn().mockResolvedValue(new Response('OK')),
+    fetch: mockHandlerFetch,
   },
 }));
 
-// Mock refreshGitHubStats before importing server
 vi.mock('./routes/sys/-utils/github-stats', () => ({
-  refreshGitHubStats: vi.fn().mockResolvedValue(undefined),
+  refreshGitHubStats: mockRefreshGitHubStats,
 }));
 
-import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
 import server from './server';
 
 describe('server', () => {
@@ -24,6 +24,8 @@ describe('server', () => {
 
   describe('fetch handler', () => {
     test('delegates to TanStack handler and does not call refreshGitHubStats', async () => {
+      mockHandlerFetch.mockReturnValue(new Response('OK'));
+
       const request = new Request('https://eve0415.net/') as Request<unknown, IncomingRequestCfProperties>;
       const ctx = createExecutionContext();
       const response = await server.fetch(request, env, ctx);
@@ -32,19 +34,21 @@ describe('server', () => {
 
       expect(response).toBeInstanceOf(Response);
       expect(await response.text()).toBe('OK');
-      expect(refreshGitHubStats).not.toHaveBeenCalled();
+      expect(mockRefreshGitHubStats).not.toHaveBeenCalled();
     });
   });
 
   describe('scheduled handler', () => {
     test('calls refreshGitHubStats with env and ctx.waitUntil receives the promise', async () => {
+      mockRefreshGitHubStats.mockResolvedValue(undefined);
+
       const ctrl = createScheduledController({ cron: '0 * * * *', scheduledTime: Date.now() });
       const ctx = createExecutionContext();
       await server.scheduled(ctrl, env, ctx);
 
       await waitOnExecutionContext(ctx);
 
-      expect(refreshGitHubStats).toHaveBeenCalledWith(env);
+      expect(mockRefreshGitHubStats).toHaveBeenCalledWith(env);
     });
   });
 });
