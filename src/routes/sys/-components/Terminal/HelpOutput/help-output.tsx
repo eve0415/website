@@ -21,6 +21,10 @@ const HelpOutput: FC = () => (
         <span>Clear terminal output</span>
       </div>
       <div className='flex gap-4'>
+        <span className='text-neon w-20'>echo</span>
+        <span>Display a line of text</span>
+      </div>
+      <div className='flex gap-4'>
         <span className='text-neon w-20'>whoami</span>
         <span>Display current user</span>
       </div>

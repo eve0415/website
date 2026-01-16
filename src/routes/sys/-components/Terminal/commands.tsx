@@ -1,6 +1,10 @@
 import type { GitHubStats } from '../../-utils/github-stats-utils';
 import type { ReactNode } from 'react';
 
+import ClaudeOutput from './ClaudeOutput/claude-output';
+import CodexOutput from './CodexOutput/codex-output';
+import EchoOutput from './EchoOutput/echo-output';
+import GeminiOutput from './GeminiOutput/gemini-output';
 import HelpOutput from './HelpOutput/help-output';
 import NeofetchOutput from './NeofetchOutput/neofetch-output';
 import WhoamiOutput from './WhoamiOutput/whoami-output';
@@ -39,6 +43,14 @@ export const COMMANDS: Command[] = [
     execute: () => ({
       type: 'output',
       content: <HelpOutput />,
+    }),
+  },
+  {
+    name: 'echo',
+    description: 'Display a line of text',
+    execute: args => ({
+      type: 'output',
+      content: <EchoOutput text={args.join(' ')} />,
     }),
   },
   {
@@ -87,6 +99,66 @@ export const COMMANDS: Command[] = [
     },
   },
   {
+    name: 'claude',
+    description: 'Anthropic AI assistant',
+    execute: args => {
+      const firstArg = args[0]?.toLowerCase();
+      let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
+
+      if (firstArg === '--help' || firstArg === '-h') {
+        mode = 'help';
+      } else if (firstArg === '--version' || firstArg === '-v') {
+        mode = 'version';
+      } else if (firstArg === 'about') {
+        mode = 'about';
+      } else if (firstArg === 'philosophy') {
+        mode = 'philosophy';
+      }
+
+      return { type: 'output', content: <ClaudeOutput mode={mode} /> };
+    },
+  },
+  {
+    name: 'codex',
+    description: 'OpenAI code assistant',
+    execute: args => {
+      const firstArg = args[0]?.toLowerCase();
+      let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
+
+      if (firstArg === '--help' || firstArg === '-h') {
+        mode = 'help';
+      } else if (firstArg === '--version' || firstArg === '-v') {
+        mode = 'version';
+      } else if (firstArg === 'about') {
+        mode = 'about';
+      } else if (firstArg === 'philosophy') {
+        mode = 'philosophy';
+      }
+
+      return { type: 'output', content: <CodexOutput mode={mode} /> };
+    },
+  },
+  {
+    name: 'gemini',
+    description: 'Google AI assistant',
+    execute: args => {
+      const firstArg = args[0]?.toLowerCase();
+      let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
+
+      if (firstArg === '--help' || firstArg === '-h') {
+        mode = 'help';
+      } else if (firstArg === '--version' || firstArg === '-v') {
+        mode = 'version';
+      } else if (firstArg === 'about') {
+        mode = 'about';
+      } else if (firstArg === 'philosophy') {
+        mode = 'philosophy';
+      }
+
+      return { type: 'output', content: <GeminiOutput mode={mode} /> };
+    },
+  },
+  {
     name: 'sudo',
     description: 'Execute as superuser',
     execute: args => {
@@ -105,8 +177,37 @@ export const COMMANDS: Command[] = [
 
 export const COMMAND_NAMES = COMMANDS.map(cmd => cmd.name);
 
+// Shell-style argument parser that handles quoted strings
+export const parseArgs = (input: string): string[] => {
+  const args: string[] = [];
+  let current = '';
+  let inDouble = false;
+  let inSingle = false;
+  let escape = false;
+
+  for (const char of input.trim()) {
+    if (escape) {
+      current += char;
+      escape = false;
+    } else if (char === '\\' && !inSingle) {
+      escape = true;
+    } else if (char === '"' && !inSingle) {
+      inDouble = !inDouble;
+    } else if (char === "'" && !inDouble) {
+      inSingle = !inSingle;
+    } else if (/\s/.test(char) && !inDouble && !inSingle) {
+      if (current) args.push(current);
+      current = '';
+    } else {
+      current += char;
+    }
+  }
+  if (current) args.push(current);
+  return args;
+};
+
 export const executeCommand = (input: string, context: CommandContext): CommandResult => {
-  const parts = input.trim().split(/\s+/);
+  const parts = parseArgs(input);
   const commandName = parts[0]?.toLowerCase() ?? '';
   const args = parts.slice(1);
 

@@ -1,6 +1,6 @@
 import { describe, expect, test, vi } from 'vitest';
 
-import { COMMANDS, COMMAND_NAMES, type CommandContext, SudoRmRfError, executeCommand } from './commands';
+import { COMMANDS, COMMAND_NAMES, type CommandContext, SudoRmRfError, executeCommand, parseArgs } from './commands';
 import { mockCommandContext, mockGitHubStats } from './terminal.fixtures';
 
 describe('SudoRmRfError', () => {
@@ -20,9 +20,63 @@ describe('SudoRmRfError', () => {
   });
 });
 
+describe('parseArgs', () => {
+  test('splits basic whitespace-separated args', () => {
+    expect(parseArgs('hello world')).toEqual(['hello', 'world']);
+  });
+
+  test('handles double-quoted strings', () => {
+    expect(parseArgs('"hello world"')).toEqual(['hello world']);
+  });
+
+  test('handles single-quoted strings', () => {
+    expect(parseArgs("'hello world'")).toEqual(['hello world']);
+  });
+
+  test('handles mixed quoted and unquoted args', () => {
+    expect(parseArgs('hello "cruel world"')).toEqual(['hello', 'cruel world']);
+  });
+
+  test('handles escaped quotes in double quotes', () => {
+    expect(parseArgs('"say \\"hi\\""')).toEqual(['say "hi"']);
+  });
+
+  test('handles single quote inside double quotes', () => {
+    expect(parseArgs('"it\'s fine"')).toEqual(["it's fine"]);
+  });
+
+  test('handles double quote inside single quotes', () => {
+    expect(parseArgs('\'say "hi"\'')).toEqual(['say "hi"']);
+  });
+
+  test('returns empty array for empty input', () => {
+    expect(parseArgs('')).toEqual([]);
+  });
+
+  test('returns empty array for whitespace-only input', () => {
+    expect(parseArgs('   ')).toEqual([]);
+  });
+
+  test('handles multiple quoted strings', () => {
+    expect(parseArgs('"hello" "world"')).toEqual(['hello', 'world']);
+  });
+
+  test('handles backslash outside quotes', () => {
+    expect(parseArgs('hello\\ world')).toEqual(['hello world']);
+  });
+
+  test('preserves backslash in single quotes', () => {
+    expect(parseArgs("'hello\\\\world'")).toEqual(['hello\\\\world']);
+  });
+
+  test('handles command with multiple spaces between args', () => {
+    expect(parseArgs('echo   hello   world')).toEqual(['echo', 'hello', 'world']);
+  });
+});
+
 describe('COMMANDS', () => {
-  test('contains exactly 7 commands', () => {
-    expect(COMMANDS).toHaveLength(7);
+  test('contains exactly 11 commands', () => {
+    expect(COMMANDS).toHaveLength(11);
   });
 
   test('all commands have required properties', () => {
@@ -190,6 +244,224 @@ describe('executeCommand', () => {
         const result = executeCommand('sudo rm file.txt', mockCommandContext);
         expect(result.type).toBe('error');
       });
+    });
+  });
+
+  describe('echo command', () => {
+    test('returns output type', () => {
+      const result = executeCommand('echo hello', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('handles empty args', () => {
+      const result = executeCommand('echo', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('handles multiple words', () => {
+      const result = executeCommand('echo hello world', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('handles quoted strings', () => {
+      const result = executeCommand('echo "hello world"', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('snapshot', () => {
+      const result = executeCommand('echo hello world', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('claude command', () => {
+    test('returns output type with no args (login mode)', () => {
+      const result = executeCommand('claude', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for --help flag', () => {
+      const result = executeCommand('claude --help', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for -h flag', () => {
+      const result = executeCommand('claude -h', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for --version flag', () => {
+      const result = executeCommand('claude --version', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for -v flag', () => {
+      const result = executeCommand('claude -v', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for about subcommand', () => {
+      const result = executeCommand('claude about', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for philosophy subcommand', () => {
+      const result = executeCommand('claude philosophy', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('is case-insensitive for flags', () => {
+      const result = executeCommand('claude ABOUT', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('snapshot login mode', () => {
+      const result = executeCommand('claude', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot help mode', () => {
+      const result = executeCommand('claude --help', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot version mode', () => {
+      const result = executeCommand('claude --version', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot about mode', () => {
+      const result = executeCommand('claude about', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot philosophy mode', () => {
+      const result = executeCommand('claude philosophy', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('codex command', () => {
+    test('returns output type with no args (login mode)', () => {
+      const result = executeCommand('codex', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for --help flag', () => {
+      const result = executeCommand('codex --help', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for -h flag', () => {
+      const result = executeCommand('codex -h', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for --version flag', () => {
+      const result = executeCommand('codex --version', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for -v flag', () => {
+      const result = executeCommand('codex -v', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for about subcommand', () => {
+      const result = executeCommand('codex about', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for philosophy subcommand', () => {
+      const result = executeCommand('codex philosophy', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('snapshot login mode', () => {
+      const result = executeCommand('codex', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot help mode', () => {
+      const result = executeCommand('codex --help', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot version mode', () => {
+      const result = executeCommand('codex --version', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot about mode', () => {
+      const result = executeCommand('codex about', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot philosophy mode', () => {
+      const result = executeCommand('codex philosophy', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+  });
+
+  describe('gemini command', () => {
+    test('returns output type with no args (login mode)', () => {
+      const result = executeCommand('gemini', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for --help flag', () => {
+      const result = executeCommand('gemini --help', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for -h flag', () => {
+      const result = executeCommand('gemini -h', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for --version flag', () => {
+      const result = executeCommand('gemini --version', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for -v flag', () => {
+      const result = executeCommand('gemini -v', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for about subcommand', () => {
+      const result = executeCommand('gemini about', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('returns output for philosophy subcommand', () => {
+      const result = executeCommand('gemini philosophy', mockCommandContext);
+      expect(result.type).toBe('output');
+    });
+
+    test('snapshot login mode', () => {
+      const result = executeCommand('gemini', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot help mode', () => {
+      const result = executeCommand('gemini --help', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot version mode', () => {
+      const result = executeCommand('gemini --version', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot about mode', () => {
+      const result = executeCommand('gemini about', mockCommandContext);
+      expect(result).toMatchSnapshot();
+    });
+
+    test('snapshot philosophy mode', () => {
+      const result = executeCommand('gemini philosophy', mockCommandContext);
+      expect(result).toMatchSnapshot();
     });
   });
 
