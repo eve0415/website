@@ -178,7 +178,7 @@ export const COMMANDS: Command[] = [
 export const COMMAND_NAMES = COMMANDS.map(cmd => cmd.name);
 
 // Shell-style argument parser that handles quoted strings
-const parseArgs = (input: string): string[] => {
+export const parseArgs = (input: string): string[] => {
   const args: string[] = [];
   let current = '';
   let inDouble = false;

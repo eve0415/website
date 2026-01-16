@@ -1,8 +1,107 @@
 // Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
 
+exports[`executeCommand > claude command > snapshot about mode 1`] = `
+{
+  "content": <ClaudeOutput
+    mode="about"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > claude command > snapshot help mode 1`] = `
+{
+  "content": <ClaudeOutput
+    mode="help"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > claude command > snapshot login mode 1`] = `
+{
+  "content": <ClaudeOutput
+    mode="login"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > claude command > snapshot philosophy mode 1`] = `
+{
+  "content": <ClaudeOutput
+    mode="philosophy"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > claude command > snapshot version mode 1`] = `
+{
+  "content": <ClaudeOutput
+    mode="version"
+  />,
+  "type": "output",
+}
+`;
+
 exports[`executeCommand > clear command > snapshot 1`] = `
 {
   "type": "clear",
+}
+`;
+
+exports[`executeCommand > codex command > snapshot about mode 1`] = `
+{
+  "content": <CodexOutput
+    mode="about"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > codex command > snapshot help mode 1`] = `
+{
+  "content": <CodexOutput
+    mode="help"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > codex command > snapshot login mode 1`] = `
+{
+  "content": <CodexOutput
+    mode="login"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > codex command > snapshot philosophy mode 1`] = `
+{
+  "content": <CodexOutput
+    mode="philosophy"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > codex command > snapshot version mode 1`] = `
+{
+  "content": <CodexOutput
+    mode="version"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > echo command > snapshot 1`] = `
+{
+  "content": <EchoOutput
+    text="hello world"
+  />,
+  "type": "output",
 }
 `;
 
@@ -10,6 +109,51 @@ exports[`executeCommand > exit command > snapshot 1`] = `
 {
   "needsConfirmation": true,
   "type": "exit",
+}
+`;
+
+exports[`executeCommand > gemini command > snapshot about mode 1`] = `
+{
+  "content": <GeminiOutput
+    mode="about"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > gemini command > snapshot help mode 1`] = `
+{
+  "content": <GeminiOutput
+    mode="help"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > gemini command > snapshot login mode 1`] = `
+{
+  "content": <GeminiOutput
+    mode="login"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > gemini command > snapshot philosophy mode 1`] = `
+{
+  "content": <GeminiOutput
+    mode="philosophy"
+  />,
+  "type": "output",
+}
+`;
+
+exports[`executeCommand > gemini command > snapshot version mode 1`] = `
+{
+  "content": <GeminiOutput
+    mode="version"
+  />,
+  "type": "output",
 }
 `;
 
