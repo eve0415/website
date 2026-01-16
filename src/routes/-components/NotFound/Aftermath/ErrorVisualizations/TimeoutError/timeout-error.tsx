@@ -52,7 +52,7 @@ const TimeoutError: FC = () => {
   };
 
   return (
-    <div className='bg-background fixed inset-0 overflow-hidden'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* Go terminal header */}
       <div className='bg-background flex h-9 items-center border-b border-[#00add8]/30 px-4'>
         <span className='font-mono text-xs text-[#00add8]'>go run server.go - context deadline exceeded</span>

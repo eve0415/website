@@ -54,7 +54,7 @@ const Panic: FC = () => {
   }, [reducedMotion, stackFrames.length]);
 
   return (
-    <div className='bg-background fixed inset-0 overflow-hidden'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* Terminal style header */}
       <div className='bg-background flex h-9 items-center border-b border-[#00d4aa]/30 px-4'>
         <span className='font-mono text-xs text-[#00d4aa]'>go run page.go</span>
@@ -127,14 +127,15 @@ const Panic: FC = () => {
           {/* Gopher panic visualization */}
           {panicShown && (
             <div className='absolute top-1/2 right-12 -translate-y-1/2 text-center'>
-              <div
-                className='text-8xl'
+              <img
+                src='/gopher.svg'
+                alt='Go Gopher panicking'
+                className='size-24 sm:size-32'
                 style={{
-                  animation: reducedMotion ? 'none' : 'pulse 0.5s infinite',
+                  animation: reducedMotion ? 'none' : 'shake 0.5s infinite',
+                  filter: 'drop-shadow(0 0 10px rgba(255, 68, 68, 0.5))',
                 }}
-              >
-                &#x1F630;
-              </div>
+              />
               <div className='mt-2 font-mono text-xs text-[#00d4aa]/50'>gopher.panic()</div>
             </div>
           )}

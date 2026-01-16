@@ -118,7 +118,7 @@ const FileNotFound: FC = () => {
   };
 
   return (
-    <div className='fixed inset-0 overflow-hidden bg-[#263238]'>
+    <div className='fixed inset-0 overflow-x-hidden overflow-y-auto bg-[#263238]'>
       {/* Blueprint grid pattern */}
       <div
         className='pointer-events-none absolute inset-0 opacity-20'

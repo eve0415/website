@@ -90,7 +90,7 @@ const DivisionByZero: FC = () => {
   };
 
   return (
-    <div className='bg-background fixed inset-0 overflow-hidden'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* Header */}
       <div className='bg-background flex h-9 items-center border-b border-[#9c27b0]/30 px-4'>
         <span className='font-mono text-xs text-[#9c27b0]'>Python 3.12.0 - ZeroDivisionError</span>

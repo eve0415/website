@@ -77,7 +77,7 @@ const ConcurrentModification: FC = () => {
   }, [reducedMotion]);
 
   return (
-    <div className='bg-background fixed inset-0 overflow-hidden'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* Java header */}
       <div className='bg-muted flex h-9 items-center border-b border-[#f89820]/30 px-4'>
         <span className='font-mono text-xs text-[#f89820]'>Java - ConcurrentModificationException</span>

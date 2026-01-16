@@ -68,7 +68,7 @@ const AssertionError: FC = () => {
   const failedCount = tests.filter(t => t.status === 'failed').length;
 
   return (
-    <div className='bg-background fixed inset-0 overflow-hidden'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* pytest header */}
       <div className='bg-muted flex h-9 items-center border-b border-[#3776ab]/30 px-4'>
         <span className='font-mono text-xs text-[#3776ab]'>pytest - AssertionError</span>

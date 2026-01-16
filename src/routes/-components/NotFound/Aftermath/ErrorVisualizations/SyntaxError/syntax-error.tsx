@@ -80,7 +80,7 @@ const SyntaxError: FC = () => {
   }, []);
 
   return (
-    <div className='bg-background fixed inset-0 overflow-hidden'>
+    <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>
       {/* VS Code style header */}
       <div className='flex h-9 items-center border-b border-[#3c3c3c] bg-[#1e1e1e] px-4'>
         <div className='flex gap-2'>
