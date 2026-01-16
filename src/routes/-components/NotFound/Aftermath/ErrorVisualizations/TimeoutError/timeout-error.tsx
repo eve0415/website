@@ -58,9 +58,9 @@ const TimeoutError: FC = () => {
         <span className='font-mono text-xs text-[#00add8]'>go run server.go - context deadline exceeded</span>
       </div>
 
-      <div className='bg-background flex h-[calc(100%-2.25rem)]'>
+      <div className='bg-background flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Main visualization */}
-        <div className='relative flex-1 p-8'>
+        <div className='relative h-1/2 flex-1 p-4 md:h-auto md:p-8'>
           {/* Hourglass visualization */}
           <div className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'>
             <svg width='200' height='300' viewBox='0 0 200 300'>
@@ -144,7 +144,7 @@ const TimeoutError: FC = () => {
         </div>
 
         {/* Log panel */}
-        <div className='bg-background w-96 border-l border-[#333] p-4'>
+        <div className='bg-background h-1/2 w-full overflow-y-auto border-t border-[#333] p-4 md:h-auto md:w-96 md:border-t-0 md:border-l'>
           <div className='mb-4 font-mono text-xs text-[#00add8]'>Request Log</div>
 
           <div className='space-y-2 font-mono text-[10px]'>

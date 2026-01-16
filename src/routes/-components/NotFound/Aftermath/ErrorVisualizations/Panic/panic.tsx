@@ -126,11 +126,11 @@ const Panic: FC = () => {
 
           {/* Gopher panic visualization */}
           {panicShown && (
-            <div className='absolute top-1/2 right-12 -translate-y-1/2 text-center'>
+            <div className='relative mx-auto mt-8 text-center md:absolute md:top-1/2 md:right-12 md:mt-0 md:-translate-y-1/2'>
               <img
                 src='/gopher.svg'
                 alt='Go Gopher panicking'
-                className='size-24 sm:size-32'
+                className='mx-auto size-20 sm:size-24 md:size-32'
                 style={{
                   animation: reducedMotion ? 'none' : 'shake 0.5s infinite',
                   filter: 'drop-shadow(0 0 10px rgba(255, 68, 68, 0.5))',

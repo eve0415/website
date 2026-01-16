@@ -89,9 +89,9 @@ const TypeError: FC = () => {
         <span className='ml-4 font-mono text-xs text-[#cccccc]'>Console - TypeError</span>
       </div>
 
-      <div className='flex h-[calc(100%-2.25rem)]'>
+      <div className='flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Object graph visualization */}
-        <div className='relative flex-1 bg-[#1e1e1e] p-8'>
+        <div className='relative h-1/2 flex-1 bg-[#1e1e1e] p-4 md:h-auto md:p-8'>
           <div className='mb-4 font-mono text-xs text-[#858585]'>Object Graph - Property Access Path</div>
 
           {/* SVG for connections */}
@@ -161,7 +161,7 @@ const TypeError: FC = () => {
         </div>
 
         {/* Console panel */}
-        <div className='w-96 border-l border-[#3c3c3c] bg-[#1e1e1e]'>
+        <div className='h-1/2 w-full overflow-y-auto border-t border-[#3c3c3c] bg-[#1e1e1e] md:h-auto md:w-96 md:border-t-0 md:border-l'>
           <div className='border-b border-[#3c3c3c] px-4 py-2'>
             <span className='font-mono text-xs text-[#cccccc]'>Console</span>
           </div>

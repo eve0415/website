@@ -85,9 +85,9 @@ const TypeMismatch: FC = () => {
         </div>
       </div>
 
-      <div className='flex h-[calc(100%-2.25rem)]'>
+      <div className='flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Type diagram */}
-        <div className='relative flex-1 bg-[#1e1e1e] p-8'>
+        <div className='relative h-1/2 flex-1 bg-[#1e1e1e] p-4 md:h-auto md:p-8'>
           <div className='mb-4 font-mono text-xs text-[#858585]'>Type System - Assignment Check</div>
 
           {/* Type boxes */}
@@ -151,7 +151,7 @@ const TypeMismatch: FC = () => {
         </div>
 
         {/* Problems panel */}
-        <div className='w-96 border-l border-[#3c3c3c] bg-[#1e1e1e]'>
+        <div className='h-1/2 w-full overflow-y-auto border-t border-[#3c3c3c] bg-[#1e1e1e] md:h-auto md:w-96 md:border-t-0 md:border-l'>
           <div className='flex items-center gap-2 border-b border-[#3c3c3c] px-4 py-2'>
             <span className='font-mono text-xs text-[#cccccc]'>PROBLEMS</span>
             {errorCount > 0 && <span className='rounded bg-[#f14c4c] px-1.5 py-0.5 font-mono text-[10px] text-white'>{errorCount}</span>}

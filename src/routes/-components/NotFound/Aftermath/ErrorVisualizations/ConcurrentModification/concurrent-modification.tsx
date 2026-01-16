@@ -83,9 +83,9 @@ const ConcurrentModification: FC = () => {
         <span className='font-mono text-xs text-[#f89820]'>Java - ConcurrentModificationException</span>
       </div>
 
-      <div className='bg-background flex h-[calc(100%-2.25rem)]'>
+      <div className='bg-background flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Thread visualization */}
-        <div className='flex-1 p-8'>
+        <div className='h-1/2 flex-1 overflow-y-auto p-4 md:h-auto md:p-8'>
           <div className='mx-auto max-w-2xl'>
             {/* Thread headers */}
             <div className='mb-8 grid grid-cols-2 gap-8'>
@@ -159,7 +159,7 @@ const ConcurrentModification: FC = () => {
         </div>
 
         {/* Stack trace panel */}
-        <div className='bg-muted w-80 border-l border-[#333] p-4'>
+        <div className='bg-muted h-1/2 w-full overflow-y-auto border-t border-[#333] p-4 md:h-auto md:w-80 md:border-t-0 md:border-l'>
           <div className='mb-4 font-mono text-xs text-[#f89820]'>Stack Trace</div>
 
           {crashed && (

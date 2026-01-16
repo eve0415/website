@@ -74,9 +74,9 @@ const AssertionError: FC = () => {
         <span className='font-mono text-xs text-[#3776ab]'>pytest - AssertionError</span>
       </div>
 
-      <div className='bg-background flex h-[calc(100%-2.25rem)]'>
+      <div className='bg-background flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Test runner visualization */}
-        <div className='flex-1 p-8'>
+        <div className='h-1/2 flex-1 overflow-y-auto p-4 md:h-auto md:p-8'>
           <div className='mx-auto max-w-xl'>
             {/* Progress bar */}
             <div className='mb-6'>
@@ -155,7 +155,7 @@ const AssertionError: FC = () => {
         </div>
 
         {/* Output panel */}
-        <div className='bg-muted w-80 border-l border-[#333] p-4'>
+        <div className='bg-muted h-1/2 w-full overflow-y-auto border-t border-[#333] p-4 md:h-auto md:w-80 md:border-t-0 md:border-l'>
           <div className='mb-4 font-mono text-xs text-[#3776ab]'>Test Output</div>
 
           <div className='space-y-1 font-mono text-[10px]'>

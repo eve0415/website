@@ -64,9 +64,9 @@ const RecursionError: FC = () => {
         <span className='font-mono text-xs text-[#3776ab]'>Python 3.12.0 - RecursionError</span>
       </div>
 
-      <div className='flex h-[calc(100%-2.25rem)]'>
+      <div className='flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Fractal visualization */}
-        <div className='bg-background relative flex-1 overflow-hidden'>
+        <div className='bg-background relative h-1/2 flex-1 overflow-hidden md:h-auto'>
           {/* Centered fractal boxes */}
           <div
             className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2'
@@ -114,7 +114,7 @@ const RecursionError: FC = () => {
         </div>
 
         {/* Stack trace panel */}
-        <div className='bg-muted w-80 border-l border-[#333] p-4'>
+        <div className='bg-muted h-1/2 w-full overflow-y-auto border-t border-[#333] p-4 md:h-auto md:w-80 md:border-t-0 md:border-l'>
           <div className='mb-4 font-mono text-xs text-[#3776ab]'>Traceback (most recent call last):</div>
 
           <div className='max-h-96 space-y-1 overflow-hidden'>

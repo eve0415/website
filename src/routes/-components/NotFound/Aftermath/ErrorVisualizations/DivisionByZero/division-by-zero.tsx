@@ -96,9 +96,9 @@ const DivisionByZero: FC = () => {
         <span className='font-mono text-xs text-[#9c27b0]'>Python 3.12.0 - ZeroDivisionError</span>
       </div>
 
-      <div className='flex h-[calc(100%-2.25rem)] bg-[#050505]'>
+      <div className='flex h-[calc(100%-2.25rem)] flex-col bg-[#050505] md:flex-row'>
         {/* Black hole visualization */}
-        <div className='relative flex-1'>
+        <div className='relative h-1/2 flex-1 md:h-auto'>
           {/* Number line background */}
           <div className='absolute inset-x-0 top-1/2 h-px bg-[#333]/50' />
           <div className='absolute inset-y-0 left-1/2 w-px bg-[#333]/50' />
@@ -157,7 +157,7 @@ const DivisionByZero: FC = () => {
         </div>
 
         {/* Error panel */}
-        <div className='bg-background w-80 border-l border-[#333] p-6'>
+        <div className='bg-background h-1/2 w-full overflow-y-auto border-t border-[#333] p-4 md:h-auto md:w-80 md:border-t-0 md:border-l md:p-6'>
           <div className='mb-4 font-mono text-xs text-[#666]'>Traceback (most recent call last):</div>
 
           <div className='space-y-2 font-mono text-xs'>

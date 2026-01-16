@@ -82,9 +82,9 @@ const UndefinedBehavior: FC = () => {
         <span className='font-mono text-xs text-[#888]'>undefined_behavior.c - Nasal Demons Territory</span>
       </div>
 
-      <div className='flex h-[calc(100%-2.25rem)]'>
+      <div className='flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Code panel */}
-        <div className='bg-muted flex-1 border-r border-[#333] p-6'>
+        <div className='bg-muted h-1/2 flex-1 overflow-y-auto border-b border-[#333] p-4 md:h-auto md:border-r md:border-b-0 md:p-6'>
           <div className='mb-4 font-mono text-xs text-[#666]'>// Same code, different results</div>
 
           <pre className='rounded border border-[#333] bg-[#0d0d0d] p-4 font-mono text-sm'>
@@ -123,7 +123,7 @@ const UndefinedBehavior: FC = () => {
         </div>
 
         {/* Output panel */}
-        <div className='w-96 bg-[#0d0d0d] p-6'>
+        <div className='h-1/2 w-full overflow-y-auto bg-[#0d0d0d] p-4 md:h-auto md:w-96 md:p-6'>
           <div className='mb-4 font-mono text-xs text-[#666]'>Execution Results:</div>
 
           <div className='space-y-3'>

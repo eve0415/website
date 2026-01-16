@@ -92,9 +92,9 @@ const BufferOverflow: FC = () => {
         <span className='font-mono text-xs text-[#00ff00]'>GDB - Stack Smashing Detected</span>
       </div>
 
-      <div className='bg-background flex h-[calc(100%-2.25rem)]'>
+      <div className='bg-background flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Memory visualization */}
-        <div className='flex-1 p-8'>
+        <div className='h-1/2 flex-1 overflow-y-auto p-4 md:h-auto md:p-8'>
           <div className='mb-4 font-mono text-xs text-[#00ff00]/70'>Stack Memory Layout (High → Low)</div>
 
           <div className='mx-auto max-w-md space-y-1'>
@@ -143,7 +143,7 @@ const BufferOverflow: FC = () => {
         </div>
 
         {/* GDB output panel */}
-        <div className='bg-background w-96 border-l border-[#00ff00]/30 p-4'>
+        <div className='bg-background h-1/2 w-full overflow-y-auto border-t border-[#00ff00]/30 p-4 md:h-auto md:w-96 md:border-t-0 md:border-l'>
           <div className='mb-4 font-mono text-xs text-[#00ff00]/50'>(gdb) run</div>
 
           {writeIndex > 0 && (

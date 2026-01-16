@@ -91,9 +91,9 @@ const SyntaxError: FC = () => {
         <span className='ml-4 font-mono text-xs text-[#cccccc]'>page.tsx - SyntaxError</span>
       </div>
 
-      <div className='flex h-[calc(100%-2.25rem)]'>
+      <div className='flex h-[calc(100%-2.25rem)] flex-col md:flex-row'>
         {/* Line numbers gutter */}
-        <div className='w-14 border-r border-[#3c3c3c] bg-[#1e1e1e] pt-2'>
+        <div className='hidden w-14 border-r border-[#3c3c3c] bg-[#1e1e1e] pt-2 md:block'>
           {codeLines.slice(0, visibleLines).map(line => (
             <div
               key={line.lineNumber}
@@ -105,7 +105,7 @@ const SyntaxError: FC = () => {
         </div>
 
         {/* Code editor */}
-        <div className='relative flex-1 overflow-hidden bg-[#1e1e1e] pt-2'>
+        <div className='relative h-1/2 flex-1 overflow-hidden bg-[#1e1e1e] pt-2 md:h-auto'>
           {codeLines.slice(0, visibleLines).map((line, idx) => (
             <div key={line.lineNumber} className={`relative font-mono text-sm leading-6 ${line.hasError && showError ? 'bg-[#f14c4c]/10' : ''}`}>
               <pre className='pl-4 text-[#d4d4d4]'>
@@ -160,7 +160,7 @@ const SyntaxError: FC = () => {
         </div>
 
         {/* Problems panel */}
-        <div className='w-80 border-l border-[#3c3c3c] bg-[#1e1e1e]'>
+        <div className='h-1/2 w-full overflow-y-auto border-t border-[#3c3c3c] bg-[#1e1e1e] md:h-auto md:w-80 md:border-t-0 md:border-l'>
           <div className='flex items-center gap-2 border-b border-[#3c3c3c] px-4 py-2'>
             <span className='font-mono text-xs text-[#cccccc]'>PROBLEMS</span>
             {showError && <span className='rounded bg-[#f14c4c] px-1.5 py-0.5 font-mono text-[10px] text-white'>1</span>}
