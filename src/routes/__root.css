@@ -25,6 +25,12 @@
   --color-orange: #ff6b35;
   --color-glow: #00ff8840;
 
+  /* AI Brand Colors */
+  --color-claude: #ff6b35;
+  --color-gemini: #4285f4;
+  --color-gemini-alt: #8ab4f8;
+  --color-codex: #10a37f;
+
   /* Border Colors */
   --color-line: #262626;
   --color-input: #404040;
