@@ -1,12 +1,12 @@
 import handler from '@tanstack/react-start/server-entry';
+import { drizzle } from 'drizzle-orm/d1';
 
+import * as schema from './db/schema';
 import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
-
-// Export workflow for Cloudflare
 export { SkillsAnalysisWorkflow } from './workflows/skills-analysis';
 
 export default {
-  fetch: (request, _env, _ctx) => {
+  fetch: (request, env, _ctx) => {
     const cf = request.cf;
     const headers = new Headers(request.headers);
 
@@ -17,8 +17,11 @@ export default {
     if (cf?.httpProtocol) headers.set('X-CF-HTTP-Protocol', cf.httpProtocol);
     if (cf?.colo) headers.set('X-CF-Colo', String(cf.colo));
 
-    const modifiedRequest = new Request(request, { headers });
-    return handler.fetch(modifiedRequest);
+    return handler.fetch(new Request(request, { headers }), {
+      context: {
+        db: drizzle(env.SKILLS_DB, { schema, casing: 'snake_case' }),
+      },
+    });
   },
   async scheduled(event, env, ctx): Promise<void> {
     // Hourly: refresh GitHub stats

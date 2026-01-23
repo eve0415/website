@@ -6,7 +6,6 @@ import { createServerFn } from '@tanstack/react-start';
 import { env } from 'cloudflare:workers';
 import { eq } from 'drizzle-orm';
 
-import { createDB } from '#db';
 import { workflowState } from '#db/schema';
 
 /**
@@ -28,15 +27,13 @@ export const loadAIProfileSummary = createServerFn().handler(async (): Promise<A
 /**
  * Load workflow state from KV (cached) or D1 (fresh)
  */
-export const loadWorkflowState = createServerFn().handler(async (): Promise<WorkflowState> => {
+export const loadWorkflowState = createServerFn().handler(async ({ context: { db } }): Promise<WorkflowState> => {
   // Try KV cache first
   const cached = await env.CACHE.get<WorkflowState>('ai_skills_state', 'json');
   if (cached) {
     return cached;
   }
 
-  // Fall back to D1 via Drizzle
-  const db = createDB(env.SKILLS_DB);
   const state = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
 
   if (!state) {
@@ -69,7 +66,7 @@ export const loadWorkflowState = createServerFn().handler(async (): Promise<Work
 /**
  * Load complete AI skills state (content + profile + workflow)
  */
-export const loadAISkillsState = createServerFn().handler(async (): Promise<AISkillsState> => {
+export const loadAISkillsState = createServerFn().handler(async ({ context: { db } }): Promise<AISkillsState> => {
   const [content, profile, workflow] = await Promise.all([
     env.CACHE.get<AISkillsContent>('ai_skills_content_ja', 'json'),
     env.CACHE.get<AIProfileSummary>('ai_profile_summary_ja', 'json'),
@@ -79,7 +76,6 @@ export const loadAISkillsState = createServerFn().handler(async (): Promise<AISk
   // Get fresh workflow state from D1 if not cached
   let workflowResult = workflow;
   if (!workflowResult) {
-    const db = createDB(env.SKILLS_DB);
     const dbState = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
 
     if (dbState) {
@@ -118,10 +114,8 @@ export const loadAISkillsState = createServerFn().handler(async (): Promise<AISk
  * Manually trigger the skills analysis workflow
  * Protected - only works in development or with proper auth
  */
-export const triggerSkillsAnalysis = createServerFn().handler(async (): Promise<{ success: boolean; message: string }> => {
+export const triggerSkillsAnalysis = createServerFn().handler(async ({ context: { db } }): Promise<{ success: boolean; message: string }> => {
   try {
-    const db = createDB(env.SKILLS_DB);
-
     // Check if already running
     const state = await db.select({ phase: workflowState.phase }).from(workflowState).where(eq(workflowState.id, 1)).get();
 

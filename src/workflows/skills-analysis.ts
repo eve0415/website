@@ -17,8 +17,9 @@ import type {
 
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from 'cloudflare:workers';
 import { count, eq, inArray, sql, sum } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/d1';
 
-import { createDB } from '#db';
+import * as schema from '#db/schema';
 import { commits, historySummaries, prReviews, pullRequests, repos, workflowState } from '#db/schema';
 
 import { classifyRepo, sanitizeForAI } from '../routes/skills/-utils/privacy-filter';
@@ -36,16 +37,12 @@ interface WorkflowEnv {
 
 export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void> {
   override async run(_event: WorkflowEvent<void>, step: WorkflowStep) {
-    const env = this.env;
-    const db = createDB(env.SKILLS_DB);
-
     // Step 1: List all repositories
     const repoList = await step.do('list-repos', async () => {
+      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
       await this.updateState(db, 'listing-repos', 0);
-      return await this.fetchAllRepos(env, db);
+      return await this.fetchAllRepos(this.env, db);
     });
-
-    await this.updateState(db, 'fetching-commits', 0, undefined, repoList.length);
 
     // Step 2: Fetch commits for each repo
     for (let i = 0; i < repoList.length; i++) {
@@ -53,59 +50,64 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       if (!repo) continue;
 
       const rateLimit = await step.do(`commits-${repo.githubId}`, async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
         await this.updateState(db, 'fetching-commits', Math.floor((i / repoList.length) * 30), repo.fullName, repoList.length, i);
-        return await this.fetchAndStoreCommits(env, db, repo);
+        return await this.fetchAndStoreCommits(this.env, db, repo);
       });
 
       await this.dynamicSleep(step, rateLimit, `commits-sleep-${repo.githubId}`);
     }
 
     // Step 3: Fetch PRs for each repo
-    await this.updateState(db, 'fetching-prs', 30);
     for (let i = 0; i < repoList.length; i++) {
       const repo = repoList[i];
       if (!repo) continue;
 
       const rateLimit = await step.do(`prs-${repo.githubId}`, async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
         await this.updateState(db, 'fetching-prs', 30 + Math.floor((i / repoList.length) * 15), repo.fullName);
-        return await this.fetchAndStorePRs(env, db, repo);
+        return await this.fetchAndStorePRs(this.env, db, repo);
       });
 
       await this.dynamicSleep(step, rateLimit, `prs-sleep-${repo.githubId}`);
     }
 
     // Step 4: Fetch PR reviews
-    await this.updateState(db, 'fetching-reviews', 45);
     const reviewRateLimit = await step.do('reviews', async () => {
-      return await this.fetchAndStoreReviews(env, db);
+      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+      await this.updateState(db, 'fetching-reviews', 45);
+      return await this.fetchAndStoreReviews(this.env, db);
     });
     await this.dynamicSleep(step, reviewRateLimit, 'reviews-sleep');
 
     // Step 5: Squash history for AI context
     const summary = await step.do('squash-history', async () => {
+      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
       await this.updateState(db, 'squashing-history', 60);
       return await this.squashHistory(db);
     });
 
     // Step 6: AI skill extraction
     const skills = await step.do('ai-extract-skills', async () => {
+      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
       await this.updateState(db, 'ai-extracting-skills', 70);
-      return await this.extractSkillsWithAI(env, summary);
+      return await this.extractSkillsWithAI(this.env, summary);
     });
 
     // Step 7: AI Japanese generation
     const content = await step.do('ai-generate-japanese', async () => {
+      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
       await this.updateState(db, 'ai-generating-japanese', 85);
-      return await this.generateJapaneseDescriptions(env, db, skills, summary);
+      return await this.generateJapaneseDescriptions(this.env, db, skills, summary);
     });
 
     // Step 8: Store final results
     await step.do('store-results', async () => {
+      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
       await this.updateState(db, 'storing-results', 95);
-      await this.storeResults(env, db, content);
+      await this.storeResults(this.env, db, content);
+      await this.updateState(db, 'completed', 100);
     });
-
-    await this.updateState(db, 'completed', 100);
   }
 
   private async updateState(db: DB, phase: WorkflowPhase, progress: number, currentRepo?: string, total?: number, processed?: number) {

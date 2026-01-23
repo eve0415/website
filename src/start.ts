@@ -1,3 +1,6 @@
+import type * as schema from '#db/schema';
+import type { drizzle } from 'drizzle-orm/d1';
+
 import { createMiddleware, createStart } from '@tanstack/react-start';
 import { setResponseHeader } from '@tanstack/react-start/server';
 
@@ -26,3 +29,13 @@ const securityMiddleware = createMiddleware().server(async ({ next }) => {
 export const startInstance = createStart(() => ({
   requestMiddleware: [securityMiddleware],
 }));
+
+declare module '@tanstack/react-start' {
+  interface Register {
+    server: {
+      requestContext: {
+        db: ReturnType<typeof drizzle<typeof schema, D1Database>>;
+      };
+    };
+  }
+}
