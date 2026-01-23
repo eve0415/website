@@ -31,6 +31,12 @@
   --color-gemini-alt: #8ab4f8;
   --color-codex: #10a37f;
 
+  /* AI Skills Feature Colors */
+  --color-fuchsia: #d946ef;
+  --color-fuchsia-glow: #d946ef40;
+  --color-fuchsia-bright: #ec4899;
+  --color-violet: #8b5cf6;
+
   /* Border Colors */
   --color-line: #262626;
   --color-input: #404040;
@@ -363,6 +369,112 @@ body {
   text-shadow:
     0 0 20px var(--color-glow),
     0 0 40px var(--color-glow);
+}
+
+/* ============================================
+   AI Skills Visualization Animations
+   ============================================ */
+
+/* Shimmer border effect for AI content */
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Heartbeat pulse for live indicator */
+@keyframes heartbeat {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.5;
+    transform: scale(1.1);
+  }
+}
+
+/* Materialize crosshair */
+@keyframes crosshair-pulse {
+  0%,
+  100% {
+    opacity: 0.8;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.05);
+  }
+}
+
+/* Wireframe spin */
+@keyframes wireframe-spin {
+  from {
+    transform: rotate(0deg);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(360deg);
+    opacity: 1;
+  }
+}
+
+/* Node flash on materialize */
+@keyframes node-flash {
+  0% {
+    filter: brightness(3) saturate(1.5);
+    transform: scale(1.3);
+  }
+  100% {
+    filter: brightness(1) saturate(1);
+    transform: scale(1);
+  }
+}
+
+/* Typewriter cursor blink */
+@keyframes typewriter-cursor {
+  0%,
+  50% {
+    border-color: var(--color-fuchsia);
+  }
+  51%,
+  100% {
+    border-color: transparent;
+  }
+}
+
+/* Connection line draw */
+@keyframes connection-draw {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+/* AI Skills Utility Classes */
+.ai-glow {
+  text-shadow: 0 0 8px var(--color-fuchsia-glow);
+}
+
+.ai-shimmer-border {
+  background: linear-gradient(90deg, transparent, var(--color-fuchsia-glow), transparent);
+  background-size: 200% 100%;
+  animation: shimmer 3s infinite linear;
+}
+
+.animate-heartbeat {
+  animation: heartbeat 2s ease-in-out infinite;
+}
+
+.animate-typewriter-cursor {
+  border-right: 2px solid var(--color-fuchsia);
+  animation: typewriter-cursor 1s step-end infinite;
 }
 
 /* Reduced motion preference */

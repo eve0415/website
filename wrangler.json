@@ -24,7 +24,7 @@
   },
 
   "triggers": {
-    "crons": ["0 * * * *"]
+    "crons": ["0 * * * *", "30 18 * * 6"]
   },
 
   "kv_namespaces": [
@@ -41,6 +41,26 @@
   "send_email": [
     {
       "name": "CONTACT_EMAIL"
+    }
+  ],
+
+  "ai": {
+    "binding": "AI"
+  },
+
+  "d1_databases": [
+    {
+      "binding": "SKILLS_DB",
+      "database_name": "skills-history",
+      "database_id": "placeholder-create-via-wrangler"
+    }
+  ],
+
+  "workflows": [
+    {
+      "name": "skills-analysis",
+      "binding": "SKILLS_WORKFLOW",
+      "class_name": "SkillsAnalysisWorkflow"
     }
   ]
 }

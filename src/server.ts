@@ -2,6 +2,9 @@ import handler from '@tanstack/react-start/server-entry';
 
 import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
 
+// Export workflow for Cloudflare
+export { SkillsAnalysisWorkflow } from './workflows/skills-analysis';
+
 export default {
   fetch: (request, _env, _ctx) => {
     const cf = request.cf;
@@ -17,7 +20,14 @@ export default {
     const modifiedRequest = new Request(request, { headers });
     return handler.fetch(modifiedRequest);
   },
-  async scheduled(_event, env, ctx): Promise<void> {
+  async scheduled(event, env, ctx): Promise<void> {
+    // Hourly: refresh GitHub stats
     ctx.waitUntil(refreshGitHubStats(env));
+
+    // Weekly (Sunday 3:30 AM JST = Saturday 18:30 UTC): trigger skills analysis
+    // Cron: "30 18 * * 6" in wrangler.json
+    if (event.cron === '30 18 * * 6') {
+      ctx.waitUntil(env.SKILLS_WORKFLOW.create());
+    }
   },
 } satisfies ExportedHandler<Env>;
