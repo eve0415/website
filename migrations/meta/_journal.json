@@ -8,6 +8,13 @@
       "when": 1769155323904,
       "tag": "0000_even_trauma",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "6",
+      "when": 1769171144015,
+      "tag": "0001_mighty_goliath",
+      "breakpoints": true
     }
   ]
 }

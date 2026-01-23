@@ -20,6 +20,11 @@ export const repos = sqliteTable(
     fetchedAt: text('fetched_at')
       .notNull()
       .default(sql`(datetime('now'))`),
+    // Incremental sync state columns
+    lastCommitAt: text('last_commit_at'),
+    lastPrUpdatedAt: text('last_pr_updated_at'),
+    commitsCursor: text('commits_cursor'),
+    prsCursor: text('prs_cursor'),
   },
   table => [index('idx_repos_privacy').on(table.privacyClass), index('idx_repos_language').on(table.language)],
 );

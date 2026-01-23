@@ -1,8 +1,8 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "64a7c7c4-0901-4a84-a369-03a95eb45c74",
-  "prevId": "00000000-0000-0000-0000-000000000000",
+  "id": "18868c96-0e8c-43c2-b408-0364e86db8c6",
+  "prevId": "64a7c7c4-0901-4a84-a369-03a95eb45c74",
   "tables": {
     "commits": {
       "name": "commits",
@@ -545,6 +545,34 @@
           "notNull": true,
           "autoincrement": false,
           "default": "(datetime('now'))"
+        },
+        "last_commit_at": {
+          "name": "last_commit_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "last_pr_updated_at": {
+          "name": "last_pr_updated_at",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "commits_cursor": {
+          "name": "commits_cursor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
+        },
+        "prs_cursor": {
+          "name": "prs_cursor",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
+          "autoincrement": false
         }
       },
       "indexes": {

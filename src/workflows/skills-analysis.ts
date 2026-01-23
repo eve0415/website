@@ -1,19 +1,10 @@
 // Cloudflare Workflow for AI Skills Analysis
-// Runs as durable execution - can take days/weeks with sleep() for rate limits
+// Uses GitHub GraphQL API with sleepUntil for rate limits
+// Supports incremental syncing and singleton execution
 
-import type { DB } from '#db';
 import type { Repo } from '#db/types';
-import type {
-  AIProfileSummary,
-  AISkill,
-  AISkillsContent,
-  GitHubCommit,
-  GitHubPR,
-  GitHubRepo,
-  GitHubReview,
-  RateLimitInfo,
-  WorkflowPhase,
-} from '../routes/skills/-utils/ai-skills-types';
+import type { AIProfileSummary, AISkill, AISkillsContent, WorkflowPhase } from './-utils/ai-skills-types';
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from 'cloudflare:workers';
 import { count, eq, inArray, sql, sum } from 'drizzle-orm';
@@ -22,92 +13,639 @@ import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '#db/schema';
 import { commits, historySummaries, prReviews, pullRequests, repos, workflowState } from '#db/schema';
 
-import { classifyRepo, sanitizeForAI } from '../routes/skills/-utils/privacy-filter';
+import {
+  DEFAULT_RATE_LIMIT_METRICS,
+  GITHUB_USERNAME,
+  type GraphQLRateLimit,
+  type RateLimitMetrics,
+  calculateDynamicThreshold,
+  createGitHubClient,
+  fetchRepoCommits,
+  fetchRepoPRs,
+  fetchUserRepos,
+  isAuthoredByUser,
+  isPRAuthoredByUser,
+} from './-utils/github-graphql';
+import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
 
-const GITHUB_USERNAME = 'eve0415';
-const GITHUB_API = 'https://api.github.com';
-const RATE_LIMIT_THRESHOLD = 100; // Sleep when remaining < this
+// KV keys
+const WORKFLOW_LOCK_KEY = 'skills_workflow_lock';
+const RATE_LIMIT_METRICS_KEY = 'skills_rate_limit_metrics';
+
+// Type alias for drizzle database
+type DB = DrizzleD1Database<typeof schema>;
 
 interface WorkflowEnv {
   GITHUB_PAT: string;
   SKILLS_DB: D1Database;
   CACHE: KVNamespace;
   AI: Ai;
+  SKILLS_WORKFLOW: Workflow;
+}
+
+interface WorkflowLock {
+  instanceId: string;
+  startedAt: string;
+}
+
+interface SyncState {
+  repos: Array<{
+    id: number;
+    githubId: number;
+    fullName: string;
+    owner: string;
+    name: string;
+    lastCommitAt: string | null;
+    lastPrUpdatedAt: string | null;
+    commitsCursor: string | null;
+    prsCursor: string | null;
+  }>;
+  userEmail: string | null;
+  totalRepos: number;
 }
 
 export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void> {
-  override async run(_event: WorkflowEvent<void>, step: WorkflowStep) {
-    // Step 1: List all repositories
-    const repoList = await step.do('list-repos', async () => {
-      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-      await this.updateState(db, 'listing-repos', 0);
-      return await this.fetchAllRepos(this.env, db);
+  private metrics: RateLimitMetrics = DEFAULT_RATE_LIMIT_METRICS;
+  private processedRepos = 0;
+  private totalRepos = 0;
+  private requestCount = 0;
+
+  override async run(event: WorkflowEvent<void>, step: WorkflowStep) {
+    const instanceId = event.instanceId;
+
+    // Step 1: Acquire lock (singleton enforcement)
+    const lockAcquired = await step.do('acquire_lock', async () => {
+      return await this.acquireLock(instanceId);
     });
 
-    // Step 2: Fetch commits for each repo
-    for (let i = 0; i < repoList.length; i++) {
-      const repo = repoList[i];
-      if (!repo) continue;
-
-      const rateLimit = await step.do(`commits-${repo.githubId}`, async () => {
-        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-        await this.updateState(db, 'fetching-commits', Math.floor((i / repoList.length) * 30), repo.fullName, repoList.length, i);
-        return await this.fetchAndStoreCommits(this.env, db, repo);
-      });
-
-      await this.dynamicSleep(step, rateLimit, `commits-sleep-${repo.githubId}`);
+    if (!lockAcquired) {
+      console.log('Another workflow instance is already running. Exiting.');
+      return;
     }
 
-    // Step 3: Fetch PRs for each repo
-    for (let i = 0; i < repoList.length; i++) {
-      const repo = repoList[i];
-      if (!repo) continue;
-
-      const rateLimit = await step.do(`prs-${repo.githubId}`, async () => {
+    try {
+      // Step 2: Load sync state
+      const syncState = await step.do('load_sync_state', async () => {
         const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-        await this.updateState(db, 'fetching-prs', 30 + Math.floor((i / repoList.length) * 15), repo.fullName);
-        return await this.fetchAndStorePRs(this.env, db, repo);
+        await this.updateState(db, 'listing-repos', 0);
+        return await this.loadSyncState(db);
       });
 
-      await this.dynamicSleep(step, rateLimit, `prs-sleep-${repo.githubId}`);
+      this.totalRepos = syncState.totalRepos;
+
+      // Load rate limit metrics from KV
+      const storedMetrics = await this.env.CACHE.get<RateLimitMetrics>(RATE_LIMIT_METRICS_KEY, 'json');
+      if (storedMetrics) {
+        this.metrics = storedMetrics;
+      }
+
+      // Step 3: Sync repos from GitHub
+      const repoList = await step.do('sync_repos', async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        await this.updateState(db, 'listing-repos', 5);
+        return await this.syncRepos(db, step, syncState.userEmail);
+      });
+
+      this.totalRepos = repoList.length;
+
+      // Step 4: Sync commits for each repo
+      for (let i = 0; i < repoList.length; i++) {
+        const repo = repoList[i];
+        if (!repo) continue;
+
+        const result = await step.do(`sync_commits_${repo.githubId}`, async () => {
+          const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+          await this.updateState(db, 'fetching-commits', 10 + Math.floor((i / repoList.length) * 25), repo.fullName, repoList.length, i);
+          return await this.syncCommits(db, repo, syncState);
+        });
+
+        this.processedRepos++;
+        this.requestCount += result.requestCount;
+
+        await this.checkRateLimitAndSleep(step, result.rateLimit, `commits_sleep_${repo.githubId}`);
+      }
+
+      // Step 5: Sync PRs and reviews for each repo
+      for (let i = 0; i < repoList.length; i++) {
+        const repo = repoList[i];
+        if (!repo) continue;
+
+        const result = await step.do(`sync_prs_${repo.githubId}`, async () => {
+          const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+          await this.updateState(db, 'fetching-prs', 35 + Math.floor((i / repoList.length) * 20), repo.fullName);
+          return await this.syncPRsAndReviews(db, repo, syncState);
+        });
+
+        this.requestCount += result.requestCount;
+
+        await this.checkRateLimitAndSleep(step, result.rateLimit, `prs_sleep_${repo.githubId}`);
+      }
+
+      // Step 6: Finalize sync state
+      await step.do('finalize_sync', async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        await this.updateState(db, 'fetching-reviews', 55);
+        await this.finalizeSyncState(db, repoList);
+      });
+
+      // AI Steps: Squash history for AI context
+      const summary = await step.do('squash_history', async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        await this.updateState(db, 'squashing-history', 60);
+        return await this.squashHistory(db);
+      });
+
+      // AI Step: Extract skills
+      const skills = await step.do('ai_extract_skills', async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        await this.updateState(db, 'ai-extracting-skills', 70);
+        try {
+          return await this.extractSkillsWithAI(summary);
+        } catch (error) {
+          console.error('AI skill extraction failed:', error);
+          return [];
+        }
+      });
+
+      // AI Step: Generate Japanese descriptions
+      const content = await step.do('ai_generate_japanese', async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        await this.updateState(db, 'ai-generating-japanese', 85);
+        try {
+          return await this.generateJapaneseDescriptions(db, skills, summary);
+        } catch (error) {
+          console.error('AI Japanese generation failed:', error);
+          return this.createFallbackContent(db, skills);
+        }
+      });
+
+      // Final Step: Store results
+      await step.do('store_results', async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        await this.updateState(db, 'storing-results', 95);
+        await this.storeResults(db, content);
+        await this.updateState(db, 'completed', 100);
+      });
+    } finally {
+      // Always release lock
+      await this.releaseLock(instanceId);
+
+      // Update rate limit metrics
+      if (this.totalRepos > 0 && this.requestCount > 0) {
+        const newMetrics: RateLimitMetrics = {
+          avgRequestsPerRepo: this.requestCount / this.totalRepos,
+          lastRunRepoCount: this.totalRepos,
+          lastRunRequestCount: this.requestCount,
+          updatedAt: new Date().toISOString(),
+        };
+        await this.env.CACHE.put(RATE_LIMIT_METRICS_KEY, JSON.stringify(newMetrics));
+      }
+    }
+  }
+
+  private async acquireLock(instanceId: string): Promise<boolean> {
+    const existingLock = await this.env.CACHE.get<WorkflowLock>(WORKFLOW_LOCK_KEY, 'json');
+
+    if (existingLock) {
+      // Check if the existing workflow is still running
+      try {
+        const existingInstance = await this.env.SKILLS_WORKFLOW.get(existingLock.instanceId);
+        const status = await existingInstance.status();
+
+        if (status.status === 'running' || status.status === 'queued' || status.status === 'paused') {
+          // Still running, don't acquire lock
+          return false;
+        }
+        // Workflow completed/errored/terminated, we can take over
+      } catch {
+        // Instance not found or error checking, assume we can take over
+      }
     }
 
-    // Step 4: Fetch PR reviews
-    const reviewRateLimit = await step.do('reviews', async () => {
-      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-      await this.updateState(db, 'fetching-reviews', 45);
-      return await this.fetchAndStoreReviews(this.env, db);
-    });
-    await this.dynamicSleep(step, reviewRateLimit, 'reviews-sleep');
-
-    // Step 5: Squash history for AI context
-    const summary = await step.do('squash-history', async () => {
-      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-      await this.updateState(db, 'squashing-history', 60);
-      return await this.squashHistory(db);
+    // Acquire lock with 24-hour TTL
+    const lock: WorkflowLock = {
+      instanceId,
+      startedAt: new Date().toISOString(),
+    };
+    await this.env.CACHE.put(WORKFLOW_LOCK_KEY, JSON.stringify(lock), {
+      expirationTtl: 86400, // 24 hours
     });
 
-    // Step 6: AI skill extraction
-    const skills = await step.do('ai-extract-skills', async () => {
-      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-      await this.updateState(db, 'ai-extracting-skills', 70);
-      return await this.extractSkillsWithAI(this.env, summary);
+    return true;
+  }
+
+  private async releaseLock(instanceId: string): Promise<void> {
+    const existingLock = await this.env.CACHE.get<WorkflowLock>(WORKFLOW_LOCK_KEY, 'json');
+
+    // Only release if we own the lock
+    if (existingLock?.instanceId === instanceId) {
+      await this.env.CACHE.delete(WORKFLOW_LOCK_KEY);
+    }
+  }
+
+  private async loadSyncState(db: DB): Promise<SyncState> {
+    const repoData = await db
+      .select({
+        id: repos.id,
+        githubId: repos.githubId,
+        fullName: repos.fullName,
+        owner: repos.owner,
+        name: repos.name,
+        lastCommitAt: repos.lastCommitAt,
+        lastPrUpdatedAt: repos.lastPrUpdatedAt,
+        commitsCursor: repos.commitsCursor,
+        prsCursor: repos.prsCursor,
+      })
+      .from(repos)
+      .all();
+
+    return {
+      repos: repoData,
+      userEmail: null, // Will be populated from GraphQL response
+      totalRepos: repoData.length,
+    };
+  }
+
+  private async syncRepos(db: DB, step: WorkflowStep, userEmail: string | null): Promise<Repo[]> {
+    const octokit = createGitHubClient(this.env.GITHUB_PAT);
+    const repoList: Repo[] = [];
+    let cursor: string | null = null;
+    let fetchedUserEmail = userEmail;
+
+    do {
+      const { data, rateLimit } = await fetchUserRepos(octokit, cursor);
+      this.requestCount++;
+
+      // Capture user email from first response
+      if (!fetchedUserEmail && data.viewer.email) {
+        fetchedUserEmail = data.viewer.email;
+      }
+
+      const nodes = data.viewer.repositories.nodes ?? [];
+
+      for (const node of nodes) {
+        if (!node) continue;
+
+        const record = await this.upsertRepo(db, {
+          id: node.databaseId!,
+          full_name: node.nameWithOwner,
+          name: node.name,
+          owner: node.nameWithOwner.split('/')[0]!,
+          private: node.isPrivate,
+          fork: node.isFork,
+          default_branch: node.defaultBranchRef?.name ?? 'main',
+          language: node.primaryLanguage?.name ?? null,
+          created_at: node.createdAt,
+          updated_at: node.updatedAt,
+        });
+        repoList.push(record);
+      }
+
+      cursor = data.viewer.repositories.pageInfo.hasNextPage ? (data.viewer.repositories.pageInfo.endCursor ?? null) : null;
+
+      await this.checkRateLimitAndSleep(step, rateLimit, `repos_sleep_${cursor ?? 'final'}`);
+    } while (cursor);
+
+    return repoList;
+  }
+
+  private async upsertRepo(
+    db: DB,
+    repo: {
+      id: number;
+      full_name: string;
+      name: string;
+      owner: string;
+      private: boolean;
+      fork: boolean;
+      default_branch: string;
+      language: string | null;
+      created_at: string;
+      updated_at: string;
+    },
+  ): Promise<Repo> {
+    const privacyClass = classifyRepo({
+      id: repo.id,
+      full_name: repo.full_name,
+      name: repo.name,
+      owner: { login: repo.owner },
+      private: repo.private,
+      fork: repo.fork,
+      default_branch: repo.default_branch,
+      language: repo.language,
+      created_at: repo.created_at,
+      updated_at: repo.updated_at,
     });
 
-    // Step 7: AI Japanese generation
-    const content = await step.do('ai-generate-japanese', async () => {
-      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-      await this.updateState(db, 'ai-generating-japanese', 85);
-      return await this.generateJapaneseDescriptions(this.env, db, skills, summary);
-    });
+    await db
+      .insert(repos)
+      .values({
+        githubId: repo.id,
+        fullName: repo.full_name,
+        name: repo.name,
+        owner: repo.owner,
+        isPrivate: repo.private,
+        isFork: repo.fork,
+        privacyClass,
+        defaultBranch: repo.default_branch,
+        language: repo.language,
+        createdAt: repo.created_at,
+        updatedAt: repo.updated_at,
+      })
+      .onConflictDoUpdate({
+        target: repos.githubId,
+        set: {
+          fullName: repo.full_name,
+          isPrivate: repo.private,
+          privacyClass,
+          language: repo.language,
+          updatedAt: repo.updated_at,
+          fetchedAt: sql`datetime('now')`,
+        },
+      });
 
-    // Step 8: Store final results
-    await step.do('store-results', async () => {
-      const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-      await this.updateState(db, 'storing-results', 95);
-      await this.storeResults(this.env, db, content);
-      await this.updateState(db, 'completed', 100);
-    });
+    const result = await db.select().from(repos).where(eq(repos.githubId, repo.id)).get();
+
+    return result!;
+  }
+
+  private async syncCommits(db: DB, repo: Repo, syncState: SyncState): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
+    const octokit = createGitHubClient(this.env.GITHUB_PAT);
+
+    // Find existing sync state for this repo
+    const existingState = syncState.repos.find(r => r.githubId === repo.githubId);
+    const since = existingState?.lastCommitAt ?? null;
+    let cursor = existingState?.commitsCursor ?? null;
+    let lastRateLimit: GraphQLRateLimit = { remaining: 5000, cost: 1, resetAt: 0 };
+    let requestCount = 0;
+    let latestCommitDate: string | null = null;
+
+    try {
+      do {
+        const { data, rateLimit } = await fetchRepoCommits(octokit, repo.owner, repo.name, since, cursor);
+        lastRateLimit = rateLimit;
+        requestCount++;
+
+        const target = data.repository?.defaultBranchRef?.target;
+        if (!target || !('history' in target)) break;
+
+        const commitNodes = target.history.nodes ?? [];
+
+        for (const node of commitNodes) {
+          if (!node) continue;
+
+          // Filter by user email
+          if (!isAuthoredByUser(node.author?.email, syncState.userEmail)) continue;
+
+          // Track latest commit date
+          if (!latestCommitDate || node.committedDate > latestCommitDate) {
+            latestCommitDate = node.committedDate;
+          }
+
+          await this.upsertCommit(db, repo.id, {
+            sha: node.oid,
+            message: node.messageHeadline,
+            authorDate: node.committedDate,
+            additions: node.additions,
+            deletions: node.deletions,
+            filesChanged: node.changedFilesIfAvailable ?? 0,
+          });
+        }
+
+        cursor = target.history.pageInfo.hasNextPage ? (target.history.pageInfo.endCursor ?? null) : null;
+      } while (cursor);
+
+      // Update repo with latest commit date
+      if (latestCommitDate) {
+        await db.update(repos).set({ lastCommitAt: latestCommitDate }).where(eq(repos.id, repo.id));
+      }
+    } catch (error) {
+      // Log error but continue with partial data
+      console.error(`Error syncing commits for ${repo.fullName}:`, error);
+    }
+
+    return { rateLimit: lastRateLimit, requestCount };
+  }
+
+  private async upsertCommit(
+    db: DB,
+    repoId: number,
+    commit: {
+      sha: string;
+      message: string;
+      authorDate: string;
+      additions: number;
+      deletions: number;
+      filesChanged: number;
+    },
+  ) {
+    await db
+      .insert(commits)
+      .values({
+        sha: commit.sha,
+        repoId,
+        message: commit.message,
+        authorDate: commit.authorDate,
+        additions: commit.additions,
+        deletions: commit.deletions,
+        filesChanged: commit.filesChanged,
+      })
+      .onConflictDoNothing();
+  }
+
+  private async syncPRsAndReviews(db: DB, repo: Repo, syncState: SyncState): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
+    const octokit = createGitHubClient(this.env.GITHUB_PAT);
+
+    const existingState = syncState.repos.find(r => r.githubId === repo.githubId);
+    const lastPrUpdatedAt = existingState?.lastPrUpdatedAt ?? null;
+    let cursor = existingState?.prsCursor ?? null;
+    let lastRateLimit: GraphQLRateLimit = { remaining: 5000, cost: 1, resetAt: 0 };
+    let requestCount = 0;
+    let latestPrUpdatedAt: string | null = null;
+
+    try {
+      do {
+        const { data, rateLimit } = await fetchRepoPRs(octokit, repo.owner, repo.name, cursor);
+        lastRateLimit = rateLimit;
+        requestCount++;
+
+        const prNodes = data.repository?.pullRequests.nodes ?? [];
+        let reachedOldData = false;
+
+        for (const pr of prNodes) {
+          if (!pr) continue;
+
+          // For incremental sync: stop if we reach PRs older than last sync
+          if (lastPrUpdatedAt && pr.updatedAt < lastPrUpdatedAt) {
+            reachedOldData = true;
+            break;
+          }
+
+          // Track latest PR update
+          if (!latestPrUpdatedAt || pr.updatedAt > latestPrUpdatedAt) {
+            latestPrUpdatedAt = pr.updatedAt;
+          }
+
+          // Only upsert PRs authored by the user
+          if (isPRAuthoredByUser(pr.author?.login)) {
+            await this.upsertPR(db, repo.id, {
+              githubId: pr.databaseId!,
+              number: pr.number,
+              title: pr.title,
+              body: pr.body ?? null,
+              state: pr.state,
+              merged: pr.merged,
+              additions: pr.additions,
+              deletions: pr.deletions,
+              changedFiles: pr.changedFiles,
+              commitsCount: pr.commits.totalCount,
+              createdAt: pr.createdAt,
+              mergedAt: pr.mergedAt ?? null,
+              closedAt: pr.closedAt ?? null,
+            });
+          }
+
+          // Process reviews on all PRs (user may have reviewed others' PRs)
+          const reviewNodes = pr.reviews?.nodes ?? [];
+          for (const review of reviewNodes) {
+            if (!review) continue;
+
+            // Only store reviews by the user
+            if (!isPRAuthoredByUser(review.author?.login)) continue;
+
+            // Skip reviews without submittedAt (pending reviews)
+            if (!review.submittedAt) continue;
+
+            await this.upsertReview(db, repo.id, pr.number, pr.title, {
+              githubId: review.databaseId!,
+              state: review.state,
+              body: review.body ?? null,
+              submittedAt: review.submittedAt,
+            });
+          }
+        }
+
+        if (reachedOldData) break;
+
+        cursor = data.repository?.pullRequests.pageInfo.hasNextPage ? (data.repository.pullRequests.pageInfo.endCursor ?? null) : null;
+      } while (cursor);
+
+      // Update repo with latest PR update time
+      if (latestPrUpdatedAt) {
+        await db.update(repos).set({ lastPrUpdatedAt: latestPrUpdatedAt }).where(eq(repos.id, repo.id));
+      }
+    } catch (error) {
+      console.error(`Error syncing PRs for ${repo.fullName}:`, error);
+    }
+
+    return { rateLimit: lastRateLimit, requestCount };
+  }
+
+  private async upsertPR(
+    db: DB,
+    repoId: number,
+    pr: {
+      githubId: number;
+      number: number;
+      title: string;
+      body: string | null;
+      state: string;
+      merged: boolean;
+      additions: number;
+      deletions: number;
+      changedFiles: number;
+      commitsCount: number;
+      createdAt: string;
+      mergedAt: string | null;
+      closedAt: string | null;
+    },
+  ) {
+    await db
+      .insert(pullRequests)
+      .values({
+        githubId: pr.githubId,
+        repoId,
+        number: pr.number,
+        title: pr.title,
+        body: pr.body,
+        state: pr.state,
+        merged: pr.merged,
+        additions: pr.additions,
+        deletions: pr.deletions,
+        changedFiles: pr.changedFiles,
+        commitsCount: pr.commitsCount,
+        commentsCount: 0, // Not fetched via GraphQL
+        reviewCommentsCount: 0,
+        createdAt: pr.createdAt,
+        mergedAt: pr.mergedAt,
+        closedAt: pr.closedAt,
+      })
+      .onConflictDoUpdate({
+        target: pullRequests.githubId,
+        set: {
+          state: pr.state,
+          merged: pr.merged,
+          mergedAt: pr.mergedAt,
+          closedAt: pr.closedAt,
+          fetchedAt: sql`datetime('now')`,
+        },
+      });
+  }
+
+  private async upsertReview(
+    db: DB,
+    repoId: number,
+    prNumber: number,
+    prTitle: string,
+    review: {
+      githubId: number;
+      state: string;
+      body: string | null;
+      submittedAt: string;
+    },
+  ) {
+    const validStates = ['APPROVED', 'CHANGES_REQUESTED', 'COMMENTED'] as const;
+    if (!validStates.includes(review.state as (typeof validStates)[number])) return;
+
+    await db
+      .insert(prReviews)
+      .values({
+        githubId: review.githubId,
+        repoId,
+        prNumber,
+        prTitle,
+        state: review.state as 'APPROVED' | 'CHANGES_REQUESTED' | 'COMMENTED',
+        body: review.body,
+        submittedAt: review.submittedAt,
+      })
+      .onConflictDoNothing();
+  }
+
+  private async finalizeSyncState(db: DB, repoList: Repo[]): Promise<void> {
+    // Clear cursors after successful sync
+    for (const repo of repoList) {
+      await db
+        .update(repos)
+        .set({
+          commitsCursor: null,
+          prsCursor: null,
+        })
+        .where(eq(repos.id, repo.id));
+    }
+  }
+
+  private async checkRateLimitAndSleep(step: WorkflowStep, rateLimit: GraphQLRateLimit, stepName: string): Promise<void> {
+    const threshold = calculateDynamicThreshold(this.metrics, this.totalRepos, this.processedRepos);
+
+    if (rateLimit.remaining < threshold) {
+      const resetDate = new Date(rateLimit.resetAt * 1000);
+
+      // Skip if reset time is in the past
+      if (resetDate.getTime() > Date.now()) {
+        console.log(`Rate limit low (${rateLimit.remaining}/${threshold}). Sleeping until ${resetDate.toISOString()}`);
+        await step.sleepUntil(stepName, resetDate);
+      }
+    }
   }
 
   private async updateState(db: DB, phase: WorkflowPhase, progress: number, currentRepo?: string, total?: number, processed?: number) {
@@ -139,308 +677,6 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     await db.update(workflowState).set(updates).where(eq(workflowState.id, 1));
   }
 
-  private async dynamicSleep(step: WorkflowStep, rateLimit: RateLimitInfo, name: string) {
-    if (rateLimit.remaining < RATE_LIMIT_THRESHOLD) {
-      const sleepMs = Math.max(0, rateLimit.resetAt * 1000 - Date.now() + 1000);
-      if (sleepMs > 0) {
-        await step.sleep(name, `${Math.ceil(sleepMs / 1000)} seconds`);
-      }
-    }
-  }
-
-  private extractRateLimit(headers: Headers): RateLimitInfo {
-    return {
-      remaining: parseInt(headers.get('X-RateLimit-Remaining') || '5000', 10),
-      limit: parseInt(headers.get('X-RateLimit-Limit') || '5000', 10),
-      resetAt: parseInt(headers.get('X-RateLimit-Reset') || '0', 10),
-    };
-  }
-
-  private async fetchAllRepos(env: WorkflowEnv, db: DB): Promise<Repo[]> {
-    const repoList: Repo[] = [];
-    let page = 1;
-
-    while (true) {
-      // Fetch user's own repos
-      const userReposRes = await fetch(`${GITHUB_API}/users/${GITHUB_USERNAME}/repos?per_page=100&page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${env.GITHUB_PAT}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      });
-
-      const userRepos: GitHubRepo[] = await userReposRes.json();
-      if (userRepos.length === 0) break;
-
-      for (const repo of userRepos) {
-        const record = await this.upsertRepo(db, repo);
-        repoList.push(record);
-      }
-
-      page++;
-    }
-
-    // Fetch repos from orgs where user is member
-    const orgsRes = await fetch(`${GITHUB_API}/user/orgs`, {
-      headers: {
-        Authorization: `Bearer ${env.GITHUB_PAT}`,
-        Accept: 'application/vnd.github+json',
-        'X-GitHub-Api-Version': '2022-11-28',
-      },
-    });
-
-    const orgs: Array<{ login: string }> = await orgsRes.json();
-
-    for (const org of orgs) {
-      page = 1;
-      while (true) {
-        const orgReposRes = await fetch(`${GITHUB_API}/orgs/${org.login}/repos?per_page=100&page=${page}`, {
-          headers: {
-            Authorization: `Bearer ${env.GITHUB_PAT}`,
-            Accept: 'application/vnd.github+json',
-            'X-GitHub-Api-Version': '2022-11-28',
-          },
-        });
-
-        const orgRepos: GitHubRepo[] = await orgReposRes.json();
-        if (orgRepos.length === 0) break;
-
-        for (const repo of orgRepos) {
-          const record = await this.upsertRepo(db, repo);
-          repoList.push(record);
-        }
-
-        page++;
-      }
-    }
-
-    return repoList;
-  }
-
-  private async upsertRepo(db: DB, repo: GitHubRepo): Promise<Repo> {
-    const privacyClass = classifyRepo(repo);
-
-    await db
-      .insert(repos)
-      .values({
-        githubId: repo.id,
-        fullName: repo.full_name,
-        name: repo.name,
-        owner: repo.owner.login,
-        isPrivate: repo.private,
-        isFork: repo.fork,
-        privacyClass,
-        defaultBranch: repo.default_branch,
-        language: repo.language,
-        createdAt: repo.created_at,
-        updatedAt: repo.updated_at,
-      })
-      .onConflictDoUpdate({
-        target: repos.githubId,
-        set: {
-          fullName: repo.full_name,
-          isPrivate: repo.private,
-          privacyClass,
-          language: repo.language,
-          updatedAt: repo.updated_at,
-          fetchedAt: sql`datetime('now')`,
-        },
-      });
-
-    const result = await db.select().from(repos).where(eq(repos.githubId, repo.id)).get();
-
-    return result!;
-  }
-
-  private async fetchAndStoreCommits(env: WorkflowEnv, db: DB, repo: Repo): Promise<RateLimitInfo> {
-    let page = 1;
-    let lastRateLimit: RateLimitInfo = { remaining: 5000, limit: 5000, resetAt: 0 };
-
-    while (true) {
-      const res = await fetch(`${GITHUB_API}/repos/${repo.fullName}/commits?author=${GITHUB_USERNAME}&per_page=100&page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${env.GITHUB_PAT}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      });
-
-      lastRateLimit = this.extractRateLimit(res.headers);
-
-      if (!res.ok) break;
-
-      const commitList: GitHubCommit[] = await res.json();
-      if (commitList.length === 0) break;
-
-      for (const commit of commitList) {
-        await this.upsertCommit(db, repo.id, commit);
-      }
-
-      page++;
-    }
-
-    return lastRateLimit;
-  }
-
-  private async upsertCommit(db: DB, repoId: number, commit: GitHubCommit) {
-    await db
-      .insert(commits)
-      .values({
-        sha: commit.sha,
-        repoId,
-        message: commit.commit.message,
-        authorDate: commit.commit.author.date,
-        additions: commit.stats?.additions || 0,
-        deletions: commit.stats?.deletions || 0,
-        filesChanged: commit.files?.length || 0,
-      })
-      .onConflictDoNothing();
-  }
-
-  private async fetchAndStorePRs(env: WorkflowEnv, db: DB, repo: Repo): Promise<RateLimitInfo> {
-    let page = 1;
-    let lastRateLimit: RateLimitInfo = { remaining: 5000, limit: 5000, resetAt: 0 };
-
-    while (true) {
-      const res = await fetch(`${GITHUB_API}/repos/${repo.fullName}/pulls?state=all&per_page=100&page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${env.GITHUB_PAT}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      });
-
-      lastRateLimit = this.extractRateLimit(res.headers);
-
-      if (!res.ok) break;
-
-      const prs: Array<GitHubPR & { user: { login: string } }> = await res.json();
-      if (prs.length === 0) break;
-
-      // Filter to only PRs authored by eve0415
-      const myPRs = prs.filter(pr => pr.user.login.toLowerCase() === GITHUB_USERNAME.toLowerCase());
-
-      for (const pr of myPRs) {
-        await this.upsertPR(db, repo.id, pr);
-      }
-
-      page++;
-    }
-
-    return lastRateLimit;
-  }
-
-  private async upsertPR(db: DB, repoId: number, pr: GitHubPR) {
-    await db
-      .insert(pullRequests)
-      .values({
-        githubId: pr.id,
-        repoId,
-        number: pr.number,
-        title: pr.title,
-        body: pr.body,
-        state: pr.state,
-        merged: pr.merged,
-        additions: pr.additions,
-        deletions: pr.deletions,
-        changedFiles: pr.changed_files,
-        commitsCount: pr.commits,
-        commentsCount: pr.comments,
-        reviewCommentsCount: pr.review_comments,
-        createdAt: pr.created_at,
-        mergedAt: pr.merged_at,
-        closedAt: pr.closed_at,
-      })
-      .onConflictDoUpdate({
-        target: pullRequests.githubId,
-        set: {
-          state: pr.state,
-          merged: pr.merged,
-          mergedAt: pr.merged_at,
-          closedAt: pr.closed_at,
-          fetchedAt: sql`datetime('now')`,
-        },
-      });
-  }
-
-  private async fetchAndStoreReviews(env: WorkflowEnv, db: DB): Promise<RateLimitInfo> {
-    // Use search API to find all reviews by user
-    let page = 1;
-    let lastRateLimit: RateLimitInfo = { remaining: 5000, limit: 5000, resetAt: 0 };
-
-    while (true) {
-      const res = await fetch(`${GITHUB_API}/search/issues?q=reviewed-by:${GITHUB_USERNAME}+is:pr&per_page=100&page=${page}`, {
-        headers: {
-          Authorization: `Bearer ${env.GITHUB_PAT}`,
-          Accept: 'application/vnd.github+json',
-          'X-GitHub-Api-Version': '2022-11-28',
-        },
-      });
-
-      lastRateLimit = this.extractRateLimit(res.headers);
-
-      if (!res.ok) break;
-
-      const data: { items: Array<{ number: number; title: string; repository_url: string }> } = await res.json();
-      if (data.items.length === 0) break;
-
-      for (const item of data.items) {
-        // Extract repo info from repository_url
-        const repoMatch = /repos\/(.+)$/.exec(item.repository_url);
-        if (!repoMatch?.[1]) continue;
-
-        const repoFullName = repoMatch[1];
-
-        // Fetch actual reviews for this PR
-        const reviewsRes = await fetch(`${GITHUB_API}/repos/${repoFullName}/pulls/${item.number}/reviews`, {
-          headers: {
-            Authorization: `Bearer ${env.GITHUB_PAT}`,
-            Accept: 'application/vnd.github+json',
-            'X-GitHub-Api-Version': '2022-11-28',
-          },
-        });
-
-        if (!reviewsRes.ok) continue;
-
-        const reviews: Array<GitHubReview & { user: { login: string } }> = await reviewsRes.json();
-        const myReviews = reviews.filter(r => r.user.login.toLowerCase() === GITHUB_USERNAME.toLowerCase() && r.state !== 'PENDING');
-
-        // Find repo in DB
-        const repo = await db.select({ id: repos.id }).from(repos).where(eq(repos.fullName, repoFullName)).get();
-
-        if (!repo) continue;
-
-        for (const review of myReviews) {
-          await this.upsertReview(db, repo.id, item.number, item.title, review);
-        }
-      }
-
-      page++;
-    }
-
-    return lastRateLimit;
-  }
-
-  private async upsertReview(db: DB, repoId: number, prNumber: number, prTitle: string, review: GitHubReview) {
-    // Filter valid states for the enum
-    const validStates = ['APPROVED', 'CHANGES_REQUESTED', 'COMMENTED'] as const;
-    if (!validStates.includes(review.state as (typeof validStates)[number])) return;
-
-    await db
-      .insert(prReviews)
-      .values({
-        githubId: review.id,
-        repoId,
-        prNumber,
-        prTitle,
-        state: review.state as 'APPROVED' | 'CHANGES_REQUESTED' | 'COMMENTED',
-        body: review.body,
-        submittedAt: review.submitted_at,
-      })
-      .onConflictDoNothing();
-  }
-
   private async squashHistory(db: DB): Promise<string> {
     // Get aggregate stats
     const [commitCount, prCount, reviewCount, reposWithCommits] = await Promise.all([
@@ -451,9 +687,9 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     ]);
 
     const stats = {
-      total_commits: commitCount?.count || 0,
-      total_prs: prCount?.count || 0,
-      total_reviews: reviewCount?.count || 0,
+      total_commits: commitCount?.count ?? 0,
+      total_prs: prCount?.count ?? 0,
+      total_reviews: reviewCount?.count ?? 0,
       repos_with_commits: reposWithCommits.length,
     };
 
@@ -511,7 +747,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       .where(inArray(repos.privacyClass, ['private', 'member-org']))
       .all();
 
-    const privateNames = privateRepos.map(r => r.fullName);
+    const privateNames = privateRepos.map((r: { fullName: string }) => r.fullName);
 
     let summary = `# GitHub Activity Summary for ${GITHUB_USERNAME}
 
@@ -522,16 +758,16 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
 - Repositories with commits: ${stats.repos_with_commits}
 
 ## Language Distribution (by lines changed)
-${languages.map(l => `- ${l.language}: ${l.commit_count} commits, ${l.lines_changed} lines`).join('\n')}
+${languages.map((l: { language: string | null; commit_count: number; lines_changed: string | number | null }) => `- ${l.language}: ${l.commit_count} commits, ${l.lines_changed} lines`).join('\n')}
 
 ## Recent Activity (Last 6 Months)
-${recentActivity.map(a => `- ${a.language || 'Unknown'}: ${a.commits} commits (${a.privacy_class})`).join('\n')}
+${recentActivity.map((a: { language: string | null; commits: number; privacy_class: string }) => `- ${a.language ?? 'Unknown'}: ${a.commits} commits (${a.privacy_class})`).join('\n')}
 
 ## PR Patterns
-${prPatterns.map(p => `- ${p.state}${p.merged ? ' (merged)' : ''}: ${p.count} PRs, avg ${Math.round(p.avg_changes)} lines`).join('\n')}
+${prPatterns.map((p: { state: string; merged: boolean; avg_changes: number; count: number }) => `- ${p.state}${p.merged ? ' (merged)' : ''}: ${p.count} PRs, avg ${Math.round(p.avg_changes)} lines`).join('\n')}
 
 ## Review Patterns
-${reviewPatterns.map(r => `- ${r.state}: ${r.count} reviews`).join('\n')}
+${reviewPatterns.map((r: { state: string; count: number }) => `- ${r.state}: ${r.count} reviews`).join('\n')}
 `;
 
     // Sanitize for privacy
@@ -544,7 +780,7 @@ ${reviewPatterns.map(r => `- ${r.state}: ${r.count} reviews`).join('\n')}
         summaryType: 'overall',
         timeRange: 'all',
         content: summary,
-        tokenEstimate: Math.ceil(summary.length / 4), // Rough token estimate
+        tokenEstimate: Math.ceil(summary.length / 4),
       })
       .onConflictDoUpdate({
         target: [historySummaries.summaryType, historySummaries.timeRange],
@@ -558,7 +794,7 @@ ${reviewPatterns.map(r => `- ${r.state}: ${r.count} reviews`).join('\n')}
     return summary;
   }
 
-  private async extractSkillsWithAI(env: WorkflowEnv, summary: string): Promise<AISkill[]> {
+  private async extractSkillsWithAI(summary: string): Promise<AISkill[]> {
     const prompt = `You are analyzing a developer's GitHub activity to extract their skills. Be BRUTALLY HONEST about skill levels - don't inflate. Base assessments purely on evidence.
 
 ${summary}
@@ -576,13 +812,13 @@ If there's little evidence, confidence should be low.
 
 Output as JSON array of skills. Nothing else.`;
 
-    const response = await env.AI.run('@cf/qwen/qwen3-30b-a3b-fp8', {
+    const response = await this.env.AI.run('@cf/qwen/qwen3-30b-a3b-fp8', {
       prompt,
       max_tokens: 4096,
     });
 
     // Parse AI response
-    const text = typeof response === 'string' ? response : (response as { response?: string }).response || '';
+    const text = typeof response === 'string' ? response : ((response as { response?: string }).response ?? '');
 
     // Extract JSON from response (AI might include markdown)
     const jsonMatch = /\[[\s\S]*\]/.exec(text);
@@ -595,13 +831,13 @@ Output as JSON array of skills. Nothing else.`;
     // Mark all as AI-discovered, add placeholders for Japanese
     return skills.map(s => ({
       ...s,
-      description_ja: '', // Will be filled in next step
+      description_ja: '',
       last_active: new Date().toISOString(),
       is_ai_discovered: true,
     }));
   }
 
-  private async generateJapaneseDescriptions(env: WorkflowEnv, db: DB, skills: AISkill[], summary: string): Promise<AISkillsContent> {
+  private async generateJapaneseDescriptions(db: DB, skills: AISkill[], summary: string): Promise<AISkillsContent> {
     // Generate descriptions for each skill
     for (const skill of skills) {
       const prompt = `あなたはプロフェッショナルなテクニカルライターです。以下のスキル情報を元に、日本語でスキルの説明文を書いてください。
@@ -620,13 +856,18 @@ Output as JSON array of skills. Nothing else.`;
 
 説明文だけを出力してください。`;
 
-      const response = await env.AI.run('@cf/google/gemma-3-12b-it', {
-        prompt,
-        max_tokens: 512,
-      });
+      try {
+        const response = await this.env.AI.run('@cf/google/gemma-3-12b-it', {
+          prompt,
+          max_tokens: 512,
+        });
 
-      const text = typeof response === 'string' ? response : (response as { response?: string }).response || '';
-      skill.description_ja = text.trim();
+        const text = typeof response === 'string' ? response : ((response as { response?: string }).response ?? '');
+        skill.description_ja = text.trim();
+      } catch (error) {
+        console.error(`Error generating Japanese for skill ${skill.name}:`, error);
+        skill.description_ja = `${skill.name}のスキル`;
+      }
     }
 
     // Generate profile summary
@@ -641,15 +882,14 @@ ${summary}
 
 JSONのみ出力してください。`;
 
-    const profileResponse = await env.AI.run('@cf/google/gemma-3-12b-it', {
-      prompt: profilePrompt,
-      max_tokens: 1024,
-    });
-
-    const profileText = typeof profileResponse === 'string' ? profileResponse : (profileResponse as { response?: string }).response || '';
-
     let profile: AIProfileSummary;
     try {
+      const profileResponse = await this.env.AI.run('@cf/google/gemma-3-12b-it', {
+        prompt: profilePrompt,
+        max_tokens: 1024,
+      });
+
+      const profileText = typeof profileResponse === 'string' ? profileResponse : ((profileResponse as { response?: string }).response ?? '');
       const jsonMatch = /\{[\s\S]*\}/.exec(profileText);
       if (jsonMatch) {
         const parsed = JSON.parse(jsonMatch[0]);
@@ -682,28 +922,44 @@ JSONのみ出力してください。`;
       skills,
       generated_at: new Date().toISOString(),
       model_used: '@cf/qwen/qwen3-30b-a3b-fp8',
-      total_commits_analyzed: commitCount?.count || 0,
-      total_prs_analyzed: prCount?.count || 0,
-      total_reviews_analyzed: reviewCount?.count || 0,
+      total_commits_analyzed: commitCount?.count ?? 0,
+      total_prs_analyzed: prCount?.count ?? 0,
+      total_reviews_analyzed: reviewCount?.count ?? 0,
     };
 
     // Store profile to KV
-    await env.CACHE.put('ai_profile_summary_ja', JSON.stringify(profile), {
-      expirationTtl: 60 * 60 * 24 * 30, // 30 days
+    await this.env.CACHE.put('ai_profile_summary_ja', JSON.stringify(profile), {
+      expirationTtl: 60 * 60 * 24 * 30,
     });
 
     return content;
   }
 
-  private async storeResults(env: WorkflowEnv, db: DB, content: AISkillsContent) {
-    await env.CACHE.put('ai_skills_content_ja', JSON.stringify(content), {
-      expirationTtl: 60 * 60 * 24 * 30, // 30 days
+  private async createFallbackContent(db: DB, skills: AISkill[]): Promise<AISkillsContent> {
+    const [commitCount, prCount, reviewCount] = await Promise.all([
+      db.select({ count: count() }).from(commits).get(),
+      db.select({ count: count() }).from(pullRequests).get(),
+      db.select({ count: count() }).from(prReviews).get(),
+    ]);
+
+    return {
+      skills,
+      generated_at: new Date().toISOString(),
+      model_used: '@cf/qwen/qwen3-30b-a3b-fp8',
+      total_commits_analyzed: commitCount?.count ?? 0,
+      total_prs_analyzed: prCount?.count ?? 0,
+      total_reviews_analyzed: reviewCount?.count ?? 0,
+    };
+  }
+
+  private async storeResults(db: DB, content: AISkillsContent) {
+    await this.env.CACHE.put('ai_skills_content_ja', JSON.stringify(content), {
+      expirationTtl: 60 * 60 * 24 * 30,
     });
 
-    // Also store workflow state snapshot
     const state = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
-    await env.CACHE.put('ai_skills_state', JSON.stringify(state), {
-      expirationTtl: 60 * 60 * 24, // 1 day
+    await this.env.CACHE.put('ai_skills_state', JSON.stringify(state), {
+      expirationTtl: 60 * 60 * 24,
     });
   }
 }

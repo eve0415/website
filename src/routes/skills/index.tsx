@@ -1,5 +1,5 @@
+import type { AISkill, AISkillsState } from '#workflows/-utils/ai-skills-types';
 import type { Skill } from './-config/skills-config';
-import type { AISkill, AISkillsState } from './-utils/ai-skills-types';
 import type { FC } from 'react';
 
 import { Link, createFileRoute } from '@tanstack/react-router';

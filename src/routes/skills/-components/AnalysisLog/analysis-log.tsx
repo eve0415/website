@@ -1,11 +1,11 @@
 // AnalysisLog - Terminal-style progress widget for workflow status
 
-import type { WorkflowPhase, WorkflowState } from '../../-utils/ai-skills-types';
+import type { WorkflowPhase, WorkflowState } from '#workflows/-utils/ai-skills-types';
 import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';
 
-import { canShowRepoName } from '../../-utils/privacy-filter';
+import { canShowRepoName } from '#workflows/-utils/privacy-filter';
 
 interface Props {
   state: WorkflowState;

@@ -1,6 +1,6 @@
 // Server function to load AI skills data from KV
 
-import type { AIProfileSummary, AISkillsContent, AISkillsState, WorkflowState } from './ai-skills-types';
+import type { AIProfileSummary, AISkillsContent, AISkillsState, WorkflowState } from '#workflows/-utils/ai-skills-types';
 
 import { createServerFn } from '@tanstack/react-start';
 import { env } from 'cloudflare:workers';

@@ -1,6 +1,6 @@
 // AISkillPanel - Expandable panel with typewriter effect for AI skill details
 
-import type { AISkill } from '../../-utils/ai-skills-types';
+import type { AISkill } from '#workflows/-utils/ai-skills-types';
 import type { FC } from 'react';
 
 import { useTypewriter } from './useTypewriter';

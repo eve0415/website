@@ -1,5 +1,5 @@
+import type { AISkill } from '#workflows/-utils/ai-skills-types';
 import type { Skill } from '../../-config/skills-config';
-import type { AISkill } from '../../-utils/ai-skills-types';
 import type { MaterializePhase } from './useNodeMaterialize';
 import type { FC } from 'react';
 
