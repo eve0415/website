@@ -50,10 +50,10 @@ const ApiCspReportRoute = ApiCspReportRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/api/csp-report': typeof ApiCspReportRoute
-  '/link': typeof LinkIndexRoute
-  '/projects': typeof ProjectsIndexRoute
-  '/skills': typeof SkillsIndexRoute
-  '/sys': typeof SysIndexRoute
+  '/link/': typeof LinkIndexRoute
+  '/projects/': typeof ProjectsIndexRoute
+  '/skills/': typeof SkillsIndexRoute
+  '/sys/': typeof SysIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -77,10 +77,10 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/api/csp-report'
-    | '/link'
-    | '/projects'
-    | '/skills'
-    | '/sys'
+    | '/link/'
+    | '/projects/'
+    | '/skills/'
+    | '/sys/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/api/csp-report' | '/link' | '/projects' | '/skills' | '/sys'
   id:
@@ -114,28 +114,28 @@ declare module '@tanstack/react-router' {
     '/sys/': {
       id: '/sys/'
       path: '/sys'
-      fullPath: '/sys'
+      fullPath: '/sys/'
       preLoaderRoute: typeof SysIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/skills/': {
       id: '/skills/'
       path: '/skills'
-      fullPath: '/skills'
+      fullPath: '/skills/'
       preLoaderRoute: typeof SkillsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/projects/': {
       id: '/projects/'
       path: '/projects'
-      fullPath: '/projects'
+      fullPath: '/projects/'
       preLoaderRoute: typeof ProjectsIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/link/': {
       id: '/link/'
       path: '/link'
-      fullPath: '/link'
+      fullPath: '/link/'
       preLoaderRoute: typeof LinkIndexRouteImport
       parentRoute: typeof rootRouteImport
     }

@@ -24,7 +24,7 @@
   },
 
   "triggers": {
-    "crons": ["0 * * * *"]
+    "crons": ["0 * * * *", "30 18 * * 6"]
   },
 
   "kv_namespaces": [
@@ -41,6 +41,27 @@
   "send_email": [
     {
       "name": "CONTACT_EMAIL"
+    }
+  ],
+
+  "ai": {
+    "binding": "AI"
+  },
+
+  "d1_databases": [
+    {
+      "binding": "SKILLS_DB",
+      "database_name": "skills-history",
+      "database_id": "245ac084-56b9-40b1-9494-2d1c9481f056",
+      "migrations_dir": "./migrations"
+    }
+  ],
+
+  "workflows": [
+    {
+      "name": "skills-analysis",
+      "binding": "SKILLS_WORKFLOW",
+      "class_name": "SkillsAnalysisWorkflow"
     }
   ]
 }

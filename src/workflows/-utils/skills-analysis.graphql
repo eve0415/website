@@ -1,0 +1,119 @@
+query UserRepos($cursor: String) {
+  rateLimit {
+    remaining
+    cost
+    resetAt
+  }
+  viewer {
+    email
+    repositories(first: 100, after: $cursor, ownerAffiliations: [OWNER, ORGANIZATION_MEMBER]) {
+      nodes {
+        id
+        databaseId
+        name
+        nameWithOwner
+        isPrivate
+        isFork
+        defaultBranchRef {
+          name
+        }
+        primaryLanguage {
+          name
+        }
+        createdAt
+        updatedAt
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}
+
+query RepoCommits($owner: String!, $name: String!, $since: GitTimestamp, $cursor: String) {
+  rateLimit {
+    remaining
+    cost
+    resetAt
+  }
+  repository(owner: $owner, name: $name) {
+    defaultBranchRef {
+      target {
+        ... on Commit {
+          history(first: 100, since: $since, after: $cursor) {
+            nodes {
+              oid
+              messageHeadline
+              committedDate
+              additions
+              deletions
+              changedFilesIfAvailable
+              author {
+                email
+              }
+            }
+            pageInfo {
+              hasNextPage
+              endCursor
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+query RepoPullRequests($owner: String!, $name: String!, $cursor: String) {
+  rateLimit {
+    remaining
+    cost
+    resetAt
+  }
+  repository(owner: $owner, name: $name) {
+    pullRequests(first: 50, orderBy: { field: UPDATED_AT, direction: DESC }, after: $cursor) {
+      nodes {
+        id
+        databaseId
+        number
+        title
+        state
+        body
+        merged
+        additions
+        deletions
+        changedFiles
+        commits {
+          totalCount
+        }
+        createdAt
+        mergedAt
+        closedAt
+        updatedAt
+        author {
+          login
+        }
+        reviews(first: 50) {
+          nodes {
+            id
+            databaseId
+            state
+            body
+            submittedAt
+            author {
+              login
+            }
+          }
+          pageInfo {
+            hasNextPage
+            endCursor
+          }
+        }
+      }
+      pageInfo {
+        hasNextPage
+        endCursor
+      }
+    }
+  }
+}

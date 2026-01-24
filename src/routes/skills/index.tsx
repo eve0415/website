@@ -1,13 +1,31 @@
+import type { AISkill, AISkillsState } from '#workflows/-utils/ai-skills-types';
 import type { Skill } from './-config/skills-config';
 import type { FC } from 'react';
 
 import { Link, createFileRoute } from '@tanstack/react-router';
+import { useState } from 'react';
 
+import AISkillPanel from './-components/AISkillPanel/ai-skill-panel';
+import AnalysisLog from './-components/AnalysisLog/analysis-log';
 import SkillCard from './-components/SkillCard/skill-card';
 import SkillsVisualization from './-components/SkillsVisualization/skills-visualization';
 import { categoryIcons, categoryLabels, levelConfig, skills } from './-config/skills-config';
+import { loadAISkillsState } from './-utils/ai-skills-loader';
 
 const SkillsPage: FC = () => {
+  const loaderData = Route.useLoaderData();
+  const [selectedSkillName, setSelectedSkillName] = useState<string | null>(null);
+
+  const aiSkillsState: AISkillsState = loaderData;
+  const aiSkills = aiSkillsState.content?.skills || [];
+  const workflowState = aiSkillsState.workflow;
+
+  // Find selected AI skill for panel display
+  const selectedAISkill = aiSkills.find(s => s.name === selectedSkillName) || null;
+
+  // Show analysis log when workflow is running
+  const isWorkflowActive = workflowState.phase !== 'idle' && workflowState.phase !== 'completed' && workflowState.phase !== 'error';
+
   const groupedSkills = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
     const category = skill.category;
     if (!acc[category]) {
@@ -16,6 +34,25 @@ const SkillsPage: FC = () => {
     acc[category].push(skill);
     return acc;
   }, {});
+
+  // Group AI-discovered skills by category
+  const aiDiscoveredSkills = aiSkills.filter(s => s.is_ai_discovered);
+  const groupedAISkills = aiDiscoveredSkills.reduce<Record<string, AISkill[]>>((acc, skill) => {
+    const category = skill.category;
+    if (!acc[category]) {
+      acc[category] = [];
+    }
+    acc[category].push(skill);
+    return acc;
+  }, {});
+
+  const handleNodeSelect = (skillName: string | null) => {
+    setSelectedSkillName(skillName);
+  };
+
+  const handlePanelClose = () => {
+    setSelectedSkillName(null);
+  };
 
   return (
     <main className='min-h-dvh px-6 py-24 md:px-12'>
@@ -27,6 +64,14 @@ const SkillsPage: FC = () => {
         </Link>
         <h1 className='animate-fade-in-up text-4xl font-bold tracking-tight md:text-5xl'>Skills Matrix</h1>
         <p className='text-muted-foreground mt-4'>技術スタック</p>
+
+        {/* AI Profile Summary */}
+        {aiSkillsState.profile && (
+          <div className='border-fuchsia/20 bg-surface/50 mt-6 rounded-lg border p-4'>
+            <p className='text-foreground text-sm leading-relaxed'>{aiSkillsState.profile.summary_ja}</p>
+            {aiSkillsState.profile.activity_narrative_ja && <p className='text-muted-foreground mt-2 text-xs'>{aiSkillsState.profile.activity_narrative_ja}</p>}
+          </div>
+        )}
       </header>
 
       {/* Legend */}
@@ -45,11 +90,18 @@ const SkillsPage: FC = () => {
             </div>
           );
         })}
+        {aiDiscoveredSkills.length > 0 && (
+          <div className='flex items-center gap-2'>
+            <span className='bg-fuchsia size-3 rounded-full' />
+            <span className='text-subtle-foreground text-sm'>AI発見</span>
+            <span className='text-fuchsia font-mono text-xs'>({aiDiscoveredSkills.length})</span>
+          </div>
+        )}
       </div>
 
       {/* Skills Visualization */}
       <section className='mb-16'>
-        <SkillsVisualization />
+        <SkillsVisualization aiSkills={aiSkills} selectedSkillId={selectedSkillName} onNodeSelect={handleNodeSelect} />
       </section>
 
       {/* Skills Grid by Category */}
@@ -63,6 +115,25 @@ const SkillsPage: FC = () => {
             <div className='space-y-3'>
               {groupedSkills[category]?.map((skill, index) => (
                 <SkillCard key={skill.name} skill={skill} index={index} />
+              ))}
+
+              {/* AI-discovered skills in this category */}
+              {groupedAISkills[category]?.map((aiSkill, index) => (
+                <button
+                  type='button'
+                  key={aiSkill.name}
+                  onClick={() => setSelectedSkillName(aiSkill.name)}
+                  className='group border-fuchsia/20 hover:border-fuchsia/50 hover:bg-fuchsia/5 flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-all'
+                >
+                  <div className='flex-1'>
+                    <div className='flex items-center gap-2'>
+                      <span className='text-fuchsia ai-glow font-medium'>{aiSkill.name}</span>
+                      <span className='bg-fuchsia/20 text-fuchsia rounded px-1.5 py-0.5 text-xs'>AI</span>
+                    </div>
+                    <p className='text-muted-foreground mt-1 line-clamp-1 text-xs'>{aiSkill.description_ja}</p>
+                  </div>
+                  <span className='text-subtle-foreground group-hover:text-fuchsia text-xs transition-colors'>{index + 1}</span>
+                </button>
               ))}
             </div>
           </section>
@@ -105,10 +176,17 @@ const SkillsPage: FC = () => {
           <span className='transition-transform group-hover:translate-x-1'>→</span>
         </Link>
       </div>
+
+      {/* AI Skill Panel (expandable) */}
+      {selectedAISkill && <AISkillPanel skill={selectedAISkill} isExpanded={true} onClose={handlePanelClose} />}
+
+      {/* Analysis Log (workflow progress) */}
+      {isWorkflowActive && <AnalysisLog state={workflowState} />}
     </main>
   );
 };
 
 export const Route = createFileRoute('/skills/')({
   component: SkillsPage,
+  loader: () => loadAISkillsState(),
 });
