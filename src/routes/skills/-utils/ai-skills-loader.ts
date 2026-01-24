@@ -5,31 +5,35 @@ import type { AIProfileSummary, AISkillsContent, AISkillsState, WorkflowState } 
 import { createServerFn } from '@tanstack/react-start';
 import { env } from 'cloudflare:workers';
 import { eq } from 'drizzle-orm';
+import { drizzle } from 'drizzle-orm/d1';
 
+import * as schema from '#db/schema';
 import { workflowState } from '#db/schema';
 
-/**
- * Load AI-generated skills content from KV
- */
-export const loadAISkillsContent = createServerFn().handler(async (): Promise<AISkillsContent | null> => {
-  const content = await env.CACHE.get<AISkillsContent>('ai_skills_content_ja', 'json');
-  return content;
-});
+type DB = ReturnType<typeof drizzle<typeof schema>>;
+
+// Exported handlers for testing - separated from server function wrappers
 
 /**
- * Load AI-generated profile summary from KV
+ * Handler: Load AI-generated skills content from KV
  */
-export const loadAIProfileSummary = createServerFn().handler(async (): Promise<AIProfileSummary | null> => {
-  const profile = await env.CACHE.get<AIProfileSummary>('ai_profile_summary_ja', 'json');
-  return profile;
-});
+export async function loadAISkillsContentHandler(kv: KVNamespace): Promise<AISkillsContent | null> {
+  return await kv.get<AISkillsContent>('ai_skills_content_ja', 'json');
+}
 
 /**
- * Load workflow state from KV (cached) or D1 (fresh)
+ * Handler: Load AI-generated profile summary from KV
  */
-export const loadWorkflowState = createServerFn().handler(async ({ context: { db } }): Promise<WorkflowState> => {
+export async function loadAIProfileSummaryHandler(kv: KVNamespace): Promise<AIProfileSummary | null> {
+  return await kv.get<AIProfileSummary>('ai_profile_summary_ja', 'json');
+}
+
+/**
+ * Handler: Load workflow state from KV (cached) or D1 (fresh)
+ */
+export async function loadWorkflowStateHandler(kv: KVNamespace, db: DB): Promise<WorkflowState> {
   // Try KV cache first
-  const cached = await env.CACHE.get<WorkflowState>('ai_skills_state', 'json');
+  const cached = await kv.get<WorkflowState>('ai_skills_state', 'json');
   if (cached) {
     return cached;
   }
@@ -61,16 +65,16 @@ export const loadWorkflowState = createServerFn().handler(async ({ context: { db
     last_completed_at: state.lastCompletedAt,
     error_message: state.errorMessage,
   };
-});
+}
 
 /**
- * Load complete AI skills state (content + profile + workflow)
+ * Handler: Load complete AI skills state (content + profile + workflow)
  */
-export const loadAISkillsState = createServerFn().handler(async ({ context: { db } }): Promise<AISkillsState> => {
+export async function loadAISkillsStateHandler(kv: KVNamespace, db: DB): Promise<AISkillsState> {
   const [content, profile, workflow] = await Promise.all([
-    env.CACHE.get<AISkillsContent>('ai_skills_content_ja', 'json'),
-    env.CACHE.get<AIProfileSummary>('ai_profile_summary_ja', 'json'),
-    env.CACHE.get<WorkflowState>('ai_skills_state', 'json'),
+    kv.get<AISkillsContent>('ai_skills_content_ja', 'json'),
+    kv.get<AIProfileSummary>('ai_profile_summary_ja', 'json'),
+    kv.get<WorkflowState>('ai_skills_state', 'json'),
   ]);
 
   // Get fresh workflow state from D1 if not cached
@@ -108,13 +112,15 @@ export const loadAISkillsState = createServerFn().handler(async ({ context: { db
     profile,
     workflow: workflowResult,
   };
-});
+}
 
 /**
- * Manually trigger the skills analysis workflow
- * Protected - only works in development or with proper auth
+ * Handler: Manually trigger the skills analysis workflow
  */
-export const triggerSkillsAnalysis = createServerFn().handler(async ({ context: { db } }): Promise<{ success: boolean; message: string }> => {
+export async function triggerSkillsAnalysisHandler(
+  db: DB,
+  workflowBinding: { create: () => Promise<unknown> },
+): Promise<{ success: boolean; message: string }> {
   try {
     // Check if already running
     const state = await db.select({ phase: workflowState.phase }).from(workflowState).where(eq(workflowState.id, 1)).get();
@@ -137,7 +143,7 @@ export const triggerSkillsAnalysis = createServerFn().handler(async ({ context: 
       .where(eq(workflowState.id, 1));
 
     // Trigger workflow
-    await env.SKILLS_WORKFLOW.create();
+    await workflowBinding.create();
 
     return {
       success: true,
@@ -150,4 +156,47 @@ export const triggerSkillsAnalysis = createServerFn().handler(async ({ context: 
       message,
     };
   }
+}
+
+// Helper to create DB instance from D1 binding
+export function createDB(d1: D1Database): DB {
+  return drizzle(d1, { schema, casing: 'snake_case' });
+}
+
+// Server functions wrapping the handlers
+
+/**
+ * Load AI-generated skills content from KV
+ */
+export const loadAISkillsContent = createServerFn().handler(async (): Promise<AISkillsContent | null> => {
+  return loadAISkillsContentHandler(env.CACHE);
+});
+
+/**
+ * Load AI-generated profile summary from KV
+ */
+export const loadAIProfileSummary = createServerFn().handler(async (): Promise<AIProfileSummary | null> => {
+  return loadAIProfileSummaryHandler(env.CACHE);
+});
+
+/**
+ * Load workflow state from KV (cached) or D1 (fresh)
+ */
+export const loadWorkflowState = createServerFn().handler(async ({ context: { db } }): Promise<WorkflowState> => {
+  return loadWorkflowStateHandler(env.CACHE, db);
+});
+
+/**
+ * Load complete AI skills state (content + profile + workflow)
+ */
+export const loadAISkillsState = createServerFn().handler(async ({ context: { db } }): Promise<AISkillsState> => {
+  return loadAISkillsStateHandler(env.CACHE, db);
+});
+
+/**
+ * Manually trigger the skills analysis workflow
+ * Protected - only works in development or with proper auth
+ */
+export const triggerSkillsAnalysis = createServerFn().handler(async ({ context: { db } }): Promise<{ success: boolean; message: string }> => {
+  return triggerSkillsAnalysisHandler(db, env.SKILLS_WORKFLOW);
 });
