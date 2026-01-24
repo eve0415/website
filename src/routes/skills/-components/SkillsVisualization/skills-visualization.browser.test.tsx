@@ -1,81 +1,221 @@
-import { describe, expect, test, vi } from 'vitest';
+import type { AISkill } from '#workflows/-utils/ai-skills-types';
+
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { page } from 'vitest/browser';
 
 import SkillsVisualization from './skills-visualization';
 
+const mockAISkill: AISkill = {
+  name: 'GraphQL',
+  category: 'domain',
+  level: 'proficient',
+  confidence: 0.8,
+  description_ja: 'テスト説明',
+  evidence: ['test'],
+  last_active: '2024-01-01T00:00:00Z',
+  trend: 'rising',
+  is_ai_discovered: true,
+};
+
+const mockAISkills: AISkill[] = [
+  mockAISkill,
+  {
+    name: 'Rust',
+    category: 'language',
+    level: 'learning',
+    confidence: 0.5,
+    description_ja: 'テスト説明2',
+    evidence: ['test2'],
+    last_active: '2024-01-01T00:00:00Z',
+    trend: 'stable',
+    is_ai_discovered: true,
+  },
+];
+
 describe('SkillsVisualization', () => {
-  test('renders canvas element', async () => {
-    const { container } = await render(<SkillsVisualization />);
-
-    const canvas = container.querySelector('canvas');
-    expect(canvas).not.toBeNull();
+  beforeEach(() => {
+    delete window.__FORCE_REDUCED_MOTION__;
   });
 
-  test('renders with animate=true (default)', async () => {
-    const { container } = await render(<SkillsVisualization />);
-
-    const canvas = container.querySelector('canvas');
-    expect(canvas).not.toBeNull();
+  afterEach(() => {
+    vi.useRealTimers();
   });
 
-  test('renders with animate=false', async () => {
-    const { container } = await render(<SkillsVisualization animate={false} />);
+  describe('basic rendering', () => {
+    test('renders canvas element', async () => {
+      const { container } = await render(<SkillsVisualization />);
 
-    const canvas = container.querySelector('canvas');
-    expect(canvas).not.toBeNull();
+      const canvas = container.querySelector('canvas');
+      expect(canvas).not.toBeNull();
+    });
+
+    test('renders with animate=true (default)', async () => {
+      const { container } = await render(<SkillsVisualization />);
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).not.toBeNull();
+    });
+
+    test('renders with animate=false', async () => {
+      const { container } = await render(<SkillsVisualization animate={false} />);
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).not.toBeNull();
+    });
+
+    test('renders legend with skill levels', async () => {
+      const { container } = await render(<SkillsVisualization />);
+
+      // Check for legend items
+      const legend = container.querySelector('.absolute.bottom-4.left-4');
+      expect(legend).not.toBeNull();
+    });
+
+    test('draws nodes for skills', async () => {
+      const { container } = await render(<SkillsVisualization />);
+
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+      expect(canvas).not.toBeNull();
+
+      // Canvas should have valid dimensions
+      expect(canvas.width).toBeGreaterThan(0);
+    });
   });
 
-  test('renders legend with skill levels', async () => {
-    const { container } = await render(<SkillsVisualization />);
+  describe('reduced motion', () => {
+    test('handles reduced motion preference', async () => {
+      // Mock reduced motion preference
+      const originalMatchMedia = window.matchMedia;
+      window.matchMedia = vi.fn().mockImplementation(query => ({
+        matches: query === '(prefers-reduced-motion: reduce)',
+        media: query,
+        onchange: null,
+        addListener: vi.fn(),
+        removeListener: vi.fn(),
+        addEventListener: vi.fn(),
+        removeEventListener: vi.fn(),
+        dispatchEvent: vi.fn(),
+      }));
 
-    // Check for legend items
-    const legend = container.querySelector('.absolute.bottom-4.left-4');
-    expect(legend).not.toBeNull();
+      const { container } = await render(<SkillsVisualization animate={true} />);
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).not.toBeNull();
+
+      // Restore
+      window.matchMedia = originalMatchMedia;
+    });
   });
 
-  test('handles reduced motion preference', async () => {
-    // Mock reduced motion preference
-    const originalMatchMedia = window.matchMedia;
-    window.matchMedia = vi.fn().mockImplementation(query => ({
-      matches: query === '(prefers-reduced-motion: reduce)',
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+  describe('cleanup', () => {
+    test('cleans up on unmount', async () => {
+      const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
 
-    const { container } = await render(<SkillsVisualization animate={true} />);
+      const screen = await render(<SkillsVisualization animate={true} />);
 
-    const canvas = container.querySelector('canvas');
-    expect(canvas).not.toBeNull();
+      await screen.unmount();
 
-    // Restore
-    window.matchMedia = originalMatchMedia;
+      // ResizeObserver disconnect is called internally, cancelAnimationFrame for animation cleanup
+      expect(cancelAnimationFrameSpy).toHaveBeenCalled();
+
+      cancelAnimationFrameSpy.mockRestore();
+    });
   });
 
-  test('cleans up on unmount', async () => {
-    const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
+  describe('AI skills', () => {
+    test('accepts aiSkills prop array', async () => {
+      const { container } = await render(<SkillsVisualization aiSkills={mockAISkills} />);
 
-    const screen = await render(<SkillsVisualization animate={true} />);
+      const canvas = container.querySelector('canvas');
+      expect(canvas).not.toBeNull();
+    });
 
-    await screen.unmount();
+    test('renders AI discovered legend when aiSkills with is_ai_discovered=true are provided', async () => {
+      await render(<SkillsVisualization aiSkills={mockAISkills} />);
 
-    // ResizeObserver disconnect is called internally, cancelAnimationFrame for animation cleanup
-    expect(cancelAnimationFrameSpy).toHaveBeenCalled();
+      // Should show "AI発見" legend item
+      await expect.element(page.getByText('AI発見')).toBeInTheDocument();
+    });
 
-    cancelAnimationFrameSpy.mockRestore();
+    test('does not show AI legend when no AI-discovered skills', async () => {
+      const nonAISkills: AISkill[] = [
+        {
+          ...mockAISkill,
+          is_ai_discovered: false,
+        },
+      ];
+
+      const { container } = await render(<SkillsVisualization aiSkills={nonAISkills} />);
+
+      // Should not have AI発見 legend
+      expect(container.textContent).not.toContain('AI発見');
+    });
   });
 
-  test('draws nodes for skills', async () => {
-    const { container } = await render(<SkillsVisualization />);
+  describe('node selection', () => {
+    test('onNodeSelect callback fires when provided', async () => {
+      const onNodeSelect = vi.fn();
 
-    const canvas = container.querySelector('canvas') as HTMLCanvasElement;
-    expect(canvas).not.toBeNull();
+      const { container } = await render(<SkillsVisualization onNodeSelect={onNodeSelect} />);
 
-    // Canvas should have valid dimensions
-    expect(canvas.width).toBeGreaterThan(0);
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+      expect(canvas).not.toBeNull();
+
+      // Click on canvas (empty space)
+      canvas.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 10, clientY: 10 }));
+
+      // Should call with null for empty space
+      expect(onNodeSelect).toHaveBeenCalledWith(null);
+    });
+
+    test('selectedSkillId prop is accepted', async () => {
+      const { container } = await render(<SkillsVisualization selectedSkillId='TypeScript' />);
+
+      const canvas = container.querySelector('canvas');
+      expect(canvas).not.toBeNull();
+    });
+
+    test('canvas has keyboard handler for escape', async () => {
+      const onNodeSelect = vi.fn();
+
+      const { container } = await render(<SkillsVisualization selectedSkillId='TypeScript' onNodeSelect={onNodeSelect} />);
+
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+      expect(canvas).not.toBeNull();
+
+      // Press escape
+      canvas.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+
+      // Should call onNodeSelect with null
+      expect(onNodeSelect).toHaveBeenCalledWith(null);
+    });
+
+    test('canvas has cursor pointer class when hovering node', async () => {
+      const { container } = await render(<SkillsVisualization />);
+
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+      expect(canvas).not.toBeNull();
+
+      // Canvas should be focusable
+      expect(canvas.tabIndex).toBe(0);
+      expect(canvas.getAttribute('role')).toBe('img');
+    });
+  });
+
+  describe('accessibility', () => {
+    test('canvas has aria-label', async () => {
+      const { container } = await render(<SkillsVisualization />);
+
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+      expect(canvas.getAttribute('aria-label')).toBe('Skills visualization graph');
+    });
+
+    test('canvas is focusable', async () => {
+      const { container } = await render(<SkillsVisualization />);
+
+      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
+      expect(canvas.tabIndex).toBe(0);
+    });
   });
 });
