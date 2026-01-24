@@ -32,7 +32,7 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' } }), tailwindcss()],
+        plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' }, remoteBindings: false }), tailwindcss()],
         resolve: {
           alias: {
             // TanStack Start internal subpath imports needed when bundling @tanstack/start-server-core
