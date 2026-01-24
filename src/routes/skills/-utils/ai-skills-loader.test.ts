@@ -1,6 +1,7 @@
 import type { AIProfileSummary, AISkillsContent, WorkflowState } from '#workflows/-utils/ai-skills-types';
 
-import { env } from 'cloudflare:test';
+import { runWithStartContext } from '@tanstack/start-storage-context';
+import { env } from 'cloudflare:workers';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
@@ -8,50 +9,21 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vites
 import * as schema from '#db/schema';
 import { workflowState } from '#db/schema';
 
-// Store original handlers extracted from createServerFn
-let loadAISkillsContentHandler: () => Promise<AISkillsContent | null>;
-let loadAIProfileSummaryHandler: () => Promise<AIProfileSummary | null>;
-let loadWorkflowStateHandler: (args: { context: { db: ReturnType<typeof drizzle<typeof schema>> } }) => Promise<WorkflowState>;
-let loadAISkillsStateHandler: (args: { context: { db: ReturnType<typeof drizzle<typeof schema>> } }) => Promise<{
-  content: AISkillsContent | null;
-  profile: AIProfileSummary | null;
-  workflow: WorkflowState;
-}>;
-let triggerSkillsAnalysisHandler: (args: { context: { db: ReturnType<typeof drizzle<typeof schema>> } }) => Promise<{ success: boolean; message: string }>;
+import { loadAIProfileSummary, loadAISkillsContent, loadAISkillsState, loadWorkflowState, triggerSkillsAnalysis } from './ai-skills-loader';
 
-// Mock createServerFn to extract handlers
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: vi.fn(() => ({
-    handler: vi.fn((fn: (...args: unknown[]) => unknown) => {
-      // Return the handler wrapped in an object so tests can call it
-      return fn;
-    }),
-  })),
-}));
+type DB = ReturnType<typeof drizzle<typeof schema>>;
 
-// Mock SKILLS_WORKFLOW
-const mockWorkflowCreate = vi.fn().mockResolvedValue(undefined);
-vi.mock('cloudflare:workers', async () => {
-  const cloudflareTest = await import('cloudflare:test');
-  return {
-    env: {
-      ...cloudflareTest.env,
-      SKILLS_WORKFLOW: {
-        create: mockWorkflowCreate,
-      },
+const runServerFn = <T>(fn: () => Promise<T>) =>
+  runWithStartContext(
+    {
+      getRouter: () => ({}) as any,
+      request: new Request('http://localhost/test'),
+      startOptions: {},
+      contextAfterGlobalMiddlewares: {},
+      executedRequestMiddlewares: new Set(),
     },
-  };
-});
-
-// Import after mocks are set up
-const aiSkillsLoaderModule = await import('./ai-skills-loader');
-
-// Extract handlers from the module
-loadAISkillsContentHandler = aiSkillsLoaderModule.loadAISkillsContent as unknown as typeof loadAISkillsContentHandler;
-loadAIProfileSummaryHandler = aiSkillsLoaderModule.loadAIProfileSummary as unknown as typeof loadAIProfileSummaryHandler;
-loadWorkflowStateHandler = aiSkillsLoaderModule.loadWorkflowState as unknown as typeof loadWorkflowStateHandler;
-loadAISkillsStateHandler = aiSkillsLoaderModule.loadAISkillsState as unknown as typeof loadAISkillsStateHandler;
-triggerSkillsAnalysisHandler = aiSkillsLoaderModule.triggerSkillsAnalysis as unknown as typeof triggerSkillsAnalysisHandler;
+    () => fn(),
+  );
 
 // SQL migrations
 const MIGRATIONS = [
@@ -69,16 +41,20 @@ const MIGRATIONS = [
 ];
 
 describe('ai-skills-loader', () => {
-  let db: ReturnType<typeof drizzle<typeof schema>>;
+  let db: DB;
+  let workflowCreateSpy: ReturnType<typeof vi.spyOn>;
 
   beforeAll(async () => {
     // Apply migrations
     const statements = MIGRATIONS.map(sql => env.SKILLS_DB.prepare(sql));
     await env.SKILLS_DB.batch(statements);
     db = drizzle(env.SKILLS_DB, { schema, casing: 'snake_case' });
+
+    workflowCreateSpy = vi.spyOn(env.SKILLS_WORKFLOW, 'create').mockResolvedValue({} as Awaited<ReturnType<typeof env.SKILLS_WORKFLOW.create>>);
   });
 
   afterAll(async () => {
+    workflowCreateSpy.mockRestore();
     await env.SKILLS_DB.prepare('DROP TABLE IF EXISTS workflow_state').run();
   });
 
@@ -120,13 +96,13 @@ describe('ai-skills-loader', () => {
 
       await env.CACHE.put('ai_skills_content_ja', JSON.stringify(mockContent));
 
-      const result = await loadAISkillsContentHandler();
+      const result = await runServerFn(() => loadAISkillsContent());
 
       expect(result).toEqual(mockContent);
     });
 
     it('returns null when KV is empty', async () => {
-      const result = await loadAISkillsContentHandler();
+      const result = await runServerFn(() => loadAISkillsContent());
 
       expect(result).toBeNull();
     });
@@ -144,13 +120,13 @@ describe('ai-skills-loader', () => {
 
       await env.CACHE.put('ai_profile_summary_ja', JSON.stringify(mockProfile));
 
-      const result = await loadAIProfileSummaryHandler();
+      const result = await runServerFn(() => loadAIProfileSummary());
 
       expect(result).toEqual(mockProfile);
     });
 
     it('returns null when KV is empty', async () => {
-      const result = await loadAIProfileSummaryHandler();
+      const result = await runServerFn(() => loadAIProfileSummary());
 
       expect(result).toBeNull();
     });
@@ -171,7 +147,7 @@ describe('ai-skills-loader', () => {
 
       await env.CACHE.put('ai_skills_state', JSON.stringify(mockState));
 
-      const result = await loadWorkflowStateHandler({ context: { db } });
+      const result = await runServerFn(() => loadWorkflowState());
 
       expect(result).toEqual(mockState);
     });
@@ -190,7 +166,7 @@ describe('ai-skills-loader', () => {
         errorMessage: null,
       });
 
-      const result = await loadWorkflowStateHandler({ context: { db } });
+      const result = await runServerFn(() => loadWorkflowState());
 
       expect(result.phase).toBe('completed');
       expect(result.progress_pct).toBe(100);
@@ -199,7 +175,7 @@ describe('ai-skills-loader', () => {
     });
 
     it('returns default idle state when both KV and D1 are empty', async () => {
-      const result = await loadWorkflowStateHandler({ context: { db } });
+      const result = await runServerFn(() => loadWorkflowState());
 
       expect(result.phase).toBe('idle');
       expect(result.progress_pct).toBe(0);
@@ -244,7 +220,7 @@ describe('ai-skills-loader', () => {
       await env.CACHE.put('ai_profile_summary_ja', JSON.stringify(mockProfile));
       await env.CACHE.put('ai_skills_state', JSON.stringify(mockWorkflow));
 
-      const result = await loadAISkillsStateHandler({ context: { db } });
+      const result = await runServerFn(() => loadAISkillsState());
 
       expect(result.content).toEqual(mockContent);
       expect(result.profile).toEqual(mockProfile);
@@ -252,7 +228,7 @@ describe('ai-skills-loader', () => {
     });
 
     it('returns null for missing content and profile', async () => {
-      const result = await loadAISkillsStateHandler({ context: { db } });
+      const result = await runServerFn(() => loadAISkillsState());
 
       expect(result.content).toBeNull();
       expect(result.profile).toBeNull();
@@ -275,41 +251,41 @@ describe('ai-skills-loader', () => {
     it('returns error if workflow is already running', async () => {
       await db.update(workflowState).set({ phase: 'fetching-commits' }).where(eq(workflowState.id, 1));
 
-      const result = await triggerSkillsAnalysisHandler({ context: { db } });
+      const result = await runServerFn(() => triggerSkillsAnalysis());
 
       expect(result.success).toBe(false);
       expect(result.message).toContain('already running');
-      expect(mockWorkflowCreate).not.toHaveBeenCalled();
+      expect(workflowCreateSpy).not.toHaveBeenCalled();
     });
 
     it('allows triggering when phase is idle', async () => {
-      const result = await triggerSkillsAnalysisHandler({ context: { db } });
+      const result = await runServerFn(() => triggerSkillsAnalysis());
 
       expect(result.success).toBe(true);
       expect(result.message).toBe('Workflow triggered successfully');
-      expect(mockWorkflowCreate).toHaveBeenCalledTimes(1);
+      expect(workflowCreateSpy).toHaveBeenCalledTimes(1);
     });
 
     it('allows triggering when phase is completed', async () => {
       await db.update(workflowState).set({ phase: 'completed' }).where(eq(workflowState.id, 1));
 
-      const result = await triggerSkillsAnalysisHandler({ context: { db } });
+      const result = await runServerFn(() => triggerSkillsAnalysis());
 
       expect(result.success).toBe(true);
-      expect(mockWorkflowCreate).toHaveBeenCalledTimes(1);
+      expect(workflowCreateSpy).toHaveBeenCalledTimes(1);
     });
 
     it('allows triggering when phase is error', async () => {
       await db.update(workflowState).set({ phase: 'error', errorMessage: 'Previous error' }).where(eq(workflowState.id, 1));
 
-      const result = await triggerSkillsAnalysisHandler({ context: { db } });
+      const result = await runServerFn(() => triggerSkillsAnalysis());
 
       expect(result.success).toBe(true);
-      expect(mockWorkflowCreate).toHaveBeenCalledTimes(1);
+      expect(workflowCreateSpy).toHaveBeenCalledTimes(1);
     });
 
     it('updates state to listing-repos when triggering', async () => {
-      await triggerSkillsAnalysisHandler({ context: { db } });
+      await runServerFn(() => triggerSkillsAnalysis());
 
       const state = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
 
@@ -319,9 +295,9 @@ describe('ai-skills-loader', () => {
     });
 
     it('returns error message on workflow failure', async () => {
-      mockWorkflowCreate.mockRejectedValueOnce(new Error('Workflow service unavailable'));
+      workflowCreateSpy.mockRejectedValueOnce(new Error('Workflow service unavailable'));
 
-      const result = await triggerSkillsAnalysisHandler({ context: { db } });
+      const result = await runServerFn(() => triggerSkillsAnalysis());
 
       expect(result.success).toBe(false);
       expect(result.message).toBe('Workflow service unavailable');

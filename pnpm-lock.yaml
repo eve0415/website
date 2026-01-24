@@ -92,6 +92,9 @@ importers:
       '@tanstack/react-start':
         specifier: ^1.154.12
         version: 1.154.12(react-dom@19.2.3(react@19.2.3))(react@19.2.3)(vite@8.0.0-beta.9(@types/node@25.0.10)(esbuild@0.25.12)(jiti@2.6.1)(tsx@4.21.0)(yaml@2.8.2))
+      '@tanstack/start-storage-context':
+        specifier: ^1.154.12
+        version: 1.154.12
       '@types/node':
         specifier: ^25.0.10
         version: 25.0.10

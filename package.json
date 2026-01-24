@@ -51,6 +51,7 @@
     "@tanstack/react-router": "^1.154.12",
     "@tanstack/react-router-devtools": "^1.154.12",
     "@tanstack/react-start": "^1.154.12",
+    "@tanstack/start-storage-context": "^1.154.12",
     "@types/node": "^25.0.10",
     "@types/react": "^19.2.9",
     "@types/react-dom": "^19.2.3",
