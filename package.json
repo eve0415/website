@@ -17,7 +17,7 @@
     "build": "vite build",
     "generate": "wrangler types && graphql-codegen && drizzle-kit generate",
     "migrate": "wrangler d1 migrations apply --local SKILLS_DB",
-    "migrate:remote": "wrangler d1 migrations apply discope --remote",
+    "migrate:remote": "wrangler d1 migrations apply SKILLS_DB --remote",
     "lint": "oxlint --type-aware --type-check --fix --fix-suggestions --fix-dangerously --report-unused-disable-directives && oxfmt",
     "test": "vitest run --typecheck",
     "test:update": "vitest run --typecheck --update",

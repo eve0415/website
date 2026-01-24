@@ -52,7 +52,7 @@
     {
       "binding": "SKILLS_DB",
       "database_name": "skills-history",
-      "database_id": "placeholder-create-via-wrangler",
+      "database_id": "245ac084-56b9-40b1-9494-2d1c9481f056",
       "migrations_dir": "./migrations"
     }
   ],
