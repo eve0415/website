@@ -74,7 +74,6 @@ const USER_REPOS_QUERY = /* GraphQL */ `
       resetAt
     }
     viewer {
-      email
       repositories(first: 100, after: $cursor, ownerAffiliations: [OWNER, ORGANIZATION_MEMBER]) {
         nodes {
           id
@@ -121,7 +120,9 @@ const REPO_COMMITS_QUERY = /* GraphQL */ `
                 deletions
                 changedFilesIfAvailable
                 author {
-                  email
+                  user {
+                    login
+                  }
                 }
               }
               pageInfo {
@@ -277,13 +278,7 @@ export function calculateDynamicThreshold(metrics: RateLimitMetrics, totalRepos:
   return Math.max(50, Math.min(500, estimatedRequestsNeeded));
 }
 
-/** Check if a commit was authored by the target user */
-export function isAuthoredByUser(authorEmail: string | null | undefined, userEmail: string | null | undefined): boolean {
-  if (!authorEmail || !userEmail) return false;
-  return authorEmail.toLowerCase() === userEmail.toLowerCase();
-}
-
-/** Check if a PR/review was authored by the target user */
+/** Check if a PR/review/commit was authored by the target user */
 export function isPRAuthoredByUser(authorLogin: string | null | undefined): boolean {
   if (!authorLogin) return false;
   return authorLogin.toLowerCase() === GITHUB_USERNAME.toLowerCase();
