@@ -7,7 +7,7 @@ import type { AIProfileSummary, AISkill, AISkillsContent, WorkflowPhase } from '
 import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
 import { WorkflowEntrypoint, type WorkflowEvent, type WorkflowStep } from 'cloudflare:workers';
-import { count, eq, inArray, sql, sum } from 'drizzle-orm';
+import { count, desc, eq, inArray, sql, sum } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 
 import * as schema from '#db/schema';
@@ -694,17 +694,18 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     };
 
     // Get language distribution
+    const linesChanged = sum(sql`${commits.additions} + ${commits.deletions}`);
     const languages = await db
       .select({
         language: repos.language,
         commit_count: count(commits.id),
-        lines_changed: sum(sql`${commits.additions} + ${commits.deletions}`),
+        lines_changed: linesChanged,
       })
       .from(commits)
       .innerJoin(repos, eq(commits.repoId, repos.id))
       .where(sql`${repos.language} IS NOT NULL`)
       .groupBy(repos.language)
-      .orderBy(sql`lines_changed DESC`)
+      .orderBy(desc(linesChanged))
       .limit(20)
       .all();
 
@@ -712,17 +713,18 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     const sixMonthsAgo = new Date();
     sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
 
+    const recentCommitCount = count(commits.id);
     const recentActivity = await db
       .select({
         language: repos.language,
-        commits: count(commits.id),
+        commits: recentCommitCount,
         privacy_class: repos.privacyClass,
       })
       .from(commits)
       .innerJoin(repos, eq(commits.repoId, repos.id))
       .where(sql`${commits.authorDate} > ${sixMonthsAgo.toISOString()}`)
       .groupBy(repos.language, repos.privacyClass)
-      .orderBy(sql`commits DESC`)
+      .orderBy(desc(recentCommitCount))
       .all();
 
     // Get PR patterns
