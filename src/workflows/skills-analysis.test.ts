@@ -3,12 +3,12 @@
 // These tests validate utility functions and database operations.
 
 import { env } from 'cloudflare:test';
-import { eq } from 'drizzle-orm';
+import { count, desc, eq, sql, sum } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import * as schema from '#db/schema';
-import { repos, workflowState } from '#db/schema';
+import { commits, repos, workflowState } from '#db/schema';
 
 import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
 
@@ -444,5 +444,166 @@ describe('KV operations', () => {
       expect(retrieved?.avgRequestsPerRepo).toBe(15);
       expect(retrieved?.lastRunRepoCount).toBe(50);
     });
+  });
+});
+
+describe('squashHistory query patterns', () => {
+  let db: ReturnType<typeof drizzle<typeof schema>>;
+
+  beforeEach(async () => {
+    db = drizzle(env.SKILLS_DB, { schema, casing: 'snake_case' });
+    await db.delete(commits);
+    await db.delete(repos);
+  });
+
+  it('orders languages by lines changed descending', async () => {
+    // Seed repos with different languages
+    await db.insert(repos).values([
+      {
+        githubId: 1,
+        fullName: 'test/ts-repo',
+        name: 'ts-repo',
+        owner: 'test',
+        isPrivate: false,
+        isFork: false,
+        privacyClass: 'self',
+        language: 'TypeScript',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+      },
+      {
+        githubId: 2,
+        fullName: 'test/go-repo',
+        name: 'go-repo',
+        owner: 'test',
+        isPrivate: false,
+        isFork: false,
+        privacyClass: 'self',
+        language: 'Go',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+      },
+      {
+        githubId: 3,
+        fullName: 'test/py-repo',
+        name: 'py-repo',
+        owner: 'test',
+        isPrivate: false,
+        isFork: false,
+        privacyClass: 'self',
+        language: 'Python',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+      },
+    ]);
+
+    const repoRecords = await db.select().from(repos).all();
+    const tsRepo = repoRecords.find(r => r.language === 'TypeScript')!;
+    const goRepo = repoRecords.find(r => r.language === 'Go')!;
+    const pyRepo = repoRecords.find(r => r.language === 'Python')!;
+
+    // Seed commits: TS=1000 lines, Go=5000 lines, Python=100 lines
+    await db.insert(commits).values([
+      { sha: 'ts1', repoId: tsRepo.id, message: 'ts commit', authorDate: '2024-01-01T00:00:00Z', additions: 500, deletions: 500, filesChanged: 10 },
+      { sha: 'go1', repoId: goRepo.id, message: 'go commit 1', authorDate: '2024-01-01T00:00:00Z', additions: 3000, deletions: 1000, filesChanged: 20 },
+      { sha: 'go2', repoId: goRepo.id, message: 'go commit 2', authorDate: '2024-01-02T00:00:00Z', additions: 500, deletions: 500, filesChanged: 5 },
+      { sha: 'py1', repoId: pyRepo.id, message: 'py commit', authorDate: '2024-01-01T00:00:00Z', additions: 50, deletions: 50, filesChanged: 2 },
+    ]);
+
+    // Run the query pattern from squashHistory
+    const linesChanged = sum(sql`${commits.additions} + ${commits.deletions}`);
+    const languages = await db
+      .select({
+        language: repos.language,
+        commit_count: count(commits.id),
+        lines_changed: linesChanged,
+      })
+      .from(commits)
+      .innerJoin(repos, eq(commits.repoId, repos.id))
+      .where(sql`${repos.language} IS NOT NULL`)
+      .groupBy(repos.language)
+      .orderBy(desc(linesChanged))
+      .limit(20)
+      .all();
+
+    // Verify order: Go (5000) > TypeScript (1000) > Python (100)
+    expect(languages.length).toBe(3);
+    expect(languages[0]?.language).toBe('Go');
+    expect(languages[1]?.language).toBe('TypeScript');
+    expect(languages[2]?.language).toBe('Python');
+  });
+
+  it('orders recent activity by commit count descending', async () => {
+    // Seed repos
+    await db.insert(repos).values([
+      {
+        githubId: 10,
+        fullName: 'test/active-repo',
+        name: 'active-repo',
+        owner: 'test',
+        isPrivate: false,
+        isFork: false,
+        privacyClass: 'self',
+        language: 'Rust',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+      },
+      {
+        githubId: 11,
+        fullName: 'test/less-active-repo',
+        name: 'less-active-repo',
+        owner: 'test',
+        isPrivate: false,
+        isFork: false,
+        privacyClass: 'self',
+        language: 'Java',
+        createdAt: '2023-01-01T00:00:00Z',
+        updatedAt: '2024-01-01T00:00:00Z',
+      },
+    ]);
+
+    const repoRecords = await db.select().from(repos).all();
+    const rustRepo = repoRecords.find(r => r.language === 'Rust')!;
+    const javaRepo = repoRecords.find(r => r.language === 'Java')!;
+
+    // Recent date within last 6 months
+    const recentDate = new Date();
+    recentDate.setMonth(recentDate.getMonth() - 1);
+    const recentIso = recentDate.toISOString();
+
+    // Rust: 5 recent commits, Java: 2 recent commits
+    await db.insert(commits).values([
+      { sha: 'rust1', repoId: rustRepo.id, message: 'rust 1', authorDate: recentIso, additions: 10, deletions: 5, filesChanged: 1 },
+      { sha: 'rust2', repoId: rustRepo.id, message: 'rust 2', authorDate: recentIso, additions: 10, deletions: 5, filesChanged: 1 },
+      { sha: 'rust3', repoId: rustRepo.id, message: 'rust 3', authorDate: recentIso, additions: 10, deletions: 5, filesChanged: 1 },
+      { sha: 'rust4', repoId: rustRepo.id, message: 'rust 4', authorDate: recentIso, additions: 10, deletions: 5, filesChanged: 1 },
+      { sha: 'rust5', repoId: rustRepo.id, message: 'rust 5', authorDate: recentIso, additions: 10, deletions: 5, filesChanged: 1 },
+      { sha: 'java1', repoId: javaRepo.id, message: 'java 1', authorDate: recentIso, additions: 10, deletions: 5, filesChanged: 1 },
+      { sha: 'java2', repoId: javaRepo.id, message: 'java 2', authorDate: recentIso, additions: 10, deletions: 5, filesChanged: 1 },
+    ]);
+
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+
+    const recentCommitCount = count(commits.id);
+    const recentActivity = await db
+      .select({
+        language: repos.language,
+        commits: recentCommitCount,
+        privacy_class: repos.privacyClass,
+      })
+      .from(commits)
+      .innerJoin(repos, eq(commits.repoId, repos.id))
+      .where(sql`${commits.authorDate} > ${sixMonthsAgo.toISOString()}`)
+      .groupBy(repos.language, repos.privacyClass)
+      .orderBy(desc(recentCommitCount))
+      .all();
+
+    // Verify order: Rust (5) > Java (2)
+    expect(recentActivity.length).toBe(2);
+    expect(recentActivity[0]?.language).toBe('Rust');
+    expect(recentActivity[0]?.commits).toBe(5);
+    expect(recentActivity[1]?.language).toBe('Java');
+    expect(recentActivity[1]?.commits).toBe(2);
   });
 });
