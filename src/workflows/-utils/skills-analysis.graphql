@@ -5,7 +5,6 @@ query UserRepos($cursor: String) {
     resetAt
   }
   viewer {
-    email
     repositories(first: 100, after: $cursor, ownerAffiliations: [OWNER, ORGANIZATION_MEMBER]) {
       nodes {
         id
@@ -50,7 +49,9 @@ query RepoCommits($owner: String!, $name: String!, $since: GitTimestamp, $cursor
               deletions
               changedFilesIfAvailable
               author {
-                email
+                user {
+                  login
+                }
               }
             }
             pageInfo {

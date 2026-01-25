@@ -23,7 +23,6 @@ import {
   fetchRepoCommits,
   fetchRepoPRs,
   fetchUserRepos,
-  isAuthoredByUser,
   isPRAuthoredByUser,
 } from './-utils/github-graphql';
 import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
@@ -60,7 +59,6 @@ interface SyncState {
     commitsCursor: string | null;
     prsCursor: string | null;
   }>;
-  userEmail: string | null;
   totalRepos: number;
 }
 
@@ -103,7 +101,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       const repoList = await step.do('sync_repos', async () => {
         const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
         await this.updateState(db, 'listing-repos', 5);
-        return await this.syncRepos(db, step, syncState.userEmail);
+        return await this.syncRepos(db, step);
       });
 
       this.totalRepos = repoList.length;
@@ -261,25 +259,18 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
 
     return {
       repos: repoData,
-      userEmail: null, // Will be populated from GraphQL response
       totalRepos: repoData.length,
     };
   }
 
-  private async syncRepos(db: DB, step: WorkflowStep, userEmail: string | null): Promise<Repo[]> {
+  private async syncRepos(db: DB, step: WorkflowStep): Promise<Repo[]> {
     const octokit = createGitHubClient(this.env.GITHUB_PAT);
     const repoList: Repo[] = [];
     let cursor: string | null = null;
-    let fetchedUserEmail = userEmail;
 
     do {
       const { data, rateLimit } = await fetchUserRepos(octokit, cursor);
       this.requestCount++;
-
-      // Capture user email from first response
-      if (!fetchedUserEmail && data.viewer.email) {
-        fetchedUserEmail = data.viewer.email;
-      }
 
       const nodes = data.viewer.repositories.nodes ?? [];
 
@@ -394,8 +385,8 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
         for (const node of commitNodes) {
           if (!node) continue;
 
-          // Filter by user email
-          if (!isAuthoredByUser(node.author?.email, syncState.userEmail)) continue;
+          // Filter by user login
+          if (!isPRAuthoredByUser(node.author?.user?.login)) continue;
 
           // Track latest commit date
           if (!latestCommitDate || node.committedDate > latestCommitDate) {

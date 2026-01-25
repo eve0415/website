@@ -14,7 +14,6 @@ import {
   fetchRepoCommits,
   fetchRepoPRs,
   fetchUserRepos,
-  isAuthoredByUser,
   isPRAuthoredByUser,
 } from './github-graphql';
 
@@ -28,7 +27,6 @@ const mockRateLimitResponse = {
 const mockUserReposResponse = {
   rateLimit: mockRateLimitResponse,
   viewer: {
-    email: 'test@example.com',
     repositories: {
       nodes: [
         {
@@ -66,7 +64,7 @@ const mockCommitsResponse = {
               additions: 50,
               deletions: 10,
               changedFilesIfAvailable: 5,
-              author: { email: 'test@example.com' },
+              author: { user: { login: 'eve0415' } },
             },
           ],
           pageInfo: {
@@ -195,7 +193,6 @@ describe('fetchUserRepos', () => {
     const client = createGitHubClient('test-token');
     const result = await fetchUserRepos(client);
 
-    expect(result.data.viewer.email).toBe('test@example.com');
     expect(result.data.viewer.repositories.nodes).toHaveLength(1);
     expect(result.data.viewer.repositories.nodes?.[0]?.name).toBe('test-repo');
     expect(result.rateLimit.remaining).toBe(4500);
@@ -313,27 +310,6 @@ describe('calculateDynamicThreshold', () => {
     const threshold = calculateDynamicThreshold(DEFAULT_RATE_LIMIT_METRICS, 20, 10);
     // 10 remaining * 12 = 120
     expect(threshold).toBe(120);
-  });
-});
-
-describe('isAuthoredByUser', () => {
-  it('returns true for matching emails (case-insensitive)', () => {
-    expect(isAuthoredByUser('Test@Example.com', 'test@example.com')).toBe(true);
-    expect(isAuthoredByUser('test@example.com', 'TEST@EXAMPLE.COM')).toBe(true);
-  });
-
-  it('returns false for non-matching emails', () => {
-    expect(isAuthoredByUser('other@example.com', 'test@example.com')).toBe(false);
-  });
-
-  it('returns false when authorEmail is null or undefined', () => {
-    expect(isAuthoredByUser(null, 'test@example.com')).toBe(false);
-    expect(isAuthoredByUser(undefined, 'test@example.com')).toBe(false);
-  });
-
-  it('returns false when userEmail is null or undefined', () => {
-    expect(isAuthoredByUser('test@example.com', null)).toBe(false);
-    expect(isAuthoredByUser('test@example.com', undefined)).toBe(false);
   });
 });
 
