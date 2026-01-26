@@ -951,8 +951,10 @@ JSONのみ出力してください。`;
     });
 
     const state = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
-    await this.env.CACHE.put('ai_skills_state', JSON.stringify(state), {
-      expirationTtl: 60 * 60 * 24,
-    });
+    if (state) {
+      await this.env.CACHE.put('ai_skills_state', JSON.stringify(state), {
+        expirationTtl: 60 * 60 * 24,
+      });
+    }
   }
 }

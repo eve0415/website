@@ -96,6 +96,16 @@ describe('ai-skills-loader', () => {
 
       expect(result).toBeNull();
     });
+
+    it('returns null and deletes corrupted KV data', async () => {
+      await env.CACHE.put('ai_skills_content_ja', 'undefined');
+
+      const result = await loadAISkillsContentHandler(env.CACHE);
+
+      expect(result).toBeNull();
+      const stored = await env.CACHE.get('ai_skills_content_ja');
+      expect(stored).toBeNull();
+    });
   });
 
   describe('loadAIProfileSummaryHandler', () => {
@@ -119,6 +129,16 @@ describe('ai-skills-loader', () => {
       const result = await loadAIProfileSummaryHandler(env.CACHE);
 
       expect(result).toBeNull();
+    });
+
+    it('returns null and deletes corrupted KV data', async () => {
+      await env.CACHE.put('ai_profile_summary_ja', 'undefined');
+
+      const result = await loadAIProfileSummaryHandler(env.CACHE);
+
+      expect(result).toBeNull();
+      const stored = await env.CACHE.get('ai_profile_summary_ja');
+      expect(stored).toBeNull();
     });
   });
 
@@ -174,6 +194,40 @@ describe('ai-skills-loader', () => {
       expect(result.current_repo).toBeNull();
       expect(result.error_message).toBeNull();
     });
+
+    it('self-heals corrupted KV by falling back to D1 and rewriting cache', async () => {
+      await env.CACHE.put('ai_skills_state', 'undefined');
+      await db.insert(workflowState).values({
+        id: 1,
+        phase: 'completed',
+        progressPct: 100,
+        currentRepo: null,
+        reposTotal: 15,
+        reposProcessed: 15,
+        lastRunAt: '2024-01-01T00:00:00Z',
+        lastCompletedAt: '2024-01-01T01:00:00Z',
+        errorMessage: null,
+      });
+
+      const result = await loadWorkflowStateHandler(env.CACHE, db);
+
+      expect(result.phase).toBe('completed');
+      expect(result.repos_total).toBe(15);
+
+      // Verify KV was rewritten with valid data
+      const healed = await env.CACHE.get<WorkflowState>('ai_skills_state', 'json');
+      expect(healed?.phase).toBe('completed');
+      expect(healed?.repos_total).toBe(15);
+    });
+
+    it('returns default state when corrupted KV and no D1 data', async () => {
+      await env.CACHE.put('ai_skills_state', 'undefined');
+
+      const result = await loadWorkflowStateHandler(env.CACHE, db);
+
+      expect(result.phase).toBe('idle');
+      expect(result.progress_pct).toBe(0);
+    });
   });
 
   describe('loadAISkillsStateHandler', () => {
@@ -223,6 +277,45 @@ describe('ai-skills-loader', () => {
       expect(result.content).toBeNull();
       expect(result.profile).toBeNull();
       expect(result.workflow.phase).toBe('idle');
+    });
+
+    it('handles corrupted content and profile gracefully', async () => {
+      await env.CACHE.put('ai_skills_content_ja', 'undefined');
+      await env.CACHE.put('ai_profile_summary_ja', '{invalid json');
+
+      const result = await loadAISkillsStateHandler(env.CACHE, db);
+
+      expect(result.content).toBeNull();
+      expect(result.profile).toBeNull();
+      expect(result.workflow.phase).toBe('idle');
+
+      // Verify corrupted keys were deleted
+      expect(await env.CACHE.get('ai_skills_content_ja')).toBeNull();
+      expect(await env.CACHE.get('ai_profile_summary_ja')).toBeNull();
+    });
+
+    it('self-heals corrupted workflow KV from D1', async () => {
+      await env.CACHE.put('ai_skills_state', 'undefined');
+      await db.insert(workflowState).values({
+        id: 1,
+        phase: 'completed',
+        progressPct: 100,
+        currentRepo: null,
+        reposTotal: 10,
+        reposProcessed: 10,
+        lastRunAt: '2024-01-01T00:00:00Z',
+        lastCompletedAt: '2024-01-01T01:00:00Z',
+        errorMessage: null,
+      });
+
+      const result = await loadAISkillsStateHandler(env.CACHE, db);
+
+      expect(result.workflow.phase).toBe('completed');
+      expect(result.workflow.repos_total).toBe(10);
+
+      // Verify KV was rewritten
+      const healed = await env.CACHE.get<WorkflowState>('ai_skills_state', 'json');
+      expect(healed?.phase).toBe('completed');
     });
   });
 
