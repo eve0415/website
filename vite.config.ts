@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, esmExternalRequirePlugin } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
 export default defineConfig({
@@ -40,6 +40,9 @@ export default defineConfig({
     browserEcho({
       injectHtml: false,
       stackMode: 'condensed',
+    }),
+    esmExternalRequirePlugin({
+      external: ['node:path', 'path'],
     }),
   ],
   build: {
