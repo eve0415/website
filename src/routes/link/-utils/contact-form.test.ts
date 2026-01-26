@@ -271,16 +271,36 @@ describe('sendContactEmail', () => {
     await sendContactEmail(formData);
 
     expect(mockAddMessage).toHaveBeenCalledWith({
-      contentType: 'text/plain; charset=UTF-8',
+      contentType: 'text/plain',
       data: expect.stringContaining('Test User'),
     });
     expect(mockAddMessage).toHaveBeenCalledWith({
-      contentType: 'text/plain; charset=UTF-8',
+      contentType: 'text/plain',
       data: expect.stringContaining('test@example.com'),
     });
     expect(mockAddMessage).toHaveBeenCalledWith({
-      contentType: 'text/plain; charset=UTF-8',
+      contentType: 'text/plain',
       data: expect.stringContaining('Hello, this is my message.'),
+    });
+  });
+
+  test('handles Japanese characters in form fields', async () => {
+    const formData = {
+      name: '田中太郎',
+      email: 'tanaka@example.com',
+      message: 'こんにちは、お問い合わせです。よろしくお願いします。',
+    };
+
+    await sendContactEmail(formData);
+
+    expect(mockSetSubject).toHaveBeenCalledWith('[Contact] 田中太郎');
+    expect(mockAddMessage).toHaveBeenCalledWith({
+      contentType: 'text/plain',
+      data: expect.stringContaining('田中太郎'),
+    });
+    expect(mockAddMessage).toHaveBeenCalledWith({
+      contentType: 'text/plain',
+      data: expect.stringContaining('こんにちは、お問い合わせです。よろしくお願いします。'),
     });
   });
 
@@ -337,15 +357,15 @@ describe('sendContactEmail', () => {
 
     // Body should have trimmed values
     expect(mockAddMessage).toHaveBeenCalledWith({
-      contentType: 'text/plain; charset=UTF-8',
+      contentType: 'text/plain',
       data: expect.stringContaining('Padded Name'),
     });
     expect(mockAddMessage).toHaveBeenCalledWith({
-      contentType: 'text/plain; charset=UTF-8',
+      contentType: 'text/plain',
       data: expect.stringContaining('padded@example.com'),
     });
     expect(mockAddMessage).toHaveBeenCalledWith({
-      contentType: 'text/plain; charset=UTF-8',
+      contentType: 'text/plain',
       data: expect.stringContaining('Padded message'),
     });
   });

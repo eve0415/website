@@ -132,7 +132,7 @@ export const sendContactEmail = createServerOnlyFn(async (formData: ContactFormD
 ${formData.message.trim()}`;
 
   msg.addMessage({
-    contentType: 'text/plain; charset=UTF-8',
+    contentType: 'text/plain',
     data: body,
   });
 
