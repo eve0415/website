@@ -12,20 +12,33 @@ import { workflowState } from '#db/schema';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 
+// Helper to safely parse JSON from KV, handling corrupted data
+async function safeKVGetJSON<T>(kv: KVNamespace, key: string): Promise<{ value: T | null; wasCorrupted: boolean }> {
+  try {
+    const value = await kv.get<T>(key, 'json');
+    return { value: value ?? null, wasCorrupted: false };
+  } catch {
+    await kv.delete(key);
+    return { value: null, wasCorrupted: true };
+  }
+}
+
 // Exported handlers for testing - separated from server function wrappers
 
 /**
  * Handler: Load AI-generated skills content from KV
  */
 export async function loadAISkillsContentHandler(kv: KVNamespace): Promise<AISkillsContent | null> {
-  return await kv.get<AISkillsContent>('ai_skills_content_ja', 'json');
+  const { value } = await safeKVGetJSON<AISkillsContent>(kv, 'ai_skills_content_ja');
+  return value;
 }
 
 /**
  * Handler: Load AI-generated profile summary from KV
  */
 export async function loadAIProfileSummaryHandler(kv: KVNamespace): Promise<AIProfileSummary | null> {
-  return await kv.get<AIProfileSummary>('ai_profile_summary_ja', 'json');
+  const { value } = await safeKVGetJSON<AIProfileSummary>(kv, 'ai_profile_summary_ja');
+  return value;
 }
 
 /**
@@ -33,7 +46,7 @@ export async function loadAIProfileSummaryHandler(kv: KVNamespace): Promise<AIPr
  */
 export async function loadWorkflowStateHandler(kv: KVNamespace, db: DB): Promise<WorkflowState> {
   // Try KV cache first
-  const cached = await kv.get<WorkflowState>('ai_skills_state', 'json');
+  const { value: cached, wasCorrupted } = await safeKVGetJSON<WorkflowState>(kv, 'ai_skills_state');
   if (cached) {
     return cached;
   }
@@ -55,7 +68,7 @@ export async function loadWorkflowStateHandler(kv: KVNamespace, db: DB): Promise
   }
 
   // Map Drizzle camelCase to snake_case for consistency with existing API
-  return {
+  const mappedState: WorkflowState = {
     phase: state.phase as WorkflowState['phase'],
     progress_pct: state.progressPct,
     current_repo: state.currentRepo,
@@ -65,25 +78,37 @@ export async function loadWorkflowStateHandler(kv: KVNamespace, db: DB): Promise
     last_completed_at: state.lastCompletedAt,
     error_message: state.errorMessage,
   };
+
+  // Self-heal: rewrite KV cache from D1 if it was corrupted
+  if (wasCorrupted) {
+    await kv.put('ai_skills_state', JSON.stringify(mappedState), {
+      expirationTtl: 60 * 60 * 24,
+    });
+  }
+
+  return mappedState;
 }
 
 /**
  * Handler: Load complete AI skills state (content + profile + workflow)
  */
 export async function loadAISkillsStateHandler(kv: KVNamespace, db: DB): Promise<AISkillsState> {
-  const [content, profile, workflow] = await Promise.all([
-    kv.get<AISkillsContent>('ai_skills_content_ja', 'json'),
-    kv.get<AIProfileSummary>('ai_profile_summary_ja', 'json'),
-    kv.get<WorkflowState>('ai_skills_state', 'json'),
+  const [contentResult, profileResult, workflowResult] = await Promise.all([
+    safeKVGetJSON<AISkillsContent>(kv, 'ai_skills_content_ja'),
+    safeKVGetJSON<AIProfileSummary>(kv, 'ai_profile_summary_ja'),
+    safeKVGetJSON<WorkflowState>(kv, 'ai_skills_state'),
   ]);
 
+  const content = contentResult.value;
+  const profile = profileResult.value;
+
   // Get fresh workflow state from D1 if not cached
-  let workflowResult = workflow;
-  if (!workflowResult) {
+  let workflow = workflowResult.value;
+  if (!workflow) {
     const dbState = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
 
     if (dbState) {
-      workflowResult = {
+      workflow = {
         phase: dbState.phase as WorkflowState['phase'],
         progress_pct: dbState.progressPct,
         current_repo: dbState.currentRepo,
@@ -93,8 +118,15 @@ export async function loadAISkillsStateHandler(kv: KVNamespace, db: DB): Promise
         last_completed_at: dbState.lastCompletedAt,
         error_message: dbState.errorMessage,
       };
+
+      // Self-heal: rewrite KV cache from D1 if it was corrupted
+      if (workflowResult.wasCorrupted) {
+        await kv.put('ai_skills_state', JSON.stringify(workflow), {
+          expirationTtl: 60 * 60 * 24,
+        });
+      }
     } else {
-      workflowResult = {
+      workflow = {
         phase: 'idle',
         progress_pct: 0,
         current_repo: null,
@@ -110,7 +142,7 @@ export async function loadAISkillsStateHandler(kv: KVNamespace, db: DB): Promise
   return {
     content,
     profile,
-    workflow: workflowResult,
+    workflow,
   };
 }
 
