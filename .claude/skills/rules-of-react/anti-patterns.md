@@ -1,289 +1,258 @@
-# useEffect Anti-Patterns
+# Better Alternatives to useEffect
 
-## 1. Redundant State for Derived Values
+## 1. Calculate During Render (Derived State)
+
+For values derived from props or state, just compute them:
 
 ```tsx
-// BAD: Extra state + Effect for derived value
 function Form() {
   const [firstName, setFirstName] = useState('Taylor');
   const [lastName, setLastName] = useState('Swift');
-  const [fullName, setFullName] = useState('');
 
-  useEffect(() => {
-    setFullName(firstName + ' ' + lastName);
-  }, [firstName, lastName]);
-}
-
-// GOOD: Calculate during rendering
-function Form() {
-  const [firstName, setFirstName] = useState('Taylor');
-  const [lastName, setLastName] = useState('Swift');
-  const fullName = firstName + ' ' + lastName; // Just compute it
+  // Runs every render - that's fine and intentional
+  const fullName = firstName + ' ' + lastName;
+  const isValid = firstName.length > 0 && lastName.length > 0;
 }
 ```
 
-**Why it's bad**: Causes extra render pass with stale value, then re-renders with updated value.
+**When to use**: The value can be computed from existing props/state.
 
 ---
 
-## 2. Filtering/Transforming Data in Effect
+## 2. useMemo for Expensive Calculations
+
+When computation is expensive, memoize it:
 
 ```tsx
-// BAD: Effect to filter list
-function TodoList({ todos, filter }) {
-  const [visibleTodos, setVisibleTodos] = useState([]);
+import { useMemo } from 'react';
 
-  useEffect(() => {
-    setVisibleTodos(getFilteredTodos(todos, filter));
-  }, [todos, filter]);
-}
-
-// GOOD: Filter during render (memoize if expensive)
 function TodoList({ todos, filter }) {
-  const visibleTodos = useMemo(() => getFilteredTodos(todos, filter), [todos, filter]);
+  const visibleTodos = useMemo(
+    () => getFilteredTodos(todos, filter),
+    [todos, filter]
+  );
 }
 ```
 
+**How to know if it's expensive**:
+```tsx
+console.time('filter');
+const visibleTodos = getFilteredTodos(todos, filter);
+console.timeEnd('filter');
+// If > 1ms, consider memoizing
+```
+
+**Note**: React Compiler can auto-memoize, reducing manual useMemo needs.
+
 ---
 
-## 3. Resetting State on Prop Change
+## 3. Key Prop to Reset State
+
+To reset ALL state when a prop changes, use key:
 
 ```tsx
-// BAD: Effect to reset state
+// Parent passes userId as key
 function ProfilePage({ userId }) {
-  const [comment, setComment] = useState('');
-
-  useEffect(() => {
-    setComment('');
-  }, [userId]);
-}
-
-// GOOD: Use key prop
-function ProfilePage({ userId }) {
-  return <Profile userId={userId} key={userId} />;
+  return (
+    <Profile
+      userId={userId}
+      key={userId}  // Different userId = different component instance
+    />
+  );
 }
 
 function Profile({ userId }) {
-  const [comment, setComment] = useState(''); // Resets automatically
+  // All state here resets when userId changes
+  const [comment, setComment] = useState('');
+  const [likes, setLikes] = useState([]);
 }
 ```
 
-**Why key works**: React treats components with different keys as different components, recreating state.
+**When to use**: You want a "fresh start" when an identity prop changes.
 
 ---
 
-## 4. Event-Specific Logic in Effect
+## 4. Store ID Instead of Object
+
+To preserve selection when list changes:
 
 ```tsx
-// BAD: Effect for button click result
-function ProductPage({ product, addToCart }) {
-  useEffect(() => {
-    if (product.isInCart) {
-      showNotification(`Added ${product.name}!`);
-    }
-  }, [product]);
+// BAD: Storing object that needs Effect to "adjust"
+function List({ items }) {
+  const [selection, setSelection] = useState(null);
 
-  function handleBuyClick() {
-    addToCart(product);
-  }
+  useEffect(() => {
+    setSelection(null); // Reset when items change
+  }, [items]);
 }
 
-// GOOD: Handle in event handler
+// GOOD: Store ID, derive object
+function List({ items }) {
+  const [selectedId, setSelectedId] = useState(null);
+
+  // Derived - no Effect needed
+  const selection = items.find(item => item.id === selectedId) ?? null;
+}
+```
+
+**Benefit**: If item with selectedId exists in new list, selection preserved.
+
+---
+
+## 5. Event Handlers for User Actions
+
+User clicks/submits/drags should be handled in event handlers, not Effects:
+
+```tsx
+// Event handler knows exactly what happened
 function ProductPage({ product, addToCart }) {
   function handleBuyClick() {
     addToCart(product);
     showNotification(`Added ${product.name}!`);
+    analytics.track('product_added', { id: product.id });
+  }
+
+  function handleCheckoutClick() {
+    addToCart(product);
+    showNotification(`Added ${product.name}!`);
+    navigateTo('/checkout');
   }
 }
 ```
 
-**Why it's bad**: Effect fires on page refresh (isInCart is true), showing notification unexpectedly.
-
----
-
-## 5. Chains of Effects
+**Shared logic**: Extract a function, call from both handlers:
 
 ```tsx
-// BAD: Effects triggering each other
-function Game() {
-  const [card, setCard] = useState(null);
-  const [goldCardCount, setGoldCardCount] = useState(0);
-  const [round, setRound] = useState(1);
-  const [isGameOver, setIsGameOver] = useState(false);
-
-  useEffect(() => {
-    if (card?.gold) setGoldCardCount(c => c + 1);
-  }, [card]);
-
-  useEffect(() => {
-    if (goldCardCount > 3) {
-      setRound(r => r + 1);
-      setGoldCardCount(0);
-    }
-  }, [goldCardCount]);
-
-  useEffect(() => {
-    if (round > 5) setIsGameOver(true);
-  }, [round]);
+function buyProduct() {
+  addToCart(product);
+  showNotification(`Added ${product.name}!`);
 }
 
-// GOOD: Calculate in event handler
-function Game() {
-  const [card, setCard] = useState(null);
-  const [goldCardCount, setGoldCardCount] = useState(0);
-  const [round, setRound] = useState(1);
-  const isGameOver = round > 5; // Derived!
-
-  function handlePlaceCard(nextCard) {
-    if (isGameOver) throw Error('Game ended');
-
-    setCard(nextCard);
-    if (nextCard.gold) {
-      if (goldCardCount < 3) {
-        setGoldCardCount(goldCardCount + 1);
-      } else {
-        setGoldCardCount(0);
-        setRound(round + 1);
-        if (round === 5) alert('Good game!');
-      }
-    }
-  }
-}
+function handleBuyClick() { buyProduct(); }
+function handleCheckoutClick() { buyProduct(); navigateTo('/checkout'); }
 ```
 
-**Why it's bad**: Multiple re-renders (setCard -> setGoldCardCount -> setRound -> setIsGameOver). Also fragile for features like history replay.
-
 ---
 
-## 6. Notifying Parent via Effect
+## 6. useSyncExternalStore for External Stores
+
+For subscribing to external data (browser APIs, third-party stores):
 
 ```tsx
-// BAD: Effect to notify parent
-function Toggle({ onChange }) {
-  const [isOn, setIsOn] = useState(false);
+// Instead of manual Effect subscription
+function useOnlineStatus() {
+  const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    onChange(isOn);
-  }, [isOn, onChange]);
+    function update() { setIsOnline(navigator.onLine); }
+    window.addEventListener('online', update);
+    window.addEventListener('offline', update);
+    return () => {
+      window.removeEventListener('online', update);
+      window.removeEventListener('offline', update);
+    };
+  }, []);
 
-  function handleClick() {
-    setIsOn(!isOn);
-  }
+  return isOnline;
 }
 
-// GOOD: Notify in same event
-function Toggle({ onChange }) {
-  const [isOn, setIsOn] = useState(false);
+// Use purpose-built hook
+import { useSyncExternalStore } from 'react';
 
-  function updateToggle(nextIsOn) {
-    setIsOn(nextIsOn);
-    onChange(nextIsOn); // Same event, batched render
-  }
-
-  function handleClick() {
-    updateToggle(!isOn);
-  }
+function subscribe(callback) {
+  window.addEventListener('online', callback);
+  window.addEventListener('offline', callback);
+  return () => {
+    window.removeEventListener('online', callback);
+    window.removeEventListener('offline', callback);
+  };
 }
 
-// BEST: Fully controlled component
-function Toggle({ isOn, onChange }) {
-  function handleClick() {
-    onChange(!isOn);
-  }
+function useOnlineStatus() {
+  return useSyncExternalStore(
+    subscribe,
+    () => navigator.onLine,      // Client value
+    () => true                   // Server value (SSR)
+  );
 }
 ```
 
 ---
 
-## 7. Passing Data Up to Parent
+## 7. Lifting State Up
+
+When two components need synchronized state, lift it to common ancestor:
 
 ```tsx
-// BAD: Child fetches, passes up via Effect
+// Instead of syncing via Effects between siblings
 function Parent() {
+  const [value, setValue] = useState('');
+
+  return (
+    <>
+      <Input value={value} onChange={setValue} />
+      <Preview value={value} />
+    </>
+  );
+}
+```
+
+---
+
+## 8. Custom Hooks for Data Fetching
+
+Extract fetch logic with proper cleanup:
+
+```tsx
+function useData(url) {
   const [data, setData] = useState(null);
-  return <Child onFetched={setData} />;
-}
-
-function Child({ onFetched }) {
-  const data = useSomeAPI();
-
-  useEffect(() => {
-    if (data) onFetched(data);
-  }, [onFetched, data]);
-}
-
-// GOOD: Parent fetches, passes down
-function Parent() {
-  const data = useSomeAPI();
-  return <Child data={data} />;
-}
-```
-
-**Why**: Data should flow down. Upward flow via Effects makes debugging hard.
-
----
-
-## 8. Fetching Without Cleanup (Race Condition)
-
-```tsx
-// BAD: No cleanup - race condition
-function SearchResults({ query }) {
-  const [results, setResults] = useState([]);
-
-  useEffect(() => {
-    fetchResults(query).then(json => {
-      setResults(json); // "hello" response may arrive after "hell"
-    });
-  }, [query]);
-}
-
-// GOOD: Cleanup ignores stale responses
-function SearchResults({ query }) {
-  const [results, setResults] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     let ignore = false;
+    setLoading(true);
 
-    fetchResults(query).then(json => {
-      if (!ignore) setResults(json);
-    });
+    fetch(url)
+      .then(res => res.json())
+      .then(json => {
+        if (!ignore) {
+          setData(json);
+          setError(null);
+        }
+      })
+      .catch(err => {
+        if (!ignore) setError(err);
+      })
+      .finally(() => {
+        if (!ignore) setLoading(false);
+      });
 
-    return () => {
-      ignore = true;
-    };
-  }, [query]);
+    return () => { ignore = true; };
+  }, [url]);
+
+  return { data, error, loading };
+}
+
+// Usage
+function SearchResults({ query }) {
+  const { data, error, loading } = useData(`/api/search?q=${query}`);
 }
 ```
+
+**Better**: Use framework's data fetching (React Query, SWR, Next.js, etc.)
 
 ---
 
-## 9. App Initialization in Effect
+## Summary: When to Use What
 
-```tsx
-// BAD: Runs twice in dev, may break auth
-function App() {
-  useEffect(() => {
-    loadDataFromLocalStorage();
-    checkAuthToken(); // May invalidate token on second call!
-  }, []);
-}
-
-// GOOD: Module-level guard
-let didInit = false;
-
-function App() {
-  useEffect(() => {
-    if (!didInit) {
-      didInit = true;
-      loadDataFromLocalStorage();
-      checkAuthToken();
-    }
-  }, []);
-}
-
-// ALSO GOOD: Module-level execution
-if (typeof window !== 'undefined') {
-  checkAuthToken();
-  loadDataFromLocalStorage();
-}
-```
+| Need | Solution |
+|------|----------|
+| Value from props/state | Calculate during render |
+| Expensive calculation | `useMemo` |
+| Reset all state on prop change | `key` prop |
+| Respond to user action | Event handler |
+| Sync with external system | `useEffect` with cleanup |
+| Subscribe to external store | `useSyncExternalStore` |
+| Share state between components | Lift state up |
+| Fetch data | Custom hook with cleanup / framework |
