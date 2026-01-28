@@ -94,7 +94,7 @@ export const useAutoScroll = ({ containerRef, dependency, smooth = 'auto' }: Use
     }
 
     // Cancel any pending timeout from previous scroll (prevents race condition on rapid clicks)
-    if (scrollTimeoutRef.current) {
+    if (scrollTimeoutRef.current !== null) {
       clearTimeout(scrollTimeoutRef.current);
       scrollTimeoutRef.current = null;
     }

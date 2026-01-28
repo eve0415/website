@@ -48,9 +48,9 @@ describe('useCorruptionEffects', () => {
       { progress: 0.5, expected: 0.3536 }, // Math.pow(0.5, 1.5) ≈ 0.3536
       { progress: 1, expected: 1 },
     ])('progress $progress produces intensity ~$expected', async ({ progress, expected }) => {
-      await render(<TestComponent enabled={true} progress={progress} />);
+      await render(<TestComponent enabled progress={progress} />);
 
-      const intensityText = page.getByTestId('intensity').element()!.textContent!;
+      const intensityText = page.getByTestId('intensity').element().textContent;
       const intensity = Number.parseFloat(intensityText);
 
       expect(intensity).toBeCloseTo(expected, 2);
@@ -65,22 +65,22 @@ describe('useCorruptionEffects', () => {
 
   describe('staticOpacity', () => {
     test('starts at 0 with progress 0', async () => {
-      await render(<TestComponent enabled={true} progress={0} />);
+      await render(<TestComponent enabled progress={0} />);
 
       await expect.element(page.getByTestId('static-opacity')).toHaveTextContent('0.0000');
     });
 
     test('increases with progress', async () => {
-      await render(<TestComponent enabled={true} progress={0.5} />);
+      await render(<TestComponent enabled progress={0.5} />);
 
-      const opacity = Number.parseFloat(page.getByTestId('static-opacity').element()!.textContent!);
+      const opacity = Number.parseFloat(page.getByTestId('static-opacity').element().textContent);
       expect(opacity).toBeGreaterThan(0);
     });
 
     test('caps at 0.15', async () => {
-      await render(<TestComponent enabled={true} progress={1} />);
+      await render(<TestComponent enabled progress={1} />);
 
-      const opacity = Number.parseFloat(page.getByTestId('static-opacity').element()!.textContent!);
+      const opacity = Number.parseFloat(page.getByTestId('static-opacity').element().textContent);
       expect(opacity).toBeLessThanOrEqual(0.15);
     });
 
@@ -93,25 +93,25 @@ describe('useCorruptionEffects', () => {
 
   describe('error selection (getErrorForProgress)', () => {
     test('returns null when progress < 0.05', async () => {
-      await render(<TestComponent enabled={true} progress={0.03} />);
+      await render(<TestComponent enabled progress={0.03} />);
 
       await expect.element(page.getByTestId('current-error')).toHaveTextContent('null');
     });
 
     test('returns stage 1 error at low progress', async () => {
-      await render(<TestComponent enabled={true} progress={0.1} />);
+      await render(<TestComponent enabled progress={0.1} />);
 
       await expect.element(page.getByTestId('current-error-stage')).toHaveTextContent('1');
     });
 
     test('returns stage 2 error at medium progress', async () => {
-      await render(<TestComponent enabled={true} progress={0.5} />);
+      await render(<TestComponent enabled progress={0.5} />);
 
       await expect.element(page.getByTestId('current-error-stage')).toHaveTextContent('2');
     });
 
     test('returns stage 3 error at high progress', async () => {
-      await render(<TestComponent enabled={true} progress={0.8} />);
+      await render(<TestComponent enabled progress={0.8} />);
 
       await expect.element(page.getByTestId('current-error-stage')).toHaveTextContent('3');
     });
@@ -131,15 +131,15 @@ describe('useCorruptionEffects', () => {
     });
 
     test('returns 0 when no current error (progress < 0.05)', async () => {
-      await render(<TestComponent enabled={true} progress={0.03} />);
+      await render(<TestComponent enabled progress={0.03} />);
 
       await expect.element(page.getByTestId('error-opacity')).toHaveTextContent('0.0000');
     });
 
     test('returns positive opacity when error present', async () => {
-      await render(<TestComponent enabled={true} progress={0.5} />);
+      await render(<TestComponent enabled progress={0.5} />);
 
-      const opacity = Number.parseFloat(page.getByTestId('error-opacity').element()!.textContent!);
+      const opacity = Number.parseFloat(page.getByTestId('error-opacity').element().textContent);
       expect(opacity).toBeGreaterThan(0);
     });
   });
@@ -152,27 +152,27 @@ describe('useCorruptionEffects', () => {
     });
 
     test('generated when enabled with progress > 0', async () => {
-      await render(<TestComponent enabled={true} progress={0.5} />);
+      await render(<TestComponent enabled progress={0.5} />);
 
       // Wait for interval to generate lines
       await vi.advanceTimersByTimeAsync(300);
 
-      const count = Number.parseInt(page.getByTestId('glitch-lines-count').element()!.textContent!, 10);
+      const count = Number.parseInt(page.getByTestId('glitch-lines-count').element().textContent, 10);
       expect(count).toBeGreaterThan(0);
     });
   });
 
   describe('scanline animation', () => {
     test('offset changes over time when enabled', async () => {
-      await render(<TestComponent enabled={true} progress={0.5} />);
+      await render(<TestComponent enabled progress={0.5} />);
 
-      const initialOffset = Number.parseInt(page.getByTestId('scanline-offset').element()!.textContent!, 10);
+      const initialOffset = Number.parseInt(page.getByTestId('scanline-offset').element().textContent, 10);
 
       await vi.advanceTimersByTimeAsync(200);
 
       await expect
         .poll(() => {
-          const currentOffset = Number.parseInt(page.getByTestId('scanline-offset').element()!.textContent!, 10);
+          const currentOffset = Number.parseInt(page.getByTestId('scanline-offset').element().textContent, 10);
           return currentOffset;
         })
         .not.toBe(initialOffset);

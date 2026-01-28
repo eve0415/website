@@ -17,7 +17,7 @@ import {
   storingResultsState,
 } from './analysis-log.fixtures';
 
-describe('AnalysisLog', () => {
+describe('analysisLog', () => {
   describe('phase messages', () => {
     test('renders idle phase message', async () => {
       await render(<AnalysisLog state={idleState} />);
@@ -102,7 +102,7 @@ describe('AnalysisLog', () => {
       // Should not have percentage display
       const percentageElements = container.querySelectorAll('.text-fuchsia.font-mono.text-xs');
       const hasPercentage = Array.from(percentageElements).some(el => el.textContent?.includes('%'));
-      expect(hasPercentage).toBe(false);
+      expect(hasPercentage).toBeFalsy();
     });
 
     test('does not show progress percentage when completed', async () => {

@@ -4,7 +4,8 @@
 export const renderToString = () => '';
 export const renderToStaticMarkup = () => '';
 export const renderToPipeableStream = () => ({ pipe: () => {}, abort: () => {} });
-export const renderToReadableStream = () => Promise.resolve(new ReadableStream());
+// oxlint-disable-next-line typescript/require-await -- Async required by type, no actual async work
+export const renderToReadableStream = async () => new ReadableStream();
 
 // Default export for CommonJS interop
 export default {

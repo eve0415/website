@@ -33,8 +33,8 @@ const DEFAULT_RATE_LIMIT: GraphQLRateLimit = {
 const MyOctokit = Octokit.plugin(throttling, retry);
 
 /** Create an Octokit instance configured for GitHub GraphQL */
-export function createGitHubClient(token: string): InstanceType<typeof MyOctokit> {
-  return new MyOctokit({
+export const createGitHubClient = (token: string): InstanceType<typeof MyOctokit> =>
+  new MyOctokit({
     auth: token,
     throttle: {
       onRateLimit: (retryAfter: number, options: { method: string; url: string }, _octokit: Octokit, retryCount: number) => {
@@ -50,20 +50,17 @@ export function createGitHubClient(token: string): InstanceType<typeof MyOctokit
       doNotRetry: ['429'],
     },
   });
-}
 
 /** Extract rate limit from GraphQL response */
-export function extractRateLimit(response: { rateLimit?: { remaining: number; cost: number; resetAt: string } | null }): GraphQLRateLimit {
-  if (!response.rateLimit) {
-    return DEFAULT_RATE_LIMIT;
-  }
+export const extractRateLimit = (response: { rateLimit?: { remaining: number; cost: number; resetAt: string } | null }): GraphQLRateLimit => {
+  if (!response.rateLimit) return DEFAULT_RATE_LIMIT;
 
   return {
     remaining: response.rateLimit.remaining,
     cost: response.rateLimit.cost,
     resetAt: Math.floor(new Date(response.rateLimit.resetAt).getTime() / 1000),
   };
-}
+};
 
 // GraphQL query strings
 const USER_REPOS_QUERY = /* GraphQL */ `
@@ -209,7 +206,7 @@ export interface FetchRepoPRsResult {
 }
 
 /** Fetch user repositories with rate limit info */
-export async function fetchUserRepos(octokit: InstanceType<typeof MyOctokit>, cursor?: string | null): Promise<FetchUserReposResult> {
+export const fetchUserRepos = async (octokit: InstanceType<typeof MyOctokit>, cursor?: string | null): Promise<FetchUserReposResult> => {
   const variables: UserReposQueryVariables = {};
   if (cursor) variables.cursor = cursor;
 
@@ -219,16 +216,16 @@ export async function fetchUserRepos(octokit: InstanceType<typeof MyOctokit>, cu
     data,
     rateLimit: extractRateLimit(data),
   };
-}
+};
 
 /** Fetch commits for a repository with rate limit info */
-export async function fetchRepoCommits(
+export const fetchRepoCommits = async (
   octokit: InstanceType<typeof MyOctokit>,
   owner: string,
   name: string,
   since?: string | null,
   cursor?: string | null,
-): Promise<FetchRepoCommitsResult> {
+): Promise<FetchRepoCommitsResult> => {
   const variables: RepoCommitsQueryVariables = { owner, name };
   if (since) variables.since = since;
   if (cursor) variables.cursor = cursor;
@@ -239,10 +236,15 @@ export async function fetchRepoCommits(
     data,
     rateLimit: extractRateLimit(data),
   };
-}
+};
 
 /** Fetch pull requests for a repository with rate limit info */
-export async function fetchRepoPRs(octokit: InstanceType<typeof MyOctokit>, owner: string, name: string, cursor?: string | null): Promise<FetchRepoPRsResult> {
+export const fetchRepoPRs = async (
+  octokit: InstanceType<typeof MyOctokit>,
+  owner: string,
+  name: string,
+  cursor?: string | null,
+): Promise<FetchRepoPRsResult> => {
   const variables: RepoPullRequestsQueryVariables = { owner, name };
   if (cursor) variables.cursor = cursor;
 
@@ -252,7 +254,7 @@ export async function fetchRepoPRs(octokit: InstanceType<typeof MyOctokit>, owne
     data,
     rateLimit: extractRateLimit(data),
   };
-}
+};
 
 /** Rate limit metrics stored in KV for dynamic threshold calculation */
 export interface RateLimitMetrics {
@@ -271,17 +273,17 @@ export const DEFAULT_RATE_LIMIT_METRICS: RateLimitMetrics = {
 };
 
 /** Calculate dynamic rate limit threshold based on remaining work */
-export function calculateDynamicThreshold(metrics: RateLimitMetrics, totalRepos: number, processedRepos: number): number {
+export const calculateDynamicThreshold = (metrics: RateLimitMetrics, totalRepos: number, processedRepos: number): number => {
   const reposRemaining = totalRepos - processedRepos;
   const estimatedRequestsNeeded = reposRemaining * metrics.avgRequestsPerRepo;
   // Minimum 50, maximum 500
   return Math.max(50, Math.min(500, estimatedRequestsNeeded));
-}
+};
 
 /** Check if a PR/review/commit was authored by the target user */
-export function isPRAuthoredByUser(authorLogin: string | null | undefined): boolean {
+export const isPRAuthoredByUser = (authorLogin: string | null | undefined): boolean => {
   if (!authorLogin) return false;
   return authorLogin.toLowerCase() === GITHUB_USERNAME.toLowerCase();
-}
+};
 
 export { GITHUB_USERNAME };

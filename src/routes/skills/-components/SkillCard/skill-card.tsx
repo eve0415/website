@@ -1,4 +1,4 @@
-import type { Skill } from '../../-config/skills-config';
+import type { Skill, SkillColor } from '../../-config/skills-config';
 import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';
@@ -16,11 +16,15 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
   const config = levelConfig[skill.level];
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), index * 50);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, index * 50);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [index]);
 
-  const colorClasses = {
+  const colorClasses: Record<SkillColor, { border: string; text: string; bg: string; textColor: string; bar: string }> = {
     neon: {
       border: 'hover:border-neon/50',
       text: 'group-hover:text-neon',
@@ -44,15 +48,19 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
     },
   };
 
-  const colors = colorClasses[config.color as keyof typeof colorClasses];
+  const colors = colorClasses[config.color];
 
   return (
     <div
       className={`group border-line bg-surface duration-normal relative cursor-default rounded-lg border p-4 transition-all ${colors.border} hover:shadow-lg ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
     >
       {/* Progress bar background */}
       <div className='absolute inset-0 overflow-hidden rounded-lg'>

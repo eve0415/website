@@ -10,14 +10,13 @@ import SkillsVisualization from './-components/SkillsVisualization/skills-visual
 import { categoryIcons, categoryLabels, levelConfig, skills } from './-config/skills-config';
 
 const SkillsPage: FC = () => {
-  const groupedSkills = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
-    const category = skill.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(skill);
-    return acc;
-  }, {});
+  const groupedSkills: Record<string, Skill[]> = {};
+  for (const skill of skills) {
+    const { category } = skill;
+    const arr = groupedSkills[category];
+    if (arr) arr.push(skill);
+    else groupedSkills[category] = [skill];
+  }
 
   return (
     <main className='min-h-dvh px-6 py-24 md:px-12'>
@@ -48,7 +47,7 @@ const SkillsPage: FC = () => {
       </section>
 
       <div className='grid gap-12 lg:grid-cols-3'>
-        {(Object.keys(groupedSkills) as Array<keyof typeof categoryLabels>).map(category => (
+        {Object.keys(groupedSkills).map(category => (
           <section key={category}>
             <h2 className='border-line text-subtle-foreground mb-6 flex items-center gap-2 border-b pb-2 font-mono text-sm tracking-wider uppercase'>
               <span>{categoryIcons[category]}</span>

@@ -84,7 +84,9 @@ export const SUDO_RM_RF_MESSAGES: BSODMessage[] = [
 ];
 
 export const getRandomMessage = (isEasterEgg: boolean): BSODMessage => {
+  const [fallback] = REGULAR_MESSAGES;
+  if (fallback === undefined) throw new Error('Expected BSOD messages to be defined');
   const pool = isEasterEgg ? SUDO_RM_RF_MESSAGES : REGULAR_MESSAGES;
   const index = Math.floor(Math.random() * pool.length);
-  return pool[index]!;
+  return pool[index] ?? fallback;
 };

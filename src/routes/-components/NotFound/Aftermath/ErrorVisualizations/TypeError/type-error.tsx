@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-unescaped-entities) -- Code snippets with quotes are intentional visual elements */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -49,14 +50,18 @@ const TypeError: FC = () => {
         setHighlightedPath(path.slice(0, pathIndexRef.current));
 
         if (pathIndexRef.current === path.length) {
-          setTimeout(() => setShowCrash(true), 300);
+          setTimeout(() => {
+            setShowCrash(true);
+          }, 300);
         }
       } else {
         clearInterval(interval);
       }
     }, 600);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   // Glitch effect
@@ -65,10 +70,14 @@ const TypeError: FC = () => {
 
     const interval = setInterval(() => {
       setGlitchOffset(Math.random() * 4 - 2);
-      setTimeout(() => setGlitchOffset(0), 50);
+      setTimeout(() => {
+        setGlitchOffset(0);
+      }, 50);
     }, 200);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [showCrash, reducedMotion]);
 
   const getNodeColor = (node: ObjectNode) => {
@@ -171,7 +180,7 @@ const TypeError: FC = () => {
                 <div className='flex items-start gap-2'>
                   <span className='text-[#f14c4c]'>&#x2715;</span>
                   <div className='font-mono text-xs'>
-                    <div className='text-[#f14c4c]'>Uncaught TypeError: Cannot read properties of undefined (reading {"'page'"})</div>
+                    <div className='text-[#f14c4c]'>Uncaught TypeError: Cannot read properties of undefined (reading 'page')</div>
                     <div className='mt-2 text-[#858585]'>
                       {'    '}at fetchPage (app.js:404:15)
                       <br />

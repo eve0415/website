@@ -31,18 +31,15 @@ const STYLES = {
 };
 
 export const printConsoleArt = (): void => {
-  if (typeof window === 'undefined') return;
+  if (globalThis.window === undefined) return;
 
   console.clear();
-  console.log('%c' + ASCII_LOGO, STYLES.logo);
+  console.log(`%c${ASCII_LOGO}`, STYLES.logo);
   console.log('');
 
   for (const msg of MESSAGES) {
-    if (msg.startsWith('GitHub:') || msg.startsWith('Twitter:')) {
-      console.log('%c' + msg, STYLES.highlight);
-    } else {
-      console.log('%c' + msg, STYLES.message);
-    }
+    if (msg.startsWith('GitHub:') || msg.startsWith('Twitter:')) console.log(`%c${msg}`, STYLES.highlight);
+    else console.log(`%c${msg}`, STYLES.message);
   }
 
   console.log('');
@@ -51,5 +48,5 @@ export const printConsoleArt = (): void => {
 };
 
 export const printSecretMessage = (message: string): void => {
-  console.log('%c🎉 ' + message, STYLES.highlight);
+  console.log(`%c🎉 ${message}`, STYLES.highlight);
 };

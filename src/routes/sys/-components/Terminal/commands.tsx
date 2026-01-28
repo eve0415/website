@@ -19,7 +19,7 @@ export class SudoRmRfError extends Error {
 
 export interface CommandContext {
   stats: GitHubStats;
-  onNavigateHome: () => void;
+  onNavigateHome: () => Promise<void> | void;
 }
 
 export interface Command {
@@ -85,15 +85,11 @@ export const COMMANDS: Command[] = [
     execute: args => {
       // Parse args for --user flag
       const userArg = args.find(a => a.startsWith('--user='));
-      if (!userArg) {
-        return { type: 'error', message: 'sys.diagnostic: missing required flag --user' };
-      }
+      if (!userArg) return { type: 'error', message: 'sys.diagnostic: missing required flag --user' };
 
       // Check for unknown flags
       const unknownArgs = args.filter(a => !a.startsWith('--user='));
-      if (unknownArgs.length > 0) {
-        return { type: 'error', message: `sys.diagnostic: unknown flag: ${unknownArgs[0]}` };
-      }
+      if (unknownArgs.length > 0) return { type: 'error', message: `sys.diagnostic: unknown flag: ${unknownArgs[0]}` };
 
       return { type: 'diagnostic' };
     },
@@ -105,15 +101,10 @@ export const COMMANDS: Command[] = [
       const firstArg = args[0]?.toLowerCase();
       let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
 
-      if (firstArg === '--help' || firstArg === '-h') {
-        mode = 'help';
-      } else if (firstArg === '--version' || firstArg === '-v') {
-        mode = 'version';
-      } else if (firstArg === 'about') {
-        mode = 'about';
-      } else if (firstArg === 'philosophy') {
-        mode = 'philosophy';
-      }
+      if (firstArg === '--help' || firstArg === '-h') mode = 'help';
+      else if (firstArg === '--version' || firstArg === '-v') mode = 'version';
+      else if (firstArg === 'about') mode = 'about';
+      else if (firstArg === 'philosophy') mode = 'philosophy';
 
       return { type: 'output', content: <ClaudeOutput mode={mode} /> };
     },
@@ -125,15 +116,10 @@ export const COMMANDS: Command[] = [
       const firstArg = args[0]?.toLowerCase();
       let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
 
-      if (firstArg === '--help' || firstArg === '-h') {
-        mode = 'help';
-      } else if (firstArg === '--version' || firstArg === '-v') {
-        mode = 'version';
-      } else if (firstArg === 'about') {
-        mode = 'about';
-      } else if (firstArg === 'philosophy') {
-        mode = 'philosophy';
-      }
+      if (firstArg === '--help' || firstArg === '-h') mode = 'help';
+      else if (firstArg === '--version' || firstArg === '-v') mode = 'version';
+      else if (firstArg === 'about') mode = 'about';
+      else if (firstArg === 'philosophy') mode = 'philosophy';
 
       return { type: 'output', content: <CodexOutput mode={mode} /> };
     },
@@ -145,15 +131,10 @@ export const COMMANDS: Command[] = [
       const firstArg = args[0]?.toLowerCase();
       let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
 
-      if (firstArg === '--help' || firstArg === '-h') {
-        mode = 'help';
-      } else if (firstArg === '--version' || firstArg === '-v') {
-        mode = 'version';
-      } else if (firstArg === 'about') {
-        mode = 'about';
-      } else if (firstArg === 'philosophy') {
-        mode = 'philosophy';
-      }
+      if (firstArg === '--help' || firstArg === '-h') mode = 'help';
+      else if (firstArg === '--version' || firstArg === '-v') mode = 'version';
+      else if (firstArg === 'about') mode = 'about';
+      else if (firstArg === 'philosophy') mode = 'philosophy';
 
       return { type: 'output', content: <GeminiOutput mode={mode} /> };
     },
@@ -164,9 +145,8 @@ export const COMMANDS: Command[] = [
     execute: args => {
       // Check for rm -rf pattern
       const argsStr = args.join(' ');
-      if (argsStr.includes('rm') && (argsStr.includes('-rf') || argsStr.includes('-fr'))) {
-        return { type: 'crash' };
-      }
+      if (argsStr.includes('rm') && (argsStr.includes('-rf') || argsStr.includes('-fr'))) return { type: 'crash' };
+
       return {
         type: 'error',
         message: `sudo: ${args[0] ?? 'command'}: permission denied`,

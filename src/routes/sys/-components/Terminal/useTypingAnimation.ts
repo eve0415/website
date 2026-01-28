@@ -114,9 +114,7 @@ export const useTypingAnimation = (targetText: string, options: UseTypingAnimati
 
   // Cursor blinking interval - only when not typing and not complete
   useEffect(() => {
-    if (state.isTyping || state.isComplete) {
-      return;
-    }
+    if (state.isTyping || state.isComplete) return;
 
     const intervalId = setInterval(() => {
       dispatch({ type: 'BLINK' });
@@ -129,9 +127,7 @@ export const useTypingAnimation = (targetText: string, options: UseTypingAnimati
 
   // Main typing animation effect
   useEffect(() => {
-    if (!shouldAnimate) {
-      return;
-    }
+    if (!shouldAnimate) return;
 
     let currentIndex = 0;
     let timeoutId: ReturnType<typeof setTimeout> | null = null;
@@ -168,9 +164,7 @@ export const useTypingAnimation = (targetText: string, options: UseTypingAnimati
 
     return () => {
       cancelled = true;
-      if (timeoutId) {
-        clearTimeout(timeoutId);
-      }
+      if (timeoutId !== null) clearTimeout(timeoutId);
     };
   }, [targetText, shouldAnimate, minDelay, maxDelay]);
 

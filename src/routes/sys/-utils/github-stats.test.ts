@@ -17,7 +17,7 @@ const mockGraphQLResponse = {
       following: { totalCount: 50 },
       repositories: {
         totalCount: 15,
-        pageInfo: { hasNextPage: false, endCursor: null },
+        pageInfo: { hasNextPage: false, endCursor: undefined },
         nodes: [
           { name: 'repo1', isFork: false, diskUsage: 1000 },
           { name: 'repo2', isFork: true, diskUsage: 500 },
@@ -48,17 +48,19 @@ const mockLanguageResponse = { TypeScript: 50000, JavaScript: 30000 };
 
 // MSW server setup
 const server = setupServer(
-  http.post('https://api.github.com/graphql', () => {
-    return HttpResponse.json(mockGraphQLResponse);
-  }),
-  http.get('https://api.github.com/repos/eve0415/:repo/languages', () => {
-    return HttpResponse.json(mockLanguageResponse);
-  }),
+  http.post('https://api.github.com/graphql', () => HttpResponse.json(mockGraphQLResponse)),
+  http.get('https://api.github.com/repos/eve0415/:repo/languages', () => HttpResponse.json(mockLanguageResponse)),
 );
 
-beforeAll(() => server.listen({ onUnhandledRequest: 'bypass' }));
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+beforeAll(() => {
+  server.listen({ onUnhandledRequest: 'bypass' });
+});
+afterEach(() => {
+  server.resetHandlers();
+});
+afterAll(() => {
+  server.close();
+});
 
 describe('levelFromContributionLevel', () => {
   test('maps NONE to 0', () => {
@@ -133,7 +135,7 @@ describe('calculateStreaksJST', () => {
 
   test('returns zeros for empty array', () => {
     const result = calculateStreaksJST([]);
-    expect(result).toEqual({ currentStreak: 0, longestStreak: 0 });
+    expect(result).toStrictEqual({ currentStreak: 0, longestStreak: 0 });
   });
 
   test('returns zeros when all days have zero contributions', () => {
@@ -147,7 +149,7 @@ describe('calculateStreaksJST', () => {
     ];
 
     const result = calculateStreaksJST(days);
-    expect(result).toEqual({ currentStreak: 0, longestStreak: 0 });
+    expect(result).toStrictEqual({ currentStreak: 0, longestStreak: 0 });
   });
 
   test('calculates current streak starting today', () => {
@@ -292,7 +294,7 @@ describe('calculateStreaksJST', () => {
     expect(result.longestStreak).toBe(1);
   });
 
-  test('JST timezone calculation - just before midnight UTC is still same day in JST', () => {
+  test('jST timezone calculation - just before midnight UTC is still same day in JST', () => {
     // 23:00 UTC on Jan 14 = 08:00 JST on Jan 15
     vi.setSystemTime(new Date('2024-01-14T23:00:00Z'));
 
@@ -450,18 +452,14 @@ describe('refreshGitHubStats', () => {
 
   test('handles empty language responses gracefully', async () => {
     // Override the language endpoint to return empty object (no languages)
-    server.use(
-      http.get('https://api.github.com/repos/eve0415/:repo/languages', () => {
-        return HttpResponse.json({});
-      }),
-    );
+    server.use(http.get('https://api.github.com/repos/eve0415/:repo/languages', () => HttpResponse.json({})));
 
     await refreshGitHubStats(env);
 
     const storedValue = await env.CACHE.get<{ languages: unknown[] }>('github_stats_eve0415', 'json');
 
     expect(storedValue).toBeDefined();
-    expect(storedValue?.languages).toEqual([]);
+    expect(storedValue?.languages).toStrictEqual([]);
   });
 
   // Note: Rate limit tests with Octokit's retry plugin are difficult to reliably test

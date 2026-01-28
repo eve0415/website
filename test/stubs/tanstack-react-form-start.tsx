@@ -5,8 +5,10 @@
 export * from '@tanstack/react-form';
 
 // Stub SSR-specific exports that would bring in react-dom/server
-export const createServerValidate = () => () => Promise.resolve({});
-export const getFormData = () => () => Promise.resolve({});
+// oxlint-disable-next-line typescript/require-await -- Async required by type, no actual async work
+export const createServerValidate = () => async () => ({});
+// oxlint-disable-next-line typescript/require-await -- Async required by type, no actual async work
+export const getFormData = () => async () => ({});
 export const initialFormState = {};
 export const useTransform = (fn: unknown, _deps: unknown[]) => fn;
 export class ServerValidateError extends Error {

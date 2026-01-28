@@ -1,9 +1,11 @@
+import type { CommandContext } from './commands';
+
 import { describe, expect, test, vi } from 'vitest';
 
-import { COMMANDS, COMMAND_NAMES, type CommandContext, SudoRmRfError, executeCommand, parseArgs } from './commands';
+import { COMMANDS, COMMAND_NAMES, SudoRmRfError, executeCommand, parseArgs } from './commands';
 import { mockCommandContext, mockGitHubStats } from './terminal.fixtures';
 
-describe('SudoRmRfError', () => {
+describe('sudoRmRfError', () => {
   test('creates error with correct name', () => {
     const error = new SudoRmRfError();
     expect(error.name).toBe('SudoRmRfError');
@@ -22,59 +24,59 @@ describe('SudoRmRfError', () => {
 
 describe('parseArgs', () => {
   test('splits basic whitespace-separated args', () => {
-    expect(parseArgs('hello world')).toEqual(['hello', 'world']);
+    expect(parseArgs('hello world')).toStrictEqual(['hello', 'world']);
   });
 
   test('handles double-quoted strings', () => {
-    expect(parseArgs('"hello world"')).toEqual(['hello world']);
+    expect(parseArgs('"hello world"')).toStrictEqual(['hello world']);
   });
 
   test('handles single-quoted strings', () => {
-    expect(parseArgs("'hello world'")).toEqual(['hello world']);
+    expect(parseArgs("'hello world'")).toStrictEqual(['hello world']);
   });
 
   test('handles mixed quoted and unquoted args', () => {
-    expect(parseArgs('hello "cruel world"')).toEqual(['hello', 'cruel world']);
+    expect(parseArgs('hello "cruel world"')).toStrictEqual(['hello', 'cruel world']);
   });
 
   test('handles escaped quotes in double quotes', () => {
-    expect(parseArgs('"say \\"hi\\""')).toEqual(['say "hi"']);
+    expect(parseArgs(String.raw`"say \"hi\""`)).toStrictEqual(['say "hi"']);
   });
 
   test('handles single quote inside double quotes', () => {
-    expect(parseArgs('"it\'s fine"')).toEqual(["it's fine"]);
+    expect(parseArgs('"it\'s fine"')).toStrictEqual(["it's fine"]);
   });
 
   test('handles double quote inside single quotes', () => {
-    expect(parseArgs('\'say "hi"\'')).toEqual(['say "hi"']);
+    expect(parseArgs('\'say "hi"\'')).toStrictEqual(['say "hi"']);
   });
 
   test('returns empty array for empty input', () => {
-    expect(parseArgs('')).toEqual([]);
+    expect(parseArgs('')).toStrictEqual([]);
   });
 
   test('returns empty array for whitespace-only input', () => {
-    expect(parseArgs('   ')).toEqual([]);
+    expect(parseArgs('   ')).toStrictEqual([]);
   });
 
   test('handles multiple quoted strings', () => {
-    expect(parseArgs('"hello" "world"')).toEqual(['hello', 'world']);
+    expect(parseArgs('"hello" "world"')).toStrictEqual(['hello', 'world']);
   });
 
   test('handles backslash outside quotes', () => {
-    expect(parseArgs('hello\\ world')).toEqual(['hello world']);
+    expect(parseArgs(String.raw`hello\ world`)).toStrictEqual(['hello world']);
   });
 
   test('preserves backslash in single quotes', () => {
-    expect(parseArgs("'hello\\\\world'")).toEqual(['hello\\\\world']);
+    expect(parseArgs(String.raw`'hello\\world'`)).toStrictEqual([String.raw`hello\\world`]);
   });
 
   test('handles command with multiple spaces between args', () => {
-    expect(parseArgs('echo   hello   world')).toEqual(['echo', 'hello', 'world']);
+    expect(parseArgs('echo   hello   world')).toStrictEqual(['echo', 'hello', 'world']);
   });
 });
 
-describe('COMMANDS', () => {
+describe('cOMMANDS', () => {
   test('contains exactly 11 commands', () => {
     expect(COMMANDS).toHaveLength(11);
   });
@@ -90,9 +92,9 @@ describe('COMMANDS', () => {
     }
   });
 
-  test('COMMAND_NAMES matches COMMANDS names', () => {
+  test('cOMMAND_NAMES matches COMMANDS names', () => {
     const names = COMMANDS.map(cmd => cmd.name);
-    expect(COMMAND_NAMES).toEqual(names);
+    expect(COMMAND_NAMES).toStrictEqual(names);
   });
 });
 

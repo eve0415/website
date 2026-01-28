@@ -3,7 +3,7 @@ import { render } from 'vitest-browser-react';
 
 import Background from './background';
 
-describe('Background', () => {
+describe('background', () => {
   test('renders canvas element', async () => {
     const { container } = await render(<Background />);
 
@@ -28,15 +28,15 @@ describe('Background', () => {
     expect(canvas).not.toBeNull();
 
     // Trigger resize
-    window.dispatchEvent(new Event('resize'));
+    globalThis.dispatchEvent(new Event('resize'));
 
     // Canvas should still exist after resize
     expect(container.querySelector('canvas')).not.toBeNull();
   });
 
   test('cleans up on unmount', async () => {
-    const removeEventListenerSpy = vi.spyOn(window, 'removeEventListener');
-    const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
+    const removeEventListenerSpy = vi.spyOn(globalThis, 'removeEventListener');
+    const cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
     const screen = await render(<Background />);
 
@@ -45,6 +45,7 @@ describe('Background', () => {
     // Cleanup should remove resize listener
     expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
     // And cancel animation frame
+    // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
     expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
     removeEventListenerSpy.mockRestore();
@@ -53,8 +54,8 @@ describe('Background', () => {
 
   test('handles reduced motion preference', async () => {
     // Mock reduced motion preference
-    const originalMatchMedia = window.matchMedia;
-    window.matchMedia = vi.fn().mockImplementation(query => ({
+    const originalMatchMedia = globalThis.matchMedia;
+    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
       matches: query === '(prefers-reduced-motion: reduce)',
       media: query,
       onchange: null,
@@ -71,7 +72,7 @@ describe('Background', () => {
     expect(canvas).not.toBeNull();
 
     // Restore
-    window.matchMedia = originalMatchMedia;
+    globalThis.matchMedia = originalMatchMedia;
   });
 
   test('handles mouse movement', async () => {
@@ -81,7 +82,7 @@ describe('Background', () => {
     expect(canvas).not.toBeNull();
 
     // Dispatch mouse move event
-    window.dispatchEvent(new MouseEvent('mousemove', { clientX: 100, clientY: 200 }));
+    globalThis.dispatchEvent(new MouseEvent('mousemove', { clientX: 100, clientY: 200 }));
 
     // Animation should continue (canvas still exists)
     expect(container.querySelector('canvas')).not.toBeNull();

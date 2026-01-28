@@ -1,5 +1,5 @@
 import type { Certificate, CertificatePack, ConnectionInfo } from './connection-info';
-import type { DOMScanData } from './useDOMScan';
+import type { DOMScanData } from './useDomScan';
 import type { NavigationTimingData } from './useNavigationTiming';
 
 export type MessageType = 'info' | 'success' | 'warning' | 'error' | 'group';
@@ -28,41 +28,37 @@ export interface ProgressStage {
 }
 
 // Flatten messages for sequential display, respecting hierarchy
-export const flattenMessages = (messages: BootMessage[], depth: number = 0): Array<BootMessage & { depth: number }> => {
-  const result: Array<BootMessage & { depth: number }> = [];
+export const flattenMessages = (messages: BootMessage[], depth = 0): (BootMessage & { depth: number })[] => {
+  const result: (BootMessage & { depth: number })[] = [];
 
   for (const msg of messages) {
     result.push({ ...msg, depth });
-    if (msg.children) {
-      result.push(...flattenMessages(msg.children, depth + 1));
-    }
+    if (msg.children) result.push(...flattenMessages(msg.children, depth + 1));
   }
 
   return result;
 };
 
 // Get text from message, resolving dynamic text functions
-export const resolveMessageText = (msg: BootMessage, ctx: BootContext): string => {
-  return typeof msg.text === 'function' ? msg.text(ctx) : msg.text;
-};
+export const resolveMessageText = (msg: BootMessage, ctx: BootContext): string => (typeof msg.text === 'function' ? msg.text(ctx) : msg.text);
 
 // Helper to slugify string for message ID
 const slugify = (str: string): string =>
   str
     .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-|-$/g, '');
+    .replaceAll(/[^a-z0-9]+/g, '-')
+    .replaceAll(/^-|-$/g, '');
 
 /**
  * Generate certificate verification messages dynamically based on certificate chain.
  * Each certificate gets its own verification block with appropriate checks.
  */
 const createCertMessages = (certPack: CertificatePack | null, baseDelay: number): BootMessage[] => {
-  if (!certPack?.certificates?.length) {
+  if (!certPack || !certPack.certificates || certPack.certificates.length === 0)
     return [{ id: 'tls-cert-none', text: 'No certificates received', type: 'warning', baseDelay }];
-  }
 
-  return certPack.certificates.map((cert: Certificate, i: number) => {
+  const { certificates } = certPack;
+  return certificates.map((cert: Certificate, i: number) => {
     const cn = cert.hosts?.[0] ?? cert.issuer ?? `cert-${i}`;
     const slug = slugify(cn);
     const isLeaf = i === 0;
@@ -101,9 +97,10 @@ const createCertMessages = (certPack: CertificatePack | null, baseDelay: number)
  * Build certificate chain display string from certificate pack.
  */
 const buildChainString = (certPack: CertificatePack | null): string => {
-  if (!certPack?.certificates?.length) return 'no chain';
-  const leaf = certPack.certificates[0]?.hosts?.[0] ?? 'leaf';
-  const intermediates = certPack.certificates.slice(1).map((c: Certificate) => c.issuer ?? 'Unknown');
+  if (!certPack || !certPack.certificates || certPack.certificates.length === 0) return 'no chain';
+  const { certificates } = certPack;
+  const leaf = certificates[0]?.hosts?.[0] ?? 'leaf';
+  const intermediates = certificates.slice(1).map((c: Certificate) => c.issuer ?? 'Unknown');
   return [leaf, ...intermediates].join(' → ');
 };
 
@@ -352,9 +349,9 @@ export const createBootMessages = (connection: ConnectionInfo): BootMessage[] =>
       {
         id: 'res-css',
         text: ctx => {
-          const css = ctx.dom.stylesheets[0];
+          const [css] = ctx.dom.stylesheets;
           if (!css?.href) return 'CSS inline styles found';
-          const name = css.href.split('/').pop() || 'styles.css';
+          const name = css.href.split('/').pop() ?? 'styles.css';
           return `CSS 取得中: ${name} (render-blocking)`;
         },
         type: 'info',

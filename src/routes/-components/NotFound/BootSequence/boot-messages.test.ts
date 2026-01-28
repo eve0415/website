@@ -1,9 +1,16 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Test assertions verify existence */
 import type { BootContext, BootMessage } from './boot-messages';
 
 import { describe, expect, it } from 'vitest';
 
 import { BASE_BOOT_DURATION, PROGRESS_STAGES, createBootMessages, flattenMessages, resolveMessageText } from './boot-messages';
 import { basicConnection, fastTiming, http3Connection, mockConnection, mockDOMScan, noCertConnection } from './boot-sequence.fixtures';
+
+// Helper to find cert group in TLS section
+const findCertGroup = (messages: BootMessage[]) => {
+  const tlsGroup = messages.find(m => m.id === 'tls');
+  return tlsGroup?.children?.find(m => m.id === 'tls-cert');
+};
 
 // Standard test context using fixtures
 const createTestContext = (overrides: Partial<BootContext> = {}): BootContext => ({
@@ -48,7 +55,7 @@ describe('boot-messages', () => {
 
       const result = flattenMessages(messages);
 
-      expect(result.map(m => m.id)).toEqual(['a', 'a1', 'b']);
+      expect(result.map(m => m.id)).toStrictEqual(['a', 'a1', 'b']);
     });
 
     it('handles deeply nested structures', () => {
@@ -88,7 +95,7 @@ describe('boot-messages', () => {
     });
 
     it('returns empty array for empty input', () => {
-      expect(flattenMessages([])).toEqual([]);
+      expect(flattenMessages([])).toStrictEqual([]);
     });
 
     it('handles messages without children', () => {
@@ -100,7 +107,7 @@ describe('boot-messages', () => {
       const result = flattenMessages(messages);
 
       expect(result).toHaveLength(2);
-      expect(result.every(m => m.depth === 0)).toBe(true);
+      expect(result.every(m => m.depth === 0)).toBeTruthy();
     });
 
     it('preserves all message properties', () => {
@@ -209,9 +216,7 @@ describe('boot-messages', () => {
       const flat = flattenMessages(messages);
       const validTypes = ['info', 'success', 'warning', 'error', 'group'];
 
-      for (const msg of flat) {
-        expect(validTypes).toContain(msg.type);
-      }
+      for (const msg of flat) expect(validTypes).toContain(msg.type);
     });
 
     it('all messages have required properties', () => {
@@ -274,18 +279,11 @@ describe('boot-messages', () => {
       const flat = flattenMessages(messages);
       const ctx = createTestContext();
 
-      for (const msg of flat) {
-        expect(() => resolveMessageText(msg, ctx)).not.toThrow();
-      }
+      for (const msg of flat) expect(() => resolveMessageText(msg, ctx)).not.toThrow();
     });
   });
 
   describe('dynamic certificate messages', () => {
-    const findCertGroup = (messages: BootMessage[]) => {
-      const tlsGroup = messages.find(m => m.id === 'tls');
-      return tlsGroup?.children?.find(m => m.id === 'tls-cert');
-    };
-
     it('generates 1 cert message for single-cert chain', () => {
       const messages = createBootMessages(basicConnection);
       const certGroup = findCertGroup(messages);
@@ -357,7 +355,7 @@ describe('boot-messages', () => {
     });
   });
 
-  describe('PROGRESS_STAGES', () => {
+  describe('pROGRESS_STAGES', () => {
     it('contains expected stages', () => {
       const labels = PROGRESS_STAGES.map(s => s.label);
 
@@ -379,9 +377,7 @@ describe('boot-messages', () => {
     });
 
     it('all stages have positive duration', () => {
-      for (const stage of PROGRESS_STAGES) {
-        expect(stage.duration).toBeGreaterThan(0);
-      }
+      for (const stage of PROGRESS_STAGES) expect(stage.duration).toBeGreaterThan(0);
     });
 
     it('total duration matches BASE_BOOT_DURATION', () => {
@@ -392,7 +388,7 @@ describe('boot-messages', () => {
     });
   });
 
-  describe('BASE_BOOT_DURATION', () => {
+  describe('bASE_BOOT_DURATION', () => {
     it('is 5000ms', () => {
       expect(BASE_BOOT_DURATION).toBe(5000);
     });

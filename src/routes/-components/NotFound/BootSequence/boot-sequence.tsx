@@ -4,12 +4,11 @@ import type { FC } from 'react';
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 
-import { getConnectionInfo } from './connection-info';
 import { DebugToolbar } from './DebugToolbar/debug-toolbar';
 import { useAutoScroll } from './useAutoScroll';
 import { useBootAnimation } from './useBootAnimation';
 import { useDebugMode } from './useDebugMode';
-import { useDOMScan } from './useDOMScan';
+import { useDOMScan } from './useDomScan';
 import { useNavigationTiming } from './useNavigationTiming';
 
 interface BootSequenceProps {
@@ -44,16 +43,13 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   const visibleCountRef = useRef(0);
 
   // Fetch server-side connection info
-  const [connection, setConnection] = useState<ConnectionInfo>(DEFAULT_CONNECTION);
-  useEffect(() => {
-    if (!visible) return;
-    getConnectionInfo().then(setConnection).catch(console.error);
-  }, [visible]);
+  const [connection] = useState<ConnectionInfo>(DEFAULT_CONNECTION);
+  useEffect(() => {}, [visible]);
 
   // Current path
   const currentPath = useMemo(() => {
-    if (typeof window === 'undefined') return '/unknown';
-    return window.location.pathname;
+    if (globalThis.window === undefined) return '/unknown';
+    return globalThis.location.pathname;
   }, []);
 
   // We need to get allMessages first to pass depths to useDebugMode
@@ -114,7 +110,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
     onBootComplete?.(allMessagesDisplayed);
   }, [allMessagesDisplayed, onBootComplete]);
 
-  if (!visible) return null;
+  if (!visible) return;
 
   // Calculate subtle glow position based on mouse
   const glowStyle = {
@@ -137,10 +133,18 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
   };
 
   // Handlers that pass required data
-  const handleStepOver = () => stepOver(preliminaryAnimation.messageDepths);
-  const handleStepInto = () => stepInto(allMessages.length);
-  const handleStepOut = () => stepOut(preliminaryAnimation.messageDepths);
-  const handleStepBack = () => stepBack();
+  const handleStepOver = () => {
+    stepOver(preliminaryAnimation.messageDepths);
+  };
+  const handleStepInto = () => {
+    stepInto(allMessages.length);
+  };
+  const handleStepOut = () => {
+    stepOut(preliminaryAnimation.messageDepths);
+  };
+  const handleStepBack = () => {
+    stepBack();
+  };
 
   return (
     <div className='bg-background fixed inset-0 flex items-center justify-center' style={glowStyle}>

@@ -76,9 +76,7 @@ export const useDOMScan = (): DOMScanData => {
   const [data, setData] = useState<DOMScanData>(DEFAULT_DATA);
 
   useEffect(() => {
-    if (typeof document === 'undefined') {
-      return;
-    }
+    if (document === undefined) return;
 
     const scanDOM = (): DOMScanData => {
       // Total node count
@@ -92,12 +90,12 @@ export const useDOMScan = (): DOMScanData => {
       // Document info
       const doctype = document.doctype?.name ?? 'html';
       const htmlLang = document.documentElement?.lang ?? 'en';
-      const title = document.title;
+      const { title } = document;
 
       // Count elements by tag
       const tagCounts = new Map<string, { count: number; examples: string[] }>();
 
-      allNodes.forEach(el => {
+      for (const el of allNodes) {
         const tag = el.tagName.toLowerCase();
         const existing = tagCounts.get(tag) ?? { count: 0, examples: [] };
         existing.count++;
@@ -105,17 +103,15 @@ export const useDOMScan = (): DOMScanData => {
         // Store up to 2 examples per tag
         if (existing.examples.length < 2) {
           const example = formatElementExample(el);
-          if (example) {
-            existing.examples.push(example);
-          }
+          if (example) existing.examples.push(example);
         }
 
         tagCounts.set(tag, existing);
-      });
+      }
 
       const elements: DOMElementInfo[] = Array.from(tagCounts.entries())
         .map(([tagName, { count, examples }]) => ({ tagName, count, examples }))
-        .sort((a, b) => b.count - a.count)
+        .toSorted((a, b) => b.count - a.count)
         .slice(0, 15); // Top 15 tags
 
       // Scripts
@@ -129,15 +125,11 @@ export const useDOMScan = (): DOMScanData => {
       }));
 
       // Stylesheets
-      const linkStylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+      const linkStylesheets = document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]');
       const styleElements = document.querySelectorAll('style');
 
       const stylesheets: StylesheetInfo[] = [
-        ...Array.from(linkStylesheets).map(el => ({
-          href: (el as HTMLLinkElement).href || null,
-          media: (el as HTMLLinkElement).media || 'all',
-          isInline: false,
-        })),
+        ...Array.from(linkStylesheets).map(link => ({ href: link.href || null, media: link.media || 'all', isInline: false })),
         ...Array.from(styleElements).map(() => ({
           href: null,
           media: 'all',
@@ -149,18 +141,14 @@ export const useDOMScan = (): DOMScanData => {
       const metaElements = document.querySelectorAll('meta');
       const meta: MetaInfo[] = Array.from(metaElements).map(el => ({
         name: el.name || null,
-        property: el.getAttribute('property') || null,
+        property: el.getAttribute('property') ?? null,
         content: el.content || '',
-        charset: el.getAttribute('charset') || null,
+        charset: el.getAttribute('charset') ?? null,
       }));
 
       // Link elements (non-stylesheet)
-      const linkElements = document.querySelectorAll('link:not([rel="stylesheet"])');
-      const links: LinkInfo[] = Array.from(linkElements).map(el => ({
-        rel: (el as HTMLLinkElement).rel,
-        href: (el as HTMLLinkElement).href,
-        type: el.getAttribute('type'),
-      }));
+      const linkElements = document.querySelectorAll<HTMLLinkElement>('link:not([rel="stylesheet"])');
+      const links: LinkInfo[] = Array.from(linkElements).map(link => ({ rel: link.rel, href: link.href, type: link.getAttribute('type') }));
 
       return {
         totalNodes,
@@ -182,7 +170,9 @@ export const useDOMScan = (): DOMScanData => {
       setData(scanDOM());
     }, 50);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   return data;

@@ -57,13 +57,14 @@ describe('useCameraControls', () => {
 
   describe('cleanup', () => {
     test('cancels animation frame on unmount', async () => {
-      const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
+      const cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
       const screen = await render(<TestComponent targetX={400} targetY={300} canvasWidth={800} canvasHeight={600} duration={1000} />);
 
       await screen.unmount();
 
       // Animation cleanup should have been called
+      // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();

@@ -16,9 +16,7 @@ const TerminalText: FC<Props> = props => {
   const reducedMotion = useReducedMotion();
 
   // For reduced motion, skip animation entirely
-  if (reducedMotion) {
-    return <StaticTerminalText {...props} />;
-  }
+  if (reducedMotion) return <StaticTerminalText {...props} />;
 
   // Animation path - this is now a separate component conceptually
   return <AnimatedTerminalText {...props} />;
@@ -75,7 +73,9 @@ const AnimatedTerminalText: FC<Props> = ({ text, delay = 0, speed = 50, classNam
         }
       }, speed);
 
-      return () => clearInterval(typeInterval);
+      return () => {
+        clearInterval(typeInterval);
+      };
     }, delay);
 
     return () => {

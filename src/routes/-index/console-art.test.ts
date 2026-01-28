@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-assignment), typescript-eslint(no-unsafe-call), typescript-eslint(no-unsafe-member-access) -- Test file uses vi.spyOn which returns any */
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { printConsoleArt, printSecretMessage } from './console-art';

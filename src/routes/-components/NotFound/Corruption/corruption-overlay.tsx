@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-array-index-key) -- Static decorative arrays for visual effects */
 import type { MouseInfluence } from '../useMouseInfluence';
 import type { FC } from 'react';
 
@@ -33,7 +34,7 @@ const CorruptionOverlay: FC<CorruptionOverlayProps> = ({ progress, mouseInfluenc
     }));
   }, [progress]);
 
-  if (!visible) return null;
+  if (!visible) return;
 
   return (
     <div className='pointer-events-none fixed inset-0 z-20 overflow-hidden'>

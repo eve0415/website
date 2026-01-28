@@ -33,7 +33,7 @@ const StackOverflow: FC = () => {
     [],
   );
 
-  const [stackFrames, setStackFrames] = useState<string[]>(() => (reducedMotion ? [...frames].reverse() : []));
+  const [stackFrames, setStackFrames] = useState<string[]>(() => (reducedMotion ? [...frames].toReversed() : []));
   const [overflowing, setOverflowing] = useState(() => reducedMotion);
   const [crashed, setCrashed] = useState(() => reducedMotion);
 
@@ -47,16 +47,29 @@ const StackOverflow: FC = () => {
     currentIndexRef.current = 0;
     const interval = setInterval(() => {
       if (currentIndexRef.current < frames.length) {
-        setStackFrames(prev => [frames[currentIndexRef.current]!, ...prev]);
-        currentIndexRef.current += 1;
+        const nextFrame = frames[currentIndexRef.current];
+        if (nextFrame) {
+          setStackFrames(prev => [nextFrame, ...prev]);
+          currentIndexRef.current += 1;
+        } else {
+          clearInterval(interval);
+          setOverflowing(true);
+          setTimeout(() => {
+            setCrashed(true);
+          }, 800);
+        }
       } else {
         clearInterval(interval);
         setOverflowing(true);
-        setTimeout(() => setCrashed(true), 800);
+        setTimeout(() => {
+          setCrashed(true);
+        }, 800);
       }
     }, 100);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion, frames]);
 
   return (

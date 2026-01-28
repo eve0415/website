@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
+import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
+
 import { useTypewriter } from './useTypewriter';
 
 interface TestProps {
@@ -34,7 +36,7 @@ const TestComponent: FC<TestProps> = ({ text, speed, enabled }) => {
 describe('useTypewriter', () => {
   beforeEach(() => {
     vi.useFakeTimers();
-    delete window.__FORCE_REDUCED_MOTION__;
+    globalThis.__FORCE_REDUCED_MOTION__ = undefined;
   });
 
   afterEach(() => {
@@ -43,12 +45,7 @@ describe('useTypewriter', () => {
 
   describe('basic functionality', () => {
     test('starts with empty text when enabled', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hello' speed={10} />);
 
@@ -58,12 +55,7 @@ describe('useTypewriter', () => {
     });
 
     test('final displayedText equals input text after animation', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const testText = '型安全なコード';
 
@@ -78,12 +70,7 @@ describe('useTypewriter', () => {
     });
 
     test('isComplete is true when animation finishes', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hi' speed={5} />);
 
@@ -96,12 +83,7 @@ describe('useTypewriter', () => {
 
   describe('skipToEnd', () => {
     test('immediately shows full text when clicked', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const testText = 'Full text appears';
 
@@ -125,12 +107,7 @@ describe('useTypewriter', () => {
 
   describe('reduced motion', () => {
     test('shows full text immediately when prefers-reduced-motion is enabled', async () => {
-      window.matchMedia = vi.fn().mockImplementation(query => ({
-        matches: query === '(prefers-reduced-motion: reduce)',
-        media: query,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }));
+      vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
       const testText = 'Immediate display';
 
@@ -145,12 +122,7 @@ describe('useTypewriter', () => {
 
   describe('disabled state', () => {
     test('returns empty displayedText when disabled', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Should not show' enabled={false} />);
 
@@ -160,12 +132,7 @@ describe('useTypewriter', () => {
     });
 
     test('does not start animation when disabled', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='No animation' speed={5} enabled={false} />);
 
@@ -179,12 +146,7 @@ describe('useTypewriter', () => {
 
   describe('text changes', () => {
     test('resets animation when text changes', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const { rerender } = await render(<TestComponent text='First' speed={5} />);
 
@@ -206,12 +168,7 @@ describe('useTypewriter', () => {
 
   describe('cleanup', () => {
     test('cancels interval on unmount', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const screen = await render(<TestComponent text='Long text content' speed={50} />);
 
@@ -222,7 +179,7 @@ describe('useTypewriter', () => {
       await screen.unmount();
 
       // Should not throw
-      expect(true).toBe(true);
+      expect(true).toBeTruthy();
     });
   });
 });

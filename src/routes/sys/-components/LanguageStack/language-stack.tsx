@@ -23,6 +23,7 @@ const LanguageStack: FC<LanguageStackProps> = ({ languages, animate }) => {
         <span className='text-neon'>[</span>
         <span>STACK_ANALYSIS</span>
         <span className='text-neon'>]</span>
+        {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
         <span className='ml-2'>// リポジトリ言語分布</span>
       </div>
 

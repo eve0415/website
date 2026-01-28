@@ -14,11 +14,13 @@ import QRCode from './qr-code';
 const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
   const isEasterEgg = error instanceof SudoRmRfError;
   const reducedMotion = useReducedMotion();
+  const [fallbackDestination] = QR_DESTINATIONS;
+  if (fallbackDestination === undefined) throw new Error('Expected QR destinations to be defined');
 
   // Random selections (stable per render)
   const [qrDestination] = useState(() => {
     const index = Math.floor(Math.random() * QR_DESTINATIONS.length);
-    return QR_DESTINATIONS[index]!;
+    return QR_DESTINATIONS[index] ?? fallbackDestination;
   });
   const [message] = useState(() => getRandomMessage(isEasterEgg));
 
@@ -40,7 +42,9 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
         return p + Math.random() * 15;
       });
     }, 200);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   // Keypress listener (only when complete)
@@ -48,17 +52,18 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
     if (!isComplete) return;
     const handler = (e: KeyboardEvent) => {
       // Allow browser shortcuts (modifier keys) and function keys to pass through
-      if (e.metaKey || e.ctrlKey || e.altKey || e.key.startsWith('F')) {
-        return;
-      }
+      if (e.metaKey || e.ctrlKey || e.altKey || e.key.startsWith('F')) return;
+
       // Trigger restart on activation keys (printable, Enter, Space, Escape)
       if (e.key.length === 1 || e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
         e.preventDefault();
         reset();
       }
     };
-    window.addEventListener('keydown', handler);
-    return () => window.removeEventListener('keydown', handler);
+    globalThis.addEventListener('keydown', handler);
+    return () => {
+      globalThis.removeEventListener('keydown', handler);
+    };
   }, [isComplete, reset]);
 
   // Reset handler for button click

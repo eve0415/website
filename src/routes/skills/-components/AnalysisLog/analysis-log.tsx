@@ -30,15 +30,15 @@ const AnalysisLog: FC<Props> = ({ state }) => {
 
   // Heartbeat blink effect
   useEffect(() => {
-    if (state.phase === 'idle' || state.phase === 'completed' || state.phase === 'error') {
-      return;
-    }
+    if (state.phase === 'idle' || state.phase === 'completed' || state.phase === 'error') return;
 
     const interval = setInterval(() => {
       setBlink(prev => !prev);
     }, 1000);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [state.phase]);
 
   const isActive = state.phase !== 'idle' && state.phase !== 'completed' && state.phase !== 'error';
@@ -94,34 +94,23 @@ const AnalysisLog: FC<Props> = ({ state }) => {
   );
 };
 
-function getRepoMessage(repoName: string): string {
+const getRepoMessage = (repoName: string): string => {
   // Privacy check - only show public repo names
   const isPublic = canShowRepoName({ privacyClass: 'self' }); // Simplified - would need actual repo privacy class
-  if (isPublic) {
-    return `Scanning ${repoName}...`;
-  }
-  return 'Scanning private repository...';
-}
+  if (isPublic) return `Scanning ${repoName}...`;
 
-function getPhaseMessage(phase: WorkflowPhase, state: WorkflowState): string | null {
-  switch (phase) {
-    case 'listing-repos':
-      return 'Enumerating repositories...';
-    case 'squashing-history':
-      return 'Compressing history data...';
-    case 'ai-extracting-skills':
-      return 'Running skill extraction model...';
-    case 'ai-generating-japanese':
-      return 'Generating Japanese descriptions...';
-    case 'storing-results':
-      return 'Writing to KV store...';
-    case 'completed':
-      return `Analysis complete. ${state.repos_processed} repos processed.`;
-    case 'error':
-      return state.error_message || 'An error occurred.';
-    default:
-      return null;
-  }
-}
+  return 'Scanning private repository...';
+};
+
+const getPhaseMessage = (phase: WorkflowPhase, state: WorkflowState): string | undefined => {
+  if (phase === 'listing-repos') return 'Enumerating repositories...';
+  if (phase === 'squashing-history') return 'Compressing history data...';
+  if (phase === 'ai-extracting-skills') return 'Running skill extraction model...';
+  if (phase === 'ai-generating-japanese') return 'Generating Japanese descriptions...';
+  if (phase === 'storing-results') return 'Writing to KV store...';
+  if (phase === 'completed') return `Analysis complete. ${state.repos_processed} repos processed.`;
+  if (phase === 'error') return state.error_message ?? 'An error occurred.';
+  return undefined;
+};
 
 export default AnalysisLog;

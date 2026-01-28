@@ -97,10 +97,10 @@ export const ProgressAnimation = meta.story({
 
     // Wait for progress to increase from 0
     await waitFor(
-      () => {
+      async () => {
         const progressText = canvas.getByTestId('bsod-progress').textContent ?? '';
         const percentage = Number.parseInt(progressText.replace('% complete', ''), 10);
-        void expect(percentage).toBeGreaterThan(0);
+        await expect(percentage).toBeGreaterThan(0);
       },
       { timeout: 2000 },
     );
@@ -120,7 +120,7 @@ export const ProgressComplete = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for progress to complete
-    await waitFor(() => expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('100% complete'), { timeout: 5000 });
+    await waitFor(async () => expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('100% complete'), { timeout: 5000 });
 
     // All buttons should appear for easter egg
     await expect(canvas.getByTestId('bsod-reset')).toBeInTheDocument();
@@ -145,7 +145,7 @@ export const ProgressCompleteRegularError = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for progress to complete
-    await waitFor(() => expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('100% complete'), { timeout: 5000 });
+    await waitFor(async () => expect(canvas.getByTestId('bsod-progress')).toHaveTextContent('100% complete'), { timeout: 5000 });
 
     // Restart and Home should appear
     await expect(canvas.getByTestId('bsod-reset')).toBeInTheDocument();
@@ -217,6 +217,7 @@ export const LongErrorMessage = meta.story({
  */
 export const EmptyErrorMessage = meta.story({
   args: {
+    // oxlint-disable-next-line eslint-plugin-unicorn(error-message) -- Intentionally testing empty error handling
     error: new Error(''),
     reset: fn(),
   },
@@ -243,7 +244,7 @@ export const ResetInteraction = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for progress to complete and reset button to appear
-    await waitFor(() => expect(canvas.getByTestId('bsod-reset')).toBeInTheDocument(), { timeout: 5000 });
+    await waitFor(async () => expect(canvas.getByTestId('bsod-reset')).toBeInTheDocument(), { timeout: 5000 });
 
     // Click reset button
     const resetButton = canvas.getByTestId('bsod-reset');

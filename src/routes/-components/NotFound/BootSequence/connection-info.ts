@@ -55,6 +55,19 @@ export interface ConnectionInfo {
   certificatePack: CertificatePack | null;
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
+
+const isStringArray = (value: unknown): value is string[] => Array.isArray(value) && value.every(item => typeof item === 'string');
+
+const isCertificatePack = (value: unknown): value is CertificatePack => {
+  if (!isRecord(value)) return false;
+  const { hosts } = value;
+  if (hosts !== undefined && !isStringArray(hosts)) return false;
+  const { certificates } = value;
+  if (certificates !== undefined && !Array.isArray(certificates)) return false;
+  return true;
+};
+
 // KV cache key for certificate data
 const CERT_CACHE_KEY = 'cert-data-eve0415';
 
@@ -71,13 +84,11 @@ const fetchCertFromCloudflareAPI = createServerOnlyFn(async (): Promise<Certific
   const client = new Cloudflare({ apiToken: token });
 
   // Use SDK async iterator - paginate until found
-  // SDK types list response as `unknown`, so we assert to our interface
   for await (const rawPack of client.ssl.certificatePacks.list({ zone_id: zoneId })) {
-    const pack = rawPack as CertificatePack;
+    if (!isCertificatePack(rawPack)) throw new Error('Unexpected certificate pack shape from Cloudflare API');
+    const pack = rawPack;
     const hosts = pack.hosts ?? [];
-    if (hosts.some(h => h === 'eve0415.net' || h === '*.eve0415.net')) {
-      return pack;
-    }
+    if (hosts.some(h => h === 'eve0415.net' || h === '*.eve0415.net')) return pack;
   }
 
   return null;
@@ -96,9 +107,7 @@ const getCachedCert = createServerOnlyFn(async (): Promise<CertificatePack | nul
   if (cached) {
     // Check validity using SDK type's expires_on field
     const expiresOn = cached.certificates?.[0]?.expires_on;
-    if (expiresOn && new Date(expiresOn) > new Date()) {
-      return cached;
-    }
+    if (expiresOn && new Date(expiresOn) > new Date()) return cached;
   }
 
   // Strict: propagate errors, no fallback for stale cache
@@ -119,6 +128,7 @@ const getCachedCert = createServerOnlyFn(async (): Promise<CertificatePack | nul
  * Server function to get connection metadata.
  * Reads real data from Cloudflare request headers and API.
  */
+/* oxlint-disable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access -- tsgo bug: getRequestHeaders() typed as any */
 export const getConnectionInfo = createServerFn().handler(async (): Promise<ConnectionInfo> => {
   const headers = getRequestHeaders();
   const certificatePack = await getCachedCert();
@@ -142,3 +152,4 @@ export const getConnectionInfo = createServerFn().handler(async (): Promise<Conn
     certificatePack,
   };
 });
+/* oxlint-enable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access */

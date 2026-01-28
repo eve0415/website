@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-unescaped-entities) -- Code snippets with quotes are intentional visual elements */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -15,6 +16,12 @@ interface FloatingNumber {
   speed: number;
 }
 
+// Seeded random for deterministic values
+const seededRandom = (seed: number): number => {
+  const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+
 // Black hole visualization for division by zero
 const DivisionByZero: FC = () => {
   const reducedMotion = useReducedMotion();
@@ -23,20 +30,17 @@ const DivisionByZero: FC = () => {
   const [pullStrength, setPullStrength] = useState(() => (reducedMotion ? 1 : 0));
   const [rotation, setRotation] = useState(0);
 
-  // Seeded random for deterministic values
-  const seededRandom = (seed: number): number => {
-    const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
-    return x - Math.floor(x);
-  };
-
   // Floating numbers that get sucked in
   const numbers = useMemo((): FloatingNumber[] => {
     const result: FloatingNumber[] = [];
     const symbols = ['1', '2', '3', '4', '5', '404', 'π', 'e', '∞', '42', '0', 'NaN'];
+    const [fallbackSymbol] = symbols;
+    if (fallbackSymbol === undefined) throw new Error('Expected division symbols to be defined');
     for (let i = 0; i < 24; i++) {
+      const symbol = symbols.length > 0 ? (symbols[i % symbols.length] ?? fallbackSymbol) : fallbackSymbol;
       result.push({
         id: i,
-        value: symbols[i % symbols.length]!,
+        value: symbol,
         x: 50 + Math.cos((i / 24) * Math.PI * 2) * 40,
         y: 50 + Math.sin((i / 24) * Math.PI * 2) * 40,
         angle: (i / 24) * Math.PI * 2,
@@ -64,7 +68,9 @@ const DivisionByZero: FC = () => {
       }
     }, 50);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   // Rotation animation
@@ -75,7 +81,9 @@ const DivisionByZero: FC = () => {
       setRotation(r => r + 2);
     }, 30);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   const getNumberPosition = (num: FloatingNumber) => {

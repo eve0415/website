@@ -57,8 +57,12 @@ const MockCurrentTime: FC = () => {
 
   useEffect(() => {
     // Update once to show it's working, then stop
-    const timer = setTimeout(() => setTime('12:00:01'), 100);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      setTime('12:00:01');
+    }, 100);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   return <span className='text-muted-foreground font-mono'>{time}</span>;
@@ -107,77 +111,77 @@ const MockContactForm: FC = () => (
 );
 
 // Simplified LinkPage for Storybook (without router dependencies)
-const LinkPageForStory: FC = () => {
-  return (
-    <main className='min-h-dvh px-6 py-24 md:px-12'>
-      {/* Header */}
-      <header className='mb-16'>
-        <a href='/' className='group text-subtle-foreground hover:text-neon mb-8 inline-flex items-center gap-2 text-sm transition-colors'>
-          <span className='transition-transform group-hover:-translate-x-1'>←</span>
-          <span>Index</span>
-        </a>
-        <h1 className='text-4xl font-bold tracking-tight md:text-5xl'>Link</h1>
-        <p className='text-muted-foreground mt-4'>連絡先 / SNS</p>
-      </header>
+const LinkPageForStory: FC = () => (
+  <main className='min-h-dvh px-6 py-24 md:px-12'>
+    {/* Header */}
+    <header className='mb-16'>
+      <a href='/' className='group text-subtle-foreground hover:text-neon mb-8 inline-flex items-center gap-2 text-sm transition-colors'>
+        <span className='transition-transform group-hover:-translate-x-1'>←</span>
+        <span>Index</span>
+      </a>
+      <h1 className='text-4xl font-bold tracking-tight md:text-5xl'>Link</h1>
+      <p className='text-muted-foreground mt-4'>連絡先 / SNS</p>
+    </header>
 
-      <div className='grid gap-16 lg:grid-cols-2'>
-        {/* Social Links */}
-        <section>
-          <h2 className='text-subtle-foreground mb-8 font-mono text-sm tracking-wider uppercase'>// Social</h2>
-          <div className='grid gap-4'>
-            {socialLinks.map((link, index) => (
-              <SocialLinkCard key={link.name} link={link} index={index} />
-            ))}
-          </div>
-        </section>
-
-        {/* Contact Form */}
-        <section>
-          <h2 className='text-subtle-foreground mb-8 font-mono text-sm tracking-wider uppercase'>// Contact</h2>
-          <MockContactForm />
-        </section>
-      </div>
-
-      {/* Location / Time */}
-      <section className='border-line mt-24 border-t pt-12'>
-        <div className='text-subtle-foreground flex flex-wrap gap-8 text-sm md:gap-12'>
-          <div>
-            <span className='block font-mono text-xs tracking-wider uppercase'>Location</span>
-            <span className='text-muted-foreground mt-1 block'>Tokyo, Japan</span>
-          </div>
-          <div>
-            <span className='block font-mono text-xs tracking-wider uppercase'>Timezone</span>
-            <span className='text-muted-foreground mt-1 block'>UTC+9 (JST)</span>
-          </div>
-          <div>
-            <span className='block font-mono text-xs tracking-wider uppercase'>Current Time</span>
-            <span className='mt-1 block'>
-              <MockCurrentTime />
-            </span>
-          </div>
-          <div>
-            <span className='block font-mono text-xs tracking-wider uppercase'>Status</span>
-            <span className='text-muted-foreground mt-1 flex items-center gap-2'>
-              <span className='relative flex size-2'>
-                <span className='bg-neon absolute inline-flex size-full animate-ping rounded-full opacity-75' />
-                <span className='bg-neon relative inline-flex size-2 rounded-full' />
-              </span>
-              Available
-            </span>
-          </div>
+    <div className='grid gap-16 lg:grid-cols-2'>
+      {/* Social Links */}
+      <section>
+        {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
+        <h2 className='text-subtle-foreground mb-8 font-mono text-sm tracking-wider uppercase'>// Social</h2>
+        <div className='grid gap-4'>
+          {socialLinks.map((link, index) => (
+            <SocialLinkCard key={link.name} link={link} index={index} />
+          ))}
         </div>
       </section>
 
-      {/* Navigation hint */}
-      <div className='mt-16 flex justify-center'>
-        <a href='/skills' className='group text-subtle-foreground hover:text-neon flex items-center gap-2 text-sm transition-colors'>
-          <span className='transition-transform group-hover:-translate-x-1'>←</span>
-          <span>Skills Matrix</span>
-        </a>
+      {/* Contact Form */}
+      <section>
+        {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
+        <h2 className='text-subtle-foreground mb-8 font-mono text-sm tracking-wider uppercase'>// Contact</h2>
+        <MockContactForm />
+      </section>
+    </div>
+
+    {/* Location / Time */}
+    <section className='border-line mt-24 border-t pt-12'>
+      <div className='text-subtle-foreground flex flex-wrap gap-8 text-sm md:gap-12'>
+        <div>
+          <span className='block font-mono text-xs tracking-wider uppercase'>Location</span>
+          <span className='text-muted-foreground mt-1 block'>Tokyo, Japan</span>
+        </div>
+        <div>
+          <span className='block font-mono text-xs tracking-wider uppercase'>Timezone</span>
+          <span className='text-muted-foreground mt-1 block'>UTC+9 (JST)</span>
+        </div>
+        <div>
+          <span className='block font-mono text-xs tracking-wider uppercase'>Current Time</span>
+          <span className='mt-1 block'>
+            <MockCurrentTime />
+          </span>
+        </div>
+        <div>
+          <span className='block font-mono text-xs tracking-wider uppercase'>Status</span>
+          <span className='text-muted-foreground mt-1 flex items-center gap-2'>
+            <span className='relative flex size-2'>
+              <span className='bg-neon absolute inline-flex size-full animate-ping rounded-full opacity-75' />
+              <span className='bg-neon relative inline-flex size-2 rounded-full' />
+            </span>
+            Available
+          </span>
+        </div>
       </div>
-    </main>
-  );
-};
+    </section>
+
+    {/* Navigation hint */}
+    <div className='mt-16 flex justify-center'>
+      <a href='/skills' className='group text-subtle-foreground hover:text-neon flex items-center gap-2 text-sm transition-colors'>
+        <span className='transition-transform group-hover:-translate-x-1'>←</span>
+        <span>Skills Matrix</span>
+      </a>
+    </div>
+  </main>
+);
 
 const meta = preview.meta({
   component: LinkPageForStory,

@@ -34,7 +34,7 @@ export interface LanguageStat {
   color: string;
 }
 
-export function levelFromContributionLevel(level: ContributionLevel): 0 | 1 | 2 | 3 | 4 {
+export const levelFromContributionLevel = (level: ContributionLevel): 0 | 1 | 2 | 3 | 4 => {
   switch (level) {
     case 'NONE':
       return 0;
@@ -49,15 +49,15 @@ export function levelFromContributionLevel(level: ContributionLevel): 0 | 1 | 2 
     default:
       return 0;
   }
-}
+};
 
-export function calculateStreaksJST(days: Array<{ date: string; count: number }>): {
+export const calculateStreaksJST = (
+  days: { date: string; count: number }[],
+): {
   currentStreak: number;
   longestStreak: number;
-} {
-  if (days.length === 0) {
-    return { currentStreak: 0, longestStreak: 0 };
-  }
+} => {
+  if (days.length === 0) return { currentStreak: 0, longestStreak: 0 };
 
   // Get today's date in JST (UTC+9)
   const now = new Date();
@@ -67,16 +67,16 @@ export function calculateStreaksJST(days: Array<{ date: string; count: number }>
   const yesterdayJST = new Date(nowJST.getTime() - 24 * 60 * 60 * 1000).toISOString().split('T')[0] ?? '';
 
   // Sort by date ascending
-  const sortedDays = [...days].sort((a, b) => a.date.localeCompare(b.date));
+  const sortedDays = [...days].toSorted((a, b) => a.date.localeCompare(b.date));
 
   // Calculate longest streak
   let longestStreak = 0;
   let tempStreak = 0;
-  let prevDate: string | null = null;
+  let prevDate;
 
   for (const day of sortedDays) {
     if (day.count > 0) {
-      if (prevDate === null) {
+      if (prevDate === undefined) {
         tempStreak = 1;
       } else {
         // Check if this day is consecutive to previous
@@ -84,48 +84,27 @@ export function calculateStreaksJST(days: Array<{ date: string; count: number }>
         const curr = new Date(day.date);
         const diffDays = Math.round((curr.getTime() - prev.getTime()) / (1000 * 60 * 60 * 24));
 
-        if (diffDays === 1) {
-          tempStreak++;
-        } else {
-          tempStreak = 1;
-        }
+        if (diffDays === 1) tempStreak++;
+        else tempStreak = 1;
       }
       longestStreak = Math.max(longestStreak, tempStreak);
       prevDate = day.date;
     } else {
       tempStreak = 0;
-      prevDate = null;
+      prevDate = undefined;
     }
   }
 
   // Calculate current streak (from today or yesterday backwards)
   let currentStreak = 0;
-  const sortedDesc = [...days].sort((a, b) => b.date.localeCompare(a.date));
+  const sortedDesc = [...days].toSorted((a, b) => b.date.localeCompare(a.date));
 
   // Find the starting point for current streak
   let streakStarted = false;
   let expectedDate = todayJST;
 
   for (const day of sortedDesc) {
-    if (!streakStarted) {
-      // Looking for today or yesterday to start the streak
-      if (day.date === todayJST || day.date === yesterdayJST) {
-        if (day.count > 0) {
-          streakStarted = true;
-          currentStreak = 1;
-          expectedDate = day.date;
-        } else if (day.date === todayJST) {
-          // Today has no contributions, check yesterday
-          continue;
-        } else {
-          // Yesterday has no contributions, no current streak
-          break;
-        }
-      } else if (day.date < yesterdayJST) {
-        // Past yesterday with no contributions found, no current streak
-        break;
-      }
-    } else {
+    if (streakStarted) {
       // Continue checking streak backwards
       const expected = new Date(expectedDate);
       expected.setDate(expected.getDate() - 1);
@@ -142,13 +121,29 @@ export function calculateStreaksJST(days: Array<{ date: string; count: number }>
         // Skipped a day, streak ends
         break;
       }
+    } else if (day.date === todayJST || day.date === yesterdayJST) {
+      // Looking for today or yesterday to start the streak
+      if (day.count > 0) {
+        streakStarted = true;
+        currentStreak = 1;
+        expectedDate = day.date;
+      } else if (day.date === todayJST) {
+        // Today has no contributions, check yesterday
+        continue;
+      } else {
+        // Yesterday has no contributions, no current streak
+        break;
+      }
+    } else if (day.date < yesterdayJST) {
+      // Past yesterday with no contributions found, no current streak
+      break;
     }
   }
 
   return { currentStreak, longestStreak };
-}
+};
 
-export function getLanguageColor(language: string): string {
+export const getLanguageColor = (language: string): string => {
   const colors: Record<string, string> = {
     TypeScript: '#3178c6',
     JavaScript: '#f1e05a',
@@ -175,12 +170,10 @@ export function getLanguageColor(language: string): string {
   };
 
   return colors[language] ?? '#8b949e';
-}
+};
 
-export function getRelativeTimeJapanese(isoDate: string): string {
-  if (isoDate === '未取得') {
-    return isoDate;
-  }
+export const getRelativeTimeJapanese = (isoDate: string): string => {
+  if (isoDate === '未取得') return isoDate;
 
   const date = new Date(isoDate);
   const now = new Date();
@@ -195,4 +188,4 @@ export function getRelativeTimeJapanese(isoDate: string): string {
   if (diffDays < 7) return `${diffDays}日前`;
 
   return date.toLocaleDateString('ja-JP');
-}
+};

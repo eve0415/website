@@ -57,20 +57,20 @@ export const useNavigationTiming = (): NavigationTimingData => {
 
   useEffect(() => {
     // Only runs on client
-    if (typeof window === 'undefined' || !window.performance) {
-      return;
-    }
+    if (globalThis.window === undefined || globalThis.performance === undefined) return;
+
+    const isNavigationTiming = (entry: PerformanceEntry): entry is PerformanceNavigationTiming => entry.entryType === 'navigation' && 'responseEnd' in entry;
+
+    const isResourceTiming = (entry: PerformanceEntry): entry is PerformanceResourceTiming => entry.entryType === 'resource' && 'transferSize' in entry;
 
     const getTimingData = () => {
-      const entries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
-      const nav = entries[0];
+      const entries = performance.getEntriesByType('navigation');
+      const nav = entries.find(entry => isNavigationTiming(entry));
 
-      if (!nav) {
-        return DEFAULT_DATA;
-      }
+      if (!nav) return DEFAULT_DATA;
 
       // Get resource timing entries (same-origin only have full data)
-      const resourceEntries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+      const resourceEntries = performance.getEntriesByType('resource').filter(entry => isResourceTiming(entry));
       const resources: ResourceTimingEntry[] = resourceEntries
         .filter(r => r.transferSize > 0) // Filter out cached/0-byte
         .map(r => ({
@@ -104,7 +104,9 @@ export const useNavigationTiming = (): NavigationTimingData => {
       setData(getTimingData());
     }, 100);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   return data;

@@ -11,21 +11,25 @@ import Logo from './logo';
 const LogoTestWrapper: FC<{ animate?: boolean }> = ({ animate = true }) => {
   const [mounted, setMounted] = useState(true);
 
-  if (!mounted) {
-    return <div data-testid='unmounted'>unmounted</div>;
-  }
+  if (!mounted) return <div data-testid='unmounted'>unmounted</div>;
 
   return (
     <div data-testid='wrapper'>
       <Logo animate={animate} />
-      <button data-testid='unmount-btn' onClick={() => setMounted(false)} type='button'>
+      <button
+        data-testid='unmount-btn'
+        onClick={() => {
+          setMounted(false);
+        }}
+        type='button'
+      >
         Unmount
       </button>
     </div>
   );
 };
 
-describe('Logo', () => {
+describe('logo', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -64,7 +68,7 @@ describe('Logo', () => {
 
   test('animation completes after delay', async () => {
     // This test covers line 28: setIsAnimating(false) after timer
-    await render(<Logo animate={true} />);
+    await render(<Logo animate />);
 
     const svg = page.getByRole('img');
     await expect.element(svg).toBeInTheDocument();
@@ -77,9 +81,9 @@ describe('Logo', () => {
   });
 
   test('cleans up timer on unmount', async () => {
-    const clearTimeoutSpy = vi.spyOn(window, 'clearTimeout');
+    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
 
-    await render(<LogoTestWrapper animate={true} />);
+    await render(<LogoTestWrapper animate />);
 
     // Unmount before animation completes
     const unmountBtn = page.getByTestId('unmount-btn');
@@ -88,6 +92,7 @@ describe('Logo', () => {
     await expect.element(page.getByTestId('unmounted')).toBeInTheDocument();
 
     // clearTimeout should have been called during cleanup
+    // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
     expect(clearTimeoutSpy).toHaveBeenCalled();
 
     clearTimeoutSpy.mockRestore();

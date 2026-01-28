@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-jest(no-conditional-in-test) -- Vitest poll() callbacks require null-coalescing for safe DOM access */
 import type { FC } from 'react';
 
 import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } from '@tanstack/react-router';
@@ -33,7 +34,7 @@ const TestWrapper: FC<TestProps> = ({ error, onReset = () => {} }) => {
   return <RouterProvider router={router} />;
 };
 
-describe('BSODError', () => {
+describe('bSODError', () => {
   describe('renders BSOD for all errors', () => {
     test('renders BSOD layout for SudoRmRfError', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
@@ -93,7 +94,7 @@ describe('BSODError', () => {
     });
   });
 
-  describe('QR code', () => {
+  describe('qR code', () => {
     test('displays QR code', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
@@ -101,7 +102,7 @@ describe('BSODError', () => {
       await expect.element(qrCode).toBeVisible();
     });
 
-    test('QR code has proper SVG structure', async () => {
+    test('qR code has proper SVG structure', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
       const qrCode = page.getByTestId('bsod-qrcode');
@@ -119,7 +120,7 @@ describe('BSODError', () => {
         .toBe(true);
     });
 
-    test('QR code contains path elements (cells)', async () => {
+    test('qR code contains path elements (cells)', async () => {
       await render(<TestWrapper error={new SudoRmRfError()} />);
 
       const qrCode = page.getByTestId('bsod-qrcode');
@@ -156,6 +157,7 @@ describe('BSODError', () => {
     });
 
     test('displays fallback for empty error message', async () => {
+      // oxlint-disable-next-line eslint-plugin-unicorn(error-message) -- Intentionally testing empty error handling
       const emptyError = new Error('');
       await render(<TestWrapper error={emptyError} />);
 
@@ -219,7 +221,7 @@ describe('BSODError', () => {
       // Click reset button
       await page.getByTestId('bsod-reset').click();
 
-      expect(onReset).toHaveBeenCalledTimes(1);
+      expect(onReset).toHaveBeenCalledOnce();
     });
 
     test('home button has correct link', async () => {
@@ -256,7 +258,7 @@ describe('BSODError', () => {
       // Press a key
       await userEvent.keyboard('{Enter}');
 
-      expect(onReset).toHaveBeenCalledTimes(1);
+      expect(onReset).toHaveBeenCalledOnce();
     });
 
     test('keypress does not trigger reset before progress completes', async () => {
@@ -316,8 +318,8 @@ describe('BSODError', () => {
     });
   });
 
-  describe('SudoRmRfError detection', () => {
-    test('SudoRmRfError is detected as easter egg', async () => {
+  describe('sudoRmRfError detection', () => {
+    test('sudoRmRfError is detected as easter egg', async () => {
       const error = new SudoRmRfError();
       await render(<TestWrapper error={error} />);
 

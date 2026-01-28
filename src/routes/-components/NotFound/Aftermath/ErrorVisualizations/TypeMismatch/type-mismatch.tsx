@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(jsx-no-comment-textnodes), eslint-plugin-react(no-array-index-key) -- Intentionally displays code comments as visual elements, static arrays */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -48,7 +49,9 @@ const TypeMismatch: FC = () => {
       }
     }, 400);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   // Conflict pulse
@@ -59,7 +62,9 @@ const TypeMismatch: FC = () => {
       setConflictPulse(p => !p);
     }, 500);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [showAssignment, reducedMotion]);
 
   const errors = [
@@ -171,7 +176,7 @@ const TypeMismatch: FC = () => {
           {/* tsc output */}
           <div className='border-t border-[#3c3c3c] p-4'>
             <div className='font-mono text-[10px] text-[#f14c4c]'>
-              Found {errorCount} error{errorCount !== 1 ? 's' : ''} in page.tsx
+              Found {errorCount} error{errorCount === 1 ? '' : 's'} in page.tsx
             </div>
             <div className='mt-2 font-mono text-[10px] text-[#858585]'>tsc --noEmit exited with code 1</div>
           </div>

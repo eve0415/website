@@ -55,20 +55,18 @@ const DEFAULT_STATE: DebugState = {
  * - Shift+F11: Step Out (run until returning to shallower depth)
  * - Escape: Stop debugging
  */
-export const useDebugMode = (messageDepths: number[] = [], totalMessages: number = 0, visibleCountRef?: RefObject<number>): UseDebugModeReturn => {
+export const useDebugMode = (messageDepths: number[] = [], totalMessages = 0, visibleCountRef?: RefObject<number>): UseDebugModeReturn => {
   const [debugState, setDebugState] = useState<DebugState>(() => {
     // Check localStorage for persisted debug mode
-    if (typeof window !== 'undefined') {
+    if (globalThis.window !== undefined) {
       const stored = localStorage.getItem(DEBUG_STORAGE_KEY);
-      if (stored === 'true') {
-        return { ...DEFAULT_STATE, isEnabled: true, isPaused: true };
-      }
+      if (stored === 'true') return { ...DEFAULT_STATE, isEnabled: true, isPaused: true };
     }
     return DEFAULT_STATE;
   });
 
   // Track if we need to sync debugIndex (loaded from localStorage with debugIndex=0)
-  const needsSyncRef = useRef(typeof window !== 'undefined' && localStorage.getItem(DEBUG_STORAGE_KEY) === 'true');
+  const needsSyncRef = useRef(globalThis.window !== undefined && localStorage.getItem(DEBUG_STORAGE_KEY) === 'true');
 
   // Sync debugIndex after mount when loaded from localStorage
   // This prevents the flash where messages appear then reset to index 0
@@ -106,12 +104,9 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
 
   // Persist debug mode to localStorage
   const persistDebugMode = useCallback((enabled: boolean) => {
-    if (typeof window !== 'undefined') {
-      if (enabled) {
-        localStorage.setItem(DEBUG_STORAGE_KEY, 'true');
-      } else {
-        localStorage.removeItem(DEBUG_STORAGE_KEY);
-      }
+    if (globalThis.window !== undefined) {
+      if (enabled) localStorage.setItem(DEBUG_STORAGE_KEY, 'true');
+      else localStorage.removeItem(DEBUG_STORAGE_KEY);
     }
   }, []);
 
@@ -189,13 +184,13 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       let nextIndex = prev.debugIndex + 1;
 
       // Skip children (higher depth)
-      while (nextIndex < depths.length && depths[nextIndex]! > currentDepth) {
+      while (nextIndex < depths.length) {
+        const nextDepth = depths[nextIndex];
+        if (nextDepth === undefined || nextDepth <= currentDepth) break;
         nextIndex++;
       }
 
-      if (nextIndex >= depths.length) {
-        nextIndex = prev.debugIndex; // Stay at current if at end
-      }
+      if (nextIndex >= depths.length) nextIndex = prev.debugIndex; // Stay at current if at end
 
       return {
         ...prev,
@@ -225,13 +220,13 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       let nextIndex = prev.debugIndex + 1;
 
       // Skip until we find a shallower depth
-      while (nextIndex < depths.length && depths[nextIndex]! >= currentDepth) {
+      while (nextIndex < depths.length) {
+        const nextDepth = depths[nextIndex];
+        if (nextDepth === undefined || nextDepth < currentDepth) break;
         nextIndex++;
       }
 
-      if (nextIndex >= depths.length) {
-        nextIndex = prev.debugIndex; // Stay at current if no shallower level found
-      }
+      if (nextIndex >= depths.length) nextIndex = prev.debugIndex; // Stay at current if no shallower level found
 
       return {
         ...prev,
@@ -291,11 +286,9 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       // F5 or Ctrl+Shift+D - Toggle debug mode / Continue
       if (e.key === 'F5' || (e.ctrlKey && e.shiftKey && e.key === 'D')) {
         e.preventDefault();
-        if (!debugState.isEnabled) {
-          enableDebugMode();
-        } else if (debugState.isPaused) {
-          stepContinue();
-        }
+        if (!debugState.isEnabled) enableDebugMode();
+        else if (debugState.isPaused) stepContinue();
+
         return;
       }
 
@@ -336,11 +329,9 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       // At last message, continue instead of stepping
       if (e.key === 'F11') {
         e.preventDefault();
-        if (debugState.debugIndex >= totalMessages - 1) {
-          stepContinue();
-        } else {
-          stepInto(totalMessages);
-        }
+        if (debugState.debugIndex >= totalMessages - 1) stepContinue();
+        else stepInto(totalMessages);
+
         return;
       }
 
@@ -348,12 +339,13 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
       if (e.key === 'Escape') {
         e.preventDefault();
         stopDebug();
-        return;
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => {
+      globalThis.removeEventListener('keydown', handleKeyDown);
+    };
   }, [
     debugState.isEnabled,
     debugState.isPaused,
@@ -392,6 +384,6 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages: number
  * Check if debug mode is enabled (for conditional rendering)
  */
 export const isDebugModeEnabled = (): boolean => {
-  if (typeof window === 'undefined') return false;
+  if (globalThis.window === undefined) return false;
   return localStorage.getItem(DEBUG_STORAGE_KEY) === 'true';
 };

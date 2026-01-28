@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion), eslint-plugin-jest(no-conditional-in-test), typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify existence; conditional in mock addEventListener captures listener; MediaQueryList mocks require type assertion */
 import type { FC } from 'react';
 
 import { describe, expect, test, vi } from 'vitest';
@@ -13,7 +14,7 @@ const TestComponent: FC = () => {
 
 describe('useReducedMotion', () => {
   test('returns false when prefers-reduced-motion is not enabled', async () => {
-    window.matchMedia = vi.fn().mockImplementation(query => ({
+    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
       matches: false,
       media: query,
       onchange: null,
@@ -30,7 +31,7 @@ describe('useReducedMotion', () => {
   });
 
   test('returns true when prefers-reduced-motion is enabled', async () => {
-    window.matchMedia = vi.fn().mockImplementation(query => ({
+    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
       matches: query === '(prefers-reduced-motion: reduce)',
       media: query,
       onchange: null,
@@ -48,7 +49,7 @@ describe('useReducedMotion', () => {
 
   test('responds to media query changes', async () => {
     type ChangeListener = (this: MediaQueryList, ev: MediaQueryListEvent) => void;
-    let changeListener: ChangeListener | null = null;
+    let changeListener: ChangeListener | undefined;
 
     const mockMediaQuery = {
       matches: false,
@@ -57,15 +58,13 @@ describe('useReducedMotion', () => {
       addListener: vi.fn(),
       removeListener: vi.fn(),
       addEventListener: vi.fn((event: string, listener: ChangeListener) => {
-        if (event === 'change') {
-          changeListener = listener;
-        }
+        if (event === 'change') changeListener = listener;
       }),
       removeEventListener: vi.fn(),
       dispatchEvent: vi.fn(),
     };
 
-    window.matchMedia = vi.fn().mockReturnValue(mockMediaQuery);
+    vi.spyOn(globalThis, 'matchMedia').mockReturnValue(mockMediaQuery as MediaQueryList);
 
     await render(<TestComponent />);
 
@@ -81,7 +80,7 @@ describe('useReducedMotion', () => {
   test('cleans up event listener on unmount', async () => {
     const removeEventListener = vi.fn();
 
-    window.matchMedia = vi.fn().mockReturnValue({
+    vi.spyOn(globalThis, 'matchMedia').mockReturnValue({
       matches: false,
       media: '(prefers-reduced-motion: reduce)',
       onchange: null,
@@ -90,7 +89,7 @@ describe('useReducedMotion', () => {
       addEventListener: vi.fn(),
       removeEventListener,
       dispatchEvent: vi.fn(),
-    });
+    } as MediaQueryList);
 
     const screen = await render(<TestComponent />);
 

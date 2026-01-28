@@ -57,12 +57,14 @@ const SyntaxError: FC = () => {
           setShowError(true);
           // Create parser fragment explosion
           const fragments = [];
+          const fragmentChars = ['<', '/', '>', '{', '}', '(', ')', ';', '='] as const;
           for (let i = 0; i < 20; i++) {
+            const char = fragmentChars[Math.floor(Math.random() * fragmentChars.length)] ?? fragmentChars[0];
             fragments.push({
               id: i,
               x: Math.random() * 200 - 100,
               y: Math.random() * 200 - 100,
-              char: ['<', '/', '>', '{', '}', '(', ')', ';', '='][Math.floor(Math.random() * 9)]!,
+              char,
             });
           }
           setParserFragments(fragments);
@@ -70,13 +72,19 @@ const SyntaxError: FC = () => {
       }
     }, 80);
 
-    return () => clearInterval(typeInterval);
+    return () => {
+      clearInterval(typeInterval);
+    };
   }, [reducedMotion, codeLines.length]);
 
   // Cursor blink
   useEffect(() => {
-    const interval = setInterval(() => setCursorVisible(v => !v), 530);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      setCursorVisible(v => !v);
+    }, 530);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (

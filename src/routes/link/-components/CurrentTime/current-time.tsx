@@ -7,7 +7,7 @@ interface Props {
 }
 
 const CurrentTime: FC<Props> = ({ fixedTime }) => {
-  const [time, setTime] = useState<string>(fixedTime || '');
+  const [time, setTime] = useState<string>(fixedTime ?? '');
 
   useEffect(() => {
     if (fixedTime) return; // Skip interval if fixed time is provided
@@ -26,7 +26,9 @@ const CurrentTime: FC<Props> = ({ fixedTime }) => {
 
     updateTime();
     const interval = setInterval(updateTime, 1000);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [fixedTime]);
 
   return <span className='text-neon font-mono tabular-nums'>{time || '--:--:--'}</span>;

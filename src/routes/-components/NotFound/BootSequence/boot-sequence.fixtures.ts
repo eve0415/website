@@ -1,5 +1,5 @@
-import type { ConnectionInfo } from './connection-info';
-import type { DOMScanData, MetaInfo, ScriptInfo, StylesheetInfo } from './useDOMScan';
+import type { CertificatePack, ConnectionInfo } from './connection-info';
+import type { DOMScanData } from './useDomScan';
 import type { NavigationTimingData, ResourceTimingEntry } from './useNavigationTiming';
 
 // --- Navigation Timing Fixtures ---
@@ -31,7 +31,7 @@ export const fastTiming: NavigationTimingData = {
     {
       name: 'https://eve0415.net/assets/styles.css',
       initiatorType: 'link',
-      transferSize: 8_000,
+      transferSize: 8000,
       decodedBodySize: 25_000,
       duration: 30,
       protocol: 'h2',
@@ -137,17 +137,17 @@ export const mockDOMScan: DOMScanData = {
   scripts: [
     { src: '/assets/main.js', type: 'module', async: false, defer: false, isInline: false },
     { src: null, type: 'application/json', async: false, defer: false, isInline: true },
-  ] as ScriptInfo[],
+  ],
   stylesheets: [
     { href: '/assets/styles.css', media: 'all', isInline: false },
     { href: null, media: 'all', isInline: true },
-  ] as StylesheetInfo[],
+  ],
   meta: [
     { name: 'viewport', property: null, content: 'width=device-width, initial-scale=1', charset: null },
     { name: 'description', property: null, content: 'Personal website of eve0415', charset: null },
     { name: null, property: 'og:title', content: 'eve0415.net', charset: null },
-    { name: null, property: null, content: '', charset: 'utf-8' },
-  ] as MetaInfo[],
+    { name: null, property: null, content: '', charset: 'utf8' },
+  ],
   links: [
     { rel: 'icon', href: '/favicon.ico', type: 'image/x-icon' },
     { rel: 'canonical', href: 'https://eve0415.net', type: null },
@@ -170,7 +170,7 @@ export const minimalDOMScan: DOMScanData = {
   ],
   scripts: [],
   stylesheets: [],
-  meta: [{ name: null, property: null, content: '', charset: 'utf-8' }],
+  meta: [{ name: null, property: null, content: '', charset: 'utf8' }],
   links: [],
 };
 
@@ -210,29 +210,39 @@ export const heavyDOMScan: DOMScanData = {
 
 // --- Connection Info Fixtures ---
 
-import type { CertificatePack } from './connection-info';
-
 /**
  * Helper to create mock certificate pack with specified number of certs
  */
 const createMockCertPack = (certCount: number): CertificatePack | null => {
   if (certCount === 0) return null;
 
-  return {
-    id: 'mock-cert-pack-id',
-    type: 'universal',
-    hosts: ['eve0415.net', '*.eve0415.net'],
-    status: 'active',
-    certificates: Array.from({ length: certCount }, (_, i) => ({
+  const certificates: CertificatePack['certificates'] = Array.from({ length: certCount }, (_, i) => {
+    const cert = {
       id: `cert-${i}`,
-      hosts: i === 0 ? ['eve0415.net', '*.eve0415.net'] : undefined,
       issuer: i === 0 ? 'Cloudflare Inc' : `Intermediate CA ${i}`,
       uploaded_on: '2024-01-01T00:00:00Z',
       expires_on: '2025-03-01T00:00:00Z',
       signature: 'SHA256WithRSA',
       bundle_method: 'ubiquitous',
-    })),
-  } as CertificatePack;
+    };
+
+    if (i === 0) {
+      return {
+        ...cert,
+        hosts: ['eve0415.net', '*.eve0415.net'],
+      };
+    }
+
+    return cert;
+  });
+
+  return {
+    id: 'mock-cert-pack-id',
+    type: 'universal',
+    hosts: ['eve0415.net', '*.eve0415.net'],
+    status: 'active',
+    certificates,
+  };
 };
 
 /**
@@ -319,7 +329,7 @@ export const mockResources: ResourceTimingEntry[] = [
   {
     name: 'https://eve0415.net/assets/styles.def456.css',
     initiatorType: 'link',
-    transferSize: 8_120,
+    transferSize: 8120,
     decodedBodySize: 28_400,
     duration: 28,
     protocol: 'h2',
@@ -327,16 +337,16 @@ export const mockResources: ResourceTimingEntry[] = [
   {
     name: 'https://fonts.googleapis.com/css2?family=Inter',
     initiatorType: 'link',
-    transferSize: 1_240,
-    decodedBodySize: 3_600,
+    transferSize: 1240,
+    decodedBodySize: 3600,
     duration: 120,
     protocol: 'h2',
   },
   {
     name: 'https://eve0415.net/assets/logo.svg',
     initiatorType: 'img',
-    transferSize: 2_100,
-    decodedBodySize: 5_800,
+    transferSize: 2100,
+    decodedBodySize: 5800,
     duration: 15,
     protocol: 'h2',
   },

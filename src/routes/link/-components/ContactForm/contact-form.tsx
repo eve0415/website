@@ -12,12 +12,12 @@ type SubmissionState = 'idle' | 'success' | 'error';
 
 const ContactForm: FC = () => {
   const [submissionState, setSubmissionState] = useState<SubmissionState>('idle');
-  const [globalError, setGlobalError] = useState<string | null>(null);
+  const [globalError, setGlobalError] = useState<string | null>();
 
   const form = useForm({
     ...contactFormOpts,
     onSubmit: async ({ value, formApi }) => {
-      setGlobalError(null);
+      setGlobalError(undefined);
 
       // Check Turnstile token
       if (!value.turnstileToken) {
@@ -38,9 +38,7 @@ const ContactForm: FC = () => {
         if (result.success) {
           setSubmissionState('success');
           formApi.reset();
-        } else if ('error' in result) {
-          handleError(result);
-        }
+        } else if ('error' in result) handleError(result);
       } catch (error) {
         console.error('Form submission failed:', error);
         setGlobalError('予期せぬエラーが発生しました。後ほどお試しください。');
@@ -53,8 +51,12 @@ const ContactForm: FC = () => {
   useEffect(() => {
     if (submissionState !== 'success') return;
 
-    const timer = setTimeout(() => setSubmissionState('idle'), 5000);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      setSubmissionState('idle');
+    }, 5000);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [submissionState]);
 
   const handleError = (result: Exclude<ContactFormResult, { success: true }>) => {
@@ -63,12 +65,10 @@ const ContactForm: FC = () => {
     switch (result.error) {
       case 'validation':
         // Set field errors from server response
-        (['name', 'email', 'message'] as const).forEach(fieldName => {
+        for (const fieldName of ['name', 'email', 'message'] as const) {
           const error = result.errors[fieldName];
-          if (error) {
-            form.setFieldMeta(fieldName, prev => ({ ...prev, errors: [error] }));
-          }
-        });
+          if (error) form.setFieldMeta(fieldName, prev => ({ ...prev, errors: [error] }));
+        }
         break;
       case 'turnstile':
       case 'rate_limit':
@@ -79,20 +79,10 @@ const ContactForm: FC = () => {
   };
 
   const isDisabled = form.state.isSubmitting || submissionState === 'success';
-  const showAlternativeContact = globalError?.includes('Discord') || globalError?.includes('制限');
+  const showAlternativeContact = globalError?.includes('Discord') ?? globalError?.includes('制限');
 
   return (
-    <form
-      data-testid='contact-form'
-      action={handleForm.url}
-      method='post'
-      encType='multipart/form-data'
-      onSubmit={e => {
-        e.preventDefault();
-        void form.handleSubmit();
-      }}
-      className='space-y-6'
-    >
+    <form data-testid='contact-form' action={handleForm.url} method='post' encType='multipart/form-data' onSubmit={_e => {}} className='space-y-6'>
       {/* Name field */}
       <form.Field name='name'>
         {field => (
@@ -106,9 +96,13 @@ const ContactForm: FC = () => {
               name={field.name}
               data-testid='name-input'
               value={field.state.value}
-              onChange={e => field.handleChange(e.target.value)}
+              onChange={e => {
+                field.handleChange(e.target.value);
+              }}
               onBlur={field.handleBlur}
-              onFocus={() => field.setMeta(prev => ({ ...prev, errors: [] }))}
+              onFocus={() => {
+                field.setMeta(prev => ({ ...prev, errors: [] }));
+              }}
               className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
                 field.state.meta.errors.length > 0 ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
               }`}
@@ -138,9 +132,13 @@ const ContactForm: FC = () => {
               name={field.name}
               data-testid='email-input'
               value={field.state.value}
-              onChange={e => field.handleChange(e.target.value)}
+              onChange={e => {
+                field.handleChange(e.target.value);
+              }}
               onBlur={field.handleBlur}
-              onFocus={() => field.setMeta(prev => ({ ...prev, errors: [] }))}
+              onFocus={() => {
+                field.setMeta(prev => ({ ...prev, errors: [] }));
+              }}
               className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
                 field.state.meta.errors.length > 0 ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
               }`}
@@ -169,9 +167,13 @@ const ContactForm: FC = () => {
               data-testid='message-input'
               rows={5}
               value={field.state.value}
-              onChange={e => field.handleChange(e.target.value)}
+              onChange={e => {
+                field.handleChange(e.target.value);
+              }}
               onBlur={field.handleBlur}
-              onFocus={() => field.setMeta(prev => ({ ...prev, errors: [] }))}
+              onFocus={() => {
+                field.setMeta(prev => ({ ...prev, errors: [] }));
+              }}
               className={`bg-surface text-foreground duration-fast placeholder:text-subtle-foreground w-full resize-none rounded-lg border px-4 py-3 transition-all focus:ring-1 focus:outline-none ${
                 field.state.meta.errors.length > 0 ? 'border-orange focus:border-orange focus:ring-orange' : 'border-line focus:border-neon focus:ring-neon'
               }`}
@@ -199,9 +201,15 @@ const ContactForm: FC = () => {
           <div data-testid='turnstile-container'>
             <input type='hidden' name={field.name} value={field.state.value} />
             <TurnstileWidget
-              onVerify={token => field.handleChange(token)}
-              onError={() => setGlobalError('セキュリティ認証に失敗しました')}
-              onExpire={() => field.handleChange('')}
+              onVerify={token => {
+                field.handleChange(token);
+              }}
+              onError={() => {
+                setGlobalError('セキュリティ認証に失敗しました');
+              }}
+              onExpire={() => {
+                field.handleChange('');
+              }}
             />
           </div>
         )}
@@ -241,7 +249,7 @@ const ContactForm: FC = () => {
       {globalError && (
         <div data-testid='error-message' className='animate-fade-in-up border-orange/30 bg-orange/10 rounded-lg border p-4'>
           <p className='text-orange text-center text-sm'>{globalError}</p>
-          {showAlternativeContact && (
+          {showAlternativeContact === true && (
             <p className='text-muted-foreground mt-2 text-center text-xs'>
               <a href='https://twitter.com/eveevekun' target='_blank' rel='noopener noreferrer' className='text-neon underline'>
                 X (@eveevekun)

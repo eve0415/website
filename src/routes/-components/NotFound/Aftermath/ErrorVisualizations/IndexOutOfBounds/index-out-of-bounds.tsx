@@ -1,3 +1,5 @@
+/* oxlint-disable eslint-plugin-react(jsx-no-comment-textnodes) -- Intentionally displays code comments as visual elements */
+/* oxlint-disable eslint-plugin-react(no-array-index-key) -- Static decorative arrays in visualization */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -7,6 +9,9 @@ import { useReducedMotion } from '#hooks/useReducedMotion';
 
 // Hex values for array corruption effect (outside component to avoid re-creation)
 const CORRUPTION_VALUES = ['0xDEAD', '0xBEEF', '0xCAFE', '0xBABE', '0xFACE', '???', '0x????'] as const;
+
+// Convert index to hex value (simulating memory contents)
+const toHexValue = (index: number) => `0x${(index * 10).toString(16).toUpperCase().padStart(2, '0')}`;
 
 // Memory debugger themed visualization for IndexOutOfBoundsException
 const IndexOutOfBounds: FC = () => {
@@ -22,9 +27,6 @@ const IndexOutOfBounds: FC = () => {
   // Use ref to avoid React Compiler issues with captured variables
   const positionRef = useRef(-1);
 
-  // Convert index to hex value (simulating memory contents)
-  const toHexValue = (index: number) => `0x${(index * 10).toString(16).toUpperCase().padStart(2, '0')}`;
-
   // Animate cursor moving through array then past boundary
   useEffect(() => {
     if (reducedMotion) return;
@@ -35,12 +37,16 @@ const IndexOutOfBounds: FC = () => {
       setCursorPosition(positionRef.current);
 
       if (positionRef.current >= arraySize) {
-        setTimeout(() => setShowError(true), 300);
+        setTimeout(() => {
+          setShowError(true);
+        }, 300);
         clearInterval(interval);
       }
     }, 200);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   // Corruption text cycling effect for error cell (skip when reduced motion)
@@ -53,7 +59,9 @@ const IndexOutOfBounds: FC = () => {
       setCorruptedText(CORRUPTION_VALUES[randomIndex] ?? '???');
     }, 150);
 
-    return () => clearInterval(corruptionInterval);
+    return () => {
+      clearInterval(corruptionInterval);
+    };
   }, [cursorPosition, reducedMotion]);
 
   return (

@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test file requires type assertions for Route internal structure */
 import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 import { describe, expect, test, vi } from 'vitest';
@@ -9,13 +10,13 @@ vi.mock('@tanstack/react-router', async importOriginal => {
   const actual = await importOriginal<object>();
   return {
     ...actual,
-    HeadContent: () => null,
-    Scripts: () => null,
+    HeadContent: () => {},
+    Scripts: () => {},
   };
 });
 
 vi.mock('@tanstack/react-devtools', () => ({
-  TanStackDevtools: ({ plugins }: { plugins: Array<{ name: string; render: ReactNode }> }) => (
+  TanStackDevtools: ({ plugins }: { plugins: { name: string; render: ReactNode }[] }) => (
     <div data-testid='tanstack-devtools'>
       {plugins.map(p => (
         <div key={p.name}>{p.name}</div>
@@ -28,12 +29,14 @@ vi.mock('@tanstack/react-router-devtools', () => ({
   TanStackRouterDevtoolsPanel: () => <div data-testid='router-devtools'>Router Devtools</div>,
 }));
 
-type RouteWithShell = { options: { shellComponent: FC<PropsWithChildren> } };
+interface RouteWithShell {
+  options: { shellComponent: FC<PropsWithChildren> };
+}
 
 // Import after mocks are set up
 const { Route } = await import('./__root');
 
-describe('RootDocument', () => {
+describe('rootDocument', () => {
   // Note: shellComponent renders <html><body>... which can't be tested inside a container
   // We test what we can: that it renders content and devtools correctly
 

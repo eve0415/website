@@ -59,8 +59,8 @@ interface UseCorruptionEffectsOptions {
 // Stage 1: 0-0.4 (40% of time, ~4 errors, slow)
 // Stage 2: 0.4-0.7 (30% of time, ~4 errors, medium)
 // Stage 3: 0.7-1.0 (30% of time, ~4 errors, rapid)
-const getErrorForProgress = (progress: number): ErrorMessage | null => {
-  if (progress < 0.05) return null;
+const getErrorForProgress = (progress: number): ErrorMessage | undefined => {
+  if (progress < 0.05) return;
 
   const stage1Errors = ERROR_MESSAGES.filter(e => e.stage === 1);
   const stage2Errors = ERROR_MESSAGES.filter(e => e.stage === 2);
@@ -69,20 +69,20 @@ const getErrorForProgress = (progress: number): ErrorMessage | null => {
   if (progress < 0.4) {
     // Stage 1: slow, each error shows for ~10% of progress
     const index = Math.floor((progress - 0.05) / 0.0875);
-    return stage1Errors[Math.min(index, stage1Errors.length - 1)] ?? null;
+    return stage1Errors[Math.min(index, stage1Errors.length - 1)] ?? undefined;
   }
 
   if (progress < 0.7) {
     // Stage 2: medium speed
     const stageProgress = (progress - 0.4) / 0.3;
     const index = Math.floor(stageProgress * stage2Errors.length);
-    return stage2Errors[Math.min(index, stage2Errors.length - 1)] ?? null;
+    return stage2Errors[Math.min(index, stage2Errors.length - 1)] ?? undefined;
   }
 
   // Stage 3: rapid
   const stageProgress = (progress - 0.7) / 0.3;
   const index = Math.floor(stageProgress * stage3Errors.length);
-  return stage3Errors[Math.min(index, stage3Errors.length - 1)] ?? null;
+  return stage3Errors[Math.min(index, stage3Errors.length - 1)] ?? undefined;
 };
 
 export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): CorruptionState => {
@@ -96,7 +96,7 @@ export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): Corr
   const intensity = useMemo(() => {
     if (!enabled) return 0;
     // Exponential ramp up
-    return Math.pow(progress, 1.5);
+    return progress ** 1.5;
   }, [enabled, progress]);
 
   // Static noise opacity increases with progress
@@ -106,9 +106,9 @@ export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): Corr
   }, [enabled, progress]);
 
   // Current error based on progress
-  const currentError = useMemo(() => {
+  const currentError = useMemo((): ErrorMessage | null => {
     if (!enabled) return null;
-    return getErrorForProgress(progress);
+    return getErrorForProgress(progress) ?? null;
   }, [enabled, progress]);
 
   // Error opacity - pulses when switching errors
@@ -149,7 +149,9 @@ export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): Corr
     const baseInterval = 200 - intensity * 150;
     const interval = setInterval(generateLines, Math.max(50, baseInterval));
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [enabled, intensity, reducedMotion]);
 
   // Return empty lines when disabled (derived, not via setState)
@@ -164,7 +166,9 @@ export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): Corr
     };
 
     const interval = setInterval(animate, 50);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [enabled, reducedMotion]);
 
   return {
@@ -179,20 +183,10 @@ export const useCorruptionEffects = (options: UseCorruptionEffectsOptions): Corr
 
 // Get color class for error language
 export const getErrorColorClass = (language?: string): string => {
-  switch (language) {
-    case 'java':
-      return 'text-orange';
-    case 'python':
-      return 'text-yellow-400';
-    case 'javascript':
-    case 'node':
-      return 'text-yellow-300';
-    case 'go':
-      return 'text-cyan';
-    case 'c':
-    case 'kernel':
-      return 'text-red-500';
-    default:
-      return 'text-red-400';
-  }
+  if (language === 'java') return 'text-orange';
+  if (language === 'python') return 'text-yellow-400';
+  if (language === 'javascript' || language === 'node') return 'text-yellow-300';
+  if (language === 'go') return 'text-cyan';
+  if (language === 'c' || language === 'kernel') return 'text-red-500';
+  return 'text-red-400';
 };

@@ -52,7 +52,7 @@ describe('useMouseInfluence', () => {
       await render(<TestComponent phase='boot' />);
 
       // Move mouse using native event
-      window.dispatchEvent(new MouseEvent('mousemove', { clientX: 100, clientY: 200 }));
+      globalThis.dispatchEvent(new MouseEvent('mousemove', { clientX: 100, clientY: 200 }));
 
       // Position should update
       await expect.element(page.getByTestId('position-x')).toHaveTextContent('100.00');
@@ -63,18 +63,18 @@ describe('useMouseInfluence', () => {
       await render(<TestComponent phase='boot' />);
 
       // Move to known position
-      window.dispatchEvent(new MouseEvent('mousemove', { clientX: 400, clientY: 300 }));
+      globalThis.dispatchEvent(new MouseEvent('mousemove', { clientX: 400, clientY: 300 }));
 
       // Get normalized values - wait for state update
       await expect
         .poll(() => {
-          const normalizedX = Number.parseFloat(page.getByTestId('normalized-x').element()!.textContent!);
+          const normalizedX = Number.parseFloat(page.getByTestId('normalized-x').element().textContent);
           return normalizedX;
         })
         .toBeGreaterThan(0);
 
-      const normalizedX = Number.parseFloat(page.getByTestId('normalized-x').element()!.textContent!);
-      const normalizedY = Number.parseFloat(page.getByTestId('normalized-y').element()!.textContent!);
+      const normalizedX = Number.parseFloat(page.getByTestId('normalized-x').element().textContent);
+      const normalizedY = Number.parseFloat(page.getByTestId('normalized-y').element().textContent);
 
       // Should be between 0 and 1
       expect(normalizedX).toBeGreaterThanOrEqual(0);
@@ -91,7 +91,7 @@ describe('useMouseInfluence', () => {
       await expect.element(page.getByTestId('position-y')).toHaveTextContent('0.00');
 
       // Move mouse
-      window.dispatchEvent(new MouseEvent('mousemove', { clientX: 500, clientY: 500 }));
+      globalThis.dispatchEvent(new MouseEvent('mousemove', { clientX: 500, clientY: 500 }));
 
       // Position should remain 0,0 (not tracking) - give a brief moment for potential update
       await expect.element(page.getByTestId('position-x')).toHaveTextContent('0.00');
@@ -137,7 +137,7 @@ describe('utility functions', () => {
   describe('normalize', () => {
     test('handles zero vector', () => {
       const result = normalize({ x: 0, y: 0 });
-      expect(result).toEqual({ x: 0, y: 0 });
+      expect(result).toStrictEqual({ x: 0, y: 0 });
     });
 
     test('returns unit vector for non-zero input', () => {
@@ -148,7 +148,7 @@ describe('utility functions', () => {
 
     test('result has magnitude 1', () => {
       const result = normalize({ x: 10, y: 20 });
-      const magnitude = Math.sqrt(result.x * result.x + result.y * result.y);
+      const magnitude = Math.hypot(result.x, result.y);
       expect(magnitude).toBeCloseTo(1);
     });
 
@@ -163,52 +163,52 @@ describe('utility functions', () => {
 
   describe('add', () => {
     test('combines vectors correctly', () => {
-      expect(add({ x: 1, y: 2 }, { x: 3, y: 4 })).toEqual({ x: 4, y: 6 });
+      expect(add({ x: 1, y: 2 }, { x: 3, y: 4 })).toStrictEqual({ x: 4, y: 6 });
     });
 
     test('handles negative values', () => {
-      expect(add({ x: 5, y: -3 }, { x: -2, y: 7 })).toEqual({ x: 3, y: 4 });
+      expect(add({ x: 5, y: -3 }, { x: -2, y: 7 })).toStrictEqual({ x: 3, y: 4 });
     });
 
     test('identity with zero vector', () => {
-      expect(add({ x: 5, y: 10 }, { x: 0, y: 0 })).toEqual({ x: 5, y: 10 });
+      expect(add({ x: 5, y: 10 }, { x: 0, y: 0 })).toStrictEqual({ x: 5, y: 10 });
     });
   });
 
   describe('subtract', () => {
     test('calculates difference correctly', () => {
-      expect(subtract({ x: 5, y: 7 }, { x: 2, y: 3 })).toEqual({ x: 3, y: 4 });
+      expect(subtract({ x: 5, y: 7 }, { x: 2, y: 3 })).toStrictEqual({ x: 3, y: 4 });
     });
 
     test('handles negative results', () => {
-      expect(subtract({ x: 1, y: 1 }, { x: 3, y: 5 })).toEqual({ x: -2, y: -4 });
+      expect(subtract({ x: 1, y: 1 }, { x: 3, y: 5 })).toStrictEqual({ x: -2, y: -4 });
     });
 
     test('subtracting from self yields zero', () => {
       const v = { x: 42, y: 17 };
-      expect(subtract(v, v)).toEqual({ x: 0, y: 0 });
+      expect(subtract(v, v)).toStrictEqual({ x: 0, y: 0 });
     });
   });
 
   describe('scale', () => {
     test('multiplies vector by scalar', () => {
-      expect(scale({ x: 2, y: 3 }, 2)).toEqual({ x: 4, y: 6 });
+      expect(scale({ x: 2, y: 3 }, 2)).toStrictEqual({ x: 4, y: 6 });
     });
 
     test('handles zero scalar', () => {
-      expect(scale({ x: 100, y: 200 }, 0)).toEqual({ x: 0, y: 0 });
+      expect(scale({ x: 100, y: 200 }, 0)).toStrictEqual({ x: 0, y: 0 });
     });
 
     test('handles negative scalar', () => {
-      expect(scale({ x: 3, y: -4 }, -2)).toEqual({ x: -6, y: 8 });
+      expect(scale({ x: 3, y: -4 }, -2)).toStrictEqual({ x: -6, y: 8 });
     });
 
     test('identity with scalar 1', () => {
-      expect(scale({ x: 7, y: 11 }, 1)).toEqual({ x: 7, y: 11 });
+      expect(scale({ x: 7, y: 11 }, 1)).toStrictEqual({ x: 7, y: 11 });
     });
 
     test('handles fractional scalars', () => {
-      expect(scale({ x: 10, y: 20 }, 0.5)).toEqual({ x: 5, y: 10 });
+      expect(scale({ x: 10, y: 20 }, 0.5)).toStrictEqual({ x: 5, y: 10 });
     });
   });
 });

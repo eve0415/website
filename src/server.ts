@@ -6,8 +6,8 @@ import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
 export { SkillsAnalysisWorkflow } from './workflows/skills-analysis';
 
 export default {
-  fetch: (request, env, _ctx) => {
-    const cf = request.cf;
+  fetch: async (request, env, _ctx) => {
+    const { cf } = request;
     const headers = new Headers(request.headers);
 
     // Inject Cloudflare request properties as custom headers
@@ -23,14 +23,12 @@ export default {
       },
     });
   },
-  async scheduled(event, env, ctx): Promise<void> {
+  scheduled(event, env, ctx) {
     // Hourly: refresh GitHub stats
     ctx.waitUntil(refreshGitHubStats(env));
 
     // Weekly (Sunday 3:30 AM JST = Saturday 18:30 UTC): trigger skills analysis
     // Cron: "30 18 * * 6" in wrangler.json
-    if (event.cron === '30 18 * * 6') {
-      ctx.waitUntil(env.SKILLS_WORKFLOW.create());
-    }
+    if (event.cron === '30 18 * * 6') ctx.waitUntil(env.SKILLS_WORKFLOW.create());
   },
 } satisfies ExportedHandler<Env>;

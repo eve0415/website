@@ -1,3 +1,4 @@
+/* oxlint-disable eslint(no-await-in-loop) -- Sequential click tests require await in loop */
 import { expect, fn, userEvent, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
@@ -277,9 +278,7 @@ export const RapidClicking = meta.story({
     const stepIntoBtn = canvas.getByRole('button', { name: /Step Into/i });
 
     // Click Step Into 10 times rapidly
-    for (let i = 0; i < 10; i++) {
-      await userEvent.click(stepIntoBtn);
-    }
+    for (let i = 0; i < 10; i++) await userEvent.click(stepIntoBtn);
 
     // Verify callback was called 10 times
     await expect(args.onStepInto).toHaveBeenCalledTimes(10);

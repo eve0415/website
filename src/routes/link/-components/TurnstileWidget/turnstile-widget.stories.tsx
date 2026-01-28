@@ -87,9 +87,7 @@ const TurnstileWidgetStory: FC<{
   onVerify?: (token: string) => void;
   onError?: () => void;
   onExpire?: () => void;
-}> = ({ onVerify = () => {}, onError = () => {}, onExpire = () => {} }) => {
-  return <MockTurnstile onVerify={onVerify} onError={onError} onExpire={onExpire} />;
-};
+}> = ({ onVerify = () => {}, onError = () => {}, onExpire = () => {} }) => <MockTurnstile onVerify={onVerify} onError={onError} onExpire={onExpire} />;
 
 const meta = preview.meta({
   component: TurnstileWidgetStory,

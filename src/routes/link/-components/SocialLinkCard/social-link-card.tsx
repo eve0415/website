@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from 'react';
 
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
@@ -26,18 +26,22 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
 
   useEffect(() => {
     if (prefersReducedMotion) return; // Skip entrance animation when reduced motion is enabled
-    const timer = setTimeout(() => setIsVisible(true), index * 100);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, index * 100);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [index, prefersReducedMotion]);
 
-  const handleCopy = async () => {
-    try {
+  const handleCopyClick = () => {
+    startTransition(async () => {
       await navigator.clipboard.writeText(link.handle);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 1500);
-    } catch {
-      // Clipboard API failed, fallback silently
-    }
+    });
+    setIsCopied(true);
+    setTimeout(() => {
+      setIsCopied(false);
+    }, 1500);
   };
 
   const cardClasses = `group flex items-center gap-4 rounded-lg border border-line bg-surface p-4 transition-all duration-normal ${link.color} hover:shadow-lg ${
@@ -57,16 +61,16 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
     </>
   );
 
-  if (link.copyAction) {
+  if (link.copyAction === true) {
     return (
-      <button type='button' onClick={handleCopy} className={`${cardClasses} cursor-pointer text-left`}>
+      <button type='button' onClick={handleCopyClick} className={`${cardClasses} cursor-pointer text-left`}>
         {content}
       </button>
     );
   }
 
   return (
-    <a href={link.url} target={link.url !== '#' ? '_blank' : undefined} rel={link.url !== '#' ? 'noopener noreferrer' : undefined} className={cardClasses}>
+    <a href={link.url} target={link.url === '#' ? undefined : '_blank'} rel={link.url === '#' ? undefined : 'noopener noreferrer'} className={cardClasses}>
       {content}
     </a>
   );

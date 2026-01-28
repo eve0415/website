@@ -44,5 +44,5 @@ const SysPage: FC = () => {
 
 export const Route = createFileRoute('/sys/')({
   component: SysPage,
-  loader: () => getGitHubStats(),
+  loader: async () => getGitHubStats(),
 });

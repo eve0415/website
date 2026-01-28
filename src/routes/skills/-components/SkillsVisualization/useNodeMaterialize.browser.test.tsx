@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
+import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
+
 import { useNodeMaterialize } from './useNodeMaterialize';
 
 interface TestProps {
@@ -28,7 +30,7 @@ const TestComponent: FC<TestProps> = ({ shouldAnimate, delay }) => {
 
 describe('useNodeMaterialize', () => {
   beforeEach(() => {
-    delete window.__FORCE_REDUCED_MOTION__;
+    globalThis.__FORCE_REDUCED_MOTION__ = undefined;
   });
 
   afterEach(() => {
@@ -37,12 +39,7 @@ describe('useNodeMaterialize', () => {
 
   describe('no animation', () => {
     test('returns visible phase immediately when shouldAnimate=false', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent shouldAnimate={false} />);
 
@@ -54,14 +51,9 @@ describe('useNodeMaterialize', () => {
 
   describe('reduced motion', () => {
     test('returns visible immediately when prefers-reduced-motion is enabled', async () => {
-      window.matchMedia = vi.fn().mockImplementation(query => ({
-        matches: query === '(prefers-reduced-motion: reduce)',
-        media: query,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }));
+      vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
-      await render(<TestComponent shouldAnimate={true} />);
+      await render(<TestComponent shouldAnimate />);
 
       await expect.element(page.getByTestId('phase')).toHaveTextContent('visible');
       await expect.element(page.getByTestId('progress')).toHaveTextContent('1.00');
@@ -73,14 +65,9 @@ describe('useNodeMaterialize', () => {
     test('starts in hidden phase when shouldAnimate=true', async () => {
       vi.useFakeTimers();
 
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
-      await render(<TestComponent shouldAnimate={true} delay={0} />);
+      await render(<TestComponent shouldAnimate delay={0} />);
 
       // Initially should be hidden
       await expect.element(page.getByTestId('phase')).toHaveTextContent('hidden');
@@ -90,14 +77,9 @@ describe('useNodeMaterialize', () => {
     test('eventually reaches visible phase with shouldAnimate=true', async () => {
       vi.useFakeTimers();
 
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
-      await render(<TestComponent shouldAnimate={true} delay={0} />);
+      await render(<TestComponent shouldAnimate delay={0} />);
 
       // Total animation time: crosshair(400) + wireframe(600) + particles(800) + flash(300) = 2100ms
       // Add buffer for animation frames
@@ -112,14 +94,9 @@ describe('useNodeMaterialize', () => {
     test('waits for delay before starting animation', async () => {
       vi.useFakeTimers();
 
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
-      await render(<TestComponent shouldAnimate={true} delay={500} />);
+      await render(<TestComponent shouldAnimate delay={500} />);
 
       // Should still be hidden before delay
       await expect.element(page.getByTestId('phase')).toHaveTextContent('hidden');
@@ -137,16 +114,11 @@ describe('useNodeMaterialize', () => {
   describe('cleanup', () => {
     test('cancels animation on unmount', async () => {
       vi.useFakeTimers();
-      const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
+      const cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
-      const screen = await render(<TestComponent shouldAnimate={true} delay={0} />);
+      const screen = await render(<TestComponent shouldAnimate delay={0} />);
 
       // Start animation
       await vi.advanceTimersByTimeAsync(100);
@@ -154,6 +126,7 @@ describe('useNodeMaterialize', () => {
       await screen.unmount();
 
       // Should have called cleanup
+      // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();

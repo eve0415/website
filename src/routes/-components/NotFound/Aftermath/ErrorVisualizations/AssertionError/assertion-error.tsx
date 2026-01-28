@@ -61,7 +61,9 @@ const AssertionError: FC = () => {
       }
     }, 800);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion, tests.length]);
 
   const passedCount = tests.filter(t => t.status === 'passed').length;

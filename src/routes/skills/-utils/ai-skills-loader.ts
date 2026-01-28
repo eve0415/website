@@ -1,6 +1,6 @@
 // Server function to load AI skills data from KV
 
-import type { AIProfileSummary, AISkillsContent, AISkillsState, WorkflowState } from '#workflows/-utils/ai-skills-types';
+import type { AIProfileSummary, AISkillsContent, AISkillsState, WorkflowPhase, WorkflowState } from '#workflows/-utils/ai-skills-types';
 
 import { createServerFn } from '@tanstack/react-start';
 import { env } from 'cloudflare:workers';
@@ -12,8 +12,24 @@ import { workflowState } from '#db/schema';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
 
+const WORKFLOW_PHASES: Record<WorkflowPhase, true> = {
+  idle: true,
+  'listing-repos': true,
+  'fetching-commits': true,
+  'fetching-prs': true,
+  'fetching-reviews': true,
+  'squashing-history': true,
+  'ai-extracting-skills': true,
+  'ai-generating-japanese': true,
+  'storing-results': true,
+  completed: true,
+  error: true,
+};
+
+const isWorkflowPhase = (value: unknown): value is WorkflowPhase => typeof value === 'string' && value in WORKFLOW_PHASES;
+
 // Helper to safely parse JSON from KV, handling corrupted data
-async function safeKVGetJSON<T>(kv: KVNamespace, key: string): Promise<{ value: T | null; wasCorrupted: boolean }> {
+const safeKVGetJSON = async <T>(kv: KVNamespace, key: string): Promise<{ value: T | null; wasCorrupted: boolean }> => {
   try {
     const value = await kv.get<T>(key, 'json');
     return { value: value ?? null, wasCorrupted: false };
@@ -21,35 +37,33 @@ async function safeKVGetJSON<T>(kv: KVNamespace, key: string): Promise<{ value: 
     await kv.delete(key);
     return { value: null, wasCorrupted: true };
   }
-}
+};
 
 // Exported handlers for testing - separated from server function wrappers
 
 /**
  * Handler: Load AI-generated skills content from KV
  */
-export async function loadAISkillsContentHandler(kv: KVNamespace): Promise<AISkillsContent | null> {
+export const loadAISkillsContentHandler = async (kv: KVNamespace): Promise<AISkillsContent | null> => {
   const { value } = await safeKVGetJSON<AISkillsContent>(kv, 'ai_skills_content_ja');
   return value;
-}
+};
 
 /**
  * Handler: Load AI-generated profile summary from KV
  */
-export async function loadAIProfileSummaryHandler(kv: KVNamespace): Promise<AIProfileSummary | null> {
+export const loadAIProfileSummaryHandler = async (kv: KVNamespace): Promise<AIProfileSummary | null> => {
   const { value } = await safeKVGetJSON<AIProfileSummary>(kv, 'ai_profile_summary_ja');
   return value;
-}
+};
 
 /**
  * Handler: Load workflow state from KV (cached) or D1 (fresh)
  */
-export async function loadWorkflowStateHandler(kv: KVNamespace, db: DB): Promise<WorkflowState> {
+export const loadWorkflowStateHandler = async (kv: KVNamespace, db: DB): Promise<WorkflowState> => {
   // Try KV cache first
   const { value: cached, wasCorrupted } = await safeKVGetJSON<WorkflowState>(kv, 'ai_skills_state');
-  if (cached) {
-    return cached;
-  }
+  if (cached) return cached;
 
   const state = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
 
@@ -69,14 +83,14 @@ export async function loadWorkflowStateHandler(kv: KVNamespace, db: DB): Promise
 
   // Map Drizzle camelCase to snake_case for consistency with existing API
   const mappedState: WorkflowState = {
-    phase: state.phase as WorkflowState['phase'],
+    phase: isWorkflowPhase(state.phase) ? state.phase : 'idle',
     progress_pct: state.progressPct,
-    current_repo: state.currentRepo,
+    current_repo: state.currentRepo ?? null,
     repos_total: state.reposTotal,
     repos_processed: state.reposProcessed,
-    last_run_at: state.lastRunAt,
-    last_completed_at: state.lastCompletedAt,
-    error_message: state.errorMessage,
+    last_run_at: state.lastRunAt ?? null,
+    last_completed_at: state.lastCompletedAt ?? null,
+    error_message: state.errorMessage ?? null,
   };
 
   // Self-heal: rewrite KV cache from D1 if it was corrupted
@@ -87,12 +101,12 @@ export async function loadWorkflowStateHandler(kv: KVNamespace, db: DB): Promise
   }
 
   return mappedState;
-}
+};
 
 /**
  * Handler: Load complete AI skills state (content + profile + workflow)
  */
-export async function loadAISkillsStateHandler(kv: KVNamespace, db: DB): Promise<AISkillsState> {
+export const loadAISkillsStateHandler = async (kv: KVNamespace, db: DB): Promise<AISkillsState> => {
   const [contentResult, profileResult, workflowResult] = await Promise.all([
     safeKVGetJSON<AISkillsContent>(kv, 'ai_skills_content_ja'),
     safeKVGetJSON<AIProfileSummary>(kv, 'ai_profile_summary_ja'),
@@ -109,14 +123,14 @@ export async function loadAISkillsStateHandler(kv: KVNamespace, db: DB): Promise
 
     if (dbState) {
       workflow = {
-        phase: dbState.phase as WorkflowState['phase'],
+        phase: isWorkflowPhase(dbState.phase) ? dbState.phase : 'idle',
         progress_pct: dbState.progressPct,
-        current_repo: dbState.currentRepo,
+        current_repo: dbState.currentRepo ?? null,
         repos_total: dbState.reposTotal,
         repos_processed: dbState.reposProcessed,
-        last_run_at: dbState.lastRunAt,
-        last_completed_at: dbState.lastCompletedAt,
-        error_message: dbState.errorMessage,
+        last_run_at: dbState.lastRunAt ?? null,
+        last_completed_at: dbState.lastCompletedAt ?? null,
+        error_message: dbState.errorMessage ?? null,
       };
 
       // Self-heal: rewrite KV cache from D1 if it was corrupted
@@ -139,20 +153,21 @@ export async function loadAISkillsStateHandler(kv: KVNamespace, db: DB): Promise
     }
   }
 
+  // workflow is guaranteed non-null by if-else above
   return {
     content,
     profile,
-    workflow,
+    workflow: workflow,
   };
-}
+};
 
 /**
  * Handler: Manually trigger the skills analysis workflow
  */
-export async function triggerSkillsAnalysisHandler(
+export const triggerSkillsAnalysisHandler = async (
   db: DB,
   workflowBinding: { create: () => Promise<unknown> },
-): Promise<{ success: boolean; message: string }> {
+): Promise<{ success: boolean; message: string }> => {
   try {
     // Check if already running
     const state = await db.select({ phase: workflowState.phase }).from(workflowState).where(eq(workflowState.id, 1)).get();
@@ -170,7 +185,7 @@ export async function triggerSkillsAnalysisHandler(
       .set({
         phase: 'listing-repos',
         lastRunAt: new Date().toISOString(),
-        errorMessage: null,
+        errorMessage: undefined,
       })
       .where(eq(workflowState.id, 1));
 
@@ -188,47 +203,37 @@ export async function triggerSkillsAnalysisHandler(
       message,
     };
   }
-}
+};
 
 // Helper to create DB instance from D1 binding
-export function createDB(d1: D1Database): DB {
-  return drizzle(d1, { schema, casing: 'snake_case' });
-}
+export const createDB = (d1: D1Database): DB => drizzle(d1, { schema, casing: 'snake_case' });
 
 // Server functions wrapping the handlers
 
 /**
  * Load AI-generated skills content from KV
  */
-export const loadAISkillsContent = createServerFn().handler(async (): Promise<AISkillsContent | null> => {
-  return loadAISkillsContentHandler(env.CACHE);
-});
+export const loadAISkillsContent = createServerFn().handler(async (): Promise<AISkillsContent | null> => loadAISkillsContentHandler(env.CACHE));
 
 /**
  * Load AI-generated profile summary from KV
  */
-export const loadAIProfileSummary = createServerFn().handler(async (): Promise<AIProfileSummary | null> => {
-  return loadAIProfileSummaryHandler(env.CACHE);
-});
+export const loadAIProfileSummary = createServerFn().handler(async (): Promise<AIProfileSummary | null> => loadAIProfileSummaryHandler(env.CACHE));
 
 /**
  * Load workflow state from KV (cached) or D1 (fresh)
  */
-export const loadWorkflowState = createServerFn().handler(async ({ context: { db } }): Promise<WorkflowState> => {
-  return loadWorkflowStateHandler(env.CACHE, db);
-});
+export const loadWorkflowState = createServerFn().handler(async ({ context: { db } }): Promise<WorkflowState> => loadWorkflowStateHandler(env.CACHE, db));
 
 /**
  * Load complete AI skills state (content + profile + workflow)
  */
-export const loadAISkillsState = createServerFn().handler(async ({ context: { db } }): Promise<AISkillsState> => {
-  return loadAISkillsStateHandler(env.CACHE, db);
-});
+export const loadAISkillsState = createServerFn().handler(async ({ context: { db } }): Promise<AISkillsState> => loadAISkillsStateHandler(env.CACHE, db));
 
 /**
  * Manually trigger the skills analysis workflow
  * Protected - only works in development or with proper auth
  */
-export const triggerSkillsAnalysis = createServerFn().handler(async ({ context: { db } }): Promise<{ success: boolean; message: string }> => {
-  return triggerSkillsAnalysisHandler(db, env.SKILLS_WORKFLOW);
-});
+export const triggerSkillsAnalysis = createServerFn().handler(
+  async ({ context: { db } }): Promise<{ success: boolean; message: string }> => triggerSkillsAnalysisHandler(db, env.SKILLS_WORKFLOW),
+);

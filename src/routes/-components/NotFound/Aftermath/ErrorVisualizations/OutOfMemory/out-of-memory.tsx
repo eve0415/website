@@ -21,6 +21,10 @@ const seededRandom = (seed: number): number => {
 };
 
 const PARTICLE_COLORS = ['#ff6b6b', '#4ecdc4', '#45b7d1', '#96ceb4', '#ffeaa7', '#dfe6e9'];
+const [FALLBACK_PARTICLE_COLOR] = PARTICLE_COLORS;
+if (FALLBACK_PARTICLE_COLOR === undefined) throw new Error('Expected particle colors to be defined');
+const getParticleColor = (index: number): string =>
+  PARTICLE_COLORS.length > 0 ? (PARTICLE_COLORS[index % PARTICLE_COLORS.length] ?? FALLBACK_PARTICLE_COLOR) : FALLBACK_PARTICLE_COLOR;
 
 // Generate initial particles (computed once, not in effect)
 const createInitialParticles = (): Particle[] =>
@@ -29,7 +33,7 @@ const createInitialParticles = (): Particle[] =>
     x: seededRandom(i * 100) * 100,
     y: seededRandom(i * 100 + 50) * 100,
     size: 8 + seededRandom(i * 100 + 75) * 24,
-    color: PARTICLE_COLORS[i % PARTICLE_COLORS.length]!,
+    color: getParticleColor(i),
     velocity: {
       x: (seededRandom(i * 100 + 100) - 0.5) * 0.5,
       y: (seededRandom(i * 100 + 125) - 0.5) * 0.5,
@@ -73,7 +77,7 @@ const OutOfMemory: FC = () => {
               x: seededRandom(seed) * 100,
               y: seededRandom(seed + 50) * 100,
               size: 6 + seededRandom(seed + 75) * 16,
-              color: PARTICLE_COLORS[prev.length % PARTICLE_COLORS.length]!,
+              color: getParticleColor(prev.length),
               velocity: {
                 x: (seededRandom(seed + 100) - 0.5) * 0.3,
                 y: (seededRandom(seed + 125) - 0.5) * 0.3,
@@ -84,7 +88,9 @@ const OutOfMemory: FC = () => {
       }
     }, 80);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [memoryUsage, reducedMotion]);
 
   // Animate particles
@@ -101,7 +107,9 @@ const OutOfMemory: FC = () => {
       );
     }, 50);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   return (
