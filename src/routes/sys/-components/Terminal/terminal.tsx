@@ -156,6 +156,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
           } else {
             handleNavigateHome();
           }
+
           break;
         case 'crash':
           // Trigger crash animation then propagate error to React's error boundary

@@ -85,7 +85,7 @@ const fetchCertFromCloudflareAPI = createServerOnlyFn(async (): Promise<Certific
 
   // Use SDK async iterator - paginate until found
   for await (const rawPack of client.ssl.certificatePacks.list({ zone_id: zoneId })) {
-    if (!isCertificatePack(rawPack)) continue;
+    if (!isCertificatePack(rawPack)) throw new Error('Unexpected certificate pack shape from Cloudflare API');
     const pack = rawPack;
     const hosts = pack.hosts ?? [];
     if (hosts.some(h => h === 'eve0415.net' || h === '*.eve0415.net')) return pack;
@@ -128,9 +128,9 @@ const getCachedCert = createServerOnlyFn(async (): Promise<CertificatePack | nul
  * Server function to get connection metadata.
  * Reads real data from Cloudflare request headers and API.
  */
+/* oxlint-disable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access -- tsgo bug: getRequestHeaders() typed as any */
 export const getConnectionInfo = createServerFn().handler(async (): Promise<ConnectionInfo> => {
-  const headers: unknown = getRequestHeaders();
-  const headerMap = headers instanceof Headers ? headers : new Headers();
+  const headers = getRequestHeaders();
   const certificatePack = await getCachedCert();
 
   return {
@@ -138,17 +138,18 @@ export const getConnectionInfo = createServerFn().handler(async (): Promise<Conn
     serverIp: '104.21.48.170',
 
     // Real TLS info from injected headers (set in server.ts)
-    tlsVersion: headerMap.get('X-CF-TLS-Version') ?? 'TLSv1.3',
-    tlsCipher: headerMap.get('X-CF-TLS-Cipher') ?? 'unknown',
+    tlsVersion: headers.get('X-CF-TLS-Version') ?? 'TLSv1.3',
+    tlsCipher: headers.get('X-CF-TLS-Cipher') ?? 'unknown',
 
     // Real HTTP protocol from injected header
-    httpVersion: headerMap.get('X-CF-HTTP-Protocol') ?? 'loading...',
+    httpVersion: headers.get('X-CF-HTTP-Protocol') ?? 'loading...',
 
     // Real Cloudflare metadata
-    cfRay: headerMap.get('CF-Ray'),
-    colo: headerMap.get('X-CF-Colo'),
+    cfRay: headers.get('CF-Ray'),
+    colo: headers.get('X-CF-Colo'),
 
     // Full certificate pack from Cloudflare API
     certificatePack,
   };
 });
+/* oxlint-enable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access */

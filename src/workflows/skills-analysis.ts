@@ -605,8 +605,8 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       await db
         .update(repos)
         .set({
-          commitsCursor: undefined,
-          prsCursor: undefined,
+          commitsCursor: null,
+          prsCursor: null,
         })
         .where(eq(repos.id, repo.id));
     }

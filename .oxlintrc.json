@@ -8,7 +8,6 @@
     "array-callback-return": ["error", { "checkForEach": true }],
     "arrow-body-style": ["error", "as-needed"],
     "block-scoped-var": "error",
-    "curly": ["error", "multi-or-nest", "consistent"],
     "default-case-last": "error",
     "eqeqeq": "error",
     "func-style": ["error", "expression", { "allowArrowFunctions": true }],

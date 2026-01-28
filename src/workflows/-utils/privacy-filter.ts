@@ -55,8 +55,9 @@ export const getRepoDisplayName = (repo: Repo): string => {
 export const anonymizeCommitMessage = (message: string, repo: Repo): string => {
   if (canShowRepoName(repo)) return message;
 
-  // Keep first line only, truncate
-  const firstLine = message.split('\n')[0] ?? message;
+  // Keep first line only, truncate (use || for empty string fallback)
+  // oxlint-disable-next-line prefer-nullish-coalescing -- empty string should fall back to message
+  const firstLine = message.split('\n')[0] || message;
   const truncated = firstLine.slice(0, 80);
 
   // Remove potential identifiers (URLs, @mentions, issue refs)

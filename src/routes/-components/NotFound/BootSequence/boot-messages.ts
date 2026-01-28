@@ -54,7 +54,7 @@ const slugify = (str: string): string =>
  * Each certificate gets its own verification block with appropriate checks.
  */
 const createCertMessages = (certPack: CertificatePack | null, baseDelay: number): BootMessage[] => {
-  if (certPack === null || certPack.certificates === undefined || certPack.certificates.length === 0)
+  if (!certPack || !certPack.certificates || certPack.certificates.length === 0)
     return [{ id: 'tls-cert-none', text: 'No certificates received', type: 'warning', baseDelay }];
 
   const { certificates } = certPack;
@@ -97,7 +97,7 @@ const createCertMessages = (certPack: CertificatePack | null, baseDelay: number)
  * Build certificate chain display string from certificate pack.
  */
 const buildChainString = (certPack: CertificatePack | null): string => {
-  if (certPack === null || certPack.certificates === undefined || certPack.certificates.length === 0) return 'no chain';
+  if (!certPack || !certPack.certificates || certPack.certificates.length === 0) return 'no chain';
   const { certificates } = certPack;
   const leaf = certificates[0]?.hosts?.[0] ?? 'leaf';
   const intermediates = certificates.slice(1).map((c: Certificate) => c.issuer ?? 'Unknown');

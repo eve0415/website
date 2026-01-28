@@ -112,7 +112,7 @@ const terminalReducer = (state: TerminalStateData, action: TerminalAction): Term
       ];
 
       // Only add output line if there's actual output (not null/undefined)
-      if (action.payload.output !== null && action.payload.output !== undefined) {
+      if (!(action.payload.output === null || action.payload.output === undefined)) {
         newLines.push({
           id: generateId(),
           type: action.payload.isError === true ? 'error' : 'output',
