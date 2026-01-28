@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-react(no-unescaped-entities), eslint-plugin-react(no-array-index-key), typescript-eslint(no-non-null-assertion) -- Code snippets, static arrays, indexing within bounds */
+/* oxlint-disable eslint-plugin-react(no-unescaped-entities) -- Code snippets and static arrays are intentional visual elements */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -32,9 +32,10 @@ const ClassNotFound: FC = () => {
   const [searchedPaths, setSearchedPaths] = useState<ClassPathEntry[]>(() => (reducedMotion ? classpath.map(p => ({ ...p, searched: true })) : classpath));
   const [currentSearch, setCurrentSearch] = useState<number | null>(() => (reducedMotion ? null : 0));
   const [searchComplete, setSearchComplete] = useState(() => reducedMotion);
-  const [scanLines, setScanLines] = useState<string[]>([]);
+  const [scanLines, setScanLines] = useState<{ id: number; text: string }[]>([]);
 
   const searchIndexRef = useRef(0);
+  const scanLineIdRef = useRef(0);
 
   // Animate classpath search
   useEffect(() => {
@@ -42,13 +43,22 @@ const ClassNotFound: FC = () => {
 
     searchIndexRef.current = 0;
     const interval = setInterval(() => {
+      const appendScanLine = (text: string) => {
+        setScanLines(prev => [...prev, { id: scanLineIdRef.current, text }]);
+        scanLineIdRef.current += 1;
+      };
       if (searchIndexRef.current < classpath.length) {
         setCurrentSearch(searchIndexRef.current);
-        setScanLines(prev => [...prev, `Scanning: ${classpath[searchIndexRef.current]!.path}`]);
+        const currentEntry = classpath[searchIndexRef.current];
+        if (!currentEntry) {
+          clearInterval(interval);
+          return;
+        }
+        appendScanLine(`Scanning: ${currentEntry.path}`);
 
         setTimeout(() => {
           setSearchedPaths(prev => prev.map((p, i) => (i === searchIndexRef.current ? { ...p, searched: true } : p)));
-          setScanLines(prev => [...prev, `  → Page.class not found`]);
+          appendScanLine('  → Page.class not found');
           searchIndexRef.current += 1;
 
           if (searchIndexRef.current >= classpath.length) {
@@ -134,9 +144,9 @@ const ClassNotFound: FC = () => {
           <div className='mb-4 font-mono text-xs text-[#f89820]'>Console Output</div>
 
           <div className='max-h-64 space-y-1 overflow-y-auto font-mono text-[10px]'>
-            {scanLines.map((line, i) => (
-              <div key={i} className={line.includes('not found') ? 'text-[#f44336]' : 'text-[#888]'}>
-                {line}
+            {scanLines.map(line => (
+              <div key={line.id} className={line.text.includes('not found') ? 'text-[#f44336]' : 'text-[#888]'}>
+                {line.text}
               </div>
             ))}
           </div>

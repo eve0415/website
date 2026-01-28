@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Performance API's getEntriesByType returns generic PerformanceEntry[], requires assertion to specific entry types */
 import { useEffect, useState } from 'react';
 
 export interface NavigationTimingData {
@@ -60,14 +59,18 @@ export const useNavigationTiming = (): NavigationTimingData => {
     // Only runs on client
     if (globalThis.window === undefined || globalThis.performance === undefined) return;
 
+    const isNavigationTiming = (entry: PerformanceEntry): entry is PerformanceNavigationTiming => entry.entryType === 'navigation' && 'responseEnd' in entry;
+
+    const isResourceTiming = (entry: PerformanceEntry): entry is PerformanceResourceTiming => entry.entryType === 'resource' && 'transferSize' in entry;
+
     const getTimingData = () => {
-      const entries = performance.getEntriesByType('navigation') as PerformanceNavigationTiming[];
-      const [nav] = entries;
+      const entries = performance.getEntriesByType('navigation');
+      const nav = entries.find(entry => isNavigationTiming(entry));
 
       if (!nav) return DEFAULT_DATA;
 
       // Get resource timing entries (same-origin only have full data)
-      const resourceEntries = performance.getEntriesByType('resource') as PerformanceResourceTiming[];
+      const resourceEntries = performance.getEntriesByType('resource').filter(entry => isResourceTiming(entry));
       const resources: ResourceTimingEntry[] = resourceEntries
         .filter(r => r.transferSize > 0) // Filter out cached/0-byte
         .map(r => ({

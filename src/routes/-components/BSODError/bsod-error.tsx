@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array access with floor/random is bounded */
 import type { ErrorComponentProps } from '@tanstack/react-router';
 import type { FC } from 'react';
 
@@ -15,11 +14,13 @@ import QRCode from './qr-code';
 const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
   const isEasterEgg = error instanceof SudoRmRfError;
   const reducedMotion = useReducedMotion();
+  const [fallbackDestination] = QR_DESTINATIONS;
+  if (fallbackDestination === undefined) throw new Error('Expected QR destinations to be defined');
 
   // Random selections (stable per render)
   const [qrDestination] = useState(() => {
     const index = Math.floor(Math.random() * QR_DESTINATIONS.length);
-    return QR_DESTINATIONS[index]!;
+    return QR_DESTINATIONS[index] ?? fallbackDestination;
   });
   const [message] = useState(() => getRandomMessage(isEasterEgg));
 

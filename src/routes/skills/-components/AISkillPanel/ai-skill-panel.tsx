@@ -1,4 +1,3 @@
-/* oxlint-disable eslint-plugin-react(no-array-index-key) -- Static evidence list items */
 // AISkillPanel - Expandable panel with typewriter effect for AI skill details
 
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
@@ -81,8 +80,8 @@ const AISkillPanel: FC<Props> = ({ skill, isExpanded, onClose }) => {
           <div className='border-fuchsia/10 border-t pt-4'>
             <h4 className='text-subtle-foreground mb-2 font-mono text-xs uppercase'>Evidence</h4>
             <ul className='space-y-1'>
-              {skill.evidence.map((e, i) => (
-                <li key={i} className='text-muted-foreground text-xs'>
+              {skill.evidence.map(e => (
+                <li key={`${skill.name}-${e}`} className='text-muted-foreground text-xs'>
                   <span className='text-fuchsia/50 mr-2'>•</span>
                   {e}
                 </li>

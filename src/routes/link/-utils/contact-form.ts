@@ -32,20 +32,23 @@ export const handleForm = createServerFn({ method: 'POST' })
   })
   .handler(async ({ data: formData }): Promise<ContactFormResult> => {
     // 1. Parse form data (FormData.get returns string | File | null, but these are text fields)
-    /* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- FormData text fields are always strings */
-    const name = formData.get('name') as string;
-    const email = formData.get('email') as string;
-    const message = formData.get('message') as string;
-    const turnstileToken = formData.get('turnstileToken') as string;
-    /* oxlint-enable typescript-eslint(no-unsafe-type-assertion) */
+    const readTextField = (key: string): string => {
+      const value = formData.get(key);
+      return typeof value === 'string' ? value : '';
+    };
+
+    const name = readTextField('name');
+    const email = readTextField('email');
+    const message = readTextField('message');
+    const turnstileToken = readTextField('turnstileToken');
 
     // 2. Server-side validation
     const validationErrors = validateContactForm({ name, email, message });
     if (hasErrors(validationErrors)) return { success: false, error: 'validation', errors: validationErrors };
 
     // 3. Get client IP from request headers
-    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- getRequestHeaders() returns Headers but TanStack types it as error
-    const clientIp: string = (getRequestHeaders() as Headers).get('CF-Connecting-IP') ?? 'unknown';
+    const requestHeaders: unknown = getRequestHeaders();
+    const clientIp: string = requestHeaders instanceof Headers ? (requestHeaders.get('CF-Connecting-IP') ?? 'unknown') : 'unknown';
 
     // 4. Verify Turnstile token
     if (!turnstileToken) return { success: false, error: 'turnstile', message: 'セキュリティ認証を完了してください' };

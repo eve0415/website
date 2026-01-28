@@ -19,7 +19,7 @@ export class SudoRmRfError extends Error {
 
 export interface CommandContext {
   stats: GitHubStats;
-  onNavigateHome: () => void;
+  onNavigateHome: () => Promise<void> | void;
 }
 
 export interface Command {

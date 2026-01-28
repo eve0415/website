@@ -4,7 +4,7 @@ import type { TerminalLine } from './useTerminal';
 import type { FC, ReactNode } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
 import { COMMAND_NAMES, SudoRmRfError, executeCommand } from './commands';
 import { useKeyboardCapture } from './useKeyboardCapture';
@@ -101,7 +101,11 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
   }, [isTouchDevice, state]);
 
   // Navigation helper
-  const handleNavigateHome = useCallback(async () => navigate({ to: '/' }), [navigate]);
+  const handleNavigateHome = useCallback(() => {
+    startTransition(async () => {
+      await navigate({ to: '/' });
+    });
+  }, [navigate]);
 
   // Scroll to prompt after command execution
   const scrollToPrompt = useCallback(() => {
@@ -127,7 +131,6 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
       if (awaitingConfirmation) {
         const isYes = input.toLowerCase() === 'y' || input.toLowerCase() === 'yes';
         confirm(isYes);
-        // oxlint-disable-next-line typescript-eslint(no-floating-promises) -- Navigation result intentionally ignored
         if (isYes && awaitingConfirmation === 'exit') handleNavigateHome();
 
         scrollToPrompt();
@@ -151,7 +154,6 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
             awaitConfirmation('exit');
             addOutput(<span>exit? (y/n)</span>);
           } else {
-            // oxlint-disable-next-line typescript-eslint(no-floating-promises) -- Navigation result intentionally ignored
             handleNavigateHome();
           }
           break;

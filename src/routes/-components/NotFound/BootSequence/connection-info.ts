@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-assignment), typescript-eslint(no-unsafe-call), typescript-eslint(no-unsafe-member-access), typescript-eslint(no-unsafe-type-assertion) -- TanStack Start's getRequestHeaders() returns error-typed value; Cloudflare SDK types require assertion */
 import { createServerFn, createServerOnlyFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 import Cloudflare from 'cloudflare';
@@ -56,6 +55,19 @@ export interface ConnectionInfo {
   certificatePack: CertificatePack | null;
 }
 
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
+
+const isStringArray = (value: unknown): value is string[] => Array.isArray(value) && value.every(item => typeof item === 'string');
+
+const isCertificatePack = (value: unknown): value is CertificatePack => {
+  if (!isRecord(value)) return false;
+  const { hosts } = value;
+  if (hosts !== undefined && !isStringArray(hosts)) return false;
+  const { certificates } = value;
+  if (certificates !== undefined && !Array.isArray(certificates)) return false;
+  return true;
+};
+
 // KV cache key for certificate data
 const CERT_CACHE_KEY = 'cert-data-eve0415';
 
@@ -72,9 +84,9 @@ const fetchCertFromCloudflareAPI = createServerOnlyFn(async (): Promise<Certific
   const client = new Cloudflare({ apiToken: token });
 
   // Use SDK async iterator - paginate until found
-  // SDK types list response as `unknown`, so we assert to our interface
   for await (const rawPack of client.ssl.certificatePacks.list({ zone_id: zoneId })) {
-    const pack = rawPack as CertificatePack;
+    if (!isCertificatePack(rawPack)) continue;
+    const pack = rawPack;
     const hosts = pack.hosts ?? [];
     if (hosts.some(h => h === 'eve0415.net' || h === '*.eve0415.net')) return pack;
   }
@@ -117,7 +129,8 @@ const getCachedCert = createServerOnlyFn(async (): Promise<CertificatePack | nul
  * Reads real data from Cloudflare request headers and API.
  */
 export const getConnectionInfo = createServerFn().handler(async (): Promise<ConnectionInfo> => {
-  const headers = getRequestHeaders();
+  const headers: unknown = getRequestHeaders();
+  const headerMap = headers instanceof Headers ? headers : new Headers();
   const certificatePack = await getCachedCert();
 
   return {
@@ -125,15 +138,15 @@ export const getConnectionInfo = createServerFn().handler(async (): Promise<Conn
     serverIp: '104.21.48.170',
 
     // Real TLS info from injected headers (set in server.ts)
-    tlsVersion: headers.get('X-CF-TLS-Version') ?? 'TLSv1.3',
-    tlsCipher: headers.get('X-CF-TLS-Cipher') ?? 'unknown',
+    tlsVersion: headerMap.get('X-CF-TLS-Version') ?? 'TLSv1.3',
+    tlsCipher: headerMap.get('X-CF-TLS-Cipher') ?? 'unknown',
 
     // Real HTTP protocol from injected header
-    httpVersion: headers.get('X-CF-HTTP-Protocol') ?? 'loading...',
+    httpVersion: headerMap.get('X-CF-HTTP-Protocol') ?? 'loading...',
 
     // Real Cloudflare metadata
-    cfRay: headers.get('CF-Ray'),
-    colo: headers.get('X-CF-Colo'),
+    cfRay: headerMap.get('CF-Ray'),
+    colo: headerMap.get('X-CF-Colo'),
 
     // Full certificate pack from Cloudflare API
     certificatePack,

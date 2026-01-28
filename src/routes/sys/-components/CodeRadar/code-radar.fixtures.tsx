@@ -1,7 +1,9 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Fixture data requires type assertion for contribution level */
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 
 // Generate sample contribution data for 52 weeks (364 days)
+const LEVELS: ContributionDay['level'][] = [0, 1, 2, 3, 4];
+const pickLevel = (index: number): ContributionDay['level'] => LEVELS[index] ?? 0;
+
 const generateContributionData = (): ContributionDay[] => {
   const days: ContributionDay[] = [];
   const today = new Date();
@@ -66,7 +68,7 @@ export const emptyContributions: ContributionDay[] = Array.from({ length: 364 },
   return {
     date: date.toISOString().split('T')[0] ?? '',
     count: 0,
-    level: 0 as const,
+    level: 0,
   };
 });
 
@@ -77,7 +79,7 @@ export const sparseContributions: ContributionDay[] = Array.from({ length: 364 }
   return {
     date: date.toISOString().split('T')[0] ?? '',
     count: hasActivity ? Math.floor(Math.random() * 5) + 1 : 0,
-    level: hasActivity ? ((Math.floor(Math.random() * 2) + 1) as 0 | 1 | 2 | 3 | 4) : (0 as const),
+    level: hasActivity ? pickLevel(Math.floor(Math.random() * 2) + 1) : 0,
   };
 });
 

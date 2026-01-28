@@ -1,6 +1,5 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Color config array access requires type assertion */
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
-import type { Skill } from '../../-config/skills-config';
+import type { Skill, SkillColor } from '../../-config/skills-config';
 import type { MaterializePhase } from './useNodeMaterialize';
 import type { FC } from 'react';
 
@@ -44,7 +43,7 @@ interface Connection {
 }
 
 // Colors
-const COLORS = {
+const COLORS: Record<SkillColor | 'fuchsia' | 'fuchsiaBright', string> = {
   neon: '#00ff88',
   cyan: '#00d4ff',
   orange: '#ff6b35',
@@ -124,7 +123,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         x: centerX + Math.cos(angle) * radius,
         y: centerY + Math.sin(angle) * radius,
         radius: skill.level === 'expert' ? 8 : skill.level === 'proficient' ? 6 : 4,
-        color: COLORS[config.color as keyof typeof COLORS] || COLORS.neon,
+        color: COLORS[config.color] ?? COLORS.neon,
         label: skill.name,
         showLabel: skill.level === 'expert',
         isAI: false,
@@ -138,7 +137,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
       const angle = (i / Math.max(aiOnlySkills.length, 1)) * Math.PI * 2 + Math.PI / 4;
       const radius = radiusBase * 1.1;
 
-      const materializeState = aiMaterializeStates.get(i) ?? { phase: 'hidden' as MaterializePhase, progress: 0 };
+      const materializeState = aiMaterializeStates.get(i) ?? { phase: 'hidden', progress: 0 };
 
       allNodes.push({
         x: centerX + Math.cos(angle) * radius,

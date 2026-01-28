@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- setTimeout return value known to be number in browser */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Phase = 'boot' | 'corruption' | 'aftermath';
@@ -88,11 +87,12 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
 
   const advancePhase = useCallback(() => {
     const config = PHASE_CONFIG[phaseRef.current];
-    if (config.next) {
-      phaseRef.current = config.next;
+    const nextPhase = config.next;
+    if (nextPhase) {
+      phaseRef.current = nextPhase;
       setState(prev => ({
         ...prev,
-        current: config.next!,
+        current: nextPhase,
         progress: 0,
         elapsed: 0,
       }));
@@ -100,7 +100,7 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
       // Reset phase pause offset to prevent accumulated pause time from affecting new phase
       phasePauseOffsetRef.current = 0;
       phasePausedAtRef.current = null;
-      onPhaseChange?.(config.next);
+      onPhaseChange?.(nextPhase);
     }
   }, [onPhaseChange]);
 
@@ -152,16 +152,17 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
       // Auto-advance to next phase (blocked when debug mode is paused or boot not complete)
       // For boot phase, require bootComplete to prevent premature transition when exiting debug mode
       const canAdvanceFromBoot = currentPhase !== 'boot' || bootCompleteRef.current;
-      if (config.duration > 0 && phaseElapsed >= config.duration && config.next && !debugPausedRef.current && canAdvanceFromBoot) {
-        phaseRef.current = config.next;
+      const nextPhase = config.next;
+      if (config.duration > 0 && phaseElapsed >= config.duration && nextPhase && !debugPausedRef.current && canAdvanceFromBoot) {
+        phaseRef.current = nextPhase;
         setState(prev => ({
           ...prev,
-          current: config.next!,
+          current: nextPhase,
           progress: 0,
           elapsed: 0,
         }));
         phaseStartTimeRef.current = timestamp;
-        onPhaseChange?.(config.next);
+        onPhaseChange?.(nextPhase);
       }
 
       // Continue animation unless we're in aftermath (check updated ref)

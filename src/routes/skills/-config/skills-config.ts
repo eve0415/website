@@ -5,6 +5,8 @@ export interface Skill {
   description?: string;
 }
 
+export type SkillColor = 'neon' | 'cyan' | 'orange';
+
 export const skills: Skill[] = [
   // Languages
   {
@@ -113,4 +115,4 @@ export const levelConfig = {
   expert: { color: 'neon', label: 'Expert', progress: 100 },
   proficient: { color: 'cyan', label: 'Proficient', progress: 70 },
   learning: { color: 'orange', label: 'Learning', progress: 35 },
-};
+} satisfies Record<Skill['level'], { color: SkillColor; label: string; progress: number }>;

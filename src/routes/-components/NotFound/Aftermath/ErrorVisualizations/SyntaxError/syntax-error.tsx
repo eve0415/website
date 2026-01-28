@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Random array indexing is bounded */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -58,12 +57,14 @@ const SyntaxError: FC = () => {
           setShowError(true);
           // Create parser fragment explosion
           const fragments = [];
+          const fragmentChars = ['<', '/', '>', '{', '}', '(', ')', ';', '='] as const;
           for (let i = 0; i < 20; i++) {
+            const char = fragmentChars[Math.floor(Math.random() * fragmentChars.length)] ?? fragmentChars[0];
             fragments.push({
               id: i,
               x: Math.random() * 200 - 100,
               y: Math.random() * 200 - 100,
-              char: ['<', '/', '>', '{', '}', '(', ')', ';', '='][Math.floor(Math.random() * 9)]!,
+              char,
             });
           }
           setParserFragments(fragments);

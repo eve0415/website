@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array indexing with bounds check */
 export type ErrorType =
   | 'null-pointer'
   | 'stack-overflow'
@@ -158,8 +157,10 @@ export const ERROR_VISUALIZATIONS: ErrorVisualization[] = [
 
 // Get random error type (seeded by current second for variety but consistency within page load)
 export const getRandomError = (): ErrorVisualization => {
+  const [fallback] = ERROR_VISUALIZATIONS;
+  if (fallback === undefined) throw new Error('Expected error visualizations to be defined');
   // Use a simple hash of the current second to pick an error
   // This gives variety on each visit but consistency during the visit
   const seed = Math.floor(Date.now() / 1000) % ERROR_VISUALIZATIONS.length;
-  return ERROR_VISUALIZATIONS[seed]!;
+  return ERROR_VISUALIZATIONS[seed] ?? fallback;
 };

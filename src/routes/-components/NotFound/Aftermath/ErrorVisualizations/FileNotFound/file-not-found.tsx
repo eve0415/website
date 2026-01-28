@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array indexing within bounds check */
 import type { FC, ReactNode } from 'react';
 
 import { Link, useLocation } from '@tanstack/react-router';
@@ -77,7 +76,8 @@ const FileNotFound: FC = () => {
     const buildTree = (segs: string[], index: number): FileNode[] => {
       if (index >= segs.length) return [];
 
-      const segment = segs[index]!;
+      const segment = segs[index];
+      if (!segment) return [];
       const isLast = index === segs.length - 1;
       const nodeType = isParameter(segment) ? 'file' : 'folder';
 
@@ -109,7 +109,13 @@ const FileNotFound: FC = () => {
 
     const interval = setInterval(() => {
       if (indexRef.current < paths.length) {
-        setSearchPath(prev => [...prev, paths[indexRef.current]!]);
+        const nextPath = paths[indexRef.current];
+        if (!nextPath) {
+          setSearchComplete(true);
+          clearInterval(interval);
+          return;
+        }
+        setSearchPath(prev => [...prev, nextPath]);
         indexRef.current += 1;
       } else {
         setSearchComplete(true);

@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- setResponseHeader parameter types require assertion */
 import type * as schema from '#db/schema';
 import type { drizzle } from 'drizzle-orm/d1';
 
@@ -15,7 +14,7 @@ const securityMiddleware = createMiddleware().server(async ({ next }) => {
   const csp = buildCspHeader(nonce);
   const headers = buildSecurityHeaders(csp);
 
-  for (const [key, value] of Object.entries(headers)) setResponseHeader(key as Parameters<typeof setResponseHeader>[0], value);
+  for (const [key, value] of Object.entries(headers)) setResponseHeader(key, value);
 
   // Execute the request with nonce in context
   return next({

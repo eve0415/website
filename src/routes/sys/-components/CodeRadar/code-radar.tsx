@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Array access in render loop requires type assertion for tuple elements */
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 import type { FC } from 'react';
 
@@ -199,7 +198,8 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
       ctx.textBaseline = 'middle';
 
       for (let i = 0; i < DAY_LABELS.length; i++) {
-        const label = DAY_LABELS[i] as string;
+        const label = DAY_LABELS[i];
+        if (!label) continue;
         const angle = (i / 7) * Math.PI * 2 - Math.PI / 2;
         const labelRadius = maxRadius + 15;
         const x = centerX + Math.cos(angle) * labelRadius;

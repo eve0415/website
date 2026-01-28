@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array/index access with bounds check */
 import type { RefObject } from 'react';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -185,7 +184,11 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages = 0, vi
       let nextIndex = prev.debugIndex + 1;
 
       // Skip children (higher depth)
-      while (nextIndex < depths.length && depths[nextIndex]! > currentDepth) nextIndex++;
+      while (nextIndex < depths.length) {
+        const nextDepth = depths[nextIndex];
+        if (nextDepth === undefined || nextDepth <= currentDepth) break;
+        nextIndex++;
+      }
 
       if (nextIndex >= depths.length) nextIndex = prev.debugIndex; // Stay at current if at end
 
@@ -217,7 +220,11 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages = 0, vi
       let nextIndex = prev.debugIndex + 1;
 
       // Skip until we find a shallower depth
-      while (nextIndex < depths.length && depths[nextIndex]! >= currentDepth) nextIndex++;
+      while (nextIndex < depths.length) {
+        const nextDepth = depths[nextIndex];
+        if (nextDepth === undefined || nextDepth < currentDepth) break;
+        nextIndex++;
+      }
 
       if (nextIndex >= depths.length) nextIndex = prev.debugIndex; // Stay at current if no shallower level found
 

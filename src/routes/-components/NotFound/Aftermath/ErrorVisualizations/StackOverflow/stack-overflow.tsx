@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array indexing within bounds check */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -48,8 +47,17 @@ const StackOverflow: FC = () => {
     currentIndexRef.current = 0;
     const interval = setInterval(() => {
       if (currentIndexRef.current < frames.length) {
-        setStackFrames(prev => [frames[currentIndexRef.current]!, ...prev]);
-        currentIndexRef.current += 1;
+        const nextFrame = frames[currentIndexRef.current];
+        if (nextFrame) {
+          setStackFrames(prev => [nextFrame, ...prev]);
+          currentIndexRef.current += 1;
+        } else {
+          clearInterval(interval);
+          setOverflowing(true);
+          setTimeout(() => {
+            setCrashed(true);
+          }, 800);
+        }
       } else {
         clearInterval(interval);
         setOverflowing(true);

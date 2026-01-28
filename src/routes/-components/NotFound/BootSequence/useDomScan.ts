@@ -125,15 +125,11 @@ export const useDOMScan = (): DOMScanData => {
       }));
 
       // Stylesheets
-      const linkStylesheets = document.querySelectorAll('link[rel="stylesheet"]');
+      const linkStylesheets = document.querySelectorAll<HTMLLinkElement>('link[rel="stylesheet"]');
       const styleElements = document.querySelectorAll('style');
 
       const stylesheets: StylesheetInfo[] = [
-        ...Array.from(linkStylesheets).map((el: Element) => {
-          // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- querySelectorAll('link[rel="stylesheet"]') guarantees HTMLLinkElement
-          const link = el as HTMLLinkElement;
-          return { href: link.href || null, media: link.media || 'all', isInline: false };
-        }),
+        ...Array.from(linkStylesheets).map(link => ({ href: link.href || null, media: link.media || 'all', isInline: false })),
         ...Array.from(styleElements).map(() => ({
           href: null,
           media: 'all',
@@ -151,12 +147,8 @@ export const useDOMScan = (): DOMScanData => {
       }));
 
       // Link elements (non-stylesheet)
-      const linkElements = document.querySelectorAll('link:not([rel="stylesheet"])');
-      const links: LinkInfo[] = Array.from(linkElements).map((el: Element) => {
-        // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- querySelectorAll('link:not(...)') guarantees HTMLLinkElement
-        const link = el as HTMLLinkElement;
-        return { rel: link.rel, href: link.href, type: el.getAttribute('type') };
-      });
+      const linkElements = document.querySelectorAll<HTMLLinkElement>('link:not([rel="stylesheet"])');
+      const links: LinkInfo[] = Array.from(linkElements).map(link => ({ rel: link.rel, href: link.href, type: link.getAttribute('type') }));
 
       return {
         totalNodes,

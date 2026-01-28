@@ -1,7 +1,6 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Database query results require type assertions for phase validation */
 // Server function to load AI skills data from KV
 
-import type { AIProfileSummary, AISkillsContent, AISkillsState, WorkflowState } from '#workflows/-utils/ai-skills-types';
+import type { AIProfileSummary, AISkillsContent, AISkillsState, WorkflowPhase, WorkflowState } from '#workflows/-utils/ai-skills-types';
 
 import { createServerFn } from '@tanstack/react-start';
 import { env } from 'cloudflare:workers';
@@ -12,6 +11,22 @@ import * as schema from '#db/schema';
 import { workflowState } from '#db/schema';
 
 type DB = ReturnType<typeof drizzle<typeof schema>>;
+
+const WORKFLOW_PHASES: Record<WorkflowPhase, true> = {
+  idle: true,
+  'listing-repos': true,
+  'fetching-commits': true,
+  'fetching-prs': true,
+  'fetching-reviews': true,
+  'squashing-history': true,
+  'ai-extracting-skills': true,
+  'ai-generating-japanese': true,
+  'storing-results': true,
+  completed: true,
+  error: true,
+};
+
+const isWorkflowPhase = (value: unknown): value is WorkflowPhase => typeof value === 'string' && value in WORKFLOW_PHASES;
 
 // Helper to safely parse JSON from KV, handling corrupted data
 const safeKVGetJSON = async <T>(kv: KVNamespace, key: string): Promise<{ value: T | null; wasCorrupted: boolean }> => {
@@ -68,7 +83,7 @@ export const loadWorkflowStateHandler = async (kv: KVNamespace, db: DB): Promise
 
   // Map Drizzle camelCase to snake_case for consistency with existing API
   const mappedState: WorkflowState = {
-    phase: state.phase as WorkflowState['phase'],
+    phase: isWorkflowPhase(state.phase) ? state.phase : 'idle',
     progress_pct: state.progressPct,
     current_repo: state.currentRepo ?? null,
     repos_total: state.reposTotal,
@@ -108,7 +123,7 @@ export const loadAISkillsStateHandler = async (kv: KVNamespace, db: DB): Promise
 
     if (dbState) {
       workflow = {
-        phase: dbState.phase as WorkflowState['phase'],
+        phase: isWorkflowPhase(dbState.phase) ? dbState.phase : 'idle',
         progress_pct: dbState.progressPct,
         current_repo: dbState.currentRepo ?? null,
         repos_total: dbState.reposTotal,

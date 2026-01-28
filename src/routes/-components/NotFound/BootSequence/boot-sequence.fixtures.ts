@@ -1,6 +1,5 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test fixtures require type assertions for mock data */
 import type { CertificatePack, ConnectionInfo } from './connection-info';
-import type { DOMScanData, MetaInfo, ScriptInfo, StylesheetInfo } from './useDomScan';
+import type { DOMScanData } from './useDomScan';
 import type { NavigationTimingData, ResourceTimingEntry } from './useNavigationTiming';
 
 // --- Navigation Timing Fixtures ---
@@ -138,17 +137,17 @@ export const mockDOMScan: DOMScanData = {
   scripts: [
     { src: '/assets/main.js', type: 'module', async: false, defer: false, isInline: false },
     { src: null, type: 'application/json', async: false, defer: false, isInline: true },
-  ] as ScriptInfo[],
+  ],
   stylesheets: [
     { href: '/assets/styles.css', media: 'all', isInline: false },
     { href: null, media: 'all', isInline: true },
-  ] as StylesheetInfo[],
+  ],
   meta: [
     { name: 'viewport', property: null, content: 'width=device-width, initial-scale=1', charset: null },
     { name: 'description', property: null, content: 'Personal website of eve0415', charset: null },
     { name: null, property: 'og:title', content: 'eve0415.net', charset: null },
     { name: null, property: null, content: '', charset: 'utf8' },
-  ] as MetaInfo[],
+  ],
   links: [
     { rel: 'icon', href: '/favicon.ico', type: 'image/x-icon' },
     { rel: 'canonical', href: 'https://eve0415.net', type: null },
@@ -217,21 +216,33 @@ export const heavyDOMScan: DOMScanData = {
 const createMockCertPack = (certCount: number): CertificatePack | null => {
   if (certCount === 0) return null;
 
-  return {
-    id: 'mock-cert-pack-id',
-    type: 'universal',
-    hosts: ['eve0415.net', '*.eve0415.net'],
-    status: 'active',
-    certificates: Array.from({ length: certCount }, (_, i) => ({
+  const certificates: CertificatePack['certificates'] = Array.from({ length: certCount }, (_, i) => {
+    const cert = {
       id: `cert-${i}`,
-      hosts: i === 0 ? ['eve0415.net', '*.eve0415.net'] : undefined,
       issuer: i === 0 ? 'Cloudflare Inc' : `Intermediate CA ${i}`,
       uploaded_on: '2024-01-01T00:00:00Z',
       expires_on: '2025-03-01T00:00:00Z',
       signature: 'SHA256WithRSA',
       bundle_method: 'ubiquitous',
-    })),
-  } as CertificatePack;
+    };
+
+    if (i === 0) {
+      return {
+        ...cert,
+        hosts: ['eve0415.net', '*.eve0415.net'],
+      };
+    }
+
+    return cert;
+  });
+
+  return {
+    id: 'mock-cert-pack-id',
+    type: 'universal',
+    hosts: ['eve0415.net', '*.eve0415.net'],
+    status: 'active',
+    certificates,
+  };
 };
 
 /**

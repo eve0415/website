@@ -1,5 +1,4 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Color config index access requires type assertion */
-import type { Skill } from '../../-config/skills-config';
+import type { Skill, SkillColor } from '../../-config/skills-config';
 import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';
@@ -25,7 +24,7 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
     };
   }, [index]);
 
-  const colorClasses = {
+  const colorClasses: Record<SkillColor, { border: string; text: string; bg: string; textColor: string; bar: string }> = {
     neon: {
       border: 'hover:border-neon/50',
       text: 'group-hover:text-neon',
@@ -49,7 +48,7 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
     },
   };
 
-  const colors = colorClasses[config.color as keyof typeof colorClasses];
+  const colors = colorClasses[config.color];
 
   return (
     <div

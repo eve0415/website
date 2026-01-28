@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-react(no-unescaped-entities), typescript-eslint(no-non-null-assertion) -- Code snippets with quotes, array indexing with modulo is always safe */
+/* oxlint-disable eslint-plugin-react(no-unescaped-entities) -- Code snippets with quotes are intentional visual elements */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -34,10 +34,13 @@ const DivisionByZero: FC = () => {
   const numbers = useMemo((): FloatingNumber[] => {
     const result: FloatingNumber[] = [];
     const symbols = ['1', '2', '3', '4', '5', '404', 'π', 'e', '∞', '42', '0', 'NaN'];
+    const [fallbackSymbol] = symbols;
+    if (fallbackSymbol === undefined) throw new Error('Expected division symbols to be defined');
     for (let i = 0; i < 24; i++) {
+      const symbol = symbols.length > 0 ? (symbols[i % symbols.length] ?? fallbackSymbol) : fallbackSymbol;
       result.push({
         id: i,
-        value: symbols[i % symbols.length]!,
+        value: symbol,
         x: 50 + Math.cos((i / 24) * Math.PI * 2) * 40,
         y: 50 + Math.sin((i / 24) * Math.PI * 2) * 40,
         angle: (i / 24) * Math.PI * 2,
