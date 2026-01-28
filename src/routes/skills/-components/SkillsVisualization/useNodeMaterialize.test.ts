@@ -9,9 +9,9 @@ describe('getMaterializeDrawParams', () => {
 
       expect(params.opacity).toBe(0);
       expect(params.scale).toBe(0);
-      expect(params.showCrosshair).toBe(false);
-      expect(params.showWireframe).toBe(false);
-      expect(params.showParticles).toBe(false);
+      expect(params.showCrosshair).toBeFalsy();
+      expect(params.showWireframe).toBeFalsy();
+      expect(params.showParticles).toBeFalsy();
       expect(params.flashIntensity).toBe(0);
     });
 
@@ -27,9 +27,9 @@ describe('getMaterializeDrawParams', () => {
     test('shows crosshair', () => {
       const params = getMaterializeDrawParams('crosshair', 0.5);
 
-      expect(params.showCrosshair).toBe(true);
-      expect(params.showWireframe).toBe(false);
-      expect(params.showParticles).toBe(false);
+      expect(params.showCrosshair).toBeTruthy();
+      expect(params.showWireframe).toBeFalsy();
+      expect(params.showParticles).toBeFalsy();
     });
 
     test('opacity increases with progress', () => {
@@ -52,9 +52,9 @@ describe('getMaterializeDrawParams', () => {
     test('shows crosshair and wireframe', () => {
       const params = getMaterializeDrawParams('wireframe', 0.5);
 
-      expect(params.showCrosshair).toBe(true);
-      expect(params.showWireframe).toBe(true);
-      expect(params.showParticles).toBe(false);
+      expect(params.showCrosshair).toBeTruthy();
+      expect(params.showWireframe).toBeTruthy();
+      expect(params.showParticles).toBeFalsy();
     });
 
     test('scale increases with progress up to 0.5', () => {
@@ -75,23 +75,23 @@ describe('getMaterializeDrawParams', () => {
     test('shows particles', () => {
       const params = getMaterializeDrawParams('particles', 0.5);
 
-      expect(params.showParticles).toBe(true);
+      expect(params.showParticles).toBeTruthy();
     });
 
     test('crosshair fades out at 50% progress', () => {
       const paramsEarly = getMaterializeDrawParams('particles', 0.3);
       const paramsLate = getMaterializeDrawParams('particles', 0.6);
 
-      expect(paramsEarly.showCrosshair).toBe(true);
-      expect(paramsLate.showCrosshair).toBe(false);
+      expect(paramsEarly.showCrosshair).toBeTruthy();
+      expect(paramsLate.showCrosshair).toBeFalsy();
     });
 
     test('wireframe fades out at 70% progress', () => {
       const paramsEarly = getMaterializeDrawParams('particles', 0.5);
       const paramsLate = getMaterializeDrawParams('particles', 0.8);
 
-      expect(paramsEarly.showWireframe).toBe(true);
-      expect(paramsLate.showWireframe).toBe(false);
+      expect(paramsEarly.showWireframe).toBeTruthy();
+      expect(paramsLate.showWireframe).toBeFalsy();
     });
 
     test('scale increases from 0.5 to 1.0', () => {
@@ -125,9 +125,9 @@ describe('getMaterializeDrawParams', () => {
     test('hides all construction elements', () => {
       const params = getMaterializeDrawParams('flash', 0.5);
 
-      expect(params.showCrosshair).toBe(false);
-      expect(params.showWireframe).toBe(false);
-      expect(params.showParticles).toBe(false);
+      expect(params.showCrosshair).toBeFalsy();
+      expect(params.showWireframe).toBeFalsy();
+      expect(params.showParticles).toBeFalsy();
     });
 
     test('full opacity and scale > 1 at start (bounce effect)', () => {
@@ -149,9 +149,9 @@ describe('getMaterializeDrawParams', () => {
 
       expect(params.opacity).toBe(1);
       expect(params.scale).toBe(1);
-      expect(params.showCrosshair).toBe(false);
-      expect(params.showWireframe).toBe(false);
-      expect(params.showParticles).toBe(false);
+      expect(params.showCrosshair).toBeFalsy();
+      expect(params.showWireframe).toBeFalsy();
+      expect(params.showParticles).toBeFalsy();
       expect(params.flashIntensity).toBe(0);
     });
 
@@ -159,7 +159,7 @@ describe('getMaterializeDrawParams', () => {
       const params0 = getMaterializeDrawParams('visible', 0);
       const params1 = getMaterializeDrawParams('visible', 1);
 
-      expect(params0).toEqual(params1);
+      expect(params0).toStrictEqual(params1);
     });
   });
 });

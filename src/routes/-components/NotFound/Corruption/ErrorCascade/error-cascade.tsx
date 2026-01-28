@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-array-index-key) -- Static decorative arrays for visual effects */
 import type { FC } from 'react';
 
 import { useMemo } from 'react';
@@ -116,12 +117,12 @@ const ErrorCascade: FC<ErrorCascadeProps> = ({ progress, enabled }) => {
     if (!enabled || progress < 0.05) return [];
 
     // Exponential curve: more errors appear faster as progress increases
-    const effectiveProgress = Math.pow(progress, 0.7); // Slightly accelerated curve
+    const effectiveProgress = progress ** 0.7; // Slightly accelerated curve
 
     return CASCADE_ERRORS.filter(error => effectiveProgress >= error.threshold);
   }, [enabled, progress]);
 
-  if (!enabled || visibleErrors.length === 0) return null;
+  if (!enabled || visibleErrors.length === 0) return;
 
   return (
     <div

@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(jsx-no-comment-textnodes) -- Intentionally displays code comments as visual elements */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -28,7 +29,7 @@ const ConcurrentModification: FC = () => {
 
   const [items, setItems] = useState<ListItem[]>(initialItems);
   const [readerPosition, setReaderPosition] = useState(0);
-  const [writerAction, setWriterAction] = useState<string | null>(null);
+  const [writerAction, setWriterAction] = useState<string | null>();
   const [crashed, setCrashed] = useState(() => reducedMotion);
   const [modCount, setModCount] = useState({ expected: 5, actual: 5 });
 
@@ -73,7 +74,9 @@ const ConcurrentModification: FC = () => {
       }
     }, 800);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   return (
@@ -103,7 +106,7 @@ const ConcurrentModification: FC = () => {
                   <div className='size-3 rounded-full bg-[#ff9800]' />
                   <span className='font-mono text-sm text-[#ff9800]'>Writer Thread</span>
                 </div>
-                <div className='mt-2 font-mono text-xs text-[#888]'>{writerAction || 'waiting...'}</div>
+                <div className='mt-2 font-mono text-xs text-[#888]'>{writerAction ?? 'waiting...'}</div>
               </div>
             </div>
 
@@ -142,7 +145,7 @@ const ConcurrentModification: FC = () => {
               </div>
               <div className='rounded border border-[#333] bg-[#111] p-3'>
                 <div className='font-mono text-xs text-[#666]'>modCount</div>
-                <div className={`mt-1 font-mono text-xl ${modCount.actual !== modCount.expected ? 'text-[#f44336]' : 'text-[#4caf50]'}`}>{modCount.actual}</div>
+                <div className={`mt-1 font-mono text-xl ${modCount.actual === modCount.expected ? 'text-[#4caf50]' : 'text-[#f44336]'}`}>{modCount.actual}</div>
               </div>
             </div>
 
@@ -164,7 +167,7 @@ const ConcurrentModification: FC = () => {
 
           {crashed && (
             <div className='space-y-1 font-mono text-[10px]'>
-              <div className='text-[#f44336]'>Exception in thread "reader-1"</div>
+              <div className='text-[#f44336]'>Exception in thread {'}reader-1{'}</div>
               <div className='text-[#f44336]'>java.util.ConcurrentModificationException</div>
               <div className='pl-2 text-[#888]'>at ArrayList$Itr.checkForComodification(ArrayList.java:911)</div>
               <div className='pl-2 text-[#888]'>at ArrayList$Itr.next(ArrayList.java:861)</div>

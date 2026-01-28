@@ -4,7 +4,7 @@ import { page } from 'vitest/browser';
 
 import TerminalText from './terminal-text';
 
-describe('TerminalText', () => {
+describe('terminalText', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -33,7 +33,7 @@ describe('TerminalText', () => {
     await vi.advanceTimersByTimeAsync(200);
 
     await expect.element(page.getByText('Test')).toBeInTheDocument();
-    expect(onComplete).toHaveBeenCalled();
+    expect(onComplete).toHaveBeenCalledWith();
   });
 
   test('applies custom className', async () => {
@@ -78,6 +78,6 @@ describe('TerminalText', () => {
     // Fast-forward for completion
     await vi.advanceTimersByTimeAsync(300);
 
-    expect(onComplete).toHaveBeenCalledTimes(1);
+    expect(onComplete).toHaveBeenCalledOnce();
   });
 });

@@ -1,4 +1,5 @@
-import type { FC } from 'react';
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array indexing within bounds check */
+import type { FC, ReactNode } from 'react';
 
 import { Link, useLocation } from '@tanstack/react-router';
 import { useEffect, useMemo, useRef, useState } from 'react';
@@ -13,8 +14,27 @@ interface FileNode {
 }
 
 // Detect if a URL segment looks like a parameter (numeric ID or UUID)
-const isParameter = (segment: string): boolean => {
-  return /^[0-9a-f-]{36}$/i.test(segment) || /^\d+$/.test(segment);
+const isParameter = (segment: string): boolean => /^[0-9a-f-]{36}$/i.test(segment) || /^\d+$/.test(segment);
+
+// Render file tree node with proper formatting
+const renderTree = (node: FileNode, depth = 0, isLast = true): ReactNode => {
+  const prefix = depth === 0 ? '' : '│  '.repeat(depth - 1) + (isLast ? '└─ ' : '├─ ');
+
+  return (
+    <div key={node.name + depth}>
+      <div
+        className={`font-mono text-sm ${node.missing === true ? 'animate-pulse text-[#ff6b6b]' : node.type === 'folder' ? 'text-[#64b5f6]' : 'text-[#90a4ae]'}`}
+      >
+        <span className='text-[#8fa9b5]'>{prefix}</span>
+        <span>
+          {node.type === 'folder' ? '📁 ' : '📄 '}
+          {node.name}
+        </span>
+        {node.missing === true && <span className='ml-2 text-xs'>[NOT FOUND]</span>}
+      </div>
+      {node.children?.map(async (child, i) => renderTree(child, depth + 1, i === (node.children?.length ?? 0) - 1))}
+    </div>
+  );
 };
 
 // Blueprint/schematic style visualization for 404 / ENOENT
@@ -28,7 +48,7 @@ const FileNotFound: FC = () => {
     const result = ['/'];
     let current = '';
     for (const segment of segments) {
-      current += '/' + segment;
+      current += `/${segment}`;
       result.push(current);
     }
     return result;
@@ -96,26 +116,10 @@ const FileNotFound: FC = () => {
         clearInterval(interval);
       }
     }, 600);
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion, paths]);
-
-  const renderTree = (node: FileNode, depth: number = 0, isLast: boolean = true): React.ReactNode => {
-    const prefix = depth === 0 ? '' : '│  '.repeat(depth - 1) + (isLast ? '└─ ' : '├─ ');
-
-    return (
-      <div key={node.name + depth}>
-        <div className={`font-mono text-sm ${node.missing ? 'animate-pulse text-[#ff6b6b]' : node.type === 'folder' ? 'text-[#64b5f6]' : 'text-[#90a4ae]'}`}>
-          <span className='text-[#8fa9b5]'>{prefix}</span>
-          <span>
-            {node.type === 'folder' ? '📁 ' : '📄 '}
-            {node.name}
-          </span>
-          {node.missing && <span className='ml-2 text-xs'>[NOT FOUND]</span>}
-        </div>
-        {node.children?.map((child, i) => renderTree(child, depth + 1, i === (node.children?.length ?? 0) - 1))}
-      </div>
-    );
-  };
 
   return (
     <div className='fixed inset-0 overflow-x-hidden overflow-y-auto bg-[#263238]'>

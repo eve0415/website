@@ -14,44 +14,42 @@ import { loadAISkillsState } from './-utils/ai-skills-loader';
 
 const SkillsPage: FC = () => {
   const loaderData = Route.useLoaderData();
-  const [selectedSkillName, setSelectedSkillName] = useState<string | null>(null);
+  const [selectedSkillName, setSelectedSkillName] = useState<string | null>();
 
   const aiSkillsState: AISkillsState = loaderData;
-  const aiSkills = aiSkillsState.content?.skills || [];
+  const aiSkills = aiSkillsState.content?.skills ?? [];
   const workflowState = aiSkillsState.workflow;
 
   // Find selected AI skill for panel display
-  const selectedAISkill = aiSkills.find(s => s.name === selectedSkillName) || null;
+  const selectedAISkill = aiSkills.find(s => s.name === selectedSkillName) ?? undefined;
 
   // Show analysis log when workflow is running
   const isWorkflowActive = workflowState.phase !== 'idle' && workflowState.phase !== 'completed' && workflowState.phase !== 'error';
 
-  const groupedSkills = skills.reduce<Record<string, Skill[]>>((acc, skill) => {
-    const category = skill.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(skill);
-    return acc;
-  }, {});
+  const groupedSkills: Record<string, Skill[]> = {};
+  for (const skill of skills) {
+    const { category } = skill;
+    const arr = groupedSkills[category];
+    if (arr) arr.push(skill);
+    else groupedSkills[category] = [skill];
+  }
 
   // Group AI-discovered skills by category
   const aiDiscoveredSkills = aiSkills.filter(s => s.is_ai_discovered);
-  const groupedAISkills = aiDiscoveredSkills.reduce<Record<string, AISkill[]>>((acc, skill) => {
-    const category = skill.category;
-    if (!acc[category]) {
-      acc[category] = [];
-    }
-    acc[category].push(skill);
-    return acc;
-  }, {});
+  const groupedAISkills: Record<string, AISkill[]> = {};
+  for (const skill of aiDiscoveredSkills) {
+    const { category } = skill;
+    const arr = groupedAISkills[category];
+    if (arr) arr.push(skill);
+    else groupedAISkills[category] = [skill];
+  }
 
   const handleNodeSelect = (skillName: string | null) => {
     setSelectedSkillName(skillName);
   };
 
   const handlePanelClose = () => {
-    setSelectedSkillName(null);
+    setSelectedSkillName(undefined);
   };
 
   return (
@@ -106,7 +104,7 @@ const SkillsPage: FC = () => {
 
       {/* Skills Grid by Category */}
       <div className='grid gap-12 lg:grid-cols-3'>
-        {(Object.keys(groupedSkills) as Array<keyof typeof categoryLabels>).map(category => (
+        {Object.keys(groupedSkills).map(category => (
           <section key={category}>
             <h2 className='border-line text-subtle-foreground mb-6 flex items-center gap-2 border-b pb-2 font-mono text-sm tracking-wider uppercase'>
               <span>{categoryIcons[category]}</span>
@@ -122,7 +120,9 @@ const SkillsPage: FC = () => {
                 <button
                   type='button'
                   key={aiSkill.name}
-                  onClick={() => setSelectedSkillName(aiSkill.name)}
+                  onClick={() => {
+                    setSelectedSkillName(aiSkill.name);
+                  }}
                   className='group border-fuchsia/20 hover:border-fuchsia/50 hover:bg-fuchsia/5 flex w-full items-center gap-3 rounded-lg border p-3 text-left transition-all'
                 >
                   <div className='flex-1'>
@@ -178,7 +178,7 @@ const SkillsPage: FC = () => {
       </div>
 
       {/* AI Skill Panel (expandable) */}
-      {selectedAISkill && <AISkillPanel skill={selectedAISkill} isExpanded={true} onClose={handlePanelClose} />}
+      {selectedAISkill && <AISkillPanel skill={selectedAISkill} isExpanded onClose={handlePanelClose} />}
 
       {/* Analysis Log (workflow progress) */}
       {isWorkflowActive && <AnalysisLog state={workflowState} />}
@@ -188,5 +188,5 @@ const SkillsPage: FC = () => {
 
 export const Route = createFileRoute('/skills/')({
   component: SkillsPage,
-  loader: () => loadAISkillsState(),
+  loader: async () => loadAISkillsState(),
 });

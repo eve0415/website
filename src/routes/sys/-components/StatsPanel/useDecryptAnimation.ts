@@ -10,7 +10,7 @@ interface UseDecryptAnimationOptions {
   enabled?: boolean;
 }
 
-export function useDecryptAnimation(finalValue: string | number, options: UseDecryptAnimationOptions = {}): string {
+export const useDecryptAnimation = (finalValue: string | number, options: UseDecryptAnimationOptions = {}): string => {
   const { duration = 1500, delay = 0, enabled = true } = options;
   const reducedMotion = useReducedMotion();
   const shouldAnimate = enabled && !reducedMotion;
@@ -57,17 +57,21 @@ export function useDecryptAnimation(finalValue: string | number, options: UseDec
         }
       }, 30);
 
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+      };
     }, delay);
 
-    return () => clearTimeout(timeoutId);
+    return () => {
+      clearTimeout(timeoutId);
+    };
   }, [finalStr, duration, delay, shouldAnimate]);
 
   return displayValue;
-}
+};
 
 // Hook for animating numbers with formatting
-export function useDecryptNumber(value: number, options: UseDecryptAnimationOptions = {}): string {
+export const useDecryptNumber = (value: number, options: UseDecryptAnimationOptions = {}): string => {
   const formattedValue = value.toLocaleString();
   return useDecryptAnimation(formattedValue, options);
-}
+};

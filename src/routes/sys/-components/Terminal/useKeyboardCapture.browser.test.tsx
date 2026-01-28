@@ -40,7 +40,13 @@ const TestComponent: FC<TestProps> = ({ enabled, commands, onSubmit = () => {}, 
       <button data-testid='clear-btn' type='button' onClick={clearInput}>
         Clear
       </button>
-      <button data-testid='set-btn' type='button' onClick={() => setInput('preset')}>
+      <button
+        data-testid='set-btn'
+        type='button'
+        onClick={() => {
+          setInput('preset');
+        }}
+      >
         Set
       </button>
     </div>
@@ -58,7 +64,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('captures input when enabled', async () => {
-      await render(<TestComponent enabled={true} commands={['help', 'exit']} />);
+      await render(<TestComponent enabled commands={['help', 'exit']} />);
 
       await userEvent.keyboard('hello');
 
@@ -68,7 +74,7 @@ describe('useKeyboardCapture', () => {
 
   describe('character input', () => {
     test('appends characters on keypress', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('a');
       await expect.element(page.getByTestId('input')).toHaveTextContent('a');
@@ -81,7 +87,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('handles special characters', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('-');
       await userEvent.keyboard('_');
@@ -91,7 +97,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('handles spaces', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('sudo rm');
 
@@ -101,7 +107,7 @@ describe('useKeyboardCapture', () => {
 
   describe('backspace', () => {
     test('removes last character', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('hello');
       await userEvent.keyboard('{Backspace}');
@@ -110,7 +116,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('handles multiple backspaces', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('abc');
       await userEvent.keyboard('{Backspace}');
@@ -120,7 +126,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('handles backspace on empty input', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('{Backspace}');
 
@@ -128,7 +134,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('resets tab state', async () => {
-      await render(<TestComponent enabled={true} commands={['help', 'hello']} />);
+      await render(<TestComponent enabled commands={['help', 'hello']} />);
 
       await userEvent.keyboard('hel');
       await userEvent.keyboard('{Tab}');
@@ -147,7 +153,7 @@ describe('useKeyboardCapture', () => {
   describe('enter submission', () => {
     test('calls onSubmit with trimmed input', async () => {
       const onSubmit = vi.fn();
-      await render(<TestComponent enabled={true} commands={[]} onSubmit={onSubmit} />);
+      await render(<TestComponent enabled commands={[]} onSubmit={onSubmit} />);
 
       await userEvent.keyboard('  test  ');
       await userEvent.keyboard('{Enter}');
@@ -156,7 +162,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('clears input after submit', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('test');
       await userEvent.keyboard('{Enter}');
@@ -166,7 +172,7 @@ describe('useKeyboardCapture', () => {
 
     test('does not submit empty input', async () => {
       const onSubmit = vi.fn();
-      await render(<TestComponent enabled={true} commands={[]} onSubmit={onSubmit} />);
+      await render(<TestComponent enabled commands={[]} onSubmit={onSubmit} />);
 
       await userEvent.keyboard('{Enter}');
 
@@ -175,7 +181,7 @@ describe('useKeyboardCapture', () => {
 
     test('does not submit whitespace-only input', async () => {
       const onSubmit = vi.fn();
-      await render(<TestComponent enabled={true} commands={[]} onSubmit={onSubmit} />);
+      await render(<TestComponent enabled commands={[]} onSubmit={onSubmit} />);
 
       await userEvent.keyboard('   ');
       await userEvent.keyboard('{Enter}');
@@ -184,19 +190,19 @@ describe('useKeyboardCapture', () => {
     });
   });
 
-  describe('Ctrl+C', () => {
+  describe('ctrl+C', () => {
     test('calls onCtrlC callback', async () => {
       const onCtrlC = vi.fn();
-      await render(<TestComponent enabled={true} commands={[]} onCtrlC={onCtrlC} />);
+      await render(<TestComponent enabled commands={[]} onCtrlC={onCtrlC} />);
 
       await userEvent.keyboard('some input');
       await userEvent.keyboard('{Control>}c{/Control}');
 
-      expect(onCtrlC).toHaveBeenCalledTimes(1);
+      expect(onCtrlC).toHaveBeenCalledOnce();
     });
 
     test('clears input on Ctrl+C', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('test');
       await userEvent.keyboard('{Control>}c{/Control}');
@@ -209,7 +215,7 @@ describe('useKeyboardCapture', () => {
     describe('0 matches', () => {
       describe('1 tab', () => {
         test('does not change input', async () => {
-          await render(<TestComponent enabled={true} commands={['help', 'exit']} />);
+          await render(<TestComponent enabled commands={['help', 'exit']} />);
 
           await userEvent.keyboard('xyz');
           await userEvent.keyboard('{Tab}');
@@ -218,7 +224,7 @@ describe('useKeyboardCapture', () => {
         });
 
         test('does not show suggestions', async () => {
-          await render(<TestComponent enabled={true} commands={['help', 'exit']} />);
+          await render(<TestComponent enabled commands={['help', 'exit']} />);
 
           await userEvent.keyboard('xyz');
           await userEvent.keyboard('{Tab}');
@@ -229,7 +235,7 @@ describe('useKeyboardCapture', () => {
 
       describe('2 tabs', () => {
         test('does not change input', async () => {
-          await render(<TestComponent enabled={true} commands={['help', 'exit']} />);
+          await render(<TestComponent enabled commands={['help', 'exit']} />);
 
           await userEvent.keyboard('xyz');
           await userEvent.keyboard('{Tab}');
@@ -239,7 +245,7 @@ describe('useKeyboardCapture', () => {
         });
 
         test('does not show suggestions', async () => {
-          await render(<TestComponent enabled={true} commands={['help', 'exit']} />);
+          await render(<TestComponent enabled commands={['help', 'exit']} />);
 
           await userEvent.keyboard('xyz');
           await userEvent.keyboard('{Tab}');
@@ -253,7 +259,7 @@ describe('useKeyboardCapture', () => {
     describe('1 match', () => {
       describe('1 tab', () => {
         test('auto-completes to full command', async () => {
-          await render(<TestComponent enabled={true} commands={['help', 'exit', 'clear']} />);
+          await render(<TestComponent enabled commands={['help', 'exit', 'clear']} />);
 
           await userEvent.keyboard('hel');
           await userEvent.keyboard('{Tab}');
@@ -262,7 +268,7 @@ describe('useKeyboardCapture', () => {
         });
 
         test('clears suggestions', async () => {
-          await render(<TestComponent enabled={true} commands={['help']} />);
+          await render(<TestComponent enabled commands={['help']} />);
 
           await userEvent.keyboard('h');
           await userEvent.keyboard('{Tab}');
@@ -273,7 +279,7 @@ describe('useKeyboardCapture', () => {
 
       describe('2 tabs', () => {
         test('stays at full command (already complete)', async () => {
-          await render(<TestComponent enabled={true} commands={['help']} />);
+          await render(<TestComponent enabled commands={['help']} />);
 
           await userEvent.keyboard('h');
           await userEvent.keyboard('{Tab}');
@@ -288,7 +294,7 @@ describe('useKeyboardCapture', () => {
       describe('with common prefix', () => {
         describe('1 tab', () => {
           test('extends input to common prefix', async () => {
-            await render(<TestComponent enabled={true} commands={['helpme', 'helper', 'helping']} />);
+            await render(<TestComponent enabled commands={['helpme', 'helper', 'helping']} />);
 
             await userEvent.keyboard('hel');
             await userEvent.keyboard('{Tab}');
@@ -297,7 +303,7 @@ describe('useKeyboardCapture', () => {
           });
 
           test('does not show suggestions yet', async () => {
-            await render(<TestComponent enabled={true} commands={['helpme', 'helper']} />);
+            await render(<TestComponent enabled commands={['helpme', 'helper']} />);
 
             await userEvent.keyboard('hel');
             await userEvent.keyboard('{Tab}');
@@ -308,7 +314,7 @@ describe('useKeyboardCapture', () => {
 
         describe('2 tabs', () => {
           test('shows all matching commands', async () => {
-            await render(<TestComponent enabled={true} commands={['helpme', 'helper', 'exit']} />);
+            await render(<TestComponent enabled commands={['helpme', 'helper', 'exit']} />);
 
             await userEvent.keyboard('hel');
             await userEvent.keyboard('{Tab}');
@@ -320,7 +326,7 @@ describe('useKeyboardCapture', () => {
           });
 
           test('keeps extended prefix in input', async () => {
-            await render(<TestComponent enabled={true} commands={['helpme', 'helper']} />);
+            await render(<TestComponent enabled commands={['helpme', 'helper']} />);
 
             await userEvent.keyboard('hel');
             await userEvent.keyboard('{Tab}');
@@ -334,7 +340,7 @@ describe('useKeyboardCapture', () => {
       describe('no common prefix beyond input', () => {
         describe('1 tab', () => {
           test('does not change input', async () => {
-            await render(<TestComponent enabled={true} commands={['help', 'hello']} />);
+            await render(<TestComponent enabled commands={['help', 'hello']} />);
 
             await userEvent.keyboard('hel');
             await userEvent.keyboard('{Tab}');
@@ -345,7 +351,7 @@ describe('useKeyboardCapture', () => {
 
         describe('2 tabs', () => {
           test('shows all matching commands', async () => {
-            await render(<TestComponent enabled={true} commands={['help', 'hello']} />);
+            await render(<TestComponent enabled commands={['help', 'hello']} />);
 
             await userEvent.keyboard('hel');
             await userEvent.keyboard('{Tab}');
@@ -361,7 +367,7 @@ describe('useKeyboardCapture', () => {
 
     describe('input change resets tab state', () => {
       test('typing after tab resets counter', async () => {
-        await render(<TestComponent enabled={true} commands={['help', 'hello']} />);
+        await render(<TestComponent enabled commands={['help', 'hello']} />);
 
         await userEvent.keyboard('hel');
         await userEvent.keyboard('{Tab}');
@@ -373,7 +379,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('backspace after tab resets counter', async () => {
-        await render(<TestComponent enabled={true} commands={['help', 'hello']} />);
+        await render(<TestComponent enabled commands={['help', 'hello']} />);
 
         await userEvent.keyboard('hel');
         await userEvent.keyboard('{Tab}');
@@ -391,7 +397,7 @@ describe('useKeyboardCapture', () => {
 
     describe('rapid tab presses', () => {
       test('handles multiple rapid tabs correctly', async () => {
-        await render(<TestComponent enabled={true} commands={['help', 'hello', 'exit']} />);
+        await render(<TestComponent enabled commands={['help', 'hello', 'exit']} />);
 
         await userEvent.keyboard('hel');
 
@@ -410,7 +416,7 @@ describe('useKeyboardCapture', () => {
 
     describe('empty input', () => {
       test('tab on empty shows no suggestions', async () => {
-        await render(<TestComponent enabled={true} commands={['help', 'exit']} />);
+        await render(<TestComponent enabled commands={['help', 'exit']} />);
 
         await userEvent.keyboard('{Tab}');
 
@@ -418,7 +424,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('tab on empty does not change input', async () => {
-        await render(<TestComponent enabled={true} commands={['help', 'exit']} />);
+        await render(<TestComponent enabled commands={['help', 'exit']} />);
 
         await userEvent.keyboard('{Tab}');
 
@@ -428,7 +434,7 @@ describe('useKeyboardCapture', () => {
 
     describe('leading whitespace', () => {
       test('trims leading whitespace for matching', async () => {
-        await render(<TestComponent enabled={true} commands={['help']} />);
+        await render(<TestComponent enabled commands={['help']} />);
 
         await userEvent.keyboard('  hel');
         await userEvent.keyboard('{Tab}');
@@ -441,7 +447,7 @@ describe('useKeyboardCapture', () => {
 
   describe('clearInput function', () => {
     test('clears input when called', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await userEvent.keyboard('test');
       await page.getByTestId('clear-btn').click();
@@ -450,7 +456,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('clears suggestions when called', async () => {
-      await render(<TestComponent enabled={true} commands={['help', 'hello']} />);
+      await render(<TestComponent enabled commands={['help', 'hello']} />);
 
       await userEvent.keyboard('hel');
       await userEvent.keyboard('{Tab}');
@@ -467,7 +473,7 @@ describe('useKeyboardCapture', () => {
 
   describe('setInput function', () => {
     test('sets input directly', async () => {
-      await render(<TestComponent enabled={true} commands={[]} />);
+      await render(<TestComponent enabled commands={[]} />);
 
       await page.getByTestId('set-btn').click();
 
@@ -475,7 +481,7 @@ describe('useKeyboardCapture', () => {
     });
 
     test('resets tab state', async () => {
-      await render(<TestComponent enabled={true} commands={['help', 'hello']} />);
+      await render(<TestComponent enabled commands={['help', 'hello']} />);
 
       await userEvent.keyboard('hel');
       await userEvent.keyboard('{Tab}');
@@ -492,7 +498,7 @@ describe('useKeyboardCapture', () => {
   describe('onInputChange callback', () => {
     test('calls onInputChange on character input', async () => {
       const onInputChange = vi.fn();
-      await render(<TestComponent enabled={true} commands={[]} onInputChange={onInputChange} />);
+      await render(<TestComponent enabled commands={[]} onInputChange={onInputChange} />);
 
       await userEvent.keyboard('a');
 
@@ -501,7 +507,7 @@ describe('useKeyboardCapture', () => {
 
     test('calls onInputChange on backspace', async () => {
       const onInputChange = vi.fn();
-      await render(<TestComponent enabled={true} commands={[]} onInputChange={onInputChange} />);
+      await render(<TestComponent enabled commands={[]} onInputChange={onInputChange} />);
 
       await userEvent.keyboard('ab');
       onInputChange.mockClear();
@@ -512,7 +518,7 @@ describe('useKeyboardCapture', () => {
 
     test('calls onInputChange on tab completion', async () => {
       const onInputChange = vi.fn();
-      await render(<TestComponent enabled={true} commands={['help']} onInputChange={onInputChange} />);
+      await render(<TestComponent enabled commands={['help']} onInputChange={onInputChange} />);
 
       await userEvent.keyboard('hel');
       onInputChange.mockClear();
@@ -525,7 +531,7 @@ describe('useKeyboardCapture', () => {
   describe('cursor position', () => {
     describe('initial state', () => {
       test('cursor starts at position 0', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await expect.element(page.getByTestId('cursor-position')).toHaveTextContent('0');
       });
@@ -533,7 +539,7 @@ describe('useKeyboardCapture', () => {
 
     describe('character input', () => {
       test('moves cursor right after each character', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('abc');
 
@@ -542,7 +548,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('inserts character at cursor position', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('ac');
         await userEvent.keyboard('{ArrowLeft}');
@@ -553,9 +559,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('ArrowLeft', () => {
+    describe('arrowLeft', () => {
       test('moves cursor left', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('abc');
         await userEvent.keyboard('{ArrowLeft}');
@@ -565,7 +571,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('stops at position 0', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('ab');
         await userEvent.keyboard('{ArrowLeft}');
@@ -576,9 +582,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('ArrowRight', () => {
+    describe('arrowRight', () => {
       test('moves cursor right', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('abc');
         await userEvent.keyboard('{ArrowLeft}');
@@ -589,7 +595,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('stops at end of input', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('ab');
         await userEvent.keyboard('{ArrowRight}');
@@ -599,9 +605,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('Home', () => {
+    describe('home', () => {
       test('moves cursor to start', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('hello');
         await userEvent.keyboard('{Home}');
@@ -611,9 +617,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('End', () => {
+    describe('end', () => {
       test('moves cursor to end', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('hello');
         await userEvent.keyboard('{Home}');
@@ -624,9 +630,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('Backspace with cursor', () => {
+    describe('backspace with cursor', () => {
       test('deletes character before cursor', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('abc');
         await userEvent.keyboard('{ArrowLeft}');
@@ -637,7 +643,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('does nothing at position 0', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('abc');
         await userEvent.keyboard('{Home}');
@@ -648,9 +654,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('Delete key', () => {
+    describe('delete key', () => {
       test('deletes character at cursor position (forward delete)', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('abc');
         await userEvent.keyboard('{Home}');
@@ -661,7 +667,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('does nothing at end of input', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('abc');
         await userEvent.keyboard('{Delete}');
@@ -671,9 +677,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('Tab completion with cursor', () => {
+    describe('tab completion with cursor', () => {
       test('moves cursor to end after completion', async () => {
-        await render(<TestComponent enabled={true} commands={['help']} />);
+        await render(<TestComponent enabled commands={['help']} />);
 
         await userEvent.keyboard('hel');
         await userEvent.keyboard('{Tab}');
@@ -685,7 +691,7 @@ describe('useKeyboardCapture', () => {
 
     describe('setInput with cursor', () => {
       test('moves cursor to end after setInput', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await page.getByTestId('set-btn').click();
 
@@ -696,7 +702,7 @@ describe('useKeyboardCapture', () => {
 
     describe('clearInput with cursor', () => {
       test('resets cursor to 0 after clear', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('hello');
         await page.getByTestId('clear-btn').click();
@@ -710,7 +716,7 @@ describe('useKeyboardCapture', () => {
     describe('storing commands', () => {
       test('stores executed commands', async () => {
         const onSubmit = vi.fn();
-        await render(<TestComponent enabled={true} commands={[]} onSubmit={onSubmit} />);
+        await render(<TestComponent enabled commands={[]} onSubmit={onSubmit} />);
 
         await userEvent.keyboard('first');
         await userEvent.keyboard('{Enter}');
@@ -726,7 +732,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('stores duplicate commands', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('same');
         await userEvent.keyboard('{Enter}');
@@ -741,9 +747,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('ArrowUp navigation', () => {
+    describe('arrowUp navigation', () => {
       test('shows most recent command', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('first');
         await userEvent.keyboard('{Enter}');
@@ -756,7 +762,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('saves current input as WIP', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('old');
         await userEvent.keyboard('{Enter}');
@@ -768,7 +774,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('navigates to older commands', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('first');
         await userEvent.keyboard('{Enter}');
@@ -788,7 +794,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('stays at oldest command when pressing up at top', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('only');
         await userEvent.keyboard('{Enter}');
@@ -801,7 +807,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('moves cursor to end of line', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('hello');
         await userEvent.keyboard('{Enter}');
@@ -812,7 +818,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('does nothing with empty history', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('current');
         await userEvent.keyboard('{ArrowUp}');
@@ -821,9 +827,9 @@ describe('useKeyboardCapture', () => {
       });
     });
 
-    describe('ArrowDown navigation', () => {
+    describe('arrowDown navigation', () => {
       test('navigates to newer commands', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('first');
         await userEvent.keyboard('{Enter}');
@@ -838,7 +844,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('restores WIP input at bottom', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('old');
         await userEvent.keyboard('{Enter}');
@@ -850,7 +856,7 @@ describe('useKeyboardCapture', () => {
       });
 
       test('does nothing when not navigating history', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('old');
         await userEvent.keyboard('{Enter}');
@@ -863,7 +869,7 @@ describe('useKeyboardCapture', () => {
 
     describe('history reset', () => {
       test('character input resets history navigation', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('first');
         await userEvent.keyboard('{Enter}');
@@ -881,8 +887,8 @@ describe('useKeyboardCapture', () => {
         await expect.element(page.getByTestId('input')).toHaveTextContent('second');
       });
 
-      test('Ctrl+C clears history navigation state', async () => {
-        await render(<TestComponent enabled={true} commands={[]} />);
+      test('ctrl+C clears history navigation state', async () => {
+        await render(<TestComponent enabled commands={[]} />);
 
         await userEvent.keyboard('first');
         await userEvent.keyboard('{Enter}');

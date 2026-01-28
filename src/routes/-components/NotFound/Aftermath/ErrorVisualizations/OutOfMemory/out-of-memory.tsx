@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array indexing with modulo is always safe */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -84,7 +85,9 @@ const OutOfMemory: FC = () => {
       }
     }, 80);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [memoryUsage, reducedMotion]);
 
   // Animate particles
@@ -101,7 +104,9 @@ const OutOfMemory: FC = () => {
       );
     }, 50);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   return (

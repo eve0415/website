@@ -16,59 +16,47 @@ const GITHUB_USERNAME = 'eve0415';
  * - private: Any private repo → aggregate only
  * - external: OSS contributions → can show name
  */
-export function classifyRepo(repo: GitHubRepo): PrivacyClass {
+export const classifyRepo = (repo: GitHubRepo): PrivacyClass => {
   // Private repos are always hidden
-  if (repo.private) {
-    return 'private';
-  }
+  if (repo.private) return 'private';
 
   const owner = repo.owner.login.toLowerCase();
 
   // Hidden organizations - aggregate only
-  if (HIDDEN_ORGS.some(org => org.toLowerCase() === owner)) {
-    return 'member-org';
-  }
+  if (HIDDEN_ORGS.some(org => org.toLowerCase() === owner)) return 'member-org';
 
   // Owned by eve0415 - can show
-  if (owner === GITHUB_USERNAME.toLowerCase()) {
-    return 'self';
-  }
+  if (owner === GITHUB_USERNAME.toLowerCase()) return 'self';
 
   // External OSS - can show
   return 'external';
-}
+};
 
 /**
  * Check if repo name can be shown publicly
  */
-export function canShowRepoName(repo: Repo | { privacyClass: PrivacyClass }): boolean {
-  return repo.privacyClass === 'self' || repo.privacyClass === 'external';
-}
+export const canShowRepoName = (repo: Repo | { privacyClass: PrivacyClass }): boolean => repo.privacyClass === 'self' || repo.privacyClass === 'external';
 
 /**
  * Get display name for repo (anonymized if needed)
  */
-export function getRepoDisplayName(repo: Repo): string {
-  if (canShowRepoName(repo)) {
-    return repo.fullName;
-  }
+export const getRepoDisplayName = (repo: Repo): string => {
+  if (canShowRepoName(repo)) return repo.fullName;
 
   // Anonymize: show language/type hint only
   const hint = repo.language ? `${repo.language} project` : 'project';
   return `[private ${hint}]`;
-}
+};
 
 /**
  * Anonymize commit message if from private repo
  * Removes specific identifiers while keeping technical content
  */
-export function anonymizeCommitMessage(message: string, repo: Repo): string {
-  if (canShowRepoName(repo)) {
-    return message;
-  }
+export const anonymizeCommitMessage = (message: string, repo: Repo): string => {
+  if (canShowRepoName(repo)) return message;
 
   // Keep first line only, truncate
-  const firstLine = message.split('\n')[0] || message;
+  const firstLine = message.split('\n')[0] ?? message;
   const truncated = firstLine.slice(0, 80);
 
   // Remove potential identifiers (URLs, @mentions, issue refs)
@@ -76,43 +64,37 @@ export function anonymizeCommitMessage(message: string, repo: Repo): string {
     .replaceAll(/@[\w-]+/g, '@[user]')
     .replaceAll(/#\d+/g, '#[ref]')
     .replaceAll(/https?:\/\/[^\s]+/g, '[url]');
-}
+};
 
 /**
  * Filter sensitive content from AI prompt context
  * Ensures no private repo names leak into AI-generated text
  */
-export function sanitizeForAI(text: string, privateRepoNames: string[]): string {
+export const sanitizeForAI = (text: string, privateRepoNames: string[]): string => {
   let result = text;
 
   for (const name of privateRepoNames) {
     // Replace full_name and just repo name
     const parts = name.split('/');
-    const repoName = parts[1] || name;
+    const repoName = parts[1] ?? name;
 
     result = result.replaceAll(new RegExp(name, 'gi'), '[private-repo]');
     result = result.replaceAll(new RegExp(`\\b${repoName}\\b`, 'gi'), '[private]');
   }
 
   return result;
-}
+};
 
 /**
  * Create aggregate stats message for hidden repos
  * Used in progress display
  */
-export function createAggregateMessage(phase: string, publicCount: number, privateCount: number, currentPublicRepo?: string): string {
-  if (currentPublicRepo) {
-    return `${phase}: ${currentPublicRepo}`;
-  }
+export const createAggregateMessage = (phase: string, publicCount: number, privateCount: number, currentPublicRepo?: string): string => {
+  if (currentPublicRepo) return `${phase}: ${currentPublicRepo}`;
 
-  if (privateCount > 0 && publicCount === 0) {
-    return `${phase}: analyzing private repositories...`;
-  }
+  if (privateCount > 0 && publicCount === 0) return `${phase}: analyzing private repositories...`;
 
-  if (privateCount > 0) {
-    return `${phase}: ${publicCount} public + ${privateCount} private repos`;
-  }
+  if (privateCount > 0) return `${phase}: ${publicCount} public + ${privateCount} private repos`;
 
   return `${phase}: ${publicCount} repositories`;
-}
+};

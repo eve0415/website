@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-assignment) -- Vite plugin array type inference limitation */
 import { exec } from 'node:child_process';
 
 import browserEcho from '@browser-echo/vite';
@@ -31,8 +32,9 @@ export default defineConfig({
       },
       editor: {
         name: 'VSCode',
+        // oxlint-disable-next-line typescript/require-await
         open: async (path, lineNumber, columnNumber) => {
-          exec(`code -g "${path.replaceAll('$', '\\$')}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}"`);
+          exec(`code -g "${path.replaceAll('$', String.raw`\$`)}${lineNumber ? `:${lineNumber}` : ''}${columnNumber ? `:${columnNumber}` : ''}"`);
         },
       },
     }),

@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-unescaped-entities), eslint-plugin-react(no-array-index-key) -- Code snippets with quotes are intentional visual elements, static arrays */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -20,7 +21,7 @@ const RecursionError: FC = () => {
     const result = [];
     for (let i = 0; i <= depth; i++) {
       result.push({
-        scale: Math.pow(0.75, i),
+        scale: 0.75 ** i,
         rotation: i * 5,
         opacity: 1 - i * 0.1,
       });
@@ -43,7 +44,9 @@ const RecursionError: FC = () => {
       }
     }, 400);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   // Zoom animation
@@ -54,7 +57,9 @@ const RecursionError: FC = () => {
       setZoomLevel(z => (z >= 2 ? 1 : z + 0.02));
     }, 50);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion, crashed]);
 
   return (

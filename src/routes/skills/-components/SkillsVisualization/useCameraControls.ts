@@ -36,7 +36,7 @@ interface UseCameraControlsResult {
 
 const DEFAULT_CAMERA: CameraState = { offsetX: 0, offsetY: 0, zoom: 1 };
 
-export function useCameraControls({ targetX, targetY, canvasWidth, canvasHeight, duration = 500 }: UseCameraControlsOptions): UseCameraControlsResult {
+export const useCameraControls = ({ targetX, targetY, canvasWidth, canvasHeight, duration = 500 }: UseCameraControlsOptions): UseCameraControlsResult => {
   const prefersReducedMotion = useReducedMotion();
   const [camera, setCamera] = useState<CameraState>(DEFAULT_CAMERA);
   const [isAnimating, setIsAnimating] = useState(false);
@@ -74,14 +74,16 @@ export function useCameraControls({ targetX, targetY, canvasWidth, canvasHeight,
       const timeoutId = setTimeout(() => {
         setCamera(targetCamera);
       }, 0);
-      return () => clearTimeout(timeoutId);
+      return () => {
+        clearTimeout(timeoutId);
+      };
     }
 
     // Animate to target
     const startTime = performance.now();
     const fromCamera = { ...camera };
 
-    function frame() {
+    const frame = () => {
       const elapsed = performance.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       const eased = easeOutExpo(progress);
@@ -98,7 +100,7 @@ export function useCameraControls({ targetX, targetY, canvasWidth, canvasHeight,
         setIsAnimating(false);
         animationRef.current = null;
       }
-    }
+    };
 
     // Start animation via timeout to avoid synchronous setState
     const startTimeoutId = setTimeout(() => {
@@ -125,7 +127,7 @@ export function useCameraControls({ targetX, targetY, canvasWidth, canvasHeight,
 
       setIsAnimating(true);
 
-      function frame() {
+      const frame = () => {
         const elapsed = performance.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         const eased = easeOutExpo(progress);
@@ -142,7 +144,7 @@ export function useCameraControls({ targetX, targetY, canvasWidth, canvasHeight,
           setIsAnimating(false);
           animationRef.current = null;
         }
-      }
+      };
 
       animationRef.current = requestAnimationFrame(frame);
     }
@@ -155,8 +157,6 @@ export function useCameraControls({ targetX, targetY, canvasWidth, canvasHeight,
     isAnimating,
     reset,
   };
-}
+};
 
-function easeOutExpo(x: number): number {
-  return x === 1 ? 1 : 1 - Math.pow(2, -10 * x);
-}
+const easeOutExpo = (x: number): number => (x === 1 ? 1 : 1 - 2 ** (-10 * x));

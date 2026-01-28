@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- setTimeout return value known to be number in browser */
 import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type Phase = 'boot' | 'corruption' | 'aftermath';
@@ -164,9 +165,7 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
       }
 
       // Continue animation unless we're in aftermath (check updated ref)
-      if (phaseRef.current !== 'aftermath') {
-        animationRef.current = requestAnimationFrame(animate);
-      }
+      if (phaseRef.current !== 'aftermath') animationRef.current = requestAnimationFrame(animate);
     };
 
     animationRef.current = requestAnimationFrame(animate);

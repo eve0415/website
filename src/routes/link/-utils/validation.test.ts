@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Intentionally casting to invalid types to test runtime type guards */
 import { describe, expect, test } from 'vitest';
 
 import { hasErrors, validateContactForm } from './validation';
@@ -19,7 +20,7 @@ describe('validateContactForm', () => {
     test('returns error when email is not a string', () => {
       const result = validateContactForm({
         name: 'Test User',
-        email: null as unknown as string,
+        email: undefined as unknown as string,
         message: 'Hello',
       });
 
@@ -223,7 +224,7 @@ describe('validateContactForm', () => {
         message: 'Hello, this is a test message.',
       });
 
-      expect(result).toEqual({});
+      expect(result).toStrictEqual({});
     });
 
     test('returns multiple errors for multiple invalid fields', () => {
@@ -254,22 +255,22 @@ describe('validateContactForm', () => {
 
 describe('hasErrors', () => {
   test('returns false for empty object', () => {
-    expect(hasErrors({})).toBe(false);
+    expect(hasErrors({})).toBeFalsy();
   });
 
   test('returns true when name error exists', () => {
-    expect(hasErrors({ name: 'error' })).toBe(true);
+    expect(hasErrors({ name: 'error' })).toBeTruthy();
   });
 
   test('returns true when email error exists', () => {
-    expect(hasErrors({ email: 'error' })).toBe(true);
+    expect(hasErrors({ email: 'error' })).toBeTruthy();
   });
 
   test('returns true when message error exists', () => {
-    expect(hasErrors({ message: 'error' })).toBe(true);
+    expect(hasErrors({ message: 'error' })).toBeTruthy();
   });
 
   test('returns true when multiple errors exist', () => {
-    expect(hasErrors({ name: 'error', email: 'error', message: 'error' })).toBe(true);
+    expect(hasErrors({ name: 'error', email: 'error', message: 'error' })).toBeTruthy();
   });
 });

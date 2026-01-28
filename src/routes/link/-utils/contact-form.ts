@@ -26,32 +26,29 @@ export type ContactFormResult =
 // Form submission handler for progressive enhancement
 export const handleForm = createServerFn({ method: 'POST' })
   .inputValidator((data: unknown) => {
-    if (!(data instanceof FormData)) {
-      throw new Error('Invalid form data');
-    }
+    if (!(data instanceof FormData)) throw new Error('Invalid form data');
+
     return data;
   })
   .handler(async ({ data: formData }): Promise<ContactFormResult> => {
-    // 1. Parse form data
+    // 1. Parse form data (FormData.get returns string | File | null, but these are text fields)
+    /* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- FormData text fields are always strings */
     const name = formData.get('name') as string;
     const email = formData.get('email') as string;
     const message = formData.get('message') as string;
     const turnstileToken = formData.get('turnstileToken') as string;
+    /* oxlint-enable typescript-eslint(no-unsafe-type-assertion) */
 
     // 2. Server-side validation
     const validationErrors = validateContactForm({ name, email, message });
-    if (hasErrors(validationErrors)) {
-      return { success: false, error: 'validation', errors: validationErrors };
-    }
+    if (hasErrors(validationErrors)) return { success: false, error: 'validation', errors: validationErrors };
 
     // 3. Get client IP from request headers
-    const headers = getRequestHeaders();
-    const clientIp = headers.get('CF-Connecting-IP') ?? 'unknown';
+    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- getRequestHeaders() returns Headers but TanStack types it as error
+    const clientIp: string = (getRequestHeaders() as Headers).get('CF-Connecting-IP') ?? 'unknown';
 
     // 4. Verify Turnstile token
-    if (!turnstileToken) {
-      return { success: false, error: 'turnstile', message: 'セキュリティ認証を完了してください' };
-    }
+    if (!turnstileToken) return { success: false, error: 'turnstile', message: 'セキュリティ認証を完了してください' };
 
     const turnstileSecretKey = env.TURNSTILE_SECRET_KEY;
     const turnstileResult = await verifyTurnstile(turnstileToken, turnstileSecretKey, clientIp);
@@ -122,7 +119,7 @@ export const sendContactEmail = createServerOnlyFn(async (formData: ContactFormD
   msg.setRecipient(env.MAIL_ADDRESS);
 
   // Sanitize name for subject to prevent email header injection
-  const safeSubjectName = formData.name.trim().replace(/[\r\n]+/g, ' ');
+  const safeSubjectName = formData.name.trim().replaceAll(/[\r\n]+/g, ' ');
   msg.setSubject(`[Contact] ${safeSubjectName}`);
 
   const body = `お名前: ${formData.name.trim()}

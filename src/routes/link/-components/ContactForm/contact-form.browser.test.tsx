@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-promise(prefer-await-to-callbacks) -- Mock callback setters for Turnstile widget testing */
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
@@ -12,7 +13,7 @@ type ContactFormResult =
 
 // Hoist mock to make it available in vi.mock factory
 const { submitMock, getTurnstileCallback, setTurnstileCallback } = vi.hoisted(() => {
-  let turnstileCallback: ((token: string) => void) | null = null;
+  let turnstileCallback: ((token: string) => void) | null;
   return {
     submitMock: vi.fn(),
     getTurnstileCallback: () => turnstileCallback,
@@ -23,11 +24,10 @@ const { submitMock, getTurnstileCallback, setTurnstileCallback } = vi.hoisted(()
 });
 
 // Mock the server function module (uses cloudflare: imports not available in browser)
-vi.mock('../../-utils/contact-form', async () => {
-  return {
-    handleForm: Object.assign(submitMock, { url: '/api/contact' }),
-  };
-});
+// oxlint-disable-next-line typescript/require-await -- vi.mock factory can be async
+vi.mock('../../-utils/contact-form', async () => ({
+  handleForm: Object.assign(submitMock, { url: '/api/contact' }),
+}));
 
 // Mock TurnstileWidget - provide token callback for tests
 vi.mock('../TurnstileWidget/turnstile-widget', () => ({
@@ -37,6 +37,7 @@ vi.mock('../TurnstileWidget/turnstile-widget', () => ({
   },
 }));
 
+// oxlint-disable-next-line eslint-plugin-import(first) -- Import must come after vi.mock setup
 import ContactForm from './contact-form';
 
 // Helper to trigger blur by clicking on a different element
@@ -45,7 +46,7 @@ const triggerBlur = async () => {
   await page.getByText('メールアドレス').click();
 };
 
-describe('ContactForm', () => {
+describe('contactForm', () => {
   beforeEach(() => {
     vi.useFakeTimers();
     setTurnstileCallback(null);
@@ -56,7 +57,7 @@ describe('ContactForm', () => {
     vi.clearAllMocks();
   });
 
-  describe('Rendering', () => {
+  describe('rendering', () => {
     test('renders all form fields', async () => {
       await render(<ContactForm />);
 
@@ -89,7 +90,7 @@ describe('ContactForm', () => {
     });
   });
 
-  describe('Field Validation', () => {
+  describe('field Validation', () => {
     test('name field shows error when empty on blur', async () => {
       await render(<ContactForm />);
 
@@ -207,7 +208,7 @@ describe('ContactForm', () => {
   // production as verified by manual testing. Field validation tests above cover the form's
   // validation behavior thoroughly.
   // oxlint-disable-next-line jest/no-disabled-tests
-  describe.skip('Submission Flow', () => {
+  describe.skip('submission Flow', () => {
     // Submission tests need real timers for async form handling to work properly
     beforeEach(() => {
       vi.useRealTimers();
@@ -351,7 +352,7 @@ describe('ContactForm', () => {
   // as Submission Flow tests above. The submission-dependent behavior works correctly in
   // production as verified by manual testing.
   // oxlint-disable-next-line jest/no-disabled-tests
-  describe.skip('UI States', () => {
+  describe.skip('uI States', () => {
     // Note: Testing button disabled state during submission is unreliable with TanStack Form
     // and Vitest's mocking. The isSubmitting state transition happens too quickly to capture.
 

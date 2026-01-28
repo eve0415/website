@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify canvas element existence before type casting */
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
@@ -33,9 +34,9 @@ const mockAISkills: AISkill[] = [
   },
 ];
 
-describe('SkillsVisualization', () => {
+describe('skillsVisualization', () => {
   beforeEach(() => {
-    delete window.__FORCE_REDUCED_MOTION__;
+    globalThis.__FORCE_REDUCED_MOTION__ = undefined;
   });
 
   afterEach(() => {
@@ -86,8 +87,8 @@ describe('SkillsVisualization', () => {
   describe('reduced motion', () => {
     test('handles reduced motion preference', async () => {
       // Mock reduced motion preference
-      const originalMatchMedia = window.matchMedia;
-      window.matchMedia = vi.fn().mockImplementation(query => ({
+      const originalMatchMedia = globalThis.matchMedia;
+      vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
         matches: query === '(prefers-reduced-motion: reduce)',
         media: query,
         onchange: null,
@@ -98,32 +99,33 @@ describe('SkillsVisualization', () => {
         dispatchEvent: vi.fn(),
       }));
 
-      const { container } = await render(<SkillsVisualization animate={true} />);
+      const { container } = await render(<SkillsVisualization animate />);
 
       const canvas = container.querySelector('canvas');
       expect(canvas).not.toBeNull();
 
       // Restore
-      window.matchMedia = originalMatchMedia;
+      globalThis.matchMedia = originalMatchMedia;
     });
   });
 
   describe('cleanup', () => {
     test('cleans up on unmount', async () => {
-      const cancelAnimationFrameSpy = vi.spyOn(window, 'cancelAnimationFrame');
+      const cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
-      const screen = await render(<SkillsVisualization animate={true} />);
+      const screen = await render(<SkillsVisualization animate />);
 
       await screen.unmount();
 
       // ResizeObserver disconnect is called internally, cancelAnimationFrame for animation cleanup
+      // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();
     });
   });
 
-  describe('AI skills', () => {
+  describe('aI skills', () => {
     test('accepts aiSkills prop array', async () => {
       const { container } = await render(<SkillsVisualization aiSkills={mockAISkills} />);
 
@@ -197,9 +199,9 @@ describe('SkillsVisualization', () => {
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;
       expect(canvas).not.toBeNull();
 
-      // Canvas should be focusable
+      // Canvas should be focusable with application role
       expect(canvas.tabIndex).toBe(0);
-      expect(canvas.getAttribute('role')).toBe('img');
+      expect(canvas.getAttribute('role')).toBe('application');
     });
   });
 
@@ -208,7 +210,7 @@ describe('SkillsVisualization', () => {
       const { container } = await render(<SkillsVisualization />);
 
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;
-      expect(canvas.getAttribute('aria-label')).toBe('Skills visualization graph');
+      expect(canvas.getAttribute('aria-label')).toBe('Interactive skills visualization - click nodes to select, press Escape to deselect');
     });
 
     test('canvas is focusable', async () => {

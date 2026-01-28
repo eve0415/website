@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Color config array access requires type assertion */
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 import type { Skill } from '../../-config/skills-config';
 import type { MaterializePhase } from './useNodeMaterialize';
@@ -54,7 +55,7 @@ const COLORS = {
 interface Props {
   animate?: boolean;
   aiSkills?: AISkill[];
-  selectedSkillId?: string | null;
+  selectedSkillId?: string | null | undefined;
   onNodeSelect?: (skillName: string | null) => void;
 }
 
@@ -76,13 +77,13 @@ const AINodeMaterializeTracker: FC<{
   return null;
 };
 
-const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selectedSkillId = null, onNodeSelect }) => {
+const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selectedSkillId, onNodeSelect }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const shouldAnimate = animate && !prefersReducedMotion;
 
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
-  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [hoveredNode, setHoveredNode] = useState<string | null>();
 
   // Track AI node materialize states
   const [aiMaterializeStates, setAIMaterializeStates] = useState<Map<number, { phase: MaterializePhase; progress: number }>>(new Map());
@@ -90,6 +91,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
   const handleMaterializeChange = useCallback((index: number, phase: MaterializePhase, progress: number) => {
     setAIMaterializeStates(prev => {
       const next = new Map(prev);
+      // oxlint-disable-next-line eslint-plugin-unicorn(no-immediate-mutation) -- React immutable state update pattern
       next.set(index, { phase, progress });
       return next;
     });
@@ -111,7 +113,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
     const allNodes: VisualizationNode[] = [];
 
     // Static skills (existing behavior)
-    staticSkills.forEach((skill, i) => {
+    for (const [i, skill] of staticSkills.entries()) {
       const config = levelConfig[skill.level];
       const angle = (i / staticSkills.length) * Math.PI * 2;
       const categoryOffset = skill.category === 'language' ? 0 : skill.category === 'infrastructure' ? 0.1 : 0.2;
@@ -128,15 +130,15 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         isAI: false,
         skill,
       });
-    });
+    }
 
     // AI-discovered skills (positioned in outer ring)
     const aiOnlySkills = aiSkills.filter(s => s.is_ai_discovered);
-    aiOnlySkills.forEach((aiSkill, i) => {
+    for (const [i, aiSkill] of aiOnlySkills.entries()) {
       const angle = (i / Math.max(aiOnlySkills.length, 1)) * Math.PI * 2 + Math.PI / 4;
       const radius = radiusBase * 1.1;
 
-      const materializeState = aiMaterializeStates.get(i) || { phase: 'hidden' as MaterializePhase, progress: 0 };
+      const materializeState = aiMaterializeStates.get(i) ?? { phase: 'hidden' as MaterializePhase, progress: 0 };
 
       allNodes.push({
         x: centerX + Math.cos(angle) * radius,
@@ -150,7 +152,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         materializePhase: materializeState.phase,
         materializeProgress: materializeState.progress,
       });
-    });
+    }
 
     nodesRef.current = allNodes;
 
@@ -163,17 +165,12 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         if (!nodeA || !nodeB) continue;
 
         // Static-to-static: same category
-        if (!nodeA.isAI && !nodeB.isAI && nodeA.skill.category === nodeB.skill.category) {
-          connections.push({ fromIndex: i, toIndex: j });
-        }
+        if (!nodeA.isAI && !nodeB.isAI && nodeA.skill.category === nodeB.skill.category) connections.push({ fromIndex: i, toIndex: j });
 
         // AI-to-static: same category
-        if (nodeA.isAI && !nodeB.isAI && nodeA.aiSkill.category === nodeB.skill.category) {
-          connections.push({ fromIndex: i, toIndex: j });
-        }
-        if (!nodeA.isAI && nodeB.isAI && nodeA.skill.category === nodeB.aiSkill.category) {
-          connections.push({ fromIndex: i, toIndex: j });
-        }
+        if (nodeA.isAI && !nodeB.isAI && nodeA.aiSkill.category === nodeB.skill.category) connections.push({ fromIndex: i, toIndex: j });
+
+        if (!nodeA.isAI && nodeB.isAI && nodeA.skill.category === nodeB.aiSkill.category) connections.push({ fromIndex: i, toIndex: j });
       }
     }
     connectionsRef.current = connections;
@@ -193,7 +190,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
       for (const node of nodesRef.current) {
         const dx = node.x - x;
         const dy = node.y - y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
+        const dist = Math.hypot(dx, dy);
 
         if (dist <= node.radius + 5) {
           onNodeSelect(node.label);
@@ -216,11 +213,11 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
 
-    let found: string | null = null;
+    let found;
     for (const node of nodesRef.current) {
       const dx = node.x - x;
       const dy = node.y - y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dist = Math.hypot(dx, dy);
 
       if (dist <= node.radius + 5) {
         found = node.label;
@@ -258,17 +255,14 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
       const { width, height } = setupCanvas();
       ctx.clearRect(0, 0, width, height);
 
-      if (shouldAnimate) {
-        time += 0.01;
-      }
+      if (shouldAnimate) time += 0.01;
 
       const nodes = nodesRef.current;
       const connections = connectionsRef.current;
 
       if (nodes.length === 0) {
-        if (shouldAnimate) {
-          animationId = requestAnimationFrame(draw);
-        }
+        if (shouldAnimate) animationId = requestAnimationFrame(draw);
+
         return;
       }
 
@@ -320,9 +314,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         }
       }
 
-      if (shouldAnimate) {
-        animationId = requestAnimationFrame(draw);
-      }
+      if (shouldAnimate) animationId = requestAnimationFrame(draw);
     };
 
     const { width, height } = setupCanvas();
@@ -330,7 +322,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
     draw();
 
     const resizeObserver = new ResizeObserver(entries => {
-      const entry = entries[0];
+      const [entry] = entries;
       if (entry) {
         const rect = entry.contentRect;
         setDimensions({ width: rect.width, height: rect.height });
@@ -356,19 +348,18 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         <AINodeMaterializeTracker key={skill.name} skill={skill} index={i} onStateChange={handleMaterializeChange} />
       ))}
 
+      {/* oxlint-disable-next-line eslint-plugin-jsx-a11y(no-static-element-interactions) -- Canvas with role='application' is correct for interactive graphics */}
       <canvas
         ref={canvasRef}
         className={`size-full ${hoveredNode ? 'cursor-pointer' : ''}`}
         onClick={handleCanvasClick}
         onMouseMove={handleMouseMove}
         onKeyDown={e => {
-          if (e.key === 'Escape' && onNodeSelect) {
-            onNodeSelect(null);
-          }
+          if (e.key === 'Escape' && onNodeSelect) onNodeSelect(null);
         }}
         tabIndex={0}
-        role='img'
-        aria-label='Skills visualization graph'
+        role='application'
+        aria-label='Interactive skills visualization - click nodes to select, press Escape to deselect'
       />
 
       {/* Legend overlay */}
@@ -397,7 +388,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
   );
 };
 
-function drawStaticNode(ctx: CanvasRenderingContext2D, x: number, y: number, node: StaticNode, isSelected: boolean, isHovered: boolean) {
+const drawStaticNode = (ctx: CanvasRenderingContext2D, x: number, y: number, node: StaticNode, isSelected: boolean, isHovered: boolean) => {
   const scale = isSelected ? 1.3 : isHovered ? 1.15 : 1;
   const radius = node.radius * scale;
 
@@ -421,9 +412,9 @@ function drawStaticNode(ctx: CanvasRenderingContext2D, x: number, y: number, nod
     ctx.textAlign = 'center';
     ctx.fillText(node.label, x, y + radius + 12);
   }
-}
+};
 
-function drawAINode(ctx: CanvasRenderingContext2D, x: number, y: number, node: AINode, time: number, isSelected: boolean, isHovered: boolean) {
+const drawAINode = (ctx: CanvasRenderingContext2D, x: number, y: number, node: AINode, time: number, isSelected: boolean, isHovered: boolean) => {
   const params = getMaterializeDrawParams(node.materializePhase, node.materializeProgress);
 
   if (params.opacity === 0) return;
@@ -542,6 +533,6 @@ function drawAINode(ctx: CanvasRenderingContext2D, x: number, y: number, node: A
   }
 
   ctx.globalAlpha = 1;
-}
+};
 
 export default SkillsVisualization;

@@ -53,9 +53,8 @@ const terminalReducer = (state: TerminalStateData, action: TerminalAction): Term
   switch (action.type) {
     case 'TYPING_DONE':
       // Only transition if still in typing state (ignore if already interrupted)
-      if (state.state !== 'typing') {
-        return state;
-      }
+      if (state.state !== 'typing') return state;
+
       // Typing complete → show content and wait for Ctrl+C
       return {
         ...state,
@@ -112,11 +111,11 @@ const terminalReducer = (state: TerminalStateData, action: TerminalAction): Term
         },
       ];
 
-      // Only add output line if there's actual output (not null)
-      if (action.payload.output !== null) {
+      // Only add output line if there's actual output (not null/undefined)
+      if (action.payload.output !== null && action.payload.output !== undefined) {
         newLines.push({
           id: generateId(),
-          type: action.payload.isError ? 'error' : 'output',
+          type: action.payload.isError === true ? 'error' : 'output',
           content: action.payload.output,
         });
       }
@@ -210,21 +209,33 @@ export interface UseTerminalResult {
 export const useTerminal = (): UseTerminalResult => {
   const [data, dispatch] = useReducer(terminalReducer, initialState);
 
-  const onTypingDone = useCallback(() => dispatch({ type: 'TYPING_DONE' }), []);
-  const onCtrlC = useCallback(
-    (partialText?: string) => dispatch(partialText ? { type: 'CTRL_C_WITH_TEXT', payload: { partialText } } : { type: 'CTRL_C' }),
-    [],
-  );
-  const setInput = useCallback((input: string) => dispatch({ type: 'SET_INPUT', payload: input }), []);
-  const executeCommand = useCallback(
-    (command: string, output: ReactNode, isError = false) => dispatch({ type: 'EXECUTE_COMMAND', payload: { command, output, isError } }),
-    [],
-  );
-  const clear = useCallback(() => dispatch({ type: 'CLEAR' }), []);
-  const awaitConfirmation = useCallback((command: string) => dispatch({ type: 'AWAIT_CONFIRMATION', payload: command }), []);
-  const confirm = useCallback((confirmed: boolean) => dispatch({ type: 'CONFIRM', payload: confirmed }), []);
-  const addOutput = useCallback((output: ReactNode) => dispatch({ type: 'ADD_OUTPUT', payload: output }), []);
-  const showDiagnostic = useCallback(() => dispatch({ type: 'SHOW_DIAGNOSTIC' }), []);
+  const onTypingDone = useCallback(() => {
+    dispatch({ type: 'TYPING_DONE' });
+  }, []);
+  const onCtrlC = useCallback((partialText?: string) => {
+    dispatch(partialText ? { type: 'CTRL_C_WITH_TEXT', payload: { partialText } } : { type: 'CTRL_C' });
+  }, []);
+  const setInput = useCallback((input: string) => {
+    dispatch({ type: 'SET_INPUT', payload: input });
+  }, []);
+  const executeCommand = useCallback((command: string, output: ReactNode, isError = false) => {
+    dispatch({ type: 'EXECUTE_COMMAND', payload: { command, output, isError } });
+  }, []);
+  const clear = useCallback(() => {
+    dispatch({ type: 'CLEAR' });
+  }, []);
+  const awaitConfirmation = useCallback((command: string) => {
+    dispatch({ type: 'AWAIT_CONFIRMATION', payload: command });
+  }, []);
+  const confirm = useCallback((confirmed: boolean) => {
+    dispatch({ type: 'CONFIRM', payload: confirmed });
+  }, []);
+  const addOutput = useCallback((output: ReactNode) => {
+    dispatch({ type: 'ADD_OUTPUT', payload: output });
+  }, []);
+  const showDiagnostic = useCallback(() => {
+    dispatch({ type: 'SHOW_DIAGNOSTIC' });
+  }, []);
 
   return {
     state: data.state,

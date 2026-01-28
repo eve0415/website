@@ -84,7 +84,7 @@ export const LateCorruption = meta.story({
 
 export const FullCorruption = meta.story({
   args: {
-    progress: 1.0,
+    progress: 1,
     mouseInfluence: defaultMouseInfluence,
     visible: true,
   },

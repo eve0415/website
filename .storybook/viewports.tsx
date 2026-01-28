@@ -1,3 +1,4 @@
+/* oxlint-disable eslint(no-await-in-loop) -- Sequential viewport screenshots require await in loop */
 // Global type declaration for test environment flag
 declare global {
   interface Window {
@@ -23,13 +24,15 @@ export type ViewportName = keyof typeof testViewports;
  * Sets the browser viewport to the specified size.
  * Used in story play functions to test responsive behavior.
  */
-export async function setViewport(viewport: ViewportName): Promise<void> {
+export const setViewport = async (viewport: ViewportName): Promise<void> => {
   const { page } = await import('vitest/browser');
 
   const { width, height } = testViewports[viewport];
   await page.viewport(width, height);
-  await new Promise(resolve => setTimeout(resolve, 100));
-}
+  await new Promise(resolve => {
+    setTimeout(resolve, 100);
+  });
+};
 
 /**
  * Enables reduced motion globally for visual regression tests.
@@ -37,28 +40,24 @@ export async function setViewport(viewport: ViewportName): Promise<void> {
  *
  * This sets window.__FORCE_REDUCED_MOTION__ which useReducedMotion() checks.
  */
-export function enableReducedMotion(): void {
-  if (typeof window !== 'undefined') {
-    window.__FORCE_REDUCED_MOTION__ = true;
-  }
-}
+export const enableReducedMotion = (): void => {
+  if (globalThis.window !== undefined) globalThis.__FORCE_REDUCED_MOTION__ = true;
+};
 
 /**
  * Disables reduced motion override, reverting to browser preference.
  */
-export function disableReducedMotion(): void {
-  if (typeof window !== 'undefined') {
-    delete window.__FORCE_REDUCED_MOTION__;
-  }
-}
+export const disableReducedMotion = (): void => {
+  if (globalThis.window !== undefined) globalThis.__FORCE_REDUCED_MOTION__ = undefined;
+};
 
 /**
  * Injects CSS to disable all animations for stable visual regression tests.
  * This is called before each screenshot to ensure animations are disabled.
  */
-function ensureReducedMotionCSS(): void {
-  if (typeof document === 'undefined') return;
-  if (document.getElementById('vitest-reduced-motion-override')) return;
+const ensureReducedMotionCSS = (): void => {
+  if (document === undefined) return;
+  if (document.querySelector('#vitest-reduced-motion-override')) return;
 
   const style = document.createElement('style');
   style.id = 'vitest-reduced-motion-override';
@@ -73,8 +72,9 @@ function ensureReducedMotionCSS(): void {
       caret-color: transparent !important;
     }
   `;
-  document.head.appendChild(style);
-}
+  // @ts-expect-error Cloudflare Workers types conflict with browser DOM types - HTMLStyleElement is valid for append()
+  document.head.append(style);
+};
 
 /**
  * Tests a story across all viewports with visual regression snapshots.
@@ -84,7 +84,7 @@ function ensureReducedMotionCSS(): void {
  * the story must use the withReducedMotion parameter or call enableReducedMotion()
  * before component mount.
  */
-export async function testAllViewports(context: StoryContext): Promise<void> {
+export const testAllViewports = async (context: StoryContext): Promise<void> => {
   const { page } = await import('vitest/browser');
   const { expect } = await import('vitest');
 
@@ -98,9 +98,11 @@ export async function testAllViewports(context: StoryContext): Promise<void> {
     await page.viewport(width, height);
     // Wait for layout to stabilize after viewport change
     // 1000ms needed for complex components with canvas/animations to fully stabilize
-    await new Promise(resolve => setTimeout(resolve, 1000));
+    await new Promise(resolve => {
+      setTimeout(resolve, 1000);
+    });
 
     const locator = page.elementLocator(context.canvasElement);
     await expect.element(locator).toMatchScreenshot(`${context.id}-${viewport}`);
   }
-}
+};

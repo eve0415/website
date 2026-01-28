@@ -1,11 +1,12 @@
 import type { GitHubStats } from '../../-utils/github-stats-utils';
+import type { CommandContext } from './commands';
 import type { TerminalLine } from './useTerminal';
 import type { FC, ReactNode } from 'react';
 
 import { useNavigate } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from 'react';
 
-import { COMMAND_NAMES, type CommandContext, SudoRmRfError, executeCommand } from './commands';
+import { COMMAND_NAMES, SudoRmRfError, executeCommand } from './commands';
 import { useKeyboardCapture } from './useKeyboardCapture';
 import { useTerminal } from './useTerminal';
 import { useTypingAnimation } from './useTypingAnimation';
@@ -26,9 +27,10 @@ interface TerminalProps {
 const INITIAL_COMMAND = 'sys.diagnostic --user=eve0415';
 
 // Touch device detection using useSyncExternalStore to avoid setState in effect
+// oxlint-disable-next-line eslint-plugin-promise(prefer-await-to-callbacks) -- useSyncExternalStore requires callback subscription pattern
 const subscribeTouchDevice = (callback: () => void) => {
-  const coarseQuery = window.matchMedia('(pointer: coarse)');
-  const fineQuery = window.matchMedia('(pointer: fine)');
+  const coarseQuery = globalThis.matchMedia('(pointer: coarse)');
+  const fineQuery = globalThis.matchMedia('(pointer: fine)');
   coarseQuery.addEventListener('change', callback);
   fineQuery.addEventListener('change', callback);
   return () => {
@@ -37,9 +39,7 @@ const subscribeTouchDevice = (callback: () => void) => {
   };
 };
 
-const getIsTouchDevice = () => {
-  return window.matchMedia('(pointer: coarse)').matches && !window.matchMedia('(pointer: fine)').matches;
-};
+const getIsTouchDevice = () => globalThis.matchMedia('(pointer: coarse)').matches && !globalThis.matchMedia('(pointer: fine)').matches;
 
 const getServerIsTouchDevice = () => false;
 
@@ -47,9 +47,7 @@ const getServerIsTouchDevice = () => false;
  * Check if device is touch-only (mobile/tablet).
  * Returns true for devices without precise pointer (mouse).
  */
-const useIsTouchDevice = (): boolean => {
-  return useSyncExternalStore(subscribeTouchDevice, getIsTouchDevice, getServerIsTouchDevice);
-};
+const useIsTouchDevice = (): boolean => useSyncExternalStore(subscribeTouchDevice, getIsTouchDevice, getServerIsTouchDevice);
 
 const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceTouchDevice }) => {
   const navigate = useNavigate();
@@ -57,7 +55,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
   const isTouchDevice = __forceTouchDevice ?? detectedTouchDevice;
   const promptRef = useRef<HTMLDivElement>(null);
   const [isCrashing, setIsCrashing] = useState(false);
-  const [pendingError, setPendingError] = useState<Error | null>(null);
+  const [pendingError, setPendingError] = useState<Error | null>();
 
   // Store callback in ref to avoid effect re-runs when callback reference changes
   const onBootCompleteRef = useRef(onBootComplete);
@@ -66,9 +64,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
   });
 
   // Throw pending error during render so React's error boundary catches it
-  if (pendingError) {
-    throw pendingError;
-  }
+  if (pendingError) throw pendingError;
 
   const {
     state,
@@ -97,18 +93,15 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
   // Desktop users must press Ctrl+C to dismiss content
   const bootTriggeredRef = useRef(false);
   useEffect(() => {
-    if (!isTouchDevice || state !== 'displaying' || bootTriggeredRef.current) {
-      return;
-    }
+    if (!isTouchDevice || state !== 'displaying' || bootTriggeredRef.current) return;
+
     bootTriggeredRef.current = true;
     // Notify parent that boot is complete (for animations)
     onBootCompleteRef.current();
   }, [isTouchDevice, state]);
 
   // Navigation helper
-  const handleNavigateHome = useCallback(() => {
-    void navigate({ to: '/' });
-  }, [navigate]);
+  const handleNavigateHome = useCallback(async () => navigate({ to: '/' }), [navigate]);
 
   // Scroll to prompt after command execution
   const scrollToPrompt = useCallback(() => {
@@ -134,9 +127,9 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
       if (awaitingConfirmation) {
         const isYes = input.toLowerCase() === 'y' || input.toLowerCase() === 'yes';
         confirm(isYes);
-        if (isYes && awaitingConfirmation === 'exit') {
-          handleNavigateHome();
-        }
+        // oxlint-disable-next-line typescript-eslint(no-floating-promises) -- Navigation result intentionally ignored
+        if (isYes && awaitingConfirmation === 'exit') handleNavigateHome();
+
         scrollToPrompt();
         return;
       }
@@ -158,6 +151,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
             awaitConfirmation('exit');
             addOutput(<span>exit? (y/n)</span>);
           } else {
+            // oxlint-disable-next-line typescript-eslint(no-floating-promises) -- Navigation result intentionally ignored
             handleNavigateHome();
           }
           break;
@@ -228,8 +222,10 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => {
+      globalThis.removeEventListener('keydown', handleKeyDown);
+    };
   }, [isTouchDevice, state]);
 
   // Determine if we should show the children (boot content)
@@ -314,6 +310,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
       {/* Footer hint - only in prompt mode */}
       {state === 'prompt' && !isTouchDevice && (
         <footer data-testid='terminal-footer' className='text-subtle-foreground mt-8 flex items-center justify-center gap-2 text-xs'>
+          {/* oxlint-disable-next-line eslint-plugin-react(no-unescaped-entities) -- Terminal-style text with quotes */}
           <span className='font-mono'># type 'help' for commands</span>
         </footer>
       )}

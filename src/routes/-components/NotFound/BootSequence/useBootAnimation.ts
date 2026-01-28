@@ -1,21 +1,13 @@
+import type { BootContext, BootMessage, ProgressStage } from './boot-messages';
 import type { ConnectionInfo } from './connection-info';
-import type { DOMScanData } from './useDOMScan';
+import type { DOMScanData } from './useDomScan';
 import type { NavigationTimingData } from './useNavigationTiming';
 
 import { useEffect, useMemo, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
-import {
-  BASE_BOOT_DURATION,
-  type BootContext,
-  type BootMessage,
-  PROGRESS_STAGES,
-  type ProgressStage,
-  createBootMessages,
-  flattenMessages,
-  resolveMessageText,
-} from './boot-messages';
+import { BASE_BOOT_DURATION, PROGRESS_STAGES, createBootMessages, flattenMessages, resolveMessageText } from './boot-messages';
 
 export interface FlattenedMessage extends BootMessage {
   depth: number;
@@ -108,11 +100,7 @@ export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimatio
     const flattened = flattenMessages(messages);
 
     // Scale delays and resolve text
-    return flattened.map(msg => ({
-      ...msg,
-      baseDelay: msg.baseDelay * scaleFactor,
-      resolvedText: resolveMessageText(msg, context),
-    }));
+    return flattened.map(msg => Object.assign(msg, { baseDelay: msg.baseDelay * scaleFactor, resolvedText: resolveMessageText(msg, context) }));
   }, [connection, context, scaleFactor]);
 
   // Extract depths array for step-over calculation
@@ -162,7 +150,9 @@ export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimatio
       setCursorVisible(prev => !prev);
     }, 530);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [enabled, reducedMotion]);
 
   // Check if all messages have been displayed

@@ -16,9 +16,8 @@ export interface LanguageBarProps {
 // Generate bar string with filled and empty chars
 const generateBar = (percentage: number, totalChars: number): string => {
   // Guard against invalid inputs
-  if (!Number.isFinite(percentage) || !Number.isFinite(totalChars) || totalChars <= 0) {
-    return '░'.repeat(Math.max(0, totalChars || 10));
-  }
+  if (!Number.isFinite(percentage) || !Number.isFinite(totalChars) || totalChars <= 0) return '░'.repeat(Math.max(0, totalChars || 10));
+
   const filled = Math.max(0, Math.min(totalChars, Math.round((percentage / 100) * totalChars)));
   const empty = Math.max(0, totalChars - filled);
   return '█'.repeat(filled) + '░'.repeat(empty);
@@ -52,12 +51,10 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
           const elapsed = currentTime - startTime;
           const progressRatio = Math.min(elapsed / duration, 1);
           // Ease out
-          const easedProgress = 1 - Math.pow(1 - progressRatio, 3);
+          const easedProgress = 1 - (1 - progressRatio) ** 3;
           setProgress(easedProgress * language.percentage);
 
-          if (progressRatio < 1) {
-            requestAnimationFrame(animateProgress);
-          }
+          if (progressRatio < 1) requestAnimationFrame(animateProgress);
         };
 
         requestAnimationFrame(animateProgress);

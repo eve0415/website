@@ -1,5 +1,6 @@
-import type { ConnectionInfo } from './connection-info';
-import type { DOMScanData, MetaInfo, ScriptInfo, StylesheetInfo } from './useDOMScan';
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test fixtures require type assertions for mock data */
+import type { CertificatePack, ConnectionInfo } from './connection-info';
+import type { DOMScanData, MetaInfo, ScriptInfo, StylesheetInfo } from './useDomScan';
 import type { NavigationTimingData, ResourceTimingEntry } from './useNavigationTiming';
 
 // --- Navigation Timing Fixtures ---
@@ -31,7 +32,7 @@ export const fastTiming: NavigationTimingData = {
     {
       name: 'https://eve0415.net/assets/styles.css',
       initiatorType: 'link',
-      transferSize: 8_000,
+      transferSize: 8000,
       decodedBodySize: 25_000,
       duration: 30,
       protocol: 'h2',
@@ -146,7 +147,7 @@ export const mockDOMScan: DOMScanData = {
     { name: 'viewport', property: null, content: 'width=device-width, initial-scale=1', charset: null },
     { name: 'description', property: null, content: 'Personal website of eve0415', charset: null },
     { name: null, property: 'og:title', content: 'eve0415.net', charset: null },
-    { name: null, property: null, content: '', charset: 'utf-8' },
+    { name: null, property: null, content: '', charset: 'utf8' },
   ] as MetaInfo[],
   links: [
     { rel: 'icon', href: '/favicon.ico', type: 'image/x-icon' },
@@ -170,7 +171,7 @@ export const minimalDOMScan: DOMScanData = {
   ],
   scripts: [],
   stylesheets: [],
-  meta: [{ name: null, property: null, content: '', charset: 'utf-8' }],
+  meta: [{ name: null, property: null, content: '', charset: 'utf8' }],
   links: [],
 };
 
@@ -209,8 +210,6 @@ export const heavyDOMScan: DOMScanData = {
 };
 
 // --- Connection Info Fixtures ---
-
-import type { CertificatePack } from './connection-info';
 
 /**
  * Helper to create mock certificate pack with specified number of certs
@@ -319,7 +318,7 @@ export const mockResources: ResourceTimingEntry[] = [
   {
     name: 'https://eve0415.net/assets/styles.def456.css',
     initiatorType: 'link',
-    transferSize: 8_120,
+    transferSize: 8120,
     decodedBodySize: 28_400,
     duration: 28,
     protocol: 'h2',
@@ -327,16 +326,16 @@ export const mockResources: ResourceTimingEntry[] = [
   {
     name: 'https://fonts.googleapis.com/css2?family=Inter',
     initiatorType: 'link',
-    transferSize: 1_240,
-    decodedBodySize: 3_600,
+    transferSize: 1240,
+    decodedBodySize: 3600,
     duration: 120,
     protocol: 'h2',
   },
   {
     name: 'https://eve0415.net/assets/logo.svg',
     initiatorType: 'img',
-    transferSize: 2_100,
-    decodedBodySize: 5_800,
+    transferSize: 2100,
+    decodedBodySize: 5800,
     duration: 15,
     protocol: 'h2',
   },

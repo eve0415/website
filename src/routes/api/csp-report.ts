@@ -37,13 +37,10 @@ interface ReportingApiFormat {
 
 type CspReport = CspReportUriFormat | ReportingApiFormat[];
 
-function isReportUriFormat(report: CspReport): report is CspReportUriFormat {
-  return !Array.isArray(report) && typeof report === 'object' && 'csp-report' in report;
-}
+const isReportUriFormat = (report: CspReport): report is CspReportUriFormat => !Array.isArray(report) && typeof report === 'object' && 'csp-report' in report;
 
-function isReportingApiFormat(report: CspReport): report is ReportingApiFormat[] {
-  return Array.isArray(report) && report.length > 0 && typeof report[0] === 'object' && 'type' in report[0];
-}
+const isReportingApiFormat = (report: CspReport): report is ReportingApiFormat[] =>
+  Array.isArray(report) && report.length > 0 && typeof report[0] === 'object' && 'type' in report[0];
 
 export const Route = createFileRoute('/api/csp-report')({
   server: {
@@ -51,9 +48,7 @@ export const Route = createFileRoute('/api/csp-report')({
       POST: async ({ request }) => {
         // Check Content-Length header for size limit
         const contentLength = request.headers.get('Content-Length');
-        if (contentLength && Number.parseInt(contentLength, 10) > MAX_BODY_SIZE) {
-          return new Response('Request body too large', { status: 413 });
-        }
+        if (contentLength && Number.parseInt(contentLength, 10) > MAX_BODY_SIZE) return new Response('Request body too large', { status: 413 });
 
         try {
           const report: CspReport = await request.json();
@@ -70,13 +65,13 @@ export const Route = createFileRoute('/api/csp-report')({
                 lineNumber: violation['line-number'],
               });
             }
-            return new Response(null, { status: 204 });
+            return new Response(undefined, { status: 204 });
           }
 
           // Handle Reporting API format (report-to directive)
           if (isReportingApiFormat(report)) {
             for (const entry of report) {
-              if (entry.type === 'csp-violation' && entry.body) {
+              if (entry.type === 'csp-violation' && entry.body !== undefined) {
                 console.warn('[CSP Violation]', {
                   documentUri: entry.body.documentURL,
                   violatedDirective: entry.body.effectiveDirective,
@@ -86,7 +81,7 @@ export const Route = createFileRoute('/api/csp-report')({
                 });
               }
             }
-            return new Response(null, { status: 204 });
+            return new Response(undefined, { status: 204 });
           }
 
           // Invalid report structure

@@ -44,40 +44,106 @@ const TestComponent: FC<TestProps> = () => {
       <button data-testid='typing-done-btn' type='button' onClick={onTypingDone}>
         Typing Done
       </button>
-      <button data-testid='ctrl-c-btn' type='button' onClick={() => onCtrlC()}>
+      <button
+        data-testid='ctrl-c-btn'
+        type='button'
+        onClick={() => {
+          onCtrlC();
+        }}
+      >
         Ctrl+C
       </button>
-      <button data-testid='ctrl-c-with-text-btn' type='button' onClick={() => onCtrlC('partial')}>
+      <button
+        data-testid='ctrl-c-with-text-btn'
+        type='button'
+        onClick={() => {
+          onCtrlC('partial');
+        }}
+      >
         Ctrl+C With Text
       </button>
-      <button data-testid='set-input-btn' type='button' onClick={() => setInput('test input')}>
+      <button
+        data-testid='set-input-btn'
+        type='button'
+        onClick={() => {
+          setInput('test input');
+        }}
+      >
         Set Input
       </button>
-      <button data-testid='clear-input-btn' type='button' onClick={() => setInput('')}>
+      <button
+        data-testid='clear-input-btn'
+        type='button'
+        onClick={() => {
+          setInput('');
+        }}
+      >
         Clear Input
       </button>
-      <button data-testid='execute-cmd-btn' type='button' onClick={() => executeCommand('help', 'Help output')}>
+      <button
+        data-testid='execute-cmd-btn'
+        type='button'
+        onClick={() => {
+          executeCommand('help', 'Help output');
+        }}
+      >
         Execute Command
       </button>
-      <button data-testid='execute-error-btn' type='button' onClick={() => executeCommand('bad', 'Error message', true)}>
+      <button
+        data-testid='execute-error-btn'
+        type='button'
+        onClick={() => {
+          executeCommand('bad', 'Error message', true);
+        }}
+      >
         Execute Error
       </button>
-      <button data-testid='execute-null-btn' type='button' onClick={() => executeCommand('sys.diagnostic', null)}>
+      <button
+        data-testid='execute-null-btn'
+        type='button'
+        onClick={() => {
+          executeCommand('sys.diagnostic', null);
+        }}
+      >
         Execute Null Output
       </button>
       <button data-testid='clear-btn' type='button' onClick={clear}>
         Clear
       </button>
-      <button data-testid='await-confirm-btn' type='button' onClick={() => awaitConfirmation('exit')}>
+      <button
+        data-testid='await-confirm-btn'
+        type='button'
+        onClick={() => {
+          awaitConfirmation('exit');
+        }}
+      >
         Await Confirmation
       </button>
-      <button data-testid='confirm-yes-btn' type='button' onClick={() => confirm(true)}>
+      <button
+        data-testid='confirm-yes-btn'
+        type='button'
+        onClick={() => {
+          confirm(true);
+        }}
+      >
         Confirm Yes
       </button>
-      <button data-testid='confirm-no-btn' type='button' onClick={() => confirm(false)}>
+      <button
+        data-testid='confirm-no-btn'
+        type='button'
+        onClick={() => {
+          confirm(false);
+        }}
+      >
         Confirm No
       </button>
-      <button data-testid='add-output-btn' type='button' onClick={() => addOutput('Additional output')}>
+      <button
+        data-testid='add-output-btn'
+        type='button'
+        onClick={() => {
+          addOutput('Additional output');
+        }}
+      >
         Add Output
       </button>
       <button data-testid='show-diagnostic-btn' type='button' onClick={showDiagnostic}>
@@ -155,7 +221,7 @@ describe('useTerminal', () => {
     });
 
     describe('from prompt state', () => {
-      test('Ctrl+C in prompt clears current input', async () => {
+      test('ctrl+C in prompt clears current input', async () => {
         await render(<TestComponent />);
 
         // Get to prompt state
@@ -174,7 +240,7 @@ describe('useTerminal', () => {
         await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
       });
 
-      test('Ctrl+C in prompt clears awaitingConfirmation', async () => {
+      test('ctrl+C in prompt clears awaitingConfirmation', async () => {
         await render(<TestComponent />);
 
         // Get to prompt state

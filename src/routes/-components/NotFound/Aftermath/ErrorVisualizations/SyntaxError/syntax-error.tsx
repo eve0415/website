@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Random array indexing is bounded */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -70,13 +71,19 @@ const SyntaxError: FC = () => {
       }
     }, 80);
 
-    return () => clearInterval(typeInterval);
+    return () => {
+      clearInterval(typeInterval);
+    };
   }, [reducedMotion, codeLines.length]);
 
   // Cursor blink
   useEffect(() => {
-    const interval = setInterval(() => setCursorVisible(v => !v), 530);
-    return () => clearInterval(interval);
+    const interval = setInterval(() => {
+      setCursorVisible(v => !v);
+    }, 530);
+    return () => {
+      clearInterval(interval);
+    };
   }, []);
 
   return (

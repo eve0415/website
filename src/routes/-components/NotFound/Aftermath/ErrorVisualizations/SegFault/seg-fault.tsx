@@ -26,27 +26,30 @@ const SegFault: FC = () => {
   const [glitchPhase, setGlitchPhase] = useState(0);
   const [showCoreDump, setShowCoreDump] = useState(() => reducedMotion);
 
-  const memorySegments = useMemo((): MemorySegment[] => {
-    return [
+  const memorySegments = useMemo(
+    (): MemorySegment[] => [
       { name: 'TEXT', start: '0x00400000', end: '0x00401fff', permissions: 'r-x', isViolated: false },
       { name: 'DATA', start: '0x00600000', end: '0x00601fff', permissions: 'rw-', isViolated: false },
       { name: 'HEAP', start: '0x00700000', end: '0x007fffff', permissions: 'rw-', isViolated: false },
       { name: '???', start: '0x00000000', end: '0x000fffff', permissions: '---', isViolated: true },
       { name: 'STACK', start: '0x7fff0000', end: '0x7fffffff', permissions: 'rw-', isViolated: false },
-    ];
-  }, []);
+    ],
+    [],
+  );
 
   // Generate glitch blocks
-  const glitchBlocks = useMemo(() => {
-    return Array.from({ length: 20 }).map((_, i) => ({
-      id: i,
-      x: seededRandom(i * 100) * 100,
-      y: seededRandom(i * 100 + 50) * 100,
-      width: 20 + seededRandom(i * 100 + 75) * 80,
-      height: 5 + seededRandom(i * 100 + 100) * 20,
-      color: seededRandom(i * 100 + 125) > 0.5 ? '#ff0040' : '#00ffff',
-    }));
-  }, []);
+  const glitchBlocks = useMemo(
+    () =>
+      Array.from({ length: 20 }).map((_, i) => ({
+        id: i,
+        x: seededRandom(i * 100) * 100,
+        y: seededRandom(i * 100 + 50) * 100,
+        width: 20 + seededRandom(i * 100 + 75) * 80,
+        height: 5 + seededRandom(i * 100 + 100) * 20,
+        color: seededRandom(i * 100 + 125) > 0.5 ? '#ff0040' : '#00ffff',
+      })),
+    [],
+  );
 
   useEffect(() => {
     if (reducedMotion) return;
@@ -57,7 +60,9 @@ const SegFault: FC = () => {
     }, 150);
 
     // Show core dump after delay
-    const timer = setTimeout(() => setShowCoreDump(true), 1500);
+    const timer = setTimeout(() => {
+      setShowCoreDump(true);
+    }, 1500);
 
     return () => {
       clearInterval(interval);

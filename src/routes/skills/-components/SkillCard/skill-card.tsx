@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Color config index access requires type assertion */
 import type { Skill } from '../../-config/skills-config';
 import type { FC } from 'react';
 
@@ -16,8 +17,12 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
   const config = levelConfig[skill.level];
 
   useEffect(() => {
-    const timer = setTimeout(() => setIsVisible(true), index * 50);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, index * 50);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [index]);
 
   const colorClasses = {
@@ -51,8 +56,12 @@ const SkillCard: FC<SkillCardProps> = ({ skill, index }) => {
       className={`group border-line bg-surface duration-normal relative cursor-default rounded-lg border p-4 transition-all ${colors.border} hover:shadow-lg ${
         isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
       }`}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      onMouseEnter={() => {
+        setIsHovered(true);
+      }}
+      onMouseLeave={() => {
+        setIsHovered(false);
+      }}
     >
       {/* Progress bar background */}
       <div className='absolute inset-0 overflow-hidden rounded-lg'>

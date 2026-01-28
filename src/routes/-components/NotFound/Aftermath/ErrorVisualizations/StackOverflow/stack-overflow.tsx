@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array indexing within bounds check */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -33,7 +34,7 @@ const StackOverflow: FC = () => {
     [],
   );
 
-  const [stackFrames, setStackFrames] = useState<string[]>(() => (reducedMotion ? [...frames].reverse() : []));
+  const [stackFrames, setStackFrames] = useState<string[]>(() => (reducedMotion ? [...frames].toReversed() : []));
   const [overflowing, setOverflowing] = useState(() => reducedMotion);
   const [crashed, setCrashed] = useState(() => reducedMotion);
 
@@ -52,11 +53,15 @@ const StackOverflow: FC = () => {
       } else {
         clearInterval(interval);
         setOverflowing(true);
-        setTimeout(() => setCrashed(true), 800);
+        setTimeout(() => {
+          setCrashed(true);
+        }, 800);
       }
     }, 100);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion, frames]);
 
   return (

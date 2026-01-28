@@ -27,14 +27,12 @@ When computation is expensive, memoize it:
 import { useMemo } from 'react';
 
 function TodoList({ todos, filter }) {
-  const visibleTodos = useMemo(
-    () => getFilteredTodos(todos, filter),
-    [todos, filter]
-  );
+  const visibleTodos = useMemo(() => getFilteredTodos(todos, filter), [todos, filter]);
 }
 ```
 
 **How to know if it's expensive**:
+
 ```tsx
 console.time('filter');
 const visibleTodos = getFilteredTodos(todos, filter);
@@ -56,7 +54,7 @@ function ProfilePage({ userId }) {
   return (
     <Profile
       userId={userId}
-      key={userId}  // Different userId = different component instance
+      key={userId} // Different userId = different component instance
     />
   );
 }
@@ -128,8 +126,13 @@ function buyProduct() {
   showNotification(`Added ${product.name}!`);
 }
 
-function handleBuyClick() { buyProduct(); }
-function handleCheckoutClick() { buyProduct(); navigateTo('/checkout'); }
+function handleBuyClick() {
+  buyProduct();
+}
+function handleCheckoutClick() {
+  buyProduct();
+  navigateTo('/checkout');
+}
 ```
 
 ---
@@ -144,7 +147,9 @@ function useOnlineStatus() {
   const [isOnline, setIsOnline] = useState(true);
 
   useEffect(() => {
-    function update() { setIsOnline(navigator.onLine); }
+    function update() {
+      setIsOnline(navigator.onLine);
+    }
     window.addEventListener('online', update);
     window.addEventListener('offline', update);
     return () => {
@@ -171,8 +176,8 @@ function subscribe(callback) {
 function useOnlineStatus() {
   return useSyncExternalStore(
     subscribe,
-    () => navigator.onLine,      // Client value
-    () => true                   // Server value (SSR)
+    () => navigator.onLine, // Client value
+    () => true, // Server value (SSR)
   );
 }
 ```
@@ -228,7 +233,9 @@ function useData(url) {
         if (!ignore) setLoading(false);
       });
 
-    return () => { ignore = true; };
+    return () => {
+      ignore = true;
+    };
   }, [url]);
 
   return { data, error, loading };
@@ -246,13 +253,13 @@ function SearchResults({ query }) {
 
 ## Summary: When to Use What
 
-| Need | Solution |
-|------|----------|
-| Value from props/state | Calculate during render |
-| Expensive calculation | `useMemo` |
-| Reset all state on prop change | `key` prop |
-| Respond to user action | Event handler |
-| Sync with external system | `useEffect` with cleanup |
-| Subscribe to external store | `useSyncExternalStore` |
-| Share state between components | Lift state up |
-| Fetch data | Custom hook with cleanup / framework |
+| Need                           | Solution                             |
+| ------------------------------ | ------------------------------------ |
+| Value from props/state         | Calculate during render              |
+| Expensive calculation          | `useMemo`                            |
+| Reset all state on prop change | `key` prop                           |
+| Respond to user action         | Event handler                        |
+| Sync with external system      | `useEffect` with cleanup             |
+| Subscribe to external store    | `useSyncExternalStore`               |
+| Share state between components | Lift state up                        |
+| Fetch data                     | Custom hook with cleanup / framework |

@@ -106,8 +106,10 @@ export const useMouseInfluence = (options: UseMouseInfluenceOptions): MouseInflu
   useEffect(() => {
     if (!enabled) return;
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    globalThis.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      globalThis.removeEventListener('mousemove', handleMouseMove);
+    };
   }, [enabled, handleMouseMove]);
 
   // Combine mouse state with phase multipliers
@@ -124,11 +126,11 @@ export const useMouseInfluence = (options: UseMouseInfluenceOptions): MouseInflu
 export const distance = (a: Vec2, b: Vec2): number => {
   const dx = b.x - a.x;
   const dy = b.y - a.y;
-  return Math.sqrt(dx * dx + dy * dy);
+  return Math.hypot(dx, dy);
 };
 
 export const normalize = (v: Vec2): Vec2 => {
-  const mag = Math.sqrt(v.x * v.x + v.y * v.y);
+  const mag = Math.hypot(v.x, v.y);
   if (mag === 0) return { x: 0, y: 0 };
   return { x: v.x / mag, y: v.y / mag };
 };

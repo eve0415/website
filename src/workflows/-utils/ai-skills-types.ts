@@ -103,7 +103,7 @@ export interface GitHubCommit {
     additions: number;
     deletions: number;
   };
-  files?: Array<{ filename: string }>;
+  files?: { filename: string }[];
 }
 
 /** GitHub PR from API */

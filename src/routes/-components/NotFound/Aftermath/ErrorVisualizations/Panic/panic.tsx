@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-array-index-key) -- Static stack frame display */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -44,12 +45,16 @@ const Panic: FC = () => {
           // Attempt recover
           setTimeout(() => {
             setRecoverAttempt(true);
-            setTimeout(() => setRecoverFailed(true), 800);
+            setTimeout(() => {
+              setRecoverFailed(true);
+            }, 800);
           }, 500);
         }
       }, 300);
 
-      return () => clearInterval(interval);
+      return () => {
+        clearInterval(interval);
+      };
     }, 500);
   }, [reducedMotion, stackFrames.length]);
 

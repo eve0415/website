@@ -1,3 +1,4 @@
+/* oxlint-disable eslint(no-await-in-loop) -- Sequential debug stepping tests require await in loop */
 import type { FC, RefObject } from 'react';
 
 import { afterEach, beforeEach, describe, expect, test } from 'vitest';
@@ -40,13 +41,31 @@ const TestComponent: FC<TestComponentProps> = ({ messageDepths = SAMPLE_DEPTHS, 
       <button data-testid='step-continue' onClick={stepContinue} type='button'>
         Continue
       </button>
-      <button data-testid='step-over' onClick={() => stepOver(messageDepths)} type='button'>
+      <button
+        data-testid='step-over'
+        onClick={() => {
+          stepOver(messageDepths);
+        }}
+        type='button'
+      >
         Step Over
       </button>
-      <button data-testid='step-into' onClick={() => stepInto(totalMessages)} type='button'>
+      <button
+        data-testid='step-into'
+        onClick={() => {
+          stepInto(totalMessages);
+        }}
+        type='button'
+      >
         Step Into
       </button>
-      <button data-testid='step-out' onClick={() => stepOut(messageDepths)} type='button'>
+      <button
+        data-testid='step-out'
+        onClick={() => {
+          stepOut(messageDepths);
+        }}
+        type='button'
+      >
         Step Out
       </button>
       <button data-testid='step-back' onClick={stepBack} type='button'>
@@ -85,7 +104,7 @@ describe('useDebugMode', () => {
   });
 
   describe('keyboard shortcuts', () => {
-    test('F5 enables debug mode when disabled', async () => {
+    test('f5 enables debug mode when disabled', async () => {
       await render(<TestComponent />);
 
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('false');
@@ -96,7 +115,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
     });
 
-    test('F5 continues when paused', async () => {
+    test('f5 continues when paused', async () => {
       await render(<TestComponent />);
 
       // Enable debug mode first
@@ -109,7 +128,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
     });
 
-    test('F5 has no effect when running (enabled but not paused)', async () => {
+    test('f5 has no effect when running (enabled but not paused)', async () => {
       await render(<TestComponent />);
 
       // Enable and continue
@@ -124,7 +143,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
     });
 
-    test('F6 pauses when running', async () => {
+    test('f6 pauses when running', async () => {
       await render(<TestComponent />);
 
       // Enable and continue (running state)
@@ -137,7 +156,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
     });
 
-    test('F6 has no effect when already paused', async () => {
+    test('f6 has no effect when already paused', async () => {
       await render(<TestComponent />);
 
       // Enable (starts paused)
@@ -149,7 +168,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
     });
 
-    test('F6 has no effect when disabled', async () => {
+    test('f6 has no effect when disabled', async () => {
       await render(<TestComponent />);
 
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('false');
@@ -159,7 +178,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('false');
     });
 
-    test('F10 steps over children when paused', async () => {
+    test('f10 steps over children when paused', async () => {
       await render(<TestComponent />);
 
       // Enable debug mode
@@ -171,7 +190,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('4');
     });
 
-    test('F10 has no effect when not paused', async () => {
+    test('f10 has no effect when not paused', async () => {
       await render(<TestComponent />);
 
       // Enable and continue (running)
@@ -188,7 +207,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
     });
 
-    test('F11 steps into next message when paused', async () => {
+    test('f11 steps into next message when paused', async () => {
       await render(<TestComponent />);
 
       // Enable debug mode
@@ -204,7 +223,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('2');
     });
 
-    test('Shift+F11 steps out to shallower depth', async () => {
+    test('shift+F11 steps out to shallower depth', async () => {
       await render(<TestComponent />);
 
       // Enable and step to index 3 (depth 2)
@@ -219,7 +238,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('4');
     });
 
-    test('Shift+F10 steps back to previous message', async () => {
+    test('shift+F10 steps back to previous message', async () => {
       await render(<TestComponent />);
 
       // Enable and step forward twice
@@ -233,7 +252,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('1');
     });
 
-    test('Escape stops debug mode', async () => {
+    test('escape stops debug mode', async () => {
       await render(<TestComponent />);
 
       // Enable debug mode
@@ -247,7 +266,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
     });
 
-    test('Ctrl+Shift+D also enables debug mode', async () => {
+    test('ctrl+Shift+D also enables debug mode', async () => {
       await render(<TestComponent />);
 
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('false');
@@ -259,14 +278,13 @@ describe('useDebugMode', () => {
   });
 
   describe('boundary conditions', () => {
-    test('Step Into at last message triggers continue', async () => {
+    test('step Into at last message triggers continue', async () => {
       await render(<TestComponent />);
 
       // Enable and go to last message (index 5)
       await userEvent.keyboard('{F5}');
-      for (let i = 0; i < 5; i++) {
-        await page.getByTestId('step-into').click();
-      }
+      for (let i = 0; i < 5; i++) await page.getByTestId('step-into').click();
+
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('5');
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
 
@@ -275,7 +293,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('false');
     });
 
-    test('Step Back at index 0 stays at 0', async () => {
+    test('step Back at index 0 stays at 0', async () => {
       await render(<TestComponent />);
 
       // Enable debug mode (starts at index 0)
@@ -291,7 +309,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
     });
 
-    test('Step Over at last depth-0 message stays at last', async () => {
+    test('step Over at last depth-0 message stays at last', async () => {
       await render(<TestComponent />);
 
       // Enable and go to index 4 (last depth-0 message)
@@ -304,7 +322,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('4');
     });
 
-    test('Step Out with no shallower depth stays put', async () => {
+    test('step Out with no shallower depth stays put', async () => {
       await render(<TestComponent />);
 
       // Enable at index 0 (depth 0, shallowest possible)
@@ -318,7 +336,7 @@ describe('useDebugMode', () => {
   });
 
   describe('state sync', () => {
-    test('Pause syncs debugIndex to current visible count', async () => {
+    test('pause syncs debugIndex to current visible count', async () => {
       const visibleCountRef = { current: 3 };
       await render(<TestComponent visibleCountRef={visibleCountRef} />);
 
@@ -335,7 +353,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('3');
     });
 
-    test('Continue resets maxVisibleDepth to Infinity', async () => {
+    test('continue resets maxVisibleDepth to Infinity', async () => {
       await render(<TestComponent />);
 
       // Enable debug mode
@@ -383,8 +401,12 @@ describe('useDebugMode', () => {
       visibleCountRef.current = 8;
 
       // Give the RAF polling time to pick up the new value
-      await new Promise(resolve => requestAnimationFrame(resolve));
-      await new Promise(resolve => requestAnimationFrame(resolve));
+      await new Promise(resolve => {
+        requestAnimationFrame(resolve);
+      });
+      await new Promise(resolve => {
+        requestAnimationFrame(resolve);
+      });
 
       // Now debugIndex should sync to 7 (8 - 1)
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('7');
@@ -406,7 +428,7 @@ describe('useDebugMode', () => {
   });
 
   describe('persistence', () => {
-    test('Saves enabled state to localStorage', async () => {
+    test('saves enabled state to localStorage', async () => {
       await render(<TestComponent />);
 
       expect(localStorage.getItem(DEBUG_STORAGE_KEY)).toBeNull();
@@ -416,7 +438,7 @@ describe('useDebugMode', () => {
       expect(localStorage.getItem(DEBUG_STORAGE_KEY)).toBe('true');
     });
 
-    test('Clears localStorage when disabled', async () => {
+    test('clears localStorage when disabled', async () => {
       localStorage.setItem(DEBUG_STORAGE_KEY, 'true');
 
       await render(<TestComponent />);
@@ -429,7 +451,7 @@ describe('useDebugMode', () => {
       expect(localStorage.getItem(DEBUG_STORAGE_KEY)).toBeNull();
     });
 
-    test('Does not persist debugIndex', async () => {
+    test('does not persist debugIndex', async () => {
       const screen1 = await render(<TestComponent />);
 
       // Enable and step forward
@@ -450,7 +472,7 @@ describe('useDebugMode', () => {
   });
 
   describe('step logic', () => {
-    test('Step Over skips all children at current depth', async () => {
+    test('step Over skips all children at current depth', async () => {
       // depths: [0, 1, 1, 2, 0, 1]
       await render(<TestComponent />);
 
@@ -462,7 +484,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('4');
     });
 
-    test('Step Over at child level finds next sibling', async () => {
+    test('step Over at child level finds next sibling', async () => {
       // depths: [0, 1, 1, 2, 0, 1]
       await render(<TestComponent />);
 
@@ -478,7 +500,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('2');
     });
 
-    test('Step Out finds next shallower depth', async () => {
+    test('step Out finds next shallower depth', async () => {
       // depths: [0, 1, 1, 2, 0, 1]
       await render(<TestComponent />);
 
@@ -495,8 +517,8 @@ describe('useDebugMode', () => {
     });
   });
 
-  describe('F5 enableDebugMode sync (regression)', () => {
-    test('F5 syncs debugIndex to current visible message count mid-stream', async () => {
+  describe('f5 enableDebugMode sync (regression)', () => {
+    test('f5 syncs debugIndex to current visible message count mid-stream', async () => {
       // Simulate 10 messages already visible when F5 is pressed
       const visibleCountRef = { current: 10 };
       await render(<TestComponent visibleCountRef={visibleCountRef} />);
@@ -510,7 +532,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
     });
 
-    test('F5 pressed immediately shows at least first message', async () => {
+    test('f5 pressed immediately shows at least first message', async () => {
       // Simulate no messages visible yet (or just starting)
       const visibleCountRef = { current: 0 };
       await render(<TestComponent visibleCountRef={visibleCountRef} />);
@@ -523,7 +545,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
     });
 
-    test('F5 with visibleCount of 1 sets debugIndex to 0', async () => {
+    test('f5 with visibleCount of 1 sets debugIndex to 0', async () => {
       // Simulate exactly 1 message visible
       const visibleCountRef = { current: 1 };
       await render(<TestComponent visibleCountRef={visibleCountRef} />);

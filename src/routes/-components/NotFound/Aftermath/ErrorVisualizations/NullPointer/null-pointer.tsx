@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-unescaped-entities) -- Code snippets with quotes are intentional visual elements */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -21,8 +22,8 @@ const NullPointer: FC<NullPointerProps> = () => {
   const [showPointerPath, setShowPointerPath] = useState(false);
 
   // Generate memory grid with null reference
-  const memoryGrid = useMemo((): MemoryCell[] => {
-    return [
+  const memoryGrid = useMemo(
+    (): MemoryCell[] => [
       { address: '0x7fff0000', value: '0x2A', isPointer: false, pointsTo: null },
       { address: '0x7fff0008', value: '0x68656C6C6F', isPointer: false, pointsTo: null },
       { address: '0x7fff0010', value: '0x7fff0028', isPointer: true, pointsTo: 5 },
@@ -31,16 +32,21 @@ const NullPointer: FC<NullPointerProps> = () => {
       { address: '0x7fff0028', value: 'Object{}', isPointer: false, pointsTo: null },
       { address: '0x7fff0030', value: '0xDEAD', isPointer: false, pointsTo: null },
       { address: '0x7fff0038', value: 'null', isPointer: false, pointsTo: null }, // Target of null pointer
-    ];
-  }, []);
+    ],
+    [],
+  );
 
   // Animate pointer following
   useEffect(() => {
     const timer = setTimeout(() => {
       setHighlightedCell(4); // Highlight the null pointer
-      setTimeout(() => setShowPointerPath(true), 500);
+      setTimeout(() => {
+        setShowPointerPath(true);
+      }, 500);
     }, 800);
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
 
   const handleCellHover = useCallback((index: number) => {
@@ -89,7 +95,9 @@ const NullPointer: FC<NullPointerProps> = () => {
                       : 'border-[#4fc1ff] bg-[#4fc1ff]/10'
                     : 'border-[#3c3c3c] bg-[#1e1e1e]'
                 } ${cell.isPointer && cell.pointsTo === null ? 'animate-pulse' : ''}`}
-                onMouseEnter={() => handleCellHover(i)}
+                onMouseEnter={() => {
+                  handleCellHover(i);
+                }}
                 onMouseLeave={handleCellLeave}
               >
                 <div className='text-[10px] text-[#569cd6]'>{cell.address}</div>

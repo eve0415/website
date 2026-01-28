@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion), typescript-eslint(no-unsafe-type-assertion) -- Handler existence verified via expect().toBeDefined() assertions; type assertion needed for route options */
 import { describe, expect, test } from 'vitest';
 
 // Get reference to the actual handlers from the route
@@ -93,7 +94,7 @@ describe('/api/csp-report POST handler', () => {
     });
   });
 
-  describe('Reporting API format', () => {
+  describe('reporting API format', () => {
     test('accepts valid Reporting API format and returns 204', async () => {
       const handler = getPostHandler();
 

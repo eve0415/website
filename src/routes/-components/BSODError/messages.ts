@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Array indexing with bounds check */
 export interface BSODMessage {
   main: string;
   sub: string;

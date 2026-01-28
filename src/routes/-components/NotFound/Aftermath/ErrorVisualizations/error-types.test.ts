@@ -41,7 +41,7 @@ describe('error-types', () => {
       vi.mocked(Date.now).mockReturnValue(1234999);
       const result2 = getRandomError();
 
-      expect(result1).toEqual(result2);
+      expect(result1).toStrictEqual(result2);
     });
 
     it('wraps around after 18 seconds', () => {
@@ -51,11 +51,11 @@ describe('error-types', () => {
       vi.mocked(Date.now).mockReturnValue(18000);
       const nineteenth = getRandomError();
 
-      expect(first).toEqual(nineteenth);
+      expect(first).toStrictEqual(nineteenth);
     });
   });
 
-  describe('ERROR_VISUALIZATIONS', () => {
+  describe('eRROR_VISUALIZATIONS', () => {
     it('contains exactly 18 error types', () => {
       expect(ERROR_VISUALIZATIONS).toHaveLength(18);
     });

@@ -7,31 +7,29 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import BSODError from './-components/BSODError/bsod-error';
 import rootCss from './__root.css?url';
 
-const RootDocument: FC<PropsWithChildren> = ({ children }) => {
-  return (
-    <html lang='ja'>
-      <head>
-        <HeadContent />
-      </head>
-      <body className='text-foreground bg-background min-h-dvh'>
-        <main>{children}</main>
+const RootDocument: FC<PropsWithChildren> = ({ children }) => (
+  <html lang='ja'>
+    <head>
+      <HeadContent />
+    </head>
+    <body className='text-foreground bg-background min-h-dvh'>
+      <main>{children}</main>
 
-        <Scripts />
+      <Scripts />
 
-        {import.meta.env.DEV && (
-          <TanStackDevtools
-            plugins={[
-              {
-                name: 'TanStack Router',
-                render: <TanStackRouterDevtoolsPanel />,
-              },
-            ]}
-          />
-        )}
-      </body>
-    </html>
-  );
-};
+      {import.meta.env.DEV && (
+        <TanStackDevtools
+          plugins={[
+            {
+              name: 'TanStack Router',
+              render: <TanStackRouterDevtoolsPanel />,
+            },
+          ]}
+        />
+      )}
+    </body>
+  </html>
+);
 
 export const Route = createRootRouteWithContext<{
   cspNonce?: string;
@@ -41,7 +39,7 @@ export const Route = createRootRouteWithContext<{
   head: () => ({
     meta: [
       {
-        charSet: 'utf-8',
+        charSet: 'utf8',
       },
       {
         name: 'viewport',

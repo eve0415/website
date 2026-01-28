@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Array access in render loop requires type assertion for tuple elements */
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 import type { FC } from 'react';
 
@@ -22,7 +23,7 @@ const COLORS = {
 
 const DAY_LABELS = ['日', '月', '火', '水', '木', '金', '土'] as const;
 
-function getLevelColor(level: 0 | 1 | 2 | 3 | 4): string {
+const getLevelColor = (level: 0 | 1 | 2 | 3 | 4): string => {
   switch (level) {
     case 0:
       return COLORS.level0;
@@ -37,7 +38,7 @@ function getLevelColor(level: 0 | 1 | 2 | 3 | 4): string {
     default:
       return COLORS.level0;
   }
-}
+};
 
 interface CodeRadarProps {
   contributionCalendar: ContributionDay[];
@@ -58,19 +59,24 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     onBootCompleteRef.current = onBootComplete;
   });
 
-  const totalContributions = useMemo(() => {
-    return contributionCalendar.reduce((sum, day) => sum + day.count, 0);
-  }, [contributionCalendar]);
+  const totalContributions = useMemo(() => contributionCalendar.reduce((sum, day) => sum + day.count, 0), [contributionCalendar]);
 
   // Draw function stored in ref to avoid effect re-runs when it changes
-  const drawRef = useRef<(ctx: CanvasRenderingContext2D, width: number, height: number, time: number, skipAnimation: boolean) => void>(undefined);
+  type DrawFn = (ctx: CanvasRenderingContext2D, width: number, height: number, time: number, skipAnimation: boolean) => void;
+  const drawRef = useRef<DrawFn | null>(null);
 
   // Update draw function ref when dependencies change
   useEffect(() => {
     drawRef.current = (ctx: CanvasRenderingContext2D, width: number, height: number, time: number, skipAnimation: boolean) => {
+      // Guard against invalid dimensions (e.g., during unmount or in test environments)
+      if (width <= 0 || height <= 0 || !Number.isFinite(width) || !Number.isFinite(height)) return;
+
       const centerX = width / 2;
       const centerY = height / 2;
       const maxRadius = Math.min(width, height) / 2 - 20;
+
+      // Guard against too-small dimensions that would cause invalid drawing
+      if (maxRadius <= 0 || !Number.isFinite(maxRadius)) return;
 
       // Clear canvas
       ctx.fillStyle = COLORS.bg;
@@ -78,9 +84,8 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
 
       // Get last 52 weeks of data (most recent at outer ring)
       const weeks: ContributionDay[][] = [];
-      for (let i = 0; i < contributionCalendar.length; i += 7) {
-        weeks.push(contributionCalendar.slice(i, i + 7));
-      }
+      for (let i = 0; i < contributionCalendar.length; i += 7) weeks.push(contributionCalendar.slice(i, i + 7));
+
       const last52Weeks = weeks.slice(-52);
 
       // Calculate ring dimensions
@@ -95,9 +100,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         const ringRadius = innerRadius + ringWidth * (weekIndex + 0.5);
 
         // During boot, only show rings up to boot progress
-        if (bootPhase === 'booting' && weekIndex > bootProgressRef.current * 52) {
-          continue;
-        }
+        if (bootPhase === 'booting' && weekIndex > bootProgressRef.current * 52) continue;
 
         for (let dayIndex = 0; dayIndex < week.length; dayIndex++) {
           const day = week[dayIndex];
@@ -137,7 +140,11 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
 
       // Draw scanning line during boot or subtle pulse during idle
       if (bootPhase === 'booting') {
-        const scanAngle = bootProgressRef.current * Math.PI * 2 - Math.PI / 2;
+        const bootProgress = bootProgressRef.current ?? 0;
+        const scanAngle = bootProgress * Math.PI * 2 - Math.PI / 2;
+
+        // Guard against invalid scanAngle (e.g., if bootProgress is NaN)
+        if (!Number.isFinite(scanAngle)) return;
 
         // Scan line glow
         const gradient = ctx.createLinearGradient(centerX, centerY, centerX + Math.cos(scanAngle) * maxRadius, centerY + Math.sin(scanAngle) * maxRadius);
@@ -219,11 +226,12 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     };
 
     let rect = setupCanvas();
-    let startTime: number | null = null;
+    let startTime = 0;
     const bootDuration = 2000; // 2 seconds boot animation
 
     const animate = (timestamp: number) => {
-      if (startTime === null) startTime = timestamp;
+      // Initialize startTime on first frame
+      if (startTime === 0) startTime = timestamp;
       const elapsed = timestamp - startTime;
 
       if (bootPhase === 'booting') {
@@ -257,9 +265,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     // Handle viewport/resize changes
     const resizeObserver = new ResizeObserver(() => {
       rect = setupCanvas();
-      if (prefersReducedMotion) {
-        drawRef.current?.(ctx, rect.width, rect.height, 0, true);
-      }
+      if (prefersReducedMotion) drawRef.current?.(ctx, rect.width, rect.height, 0, true);
     });
     resizeObserver.observe(canvas);
 
@@ -276,8 +282,8 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
 
     const observer = new IntersectionObserver(
       entries => {
-        const entry = entries[0];
-        if (entry?.isIntersecting && bootPhase === 'booting') {
+        const [entry] = entries;
+        if (entry?.isIntersecting === true && bootPhase === 'booting') {
           // Animation will auto-start via useEffect
         }
       },
@@ -285,7 +291,9 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     );
 
     observer.observe(canvas);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, [bootPhase, prefersReducedMotion]);
 
   return (
@@ -295,6 +303,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         <span className='text-neon'>[</span>
         <span>CODE_RADAR</span>
         <span className='text-neon'>]</span>
+        {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
         <span className='text-subtle-foreground ml-2'>// 52週間の活動</span>
       </div>
 

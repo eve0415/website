@@ -21,17 +21,16 @@ vi.mock('#hooks/useReducedMotion', () => ({
 
 // Mock connection-info module (imports cloudflare:workers which isn't available in browser)
 vi.mock('./BootSequence/connection-info', () => ({
-  getConnectionInfo: vi.fn(() =>
-    Promise.resolve({
-      serverIp: '127.0.0.1',
-      tlsVersion: 'TLSv1.3',
-      tlsCipher: 'TLS_AES_128_GCM_SHA256',
-      httpVersion: 'h2',
-      cfRay: 'mock-ray-id',
-      colo: 'NRT',
-      certificatePack: null,
-    }),
-  ),
+  // oxlint-disable-next-line typescript/require-await -- Mock async function for testing
+  getConnectionInfo: vi.fn(async () => ({
+    serverIp: '127.0.0.1',
+    tlsVersion: 'TLSv1.3',
+    tlsCipher: 'TLS_AES_128_GCM_SHA256',
+    httpVersion: 'h2',
+    cfRay: 'mock-ray-id',
+    colo: 'NRT',
+    certificatePack: undefined,
+  })),
 }));
 
 // Create a router wrapper
@@ -51,7 +50,7 @@ const TestWrapper: FC = () => {
   return <RouterProvider router={router} />;
 };
 
-describe('NotFound', () => {
+describe('notFound', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -138,7 +137,7 @@ describe('NotFound', () => {
     });
   });
 
-  describe('StaticAftermath component', () => {
+  describe('staticAftermath component', () => {
     test('has visual indicator dot', async () => {
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);

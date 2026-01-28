@@ -36,7 +36,7 @@ describe('useMousePosition', () => {
       clientX: 100,
       clientY: 200,
     });
-    window.dispatchEvent(event);
+    globalThis.dispatchEvent(event);
 
     await expect.element(page.getByTestId('x')).toHaveTextContent('100');
     await expect.element(page.getByTestId('y')).toHaveTextContent('200');
@@ -50,7 +50,7 @@ describe('useMousePosition', () => {
     const height = window.innerHeight;
 
     // Move to top-left
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new MouseEvent('mousemove', {
         clientX: 0,
         clientY: 0,
@@ -61,7 +61,7 @@ describe('useMousePosition', () => {
     await expect.element(page.getByTestId('normalized-y')).toHaveTextContent('0.00');
 
     // Move to center
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new MouseEvent('mousemove', {
         clientX: width / 2,
         clientY: height / 2,
@@ -72,7 +72,7 @@ describe('useMousePosition', () => {
     await expect.element(page.getByTestId('normalized-y')).toHaveTextContent('0.50');
 
     // Move to bottom-right
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new MouseEvent('mousemove', {
         clientX: width,
         clientY: height,
@@ -87,7 +87,7 @@ describe('useMousePosition', () => {
     await render(<TestComponent />);
 
     // First move
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new MouseEvent('mousemove', {
         clientX: 100,
         clientY: 100,
@@ -97,7 +97,7 @@ describe('useMousePosition', () => {
     await expect.element(page.getByTestId('x')).toHaveTextContent('100');
 
     // Second move
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new MouseEvent('mousemove', {
         clientX: 250,
         clientY: 350,
@@ -115,7 +115,7 @@ describe('useMousePosition', () => {
 
     // After unmount, listener should be removed
     // This is a behavioral test - we verify no errors occur
-    window.dispatchEvent(
+    globalThis.dispatchEvent(
       new MouseEvent('mousemove', {
         clientX: 999,
         clientY: 999,
@@ -123,6 +123,6 @@ describe('useMousePosition', () => {
     );
 
     // If cleanup didn't work, this would cause issues in subsequent tests
-    expect(true).toBe(true);
+    expect(true).toBeTruthy();
   });
 });

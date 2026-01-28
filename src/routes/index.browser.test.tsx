@@ -1,3 +1,4 @@
+/* oxlint-disable eslint(no-await-in-loop) -- Sequential keyboard input tests require await in loop */
 import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';
@@ -15,18 +16,24 @@ const TestIndexPage: FC = () => {
   const [showTagline, setShowTagline] = useState(false);
   const [showNav, setShowNav] = useState(false);
   const [konamiActivated, setKonamiActivated] = useState(false);
-  const [navigatedTo, setNavigatedTo] = useState<string | null>(null);
+  const [navigatedTo, setNavigatedTo] = useState<string | null>();
 
   useKonamiCode(() => {
     setKonamiActivated(true);
     console.log('%c🎮 Secret unlocked!', 'color: #00ff88; font-size: 20px; font-weight: bold;');
-    setTimeout(() => setKonamiActivated(false), 3000);
+    setTimeout(() => {
+      setKonamiActivated(false);
+    }, 3000);
   });
 
   useEffect(() => {
     printConsoleArt();
-    const taglineTimer = setTimeout(() => setShowTagline(true), 100); // Reduced for testing
-    const navTimer = setTimeout(() => setShowNav(true), 200);
+    const taglineTimer = setTimeout(() => {
+      setShowTagline(true);
+    }, 100); // Reduced for testing
+    const navTimer = setTimeout(() => {
+      setShowNav(true);
+    }, 200);
     return () => {
       clearTimeout(taglineTimer);
       clearTimeout(navTimer);
@@ -51,8 +58,10 @@ const TestIndexPage: FC = () => {
           break;
       }
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => {
+      globalThis.removeEventListener('keydown', handleKeyDown);
+    };
   }, []);
 
   return (
@@ -97,7 +106,7 @@ const TestIndexPage: FC = () => {
   );
 };
 
-describe('IndexPage', () => {
+describe('indexPage', () => {
   beforeEach(() => {
     vi.spyOn(console, 'log').mockImplementation(() => {});
     vi.spyOn(console, 'clear').mockImplementation(() => {});
@@ -154,9 +163,7 @@ describe('IndexPage', () => {
     // Konami code: ↑ ↑ ↓ ↓ ← → ← → B A
     const konamiSequence = ['ArrowUp', 'ArrowUp', 'ArrowDown', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ArrowLeft', 'ArrowRight', 'b', 'a'];
 
-    for (const key of konamiSequence) {
-      await userEvent.keyboard(`{${key}}`);
-    }
+    for (const key of konamiSequence) await userEvent.keyboard(`{${key}}`);
 
     await expect.element(page.getByTestId('konami-overlay')).toBeInTheDocument();
     await expect.element(page.getByText('SECRET_UNLOCKED')).toBeInTheDocument();

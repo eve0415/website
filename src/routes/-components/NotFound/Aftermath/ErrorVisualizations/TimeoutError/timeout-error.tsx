@@ -5,6 +5,13 @@ import { useEffect, useRef, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
+// Format seconds as MM:SS
+const formatTime = (seconds: number) => {
+  const mins = Math.floor(seconds / 60);
+  const secs = seconds % 60;
+  return `${mins}:${secs.toString().padStart(2, '0')}`;
+};
+
 // Go context timeout visualization with hourglass
 const TimeoutError: FC = () => {
   const reducedMotion = useReducedMotion();
@@ -42,14 +49,10 @@ const TimeoutError: FC = () => {
       }
     }, 100);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
-
-  const formatTime = (seconds: number) => {
-    const mins = Math.floor(seconds / 60);
-    const secs = seconds % 60;
-    return `${mins}:${secs.toString().padStart(2, '0')}`;
-  };
 
   return (
     <div className='bg-background fixed inset-0 overflow-x-hidden overflow-y-auto'>

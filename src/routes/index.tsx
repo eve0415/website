@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useEffect, useState } from 'react';
+import { startTransition, useEffect, useState } from 'react';
 
 import Background from './-index/Background/background';
 import { printConsoleArt } from './-index/console-art';
@@ -20,7 +20,9 @@ const IndexPage: FC = () => {
     setKonamiActivated(true);
     console.log('%c🎮 Secret unlocked!', 'color: #00ff88; font-size: 20px; font-weight: bold;');
     // Reset after animation
-    setTimeout(() => setKonamiActivated(false), 3000);
+    setTimeout(() => {
+      setKonamiActivated(false);
+    }, 3000);
   });
 
   useEffect(() => {
@@ -28,8 +30,12 @@ const IndexPage: FC = () => {
     printConsoleArt();
 
     // Stagger the animations
-    const taglineTimer = setTimeout(() => setShowTagline(true), 1500);
-    const navTimer = setTimeout(() => setShowNav(true), 2500);
+    const taglineTimer = setTimeout(() => {
+      setShowTagline(true);
+    }, 1500);
+    const navTimer = setTimeout(() => {
+      setShowNav(true);
+    }, 2500);
 
     return () => {
       clearTimeout(taglineTimer);
@@ -39,28 +45,32 @@ const IndexPage: FC = () => {
 
   // Keyboard navigation
   useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
+    const listener = (e: KeyboardEvent) => {
       // Skip if user is typing in an input
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
-
-      switch (e.key) {
-        case '1':
-          void navigate({ to: '/projects' });
-          break;
-        case '2':
-          void navigate({ to: '/skills' });
-          break;
-        case '3':
-          void navigate({ to: '/link' });
-          break;
-        case '4':
-          void navigate({ to: '/sys' });
-          break;
-      }
+      startTransition(async () => {
+        switch (e.key) {
+          case '1':
+            await navigate({ to: '/projects' });
+            break;
+          case '2':
+            await navigate({ to: '/skills' });
+            break;
+          case '3':
+            await navigate({ to: '/link' });
+            break;
+          case '4':
+            await navigate({ to: '/sys' });
+            break;
+        }
+      });
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', listener);
+
+    return () => {
+      globalThis.removeEventListener('keydown', listener);
+    };
   }, [navigate]);
 
   return (
@@ -74,6 +84,7 @@ const IndexPage: FC = () => {
         <div className='bg-background/80 pointer-events-none fixed inset-0 z-50 flex items-center justify-center'>
           <div className='animate-fade-in-scale text-center'>
             <span className='text-neon block font-mono text-xl'>SECRET_UNLOCKED</span>
+            {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
             <span className='text-subtle-foreground mt-2 block text-sm'>// 何かを見つけた...</span>
           </div>
         </div>
@@ -101,6 +112,7 @@ const IndexPage: FC = () => {
         {/* Navigation prompt */}
         {showNav && (
           <nav className='animate-fade-in-up text-subtle-foreground mt-12 flex flex-col items-center gap-6 text-sm'>
+            {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
             <span className='font-mono text-xs tracking-wider'>// 探索を始める</span>
             <div className='flex gap-6'>
               <Link to='/projects' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>

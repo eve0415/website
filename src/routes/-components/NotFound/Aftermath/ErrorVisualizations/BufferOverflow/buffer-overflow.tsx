@@ -38,7 +38,7 @@ const BufferOverflow: FC = () => {
   const [corruption, setCorruption] = useState<number[]>(() => (reducedMotion ? [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] : []));
   const [canaryDead, setCanaryDead] = useState(() => reducedMotion);
   const [crashed, setCrashed] = useState(() => reducedMotion);
-  const [jitterOffsets, setJitterOffsets] = useState<number[]>(() => Array(10).fill(0) as number[]);
+  const [jitterOffsets, setJitterOffsets] = useState<number[]>(() => Array.from({ length: 10 }, () => 0));
 
   const writeIndexRef = useRef(0);
 
@@ -54,24 +54,24 @@ const BufferOverflow: FC = () => {
 
         // Corrupt from bottom up (buffer fills, then overflows)
         const blockIndex = memoryLayout.length - 1 - Math.min(writeIndexRef.current - 1, memoryLayout.length - 1);
-        if (blockIndex >= 0) {
-          setCorruption(prev => [...prev, blockIndex]);
-        }
+        if (blockIndex >= 0) setCorruption(prev => [...prev, blockIndex]);
 
         // Check if canary is hit (index 1 in array)
-        if (writeIndexRef.current >= 9) {
-          setCanaryDead(true);
-        }
+        if (writeIndexRef.current >= 9) setCanaryDead(true);
 
         if (writeIndexRef.current >= 11) {
-          setTimeout(() => setCrashed(true), 300);
+          setTimeout(() => {
+            setCrashed(true);
+          }, 300);
         }
       } else {
         clearInterval(interval);
       }
     }, 200);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion, memoryLayout.length]);
 
   // Jitter animation for corrupted blocks
@@ -82,7 +82,9 @@ const BufferOverflow: FC = () => {
       setJitterOffsets(prev => prev.map((_, i) => Math.sin(Date.now() / 100 + i) * 2));
     }, 50);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   return (

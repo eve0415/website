@@ -25,14 +25,12 @@ describe('generateNonce', () => {
 
     // 16 bytes = 128 bits, base64 encodes to ceil(16/3)*4 = 24 characters
     // After removing padding (==), length is 22
-    expect(nonce.length).toBe(22);
+    expect(nonce).toHaveLength(22);
   });
 
   test('generates unique nonces on each call', () => {
     const nonces = new Set<string>();
-    for (let i = 0; i < 100; i++) {
-      nonces.add(generateNonce());
-    }
+    for (let i = 0; i < 100; i++) nonces.add(generateNonce());
 
     // All 100 should be unique
     expect(nonces.size).toBe(100);
@@ -41,12 +39,12 @@ describe('generateNonce', () => {
   test('can be decoded back to 16 bytes', () => {
     const nonce = generateNonce();
     // Convert base64url back to base64 for decoding
-    const base64 = nonce.replace(/-/g, '+').replace(/_/g, '/');
+    const base64 = nonce.replaceAll('-', '+').replaceAll('_', '/');
     // Add padding if needed
     const padded = base64 + '=='.slice(0, (4 - (base64.length % 4)) % 4);
     const decoded = atob(padded);
 
-    expect(decoded.length).toBe(16);
+    expect(decoded).toHaveLength(16);
   });
 });
 

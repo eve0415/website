@@ -1,8 +1,9 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Test assertions verify existence */
 // Unit tests for Skills Analysis Workflow utilities
 // Note: Full workflow testing requires Cloudflare Workflows runtime.
 // These tests validate utility functions and database operations.
 
-import { env } from 'cloudflare:test';
+import { env } from 'cloudflare:workers';
 import { count, desc, eq, sql, sum } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -123,7 +124,7 @@ afterAll(async () => {
   await env.SKILLS_DB.prepare('DROP TABLE IF EXISTS workflow_state').run();
 });
 
-describe('Privacy filter utilities', () => {
+describe('privacy filter utilities', () => {
   describe('classifyRepo', () => {
     it('classifies private repos as private', () => {
       const repo = {
@@ -226,7 +227,7 @@ describe('Privacy filter utilities', () => {
   });
 });
 
-describe('Database operations', () => {
+describe('database operations', () => {
   let db: ReturnType<typeof drizzle<typeof schema>>;
 
   beforeEach(async () => {
@@ -401,7 +402,7 @@ describe('Database operations', () => {
   });
 });
 
-describe('KV operations', () => {
+describe('kV operations', () => {
   beforeEach(async () => {
     // Clean KV before each test
     await env.CACHE.delete('skills_workflow_lock');
@@ -527,7 +528,7 @@ describe('squashHistory query patterns', () => {
       .all();
 
     // Verify order: Go (5000) > TypeScript (1000) > Python (100)
-    expect(languages.length).toBe(3);
+    expect(languages).toHaveLength(3);
     expect(languages[0]?.language).toBe('Go');
     expect(languages[1]?.language).toBe('TypeScript');
     expect(languages[2]?.language).toBe('Python');
@@ -600,7 +601,7 @@ describe('squashHistory query patterns', () => {
       .all();
 
     // Verify order: Rust (5) > Java (2)
-    expect(recentActivity.length).toBe(2);
+    expect(recentActivity).toHaveLength(2);
     expect(recentActivity[0]?.language).toBe('Rust');
     expect(recentActivity[0]?.commits).toBe(5);
     expect(recentActivity[1]?.language).toBe('Java');

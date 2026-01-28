@@ -1,4 +1,6 @@
-import type { GetGitHubStatsQuery, GetGitHubStatsQueryVariables } from '#generated/github-graphql';
+/* oxlint-disable eslint(no-await-in-loop), eslint-plugin-promise(prefer-await-to-then) -- Pagination requires sequential await; .catch() in Promise.all is valid error handling */
+import type { GetGitHubStatsQuery } from '#generated/github-graphql';
+import type { GitHubStats, LanguageStat } from './github-stats-utils';
 
 import { Octokit } from '@octokit/core';
 import { retry } from '@octokit/plugin-retry';
@@ -6,7 +8,7 @@ import { throttling } from '@octokit/plugin-throttling';
 import { createServerFn } from '@tanstack/react-start';
 import { env } from 'cloudflare:workers';
 
-import { type GitHubStats, type LanguageStat, calculateStreaksJST, getLanguageColor, levelFromContributionLevel } from './github-stats-utils';
+import { calculateStreaksJST, getLanguageColor, levelFromContributionLevel } from './github-stats-utils';
 
 // Cache key for KV storage
 const CACHE_KEY = 'github_stats_eve0415';
@@ -99,7 +101,7 @@ export const getGitHubStats = createServerFn().handler(async (): Promise<GitHubS
 });
 
 // Cron handler: Fetch from GitHub and store in KV
-export async function refreshGitHubStats(workerEnv: Env): Promise<void> {
+export const refreshGitHubStats = async (workerEnv: Env): Promise<void> => {
   const pat = workerEnv.GITHUB_PAT;
   const kv = workerEnv.CACHE;
 
@@ -126,38 +128,30 @@ export async function refreshGitHubStats(workerEnv: Env): Promise<void> {
 
   // Store in KV
   await kv.put(CACHE_KEY, JSON.stringify(stats));
-}
+};
 
-async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<GitHubStats> {
+const fetchAllStats = async (octokit: InstanceType<typeof MyOctokit>): Promise<GitHubStats> => {
   // Fetch GraphQL data with pagination for repos
-  const allRepos: Array<{ name: string; isFork: boolean; diskUsage?: number | null }> = [];
-  let cursor: string | null = null;
-  let graphqlData: GetGitHubStatsQuery | null = null;
+  const allRepos: { name: string; isFork: boolean; diskUsage?: number | null }[] = [];
+  let cursor;
+  let graphqlData;
 
   do {
-    const response: GetGitHubStatsQuery = await octokit.graphql<GetGitHubStatsQuery>(GET_GITHUB_STATS_QUERY, { cursor } satisfies GetGitHubStatsQueryVariables);
+    const response: GetGitHubStatsQuery = await octokit.graphql<GetGitHubStatsQuery>(GET_GITHUB_STATS_QUERY, { cursor });
 
-    if (!graphqlData) {
-      graphqlData = response;
-    }
+    graphqlData ??= response;
 
     const repos = response.viewer.repositories.nodes ?? [];
-    for (const repo of repos) {
-      if (repo) {
-        allRepos.push(repo);
-      }
-    }
+    for (const repo of repos) if (repo) allRepos.push(repo);
 
-    cursor = response.viewer.repositories.pageInfo.hasNextPage ? (response.viewer.repositories.pageInfo.endCursor ?? null) : null;
+    cursor = response.viewer.repositories.pageInfo.hasNextPage ? (response.viewer.repositories.pageInfo.endCursor ?? undefined) : undefined;
   } while (cursor);
 
-  if (!graphqlData) {
-    throw new Error('Failed to fetch GitHub stats');
-  }
+  if (graphqlData === null) throw new Error('Failed to fetch GitHub stats');
 
   // Fetch language data for non-fork repos via REST (parallel)
   const nonForkRepos = allRepos.filter(repo => !repo.isFork);
-  const languagePromises = nonForkRepos.map(repo =>
+  const languagePromises = nonForkRepos.map(async repo =>
     octokit
       .request('GET /repos/{owner}/{repo}/languages', {
         owner: GITHUB_USERNAME,
@@ -171,9 +165,7 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
   const languageBytes: Record<string, number> = {};
   for (const response of languageResponses) {
     const languages = response.data as Record<string, number>;
-    for (const [lang, bytes] of Object.entries(languages)) {
-      languageBytes[lang] = (languageBytes[lang] ?? 0) + bytes;
-    }
+    for (const [lang, bytes] of Object.entries(languages)) languageBytes[lang] = (languageBytes[lang] ?? 0) + bytes;
   }
 
   // Calculate language percentages
@@ -186,7 +178,7 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
             percentage: (bytes / totalBytes) * 100,
             color: getLanguageColor(name),
           }))
-          .sort((a, b) => b.percentage - a.percentage)
+          .toSorted((a, b) => b.percentage - a.percentage)
           .slice(0, 6)
       : [];
 
@@ -222,4 +214,4 @@ async function fetchAllStats(octokit: InstanceType<typeof MyOctokit>): Promise<G
     languages,
     cachedAt: new Date().toISOString(),
   };
-}
+};

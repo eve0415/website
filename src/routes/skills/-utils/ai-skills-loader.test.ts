@@ -88,7 +88,7 @@ describe('ai-skills-loader', () => {
 
       const result = await loadAISkillsContentHandler(env.CACHE);
 
-      expect(result).toEqual(mockContent);
+      expect(result).toStrictEqual(mockContent);
     });
 
     it('returns null when KV is empty', async () => {
@@ -122,7 +122,7 @@ describe('ai-skills-loader', () => {
 
       const result = await loadAIProfileSummaryHandler(env.CACHE);
 
-      expect(result).toEqual(mockProfile);
+      expect(result).toStrictEqual(mockProfile);
     });
 
     it('returns null when KV is empty', async () => {
@@ -159,7 +159,7 @@ describe('ai-skills-loader', () => {
 
       const result = await loadWorkflowStateHandler(env.CACHE, db);
 
-      expect(result).toEqual(mockState);
+      expect(result).toStrictEqual(mockState);
     });
 
     it('falls back to D1 when KV is empty', async () => {
@@ -266,9 +266,9 @@ describe('ai-skills-loader', () => {
 
       const result = await loadAISkillsStateHandler(env.CACHE, db);
 
-      expect(result.content).toEqual(mockContent);
-      expect(result.profile).toEqual(mockProfile);
-      expect(result.workflow).toEqual(mockWorkflow);
+      expect(result.content).toStrictEqual(mockContent);
+      expect(result.profile).toStrictEqual(mockProfile);
+      expect(result.workflow).toStrictEqual(mockWorkflow);
     });
 
     it('returns null for missing content and profile', async () => {
@@ -290,8 +290,8 @@ describe('ai-skills-loader', () => {
       expect(result.workflow.phase).toBe('idle');
 
       // Verify corrupted keys were deleted
-      expect(await env.CACHE.get('ai_skills_content_ja')).toBeNull();
-      expect(await env.CACHE.get('ai_profile_summary_ja')).toBeNull();
+      await expect(env.CACHE.get('ai_skills_content_ja')).resolves.toBeNull();
+      await expect(env.CACHE.get('ai_profile_summary_ja')).resolves.toBeNull();
     });
 
     it('self-heals corrupted workflow KV from D1', async () => {
@@ -336,7 +336,7 @@ describe('ai-skills-loader', () => {
 
       const result = await triggerSkillsAnalysisHandler(db, mockWorkflowBinding);
 
-      expect(result.success).toBe(false);
+      expect(result.success).toBeFalsy();
       expect(result.message).toContain('already running');
       expect(mockWorkflowBinding.create).not.toHaveBeenCalled();
     });
@@ -344,9 +344,9 @@ describe('ai-skills-loader', () => {
     it('allows triggering when phase is idle', async () => {
       const result = await triggerSkillsAnalysisHandler(db, mockWorkflowBinding);
 
-      expect(result.success).toBe(true);
+      expect(result.success).toBeTruthy();
       expect(result.message).toBe('Workflow triggered successfully');
-      expect(mockWorkflowBinding.create).toHaveBeenCalledTimes(1);
+      expect(mockWorkflowBinding.create).toHaveBeenCalledOnce();
     });
 
     it('allows triggering when phase is completed', async () => {
@@ -354,8 +354,8 @@ describe('ai-skills-loader', () => {
 
       const result = await triggerSkillsAnalysisHandler(db, mockWorkflowBinding);
 
-      expect(result.success).toBe(true);
-      expect(mockWorkflowBinding.create).toHaveBeenCalledTimes(1);
+      expect(result.success).toBeTruthy();
+      expect(mockWorkflowBinding.create).toHaveBeenCalledOnce();
     });
 
     it('allows triggering when phase is error', async () => {
@@ -363,8 +363,8 @@ describe('ai-skills-loader', () => {
 
       const result = await triggerSkillsAnalysisHandler(db, mockWorkflowBinding);
 
-      expect(result.success).toBe(true);
-      expect(mockWorkflowBinding.create).toHaveBeenCalledTimes(1);
+      expect(result.success).toBeTruthy();
+      expect(mockWorkflowBinding.create).toHaveBeenCalledOnce();
     });
 
     it('updates state to listing-repos when triggering', async () => {
@@ -382,7 +382,7 @@ describe('ai-skills-loader', () => {
 
       const result = await triggerSkillsAnalysisHandler(db, failingBinding);
 
-      expect(result.success).toBe(false);
+      expect(result.success).toBeFalsy();
       expect(result.message).toBe('Workflow service unavailable');
     });
   });

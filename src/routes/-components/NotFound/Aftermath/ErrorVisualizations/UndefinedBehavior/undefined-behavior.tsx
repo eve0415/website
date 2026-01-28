@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(jsx-no-comment-textnodes), eslint-plugin-react(no-unescaped-entities), eslint-plugin-react(no-array-index-key) -- Code snippets with comments and quotes are intentional visual elements, static arrays */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -35,15 +36,15 @@ const UndefinedBehavior: FC = () => {
         outputIndexRef.current += 1;
         setOutputIndex(outputIndexRef.current);
 
-        if (outputIndexRef.current === outputs.length) {
-          setNasalDemons(true);
-        }
+        if (outputIndexRef.current === outputs.length) setNasalDemons(true);
       } else {
         clearInterval(interval);
       }
     }, 800);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion, outputs.length]);
 
   // Glitch effect
@@ -63,7 +64,9 @@ const UndefinedBehavior: FC = () => {
       }, 100);
     }, 300);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   return (
@@ -105,7 +108,7 @@ const UndefinedBehavior: FC = () => {
 
           {/* Compiler warning */}
           <div className='mt-4 rounded border border-[#ffaa00]/30 bg-[#ffaa00]/10 p-3'>
-            <div className='font-mono text-xs text-[#ffaa00]'>warning: variable {"'x'"} is uninitialized when used here [-Wuninitialized]</div>
+            <div className='font-mono text-xs text-[#ffaa00]'>warning: variable 'x' is uninitialized when used here [-Wuninitialized]</div>
           </div>
 
           {/* Nasal demons */}

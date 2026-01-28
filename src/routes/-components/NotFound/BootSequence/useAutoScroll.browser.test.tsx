@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion), eslint(no-await-in-loop) -- Test file requires HTMLDivElement casts; sequential click tests require await in loop */
 import type { FC } from 'react';
 
 import { useRef, useState } from 'react';
@@ -42,13 +43,31 @@ const TestComponent: FC<TestComponentProps> = ({ initialDependency = 0, smooth =
           Scrollable content
         </div>
       </div>
-      <button data-testid='increment' onClick={() => setDependency(d => d + 1)} type='button'>
+      <button
+        data-testid='increment'
+        onClick={() => {
+          setDependency(d => d + 1);
+        }}
+        type='button'
+      >
         Increment
       </button>
-      <button data-testid='increment-5' onClick={() => setDependency(d => d + 5)} type='button'>
+      <button
+        data-testid='increment-5'
+        onClick={() => {
+          setDependency(d => d + 5);
+        }}
+        type='button'
+      >
         Increment +5
       </button>
-      <button data-testid='set-10' onClick={() => setDependency(10)} type='button'>
+      <button
+        data-testid='set-10'
+        onClick={() => {
+          setDependency(10);
+        }}
+        type='button'
+      >
         Set to 10
       </button>
     </div>
@@ -56,7 +75,10 @@ const TestComponent: FC<TestComponentProps> = ({ initialDependency = 0, smooth =
 };
 
 // Helper to wait for scroll to settle
-const waitForScroll = () => new Promise(resolve => setTimeout(resolve, 50));
+const waitForScroll = async () =>
+  new Promise(resolve => {
+    setTimeout(resolve, 50);
+  });
 
 describe('useAutoScroll', () => {
   test('starts with auto-scrolling enabled (at bottom)', async () => {
@@ -208,9 +230,7 @@ describe('useAutoScroll', () => {
     await render(<TestComponent smooth={false} />);
 
     // Rapidly click multiple times
-    for (let i = 0; i < 5; i++) {
-      await page.getByTestId('increment').click();
-    }
+    for (let i = 0; i < 5; i++) await page.getByTestId('increment').click();
 
     // Wait for all effects to settle
     await waitForScroll();

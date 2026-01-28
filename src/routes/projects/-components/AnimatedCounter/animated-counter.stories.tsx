@@ -39,7 +39,7 @@ export const Static = meta.story({
     const canvas = within(context.canvasElement);
     // Wait for IntersectionObserver to trigger and value to appear
     // duration=0 means instant animation once visible
-    await waitFor(() => expect(canvas.getByText('100')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('100')).toBeInTheDocument(), { timeout: 10000 });
     await testAllViewports(context);
   },
 });

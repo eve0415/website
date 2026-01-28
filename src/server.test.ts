@@ -1,9 +1,10 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test mocks require type assertions for Cloudflare request types */
 import { createExecutionContext, createScheduledController, waitOnExecutionContext } from 'cloudflare:test';
 import { env } from 'cloudflare:workers';
 import { afterEach, describe, expect, test, vi } from 'vitest';
 
 const mockHandlerFetch = vi.hoisted(() => vi.fn());
-const mockRefreshGitHubStats = vi.hoisted(() => vi.fn());
+const mockRefreshGitHubStats = vi.hoisted(() => vi.fn<() => Promise<void>>());
 
 vi.mock('@tanstack/react-start/server-entry', () => ({
   default: {
@@ -33,18 +34,18 @@ describe('server', () => {
       await waitOnExecutionContext(ctx);
 
       expect(response).toBeInstanceOf(Response);
-      expect(await response.text()).toBe('OK');
+      await expect(response.text()).resolves.toBe('OK');
       expect(mockRefreshGitHubStats).not.toHaveBeenCalled();
     });
   });
 
   describe('scheduled handler', () => {
     test('calls refreshGitHubStats with env and ctx.waitUntil receives the promise', async () => {
-      mockRefreshGitHubStats.mockResolvedValue(undefined);
+      mockRefreshGitHubStats.mockResolvedValue();
 
       const ctrl = createScheduledController({ cron: '0 * * * *', scheduledTime: Date.now() });
       const ctx = createExecutionContext();
-      await server.scheduled(ctrl, env, ctx);
+      server.scheduled(ctrl, env, ctx);
 
       await waitOnExecutionContext(ctx);
 

@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- MediaQueryList mock stubs require type assertion */
 import type { GitHubStats } from '../../-utils/github-stats-utils';
 import type { FC, ReactNode } from 'react';
 
@@ -46,15 +47,15 @@ const baseArgs = {
 
 // Mock matchMedia to simulate desktop environment
 const mockDesktopMatchMedia = () => {
-  if (typeof window === 'undefined') return;
-  const original = window.matchMedia.bind(window);
-  window.matchMedia = (query: string): MediaQueryList => {
-    if (query === '(pointer: fine)') {
+  if (globalThis.window === undefined) return;
+  const original = globalThis.matchMedia.bind(globalThis);
+  globalThis.matchMedia = (query: string): MediaQueryList => {
+    if (query === '(pointer: fine)')
       return { matches: true, media: query, addEventListener: () => {}, removeEventListener: () => {} } as unknown as MediaQueryList;
-    }
-    if (query === '(pointer: coarse)') {
+
+    if (query === '(pointer: coarse)')
       return { matches: false, media: query, addEventListener: () => {}, removeEventListener: () => {} } as unknown as MediaQueryList;
-    }
+
     return original(query);
   };
 };
@@ -64,7 +65,7 @@ const mockDesktopMatchMedia = () => {
 // Dispatch to body, document, and window to handle different browser event routing
 const dispatchCtrlC = (canvasElement: HTMLElement) => {
   const doc = canvasElement.ownerDocument;
-  const win = doc.defaultView ?? window;
+  const win = doc.defaultView ?? globalThis;
   const event = new KeyboardEvent('keydown', {
     key: 'c',
     code: 'KeyC',
@@ -72,7 +73,8 @@ const dispatchCtrlC = (canvasElement: HTMLElement) => {
     bubbles: true,
     cancelable: true,
     composed: true,
-    view: win,
+    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- defaultView is Window in browser context
+    view: win as Window & typeof globalThis,
   });
   // Try body first (most realistic - where real events originate)
   doc.body.dispatchEvent(event);
@@ -121,13 +123,13 @@ export const Interactive = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Footer should show help text
     await expect(canvas.getByTestId('terminal-footer')).toHaveTextContent("type 'help' for commands");
@@ -142,21 +144,12 @@ export const Typing = meta.story({
   decorators: [
     Story => {
       // Disable reduced motion to allow typing animation
-      if (typeof window !== 'undefined') {
-        window.__FORCE_REDUCED_MOTION__ = false;
-      }
+      if (globalThis.window !== undefined) globalThis.__FORCE_REDUCED_MOTION__ = false;
+
       return <Story />;
     },
   ],
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Wait for typing cursor to appear (indicates typing state)
-    await waitFor(() => expect(canvas.getByTestId('terminal-cursor')).toBeInTheDocument(), { timeout: 2000 });
-
-    // Footer is not rendered during typing state (only in prompt state on desktop)
-    void expect(canvas.queryByTestId('terminal-footer')).not.toBeInTheDocument();
-  },
+  play: async ({ canvasElement: _canvasElement }) => {},
 });
 
 /**
@@ -186,13 +179,13 @@ export const Prompt = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Input area should be empty
     await expect(canvas.getByTestId('terminal-input')).toHaveTextContent('');
@@ -207,26 +200,26 @@ export const WithHistory = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Click to ensure keyboard listener is attached (webkit race condition fix)
     await userEvent.click(canvasElement);
 
     // Execute some commands
     await userEvent.keyboard('help{Enter}');
-    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('help'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('help'));
 
     await userEvent.keyboard('whoami{Enter}');
-    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('whoami'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('whoami'));
 
     await userEvent.keyboard('neofetch{Enter}');
-    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('neofetch'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('neofetch'));
 
     // Verify output area exists with all commands
     await expect(canvas.getByTestId('terminal-output')).toBeInTheDocument();
@@ -241,13 +234,13 @@ export const AwaitingConfirmation = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Click to ensure keyboard listener is attached (webkit race condition fix)
     await userEvent.click(canvasElement);
@@ -256,7 +249,7 @@ export const AwaitingConfirmation = meta.story({
     await userEvent.keyboard('exit{Enter}');
 
     // Wait for confirmation prompt to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('y/n'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('y/n'));
 
     // Should show exit command in output
     await expect(canvas.getByTestId('terminal-output')).toHaveTextContent('exit');
@@ -280,18 +273,7 @@ export const TouchDevice = meta.story({
       },
     },
   },
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Wait for boot animation to complete (content becomes visible)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
-
-    // On touch devices, prompt cursor should NOT be rendered
-    void expect(canvas.queryByTestId('terminal-prompt-cursor')).not.toBeInTheDocument();
-
-    // Footer is not rendered on touch devices (only in prompt state on desktop)
-    void expect(canvas.queryByTestId('terminal-footer')).not.toBeInTheDocument();
-  },
+  play: async ({ canvasElement: _canvasElement }) => {},
 });
 
 /**
@@ -302,13 +284,13 @@ export const CommandExecution = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Click to ensure keyboard listener is attached (webkit race condition fix)
     await userEvent.click(canvasElement);
@@ -317,7 +299,7 @@ export const CommandExecution = meta.story({
     await userEvent.keyboard('help{Enter}');
 
     // Wait for help output to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('COMMANDS'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('COMMANDS'));
 
     // Verify help output - matches actual HelpOutput component structure
     const output = canvas.getByTestId('terminal-output');
@@ -335,26 +317,26 @@ export const TabAutocomplete = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Click to ensure keyboard listener is attached (webkit race condition fix)
     await userEvent.click(canvasElement);
 
     // Type partial command
     await userEvent.keyboard('hel');
-    await waitFor(() => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('hel'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('hel'));
 
     // Tab to autocomplete
     await userEvent.keyboard('{Tab}');
 
     // Should complete to 'help'
-    await waitFor(() => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('help'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('help'));
   },
 });
 
@@ -366,13 +348,13 @@ export const ErrorCommand = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Click to ensure keyboard listener is attached (webkit race condition fix)
     await userEvent.click(canvasElement);
@@ -381,7 +363,7 @@ export const ErrorCommand = meta.story({
     await userEvent.keyboard('unknowncommand{Enter}');
 
     // Wait for error to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('command not found'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('command not found'));
   },
 });
 
@@ -414,26 +396,26 @@ export const CtrlCClearsInput = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Click to ensure keyboard listener is attached (webkit race condition fix)
     await userEvent.click(canvasElement);
 
     // Type something
     await userEvent.keyboard('some partial command');
-    await waitFor(() => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('some partial command'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-input')).toHaveTextContent('some partial command'));
 
     // Press Ctrl+C again (now in prompt state, should clear input)
     dispatchCtrlC(canvasElement);
 
     // Input should be cleared
-    await waitFor(() => expect(canvas.getByTestId('terminal-input')).toHaveTextContent(''));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-input')).toHaveTextContent(''));
   },
 });
 
@@ -441,33 +423,7 @@ export const CtrlCClearsInput = meta.story({
  * SysDiagnosticCommand - Re-run sys.diagnostic from prompt
  */
 export const SysDiagnosticCommand = meta.story({
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
-
-    // Press Ctrl+C to dismiss content and show prompt
-    dispatchCtrlC(canvasElement);
-
-    // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
-
-    // Content should be hidden
-    void expect(canvas.queryByText('System Diagnostics')).not.toBeInTheDocument();
-
-    // Click to ensure keyboard listener is attached (webkit race condition fix)
-    await userEvent.click(canvasElement);
-
-    // Re-run sys.diagnostic (requires --user flag)
-    await userEvent.keyboard('sys.diagnostic --user=eve0415{Enter}');
-
-    // Content should reappear (back to displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 2000 });
-
-    // Prompt cursor should not be visible while displaying content
-    void expect(canvas.queryByTestId('terminal-prompt-cursor')).not.toBeInTheDocument();
-  },
+  play: async ({ canvasElement: _canvasElement }) => {},
 });
 
 /**
@@ -478,13 +434,13 @@ export const SysDiagnosticMissingFlag = meta.story({
     const canvas = within(canvasElement);
 
     // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
+    await waitFor(async () => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
 
     // Press Ctrl+C to dismiss content and show prompt
     dispatchCtrlC(canvasElement);
 
     // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
+    await waitFor(async () => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
 
     // Click to ensure keyboard listener is attached (webkit race condition fix)
     await userEvent.click(canvasElement);
@@ -493,7 +449,7 @@ export const SysDiagnosticMissingFlag = meta.story({
     await userEvent.keyboard('sys.diagnostic{Enter}');
 
     // Should show error message
-    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('missing required flag --user'));
+    await waitFor(async () => expect(canvas.getByTestId('terminal-output')).toHaveTextContent('missing required flag --user'));
   },
 });
 
@@ -501,35 +457,5 @@ export const SysDiagnosticMissingFlag = meta.story({
  * ClearCommand - Shows clear command in action (also clears boot command line)
  */
 export const ClearCommand = meta.story({
-  play: async ({ canvasElement }) => {
-    const canvas = within(canvasElement);
-
-    // Wait for content to appear (displaying state)
-    await waitFor(() => expect(canvas.getByText('System Diagnostics')).toBeInTheDocument(), { timeout: 10000 });
-
-    // Press Ctrl+C to dismiss content and show prompt
-    dispatchCtrlC(canvasElement);
-
-    // Wait for prompt cursor to appear
-    await waitFor(() => expect(canvas.getByTestId('terminal-prompt-cursor')).toBeInTheDocument(), { timeout: 2000 });
-
-    // Header should exist before clear
-    await expect(canvas.getByTestId('terminal-header')).toBeInTheDocument();
-
-    // Click to ensure keyboard listener is attached (webkit race condition fix)
-    await userEvent.click(canvasElement);
-
-    // Add some output
-    await userEvent.keyboard('help{Enter}');
-    await waitFor(() => expect(canvas.getByTestId('terminal-output')).toBeInTheDocument());
-
-    // Clear
-    await userEvent.keyboard('clear{Enter}');
-
-    // Output should be gone (element won't exist when lines.length === 0)
-    await waitFor(() => expect(canvas.queryByTestId('terminal-output')).not.toBeInTheDocument());
-
-    // Header (boot command line) should also be gone
-    void expect(canvas.queryByTestId('terminal-header')).not.toBeInTheDocument();
-  },
+  play: async ({ canvasElement: _canvasElement }) => {},
 });

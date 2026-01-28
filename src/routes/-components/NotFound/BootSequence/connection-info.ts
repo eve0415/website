@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-assignment), typescript-eslint(no-unsafe-call), typescript-eslint(no-unsafe-member-access), typescript-eslint(no-unsafe-type-assertion) -- TanStack Start's getRequestHeaders() returns error-typed value; Cloudflare SDK types require assertion */
 import { createServerFn, createServerOnlyFn } from '@tanstack/react-start';
 import { getRequestHeaders } from '@tanstack/react-start/server';
 import Cloudflare from 'cloudflare';
@@ -75,9 +76,7 @@ const fetchCertFromCloudflareAPI = createServerOnlyFn(async (): Promise<Certific
   for await (const rawPack of client.ssl.certificatePacks.list({ zone_id: zoneId })) {
     const pack = rawPack as CertificatePack;
     const hosts = pack.hosts ?? [];
-    if (hosts.some(h => h === 'eve0415.net' || h === '*.eve0415.net')) {
-      return pack;
-    }
+    if (hosts.some(h => h === 'eve0415.net' || h === '*.eve0415.net')) return pack;
   }
 
   return null;
@@ -96,9 +95,7 @@ const getCachedCert = createServerOnlyFn(async (): Promise<CertificatePack | nul
   if (cached) {
     // Check validity using SDK type's expires_on field
     const expiresOn = cached.certificates?.[0]?.expires_on;
-    if (expiresOn && new Date(expiresOn) > new Date()) {
-      return cached;
-    }
+    if (expiresOn && new Date(expiresOn) > new Date()) return cached;
   }
 
   // Strict: propagate errors, no fallback for stale cache

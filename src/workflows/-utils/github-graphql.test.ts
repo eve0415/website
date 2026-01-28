@@ -1,4 +1,7 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test mocks require type assertions for request.json() parsing */
 // Unit tests for GitHub GraphQL client utility
+
+import type { RateLimitMetrics } from './github-graphql';
 
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
@@ -7,7 +10,6 @@ import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
 import {
   DEFAULT_RATE_LIMIT_METRICS,
   GITHUB_USERNAME,
-  type RateLimitMetrics,
   calculateDynamicThreshold,
   createGitHubClient,
   extractRateLimit,
@@ -44,7 +46,7 @@ const mockUserReposResponse = {
       ],
       pageInfo: {
         hasNextPage: false,
-        endCursor: null,
+        endCursor: undefined,
       },
     },
   },
@@ -69,7 +71,7 @@ const mockCommitsResponse = {
           ],
           pageInfo: {
             hasNextPage: false,
-            endCursor: null,
+            endCursor: undefined,
           },
         },
       },
@@ -112,14 +114,14 @@ const mockPRsResponse = {
             ],
             pageInfo: {
               hasNextPage: false,
-              endCursor: null,
+              endCursor: undefined,
             },
           },
         },
       ],
       pageInfo: {
         hasNextPage: false,
-        endCursor: null,
+        endCursor: undefined,
       },
     },
   },
@@ -129,25 +131,27 @@ const mockPRsResponse = {
 const server = setupServer(
   http.post('https://api.github.com/graphql', async ({ request }) => {
     const body = (await request.json()) as { query: string; variables?: Record<string, unknown> };
-    const query = body.query;
+    const { query } = body;
 
-    if (query.includes('UserRepos')) {
-      return HttpResponse.json({ data: mockUserReposResponse });
-    }
-    if (query.includes('RepoCommits')) {
-      return HttpResponse.json({ data: mockCommitsResponse });
-    }
-    if (query.includes('RepoPullRequests')) {
-      return HttpResponse.json({ data: mockPRsResponse });
-    }
+    if (query.includes('UserRepos')) return HttpResponse.json({ data: mockUserReposResponse });
+
+    if (query.includes('RepoCommits')) return HttpResponse.json({ data: mockCommitsResponse });
+
+    if (query.includes('RepoPullRequests')) return HttpResponse.json({ data: mockPRsResponse });
 
     return HttpResponse.json({ errors: [{ message: 'Unknown query' }] }, { status: 400 });
   }),
 );
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+beforeAll(() => {
+  server.listen();
+});
+afterEach(() => {
+  server.resetHandlers();
+});
+afterAll(() => {
+  server.close();
+});
 
 describe('createGitHubClient', () => {
   it('creates an Octokit client with auth token', () => {
@@ -315,22 +319,26 @@ describe('calculateDynamicThreshold', () => {
 
 describe('isPRAuthoredByUser', () => {
   it('returns true for matching login (case-insensitive)', () => {
-    expect(isPRAuthoredByUser('eve0415')).toBe(true);
-    expect(isPRAuthoredByUser('EVE0415')).toBe(true);
-    expect(isPRAuthoredByUser('Eve0415')).toBe(true);
+    expect(isPRAuthoredByUser('eve0415')).toBeTruthy();
+    expect(isPRAuthoredByUser('EVE0415')).toBeTruthy();
+    expect(isPRAuthoredByUser('Eve0415')).toBeTruthy();
   });
 
   it('returns false for non-matching login', () => {
-    expect(isPRAuthoredByUser('other-user')).toBe(false);
+    expect(isPRAuthoredByUser('other-user')).toBeFalsy();
   });
 
-  it('returns false when login is null or undefined', () => {
-    expect(isPRAuthoredByUser(null)).toBe(false);
-    expect(isPRAuthoredByUser(undefined)).toBe(false);
+  it('returns false when login is null', () => {
+    expect(isPRAuthoredByUser(null)).toBeFalsy();
+  });
+
+  it('returns false when login is undefined', () => {
+    const undefinedValue = undefined;
+    expect(isPRAuthoredByUser(undefinedValue)).toBeFalsy();
   });
 });
 
-describe('GITHUB_USERNAME constant', () => {
+describe('gITHUB_USERNAME constant', () => {
   it('is exported and has expected value', () => {
     expect(GITHUB_USERNAME).toBe('eve0415');
   });
@@ -339,14 +347,14 @@ describe('GITHUB_USERNAME constant', () => {
 describe('error handling', () => {
   it('handles GraphQL errors gracefully', async () => {
     server.use(
-      http.post('https://api.github.com/graphql', () => {
-        return HttpResponse.json(
+      http.post('https://api.github.com/graphql', () =>
+        HttpResponse.json(
           {
             errors: [{ message: 'API rate limit exceeded' }],
           },
           { status: 200 },
-        );
-      }),
+        ),
+      ),
     );
 
     const client = createGitHubClient('test-token');

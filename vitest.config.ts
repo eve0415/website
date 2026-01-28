@@ -18,9 +18,8 @@ export default defineConfig({
     // that happen outside of act() boundaries. This is a known limitation of testing
     // with TanStack Router's internal components.
     onConsoleLog(log) {
-      if (log.includes('Transitioner') && log.includes('was not wrapped in act')) {
-        return false; // Suppress
-      }
+      if (log.includes('Transitioner') && log.includes('was not wrapped in act')) return false; // Suppress
+
       return true;
     },
     coverage: {

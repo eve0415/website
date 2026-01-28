@@ -3,6 +3,7 @@ import addonDocs from '@storybook/addon-docs';
 import { definePreview } from '@storybook/react-vite';
 import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 
+// oxlint-disable-next-line eslint-plugin-import(no-unassigned-import) -- CSS side-effect import
 import '#routes/__root.css';
 
 // Note: CSS animation disabling is handled in vitest.setup.ts via

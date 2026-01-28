@@ -25,7 +25,7 @@ interface UseTypewriterResult {
   skipToEnd: () => void;
 }
 
-export function useTypewriter({ text, speed = 10, enabled = true }: UseTypewriterOptions): UseTypewriterResult {
+export const useTypewriter = ({ text, speed = 10, enabled = true }: UseTypewriterOptions): UseTypewriterResult => {
   const prefersReducedMotion = useReducedMotion();
   // Initialize with a key based on text to reset on text change
   const [state, setState] = useState({ charIndex: 0, textKey: text });
@@ -35,9 +35,7 @@ export function useTypewriter({ text, speed = 10, enabled = true }: UseTypewrite
 
   // Animation interval - all setState calls are in interval callback (external subscription)
   useEffect(() => {
-    if (!enabled || prefersReducedMotion) {
-      return;
-    }
+    if (!enabled || prefersReducedMotion) return;
 
     let localIndex = 0;
 
@@ -88,4 +86,4 @@ export function useTypewriter({ text, speed = 10, enabled = true }: UseTypewrite
     isComplete,
     skipToEnd,
   };
-}
+};

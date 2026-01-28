@@ -15,20 +15,22 @@ const Logo: FC<Props> = ({ className = '', animate = true }) => {
     if (!animate) return;
 
     // Calculate path lengths for stroke animation
-    pathRefs.current.forEach(path => {
+    for (const path of pathRefs.current) {
       if (path) {
         const length = path.getTotalLength();
         path.style.strokeDasharray = String(length);
         path.style.strokeDashoffset = String(length);
       }
-    });
+    }
 
     // Trigger animation after a brief delay
     const timer = setTimeout(() => {
       setIsAnimating(false);
     }, 2000);
 
-    return () => clearTimeout(timer);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [animate]);
 
   const setPathRef = (index: number) => (el: SVGPathElement | null) => {

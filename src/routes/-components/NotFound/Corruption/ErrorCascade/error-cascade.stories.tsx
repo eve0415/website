@@ -87,7 +87,7 @@ export const Catastrophic = meta.story({
 
 export const Full = meta.story({
   args: {
-    progress: 1.0,
+    progress: 1,
     enabled: true,
   },
   play: async context => {

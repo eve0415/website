@@ -1,3 +1,4 @@
+/* oxlint-disable eslint(no-await-in-loop) -- Sequential keyboard input tests require await in loop */
 import type { FC } from 'react';
 
 import { describe, expect, test, vi } from 'vitest';
@@ -31,9 +32,7 @@ describe('useKonamiCode', () => {
     await expect.element(page.getByTestId('result')).toHaveTextContent('false');
 
     // Input the Konami Code
-    for (const key of KONAMI_CODE) {
-      await userEvent.keyboard(`{${key}}`);
-    }
+    for (const key of KONAMI_CODE) await userEvent.keyboard(`{${key}}`);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('true');
     expect(onActivate).toHaveBeenCalledOnce();
@@ -44,9 +43,7 @@ describe('useKonamiCode', () => {
     await render(<TestComponent onActivate={onActivate} />);
 
     // Input only first 5 keys
-    for (let i = 0; i < 5; i++) {
-      await userEvent.keyboard(`{${KONAMI_CODE[i]}}`);
-    }
+    for (let i = 0; i < 5; i++) await userEvent.keyboard(`{${KONAMI_CODE[i]}}`);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('false');
     expect(onActivate).not.toHaveBeenCalled();
@@ -57,17 +54,13 @@ describe('useKonamiCode', () => {
     await render(<TestComponent onActivate={onActivate} />);
 
     // Input 5 correct keys
-    for (let i = 0; i < 5; i++) {
-      await userEvent.keyboard(`{${KONAMI_CODE[i]}}`);
-    }
+    for (let i = 0; i < 5; i++) await userEvent.keyboard(`{${KONAMI_CODE[i]}}`);
 
     // Input wrong key
     await userEvent.keyboard('{KeyX}');
 
     // Continue with rest of sequence
-    for (let i = 5; i < KONAMI_CODE.length; i++) {
-      await userEvent.keyboard(`{${KONAMI_CODE[i]}}`);
-    }
+    for (let i = 5; i < KONAMI_CODE.length; i++) await userEvent.keyboard(`{${KONAMI_CODE[i]}}`);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('false');
     expect(onActivate).not.toHaveBeenCalled();
@@ -83,9 +76,7 @@ describe('useKonamiCode', () => {
     await userEvent.keyboard('{KeyZ}');
 
     // Then input correct sequence
-    for (const key of KONAMI_CODE) {
-      await userEvent.keyboard(`{${key}}`);
-    }
+    for (const key of KONAMI_CODE) await userEvent.keyboard(`{${key}}`);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('true');
     expect(onActivate).toHaveBeenCalledOnce();
@@ -96,17 +87,13 @@ describe('useKonamiCode', () => {
     await render(<TestComponent onActivate={onActivate} />);
 
     // Input the Konami Code
-    for (const key of KONAMI_CODE) {
-      await userEvent.keyboard(`{${key}}`);
-    }
+    for (const key of KONAMI_CODE) await userEvent.keyboard(`{${key}}`);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('true');
     expect(onActivate).toHaveBeenCalledOnce();
 
     // Try to activate again
-    for (const key of KONAMI_CODE) {
-      await userEvent.keyboard(`{${key}}`);
-    }
+    for (const key of KONAMI_CODE) await userEvent.keyboard(`{${key}}`);
 
     // Still only called once
     expect(onActivate).toHaveBeenCalledOnce();
@@ -115,9 +102,7 @@ describe('useKonamiCode', () => {
   test('works without onActivate callback', async () => {
     await render(<TestComponent />);
 
-    for (const key of KONAMI_CODE) {
-      await userEvent.keyboard(`{${key}}`);
-    }
+    for (const key of KONAMI_CODE) await userEvent.keyboard(`{${key}}`);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('true');
   });
@@ -127,14 +112,10 @@ describe('useKonamiCode', () => {
     await render(<TestComponent onActivate={onActivate} />);
 
     // Input 15 random keys (exceeds buffer size)
-    for (let i = 0; i < 15; i++) {
-      await userEvent.keyboard('{KeyX}');
-    }
+    for (let i = 0; i < 15; i++) await userEvent.keyboard('{KeyX}');
 
     // Now input the correct sequence
-    for (const key of KONAMI_CODE) {
-      await userEvent.keyboard(`{${key}}`);
-    }
+    for (const key of KONAMI_CODE) await userEvent.keyboard(`{${key}}`);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('true');
     expect(onActivate).toHaveBeenCalledOnce();

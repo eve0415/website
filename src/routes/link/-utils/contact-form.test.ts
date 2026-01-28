@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-unsafe-assignment), typescript-eslint(no-unsafe-type-assertion), typescript-eslint(no-unsafe-return) -- Vitest's expect.stringContaining() returns any by design; test mocks require type assertions */
 import { env, withEnv } from 'cloudflare:workers';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
@@ -69,7 +70,7 @@ describe('checkAndIncrementRateLimit', () => {
   test('first request: allowed=true, remaining=2', async () => {
     const result = await checkAndIncrementRateLimit(testIp);
 
-    expect(result.allowed).toBe(true);
+    expect(result.allowed).toBeTruthy();
     expect(result.remaining).toBe(2);
   });
 
@@ -77,7 +78,7 @@ describe('checkAndIncrementRateLimit', () => {
     await checkAndIncrementRateLimit(testIp);
     const result = await checkAndIncrementRateLimit(testIp);
 
-    expect(result.allowed).toBe(true);
+    expect(result.allowed).toBeTruthy();
     expect(result.remaining).toBe(1);
   });
 
@@ -86,7 +87,7 @@ describe('checkAndIncrementRateLimit', () => {
     await checkAndIncrementRateLimit(testIp);
     const result = await checkAndIncrementRateLimit(testIp);
 
-    expect(result.allowed).toBe(true);
+    expect(result.allowed).toBeTruthy();
     expect(result.remaining).toBe(0);
   });
 
@@ -96,7 +97,7 @@ describe('checkAndIncrementRateLimit', () => {
     await checkAndIncrementRateLimit(testIp);
     const result = await checkAndIncrementRateLimit(testIp);
 
-    expect(result.allowed).toBe(false);
+    expect(result.allowed).toBeFalsy();
     expect(result.remaining).toBe(0);
   });
 
@@ -104,7 +105,7 @@ describe('checkAndIncrementRateLimit', () => {
     await checkAndIncrementRateLimit(testIp);
 
     const stored = await env.CONTACT_RATE_LIMIT.get<{ count: number }>(testKey, 'json');
-    expect(stored).toEqual({ count: 1 });
+    expect(stored).toStrictEqual({ count: 1 });
   });
 
   test('increments existing count', async () => {
@@ -112,7 +113,7 @@ describe('checkAndIncrementRateLimit', () => {
     await checkAndIncrementRateLimit(testIp);
 
     const stored = await env.CONTACT_RATE_LIMIT.get<{ count: number }>(testKey, 'json');
-    expect(stored).toEqual({ count: 2 });
+    expect(stored).toStrictEqual({ count: 2 });
   });
 
   test('different IPs have separate rate limits', async () => {
@@ -129,8 +130,8 @@ describe('checkAndIncrementRateLimit', () => {
       // ip2 should still be allowed
       const ip2Result = await checkAndIncrementRateLimit(ip2);
 
-      expect(ip1Result.allowed).toBe(false);
-      expect(ip2Result.allowed).toBe(true);
+      expect(ip1Result.allowed).toBeFalsy();
+      expect(ip2Result.allowed).toBeTruthy();
       expect(ip2Result.remaining).toBe(2);
     } finally {
       await env.CONTACT_RATE_LIMIT.delete(`rate:${ip1}`);
@@ -173,7 +174,7 @@ describe('checkAndIncrementRateLimit', () => {
 });
 
 describe('sendContactEmail', () => {
-  const mockSend = vi.fn().mockResolvedValue(undefined);
+  const mockSend = vi.fn<(msg: { from: string; to: string; raw: string }) => Promise<void>>().mockResolvedValue();
 
   beforeEach(() => {
     vi.clearAllMocks();
@@ -194,7 +195,7 @@ describe('sendContactEmail', () => {
       await sendContactEmail(formData);
 
       // Check the message passed to mockSend has correct from/to
-      expect(mockSend).toHaveBeenCalledTimes(1);
+      expect(mockSend).toHaveBeenCalledOnce();
       const sentMessage = mockSend.mock.calls[0]?.[0] as { from: string; to: string; raw: string } | undefined;
       expect(sentMessage).toBeDefined();
       expect(sentMessage?.from).toBe('noreply@eve0415.net');
@@ -211,7 +212,7 @@ describe('sendContactEmail', () => {
 
     await sendContactEmail(formData);
 
-    expect(mockSend).toHaveBeenCalledTimes(1);
+    expect(mockSend).toHaveBeenCalledOnce();
     const sentMessage = mockSend.mock.calls[0]?.[0] as { from: string; to: string; raw: string } | undefined;
     // Verify it has the expected shape
     expect(sentMessage).toBeDefined();

@@ -105,7 +105,6 @@
     "unicorn/no-magic-array-flat-depth": "error",
     "unicorn/no-negation-in-equality-check": "error",
     "unicorn/no-new-buffer": "error",
-    "unicorn/no-null": "error",
     "unicorn/no-static-only-class": "error",
     "unicorn/no-this-assignment": "error",
     "unicorn/no-typeof-undefined": "error",

@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-unescaped-entities), eslint-plugin-react(no-array-index-key), typescript-eslint(no-non-null-assertion) -- Code snippets, static arrays, indexing within bounds */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -60,7 +61,9 @@ const ClassNotFound: FC = () => {
       }
     }, 600);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion, classpath]);
 
   return (

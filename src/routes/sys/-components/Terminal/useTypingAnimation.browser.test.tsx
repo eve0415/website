@@ -4,6 +4,8 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
+import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
+
 import { useTypingAnimation } from './useTypingAnimation';
 
 interface TestProps {
@@ -39,7 +41,7 @@ describe('useTypingAnimation', () => {
     vi.useFakeTimers();
     // Clear global reduced motion override set by vitest.setup.ts
     // so tests can control behavior via matchMedia mocks
-    delete window.__FORCE_REDUCED_MOTION__;
+    globalThis.__FORCE_REDUCED_MOTION__ = undefined;
   });
 
   afterEach(() => {
@@ -49,12 +51,7 @@ describe('useTypingAnimation', () => {
   describe('basic functionality', () => {
     test('starts with empty text when enabled', async () => {
       // Mock matchMedia to return no reduced motion
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hello' minDelay={10} maxDelay={20} />);
 
@@ -65,12 +62,7 @@ describe('useTypingAnimation', () => {
     });
 
     test('types characters sequentially', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hi' minDelay={10} maxDelay={20} />);
 
@@ -82,12 +74,7 @@ describe('useTypingAnimation', () => {
     });
 
     test('completes typing and calls onComplete', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const onComplete = vi.fn();
 
@@ -99,18 +86,13 @@ describe('useTypingAnimation', () => {
       await expect.element(page.getByTestId('displayed-text')).toHaveTextContent('Hi');
       await expect.element(page.getByTestId('is-typing')).toHaveTextContent('false');
       await expect.element(page.getByTestId('is-complete')).toHaveTextContent('true');
-      expect(onComplete).toHaveBeenCalledTimes(1);
+      expect(onComplete).toHaveBeenCalledOnce();
     });
   });
 
   describe('cursor visibility', () => {
     test('cursor is visible during typing', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hello World' minDelay={50} maxDelay={100} />);
 
@@ -122,12 +104,7 @@ describe('useTypingAnimation', () => {
     });
 
     test('cursor is initially visible', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Test' minDelay={10} maxDelay={20} />);
 
@@ -137,12 +114,7 @@ describe('useTypingAnimation', () => {
 
   describe('enabled option', () => {
     test('does not animate when enabled=false', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const onComplete = vi.fn();
 
@@ -161,12 +133,7 @@ describe('useTypingAnimation', () => {
 
   describe('reduced motion', () => {
     test('skips animation when prefers-reduced-motion is enabled', async () => {
-      window.matchMedia = vi.fn().mockImplementation(query => ({
-        matches: query === '(prefers-reduced-motion: reduce)',
-        media: query,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }));
+      vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
       const onComplete = vi.fn();
 
@@ -183,12 +150,7 @@ describe('useTypingAnimation', () => {
     });
 
     test('cursor is visible when reduced motion enabled', async () => {
-      window.matchMedia = vi.fn().mockImplementation(query => ({
-        matches: query === '(prefers-reduced-motion: reduce)',
-        media: query,
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      }));
+      vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
       await render(<TestComponent text='Test' />);
 
@@ -198,12 +160,7 @@ describe('useTypingAnimation', () => {
 
   describe('cleanup', () => {
     test('cleanup cancels pending timeouts on unmount', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const screen = await render(<TestComponent text='Long text that takes a while' minDelay={50} maxDelay={100} />);
 
@@ -213,18 +170,13 @@ describe('useTypingAnimation', () => {
 
       // Verify the component was unmounted without errors
       // The test passes if unmount completes without exceptions
-      expect(true).toBe(true);
+      expect(true).toBeTruthy();
     });
   });
 
   describe('target text change', () => {
     test('resets animation when target text changes', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const { rerender } = await render(<TestComponent text='First' minDelay={5} maxDelay={10} />);
 
@@ -245,12 +197,7 @@ describe('useTypingAnimation', () => {
 
   describe('default options', () => {
     test('uses default minDelay=50 and maxDelay=150 when not provided', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='AB' />);
 
@@ -264,12 +211,7 @@ describe('useTypingAnimation', () => {
 
   describe('initial delay', () => {
     test('waits 500ms before starting to type', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hello' minDelay={5} maxDelay={10} />);
 
@@ -288,12 +230,7 @@ describe('useTypingAnimation', () => {
 
   describe('empty text', () => {
     test('handles empty string', async () => {
-      window.matchMedia = vi.fn().mockReturnValue({
-        matches: false,
-        media: '',
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-      });
+      vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const onComplete = vi.fn();
 
@@ -304,7 +241,7 @@ describe('useTypingAnimation', () => {
 
       await expect.element(page.getByTestId('displayed-text')).toHaveTextContent('');
       await expect.element(page.getByTestId('is-complete')).toHaveTextContent('true');
-      expect(onComplete).toHaveBeenCalledTimes(1);
+      expect(onComplete).toHaveBeenCalledOnce();
     });
   });
 });

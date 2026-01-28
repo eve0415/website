@@ -40,7 +40,7 @@ const PHASE_DURATIONS: Record<MaterializePhase, number> = {
 
 const PHASE_ORDER: MaterializePhase[] = ['hidden', 'crosshair', 'wireframe', 'particles', 'flash', 'visible'];
 
-export function useNodeMaterialize({ shouldAnimate, delay = 0 }: UseNodeMaterializeOptions): UseNodeMaterializeResult {
+export const useNodeMaterialize = ({ shouldAnimate, delay = 0 }: UseNodeMaterializeOptions): UseNodeMaterializeResult => {
   const prefersReducedMotion = useReducedMotion();
 
   // Handle reduced motion or no animation - return immediately without effect
@@ -53,17 +53,15 @@ export function useNodeMaterialize({ shouldAnimate, delay = 0 }: UseNodeMaterial
 
   useEffect(() => {
     // If skipping animation, state is already correct from initial value
-    if (skipAnimation) {
-      return;
-    }
+    if (skipAnimation) return;
 
     let timeoutId: ReturnType<typeof setTimeout>;
     let animationId: number;
-    let startTime: number;
+    let startTime = 0;
     let currentPhaseIndex = 0;
     let currentPhase: MaterializePhase = 'hidden';
 
-    function startPhase(phaseIndex: number) {
+    const startPhase = (phaseIndex: number) => {
       const phase = PHASE_ORDER[phaseIndex];
       if (!phase) {
         setState({ phase: 'visible', progress: 1 });
@@ -74,17 +72,15 @@ export function useNodeMaterialize({ shouldAnimate, delay = 0 }: UseNodeMaterial
       const duration = PHASE_DURATIONS[phase];
       if (duration === 0) {
         // Skip to next phase
-        if (phase === 'visible') {
-          setState({ phase: 'visible', progress: 1 });
-        } else {
-          startPhase(phaseIndex + 1);
-        }
+        if (phase === 'visible') setState({ phase: 'visible', progress: 1 });
+        else startPhase(phaseIndex + 1);
+
         return;
       }
 
       startTime = performance.now();
 
-      function animate() {
+      const animate = () => {
         const elapsed = performance.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
         setState({ phase: currentPhase, progress });
@@ -95,10 +91,10 @@ export function useNodeMaterialize({ shouldAnimate, delay = 0 }: UseNodeMaterial
           currentPhaseIndex = phaseIndex + 1;
           startPhase(currentPhaseIndex);
         }
-      }
+      };
 
       animationId = requestAnimationFrame(animate);
-    }
+    };
 
     // Start after delay
     timeoutId = setTimeout(() => {
@@ -126,12 +122,12 @@ export function useNodeMaterialize({ shouldAnimate, delay = 0 }: UseNodeMaterial
     progress: state.progress,
     isComplete: state.phase === 'visible',
   };
-}
+};
 
 /**
  * Get drawing parameters for current materialize phase
  */
-export function getMaterializeDrawParams(phase: MaterializePhase, progress: number) {
+export const getMaterializeDrawParams = (phase: MaterializePhase, progress: number) => {
   switch (phase) {
     case 'hidden':
       return { opacity: 0, scale: 0, showCrosshair: false, showWireframe: false, showParticles: false, flashIntensity: 0 };
@@ -177,7 +173,6 @@ export function getMaterializeDrawParams(phase: MaterializePhase, progress: numb
       };
 
     case 'visible':
-    default:
       return { opacity: 1, scale: 1, showCrosshair: false, showWireframe: false, showParticles: false, flashIntensity: 0 };
   }
-}
+};

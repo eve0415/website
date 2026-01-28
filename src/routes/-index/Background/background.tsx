@@ -45,7 +45,7 @@ const Background: FC = () => {
     let animationId: number;
 
     const draw = () => {
-      if (!ctx || !canvas) return;
+      if (ctx === null || canvas === null) return;
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
@@ -60,7 +60,7 @@ const Background: FC = () => {
           // Calculate distance from mouse for reactive effect
           const dx = x - effectivePosition.x;
           const dy = y - effectivePosition.y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
+          const distance = Math.hypot(dx, dy);
           const maxDistance = 200;
 
           // Increase size/opacity near mouse
@@ -83,9 +83,7 @@ const Background: FC = () => {
       ctx.globalAlpha = 1;
 
       // Only continue animation loop if motion is not reduced
-      if (!reducedMotion) {
-        animationId = requestAnimationFrame(draw);
-      }
+      if (!reducedMotion) animationId = requestAnimationFrame(draw);
     };
 
     draw();

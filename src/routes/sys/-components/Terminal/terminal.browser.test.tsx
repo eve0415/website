@@ -1,9 +1,12 @@
+/* oxlint-disable eslint(no-await-in-loop) -- Terminal commands must execute sequentially to simulate real user interaction */
 import type { ReactNode } from 'react';
 
 import { Component } from 'react';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
+
+import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
 
 import Terminal from './terminal';
 import { mockGitHubStats } from './terminal.fixtures';
@@ -16,11 +19,11 @@ class TestErrorBoundary extends Component<{ children: ReactNode }, { caughtError
     return { caughtError: error };
   }
 
+  // oxlint-disable-next-line typescript-eslint(promise-function-async) -- React render() returns ReactNode, not Promise
   override render() {
     const { caughtError } = this.state;
-    if (caughtError) {
-      return <div data-testid='error-caught'>{caughtError.name}</div>;
-    }
+    if (caughtError) return <div data-testid='error-caught'>{caughtError.name}</div>;
+
     return this.props.children;
   }
 }
@@ -35,9 +38,10 @@ const dispatchCtrlC = () => {
     bubbles: true,
     cancelable: true,
     composed: true,
-    view: window,
+    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- globalThis is Window in browser context
+    view: globalThis as Window & typeof globalThis,
   });
-  window.dispatchEvent(event);
+  globalThis.dispatchEvent(event);
 };
 
 // Mock useNavigate
@@ -48,15 +52,13 @@ vi.mock('@tanstack/react-router', () => ({
 
 // Helper to mock touch device detection and reduced motion
 const mockTouchDevice = (isTouch: boolean, reducedMotion = false) => {
-  window.matchMedia = vi.fn().mockImplementation((query: string) => ({
-    matches: query === '(pointer: coarse)' ? isTouch : query === '(prefers-reduced-motion: reduce)' ? reducedMotion : !isTouch,
-    media: query,
-    addEventListener: vi.fn(),
-    removeEventListener: vi.fn(),
-  }));
+  vi.spyOn(globalThis, 'matchMedia').mockImplementation((query: string) => {
+    const matches = query === '(pointer: coarse)' ? isTouch : query === '(prefers-reduced-motion: reduce)' ? reducedMotion : !isTouch;
+    return createMediaQueryListMock(matches, query);
+  });
 };
 
-describe('Terminal', () => {
+describe('terminal', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -117,7 +119,7 @@ describe('Terminal', () => {
       await vi.advanceTimersByTimeAsync(100);
 
       // Should call onBootComplete
-      expect(onBootComplete).toHaveBeenCalled();
+      expect(onBootComplete).toHaveBeenCalledWith();
 
       // Content should be hidden after Ctrl+C in displaying state
       await expect.element(page.getByTestId('boot-content')).not.toBeInTheDocument();
@@ -151,7 +153,7 @@ describe('Terminal', () => {
     });
   });
 
-  describe('Ctrl+C interrupt', () => {
+  describe('ctrl+C interrupt', () => {
     // NOTE: Testing Ctrl+C during typing state is skipped because synthetic
     // KeyboardEvent dispatch doesn't reliably reach window event listeners
     // when React's state updates are batched during animation with fake timers.
@@ -164,7 +166,7 @@ describe('Terminal', () => {
     // verifies the Ctrl+C → prompt transition works correctly.
 
     // oxlint-disable-next-line no-disabled-tests
-    test.skip('Ctrl+C during typing skips content and shows prompt with ^C', async () => {
+    test.skip('ctrl+C during typing skips content and shows prompt with ^C', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -196,7 +198,7 @@ describe('Terminal', () => {
     });
 
     // oxlint-disable-next-line no-disabled-tests
-    test.skip('Ctrl+C during typing transitions to prompt without content', async () => {
+    test.skip('ctrl+C during typing transitions to prompt without content', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -229,7 +231,7 @@ describe('Terminal', () => {
       const onBootComplete = vi.fn();
 
       await render(
-        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice={true}>
+        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice>
           <div data-testid='boot-content'>Content</div>
         </Terminal>,
       );
@@ -248,7 +250,7 @@ describe('Terminal', () => {
       const onBootComplete = vi.fn();
 
       await render(
-        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice={true}>
+        <Terminal stats={mockGitHubStats} onBootComplete={onBootComplete} __forceTouchDevice>
           <div>Content</div>
         </Terminal>,
       );
@@ -670,7 +672,7 @@ describe('Terminal', () => {
     });
   });
 
-  describe('Ctrl+C in prompt state', () => {
+  describe('ctrl+C in prompt state', () => {
     test('clears current input', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();

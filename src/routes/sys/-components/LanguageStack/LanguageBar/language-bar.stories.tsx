@@ -66,12 +66,12 @@ export const DifferentLanguages = meta.story({
 
 export const MultipleIndices = meta.story({
   render: () => {
-    const language: LanguageStat = { name: 'Python', percentage: 30.0, color: '#3572A5' };
+    const language: LanguageStat = { name: 'Python', percentage: 30, color: '#3572A5' };
     return (
       <div className='border-line bg-surface/50 w-96 space-y-1 rounded border p-4'>
-        <LanguageBar language={language} index={0} animate={true} />
-        <LanguageBar language={{ ...language, name: 'Go', color: '#00ADD8' }} index={1} animate={true} />
-        <LanguageBar language={{ ...language, name: 'Java', color: '#b07219' }} index={2} animate={true} />
+        <LanguageBar language={language} index={0} animate />
+        <LanguageBar language={{ ...language, name: 'Go', color: '#00ADD8' }} index={1} animate />
+        <LanguageBar language={{ ...language, name: 'Java', color: '#b07219' }} index={2} animate />
       </div>
     );
   },
@@ -87,7 +87,7 @@ export const SmallPercentage = meta.story({
 
 export const LargePercentage = meta.story({
   args: {
-    language: { name: 'TypeScript', percentage: 95.0, color: '#3178c6' },
+    language: { name: 'TypeScript', percentage: 95, color: '#3178c6' },
     index: 0,
     animate: false,
   },
@@ -143,9 +143,9 @@ export const ExtremePercentages = meta.story({
   render: () => {
     const languages: LanguageStat[] = [
       { name: 'Tiny', percentage: 0.1, color: '#89e051' },
-      { name: 'Half', percentage: 50.0, color: '#f1e05a' },
+      { name: 'Half', percentage: 50, color: '#f1e05a' },
       { name: 'Almost All', percentage: 99.9, color: '#dea584' },
-      { name: 'Complete', percentage: 100.0, color: '#3178c6' },
+      { name: 'Complete', percentage: 100, color: '#3178c6' },
     ];
     return (
       <div className='border-line bg-surface/50 w-96 space-y-1 rounded border p-4'>
@@ -192,7 +192,7 @@ export const CircuitTrace = meta.story({
   render: () => {
     const languages: LanguageStat[] = [
       { name: 'TypeScript', percentage: 45.5, color: '#3178c6' },
-      { name: 'Go', percentage: 5.0, color: '#00ADD8' },
+      { name: 'Go', percentage: 5, color: '#00ADD8' },
       { name: 'Rust', percentage: 12.2, color: '#dea584' },
       { name: 'Shell', percentage: 3.5, color: '#89e051' },
     ];
@@ -216,11 +216,11 @@ export const CircuitTrace = meta.story({
 export const AlignedBars = meta.story({
   render: () => {
     const languages: LanguageStat[] = [
-      { name: 'C', percentage: 10.0, color: '#555555' },
-      { name: 'Go', percentage: 15.0, color: '#00ADD8' },
-      { name: 'Rust', percentage: 20.0, color: '#dea584' },
-      { name: 'Python', percentage: 25.0, color: '#3572A5' },
-      { name: 'TypeScript', percentage: 30.0, color: '#3178c6' },
+      { name: 'C', percentage: 10, color: '#555555' },
+      { name: 'Go', percentage: 15, color: '#00ADD8' },
+      { name: 'Rust', percentage: 20, color: '#dea584' },
+      { name: 'Python', percentage: 25, color: '#3572A5' },
+      { name: 'TypeScript', percentage: 30, color: '#3178c6' },
     ];
     return (
       <div className='border-line bg-surface/50 w-[600px] space-y-1 rounded border p-4'>

@@ -1,7 +1,8 @@
+/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Fixture data requires type assertion for contribution level */
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 
 // Generate sample contribution data for 52 weeks (364 days)
-function generateContributionData(): ContributionDay[] {
+const generateContributionData = (): ContributionDay[] => {
   const days: ContributionDay[] = [];
   const today = new Date();
 
@@ -29,24 +30,22 @@ function generateContributionData(): ContributionDay[] {
         level = 2;
         count = Math.floor(Math.random() * 5) + 4;
       }
+    } else if (random < 0.1) {
+      // More activity on weekdays - rare no-activity days
+      level = 0;
+      count = 0;
+    } else if (random < 0.3) {
+      level = 1;
+      count = Math.floor(Math.random() * 3) + 1;
+    } else if (random < 0.6) {
+      level = 2;
+      count = Math.floor(Math.random() * 5) + 4;
+    } else if (random < 0.85) {
+      level = 3;
+      count = Math.floor(Math.random() * 10) + 9;
     } else {
-      // More activity on weekdays
-      if (random < 0.1) {
-        level = 0;
-        count = 0;
-      } else if (random < 0.3) {
-        level = 1;
-        count = Math.floor(Math.random() * 3) + 1;
-      } else if (random < 0.6) {
-        level = 2;
-        count = Math.floor(Math.random() * 5) + 4;
-      } else if (random < 0.85) {
-        level = 3;
-        count = Math.floor(Math.random() * 10) + 9;
-      } else {
-        level = 4;
-        count = Math.floor(Math.random() * 15) + 20;
-      }
+      level = 4;
+      count = Math.floor(Math.random() * 15) + 20;
     }
 
     days.push({
@@ -57,7 +56,7 @@ function generateContributionData(): ContributionDay[] {
   }
 
   return days;
-}
+};
 
 export const sampleContributions = generateContributionData();
 
@@ -85,7 +84,7 @@ export const sparseContributions: ContributionDay[] = Array.from({ length: 364 }
 export const highActivityContributions: ContributionDay[] = Array.from({ length: 364 }, (_, i) => {
   const date = new Date();
   date.setDate(date.getDate() - (363 - i));
-  const levels: Array<0 | 1 | 2 | 3 | 4> = [2, 3, 3, 4, 4];
+  const levels: (0 | 1 | 2 | 3 | 4)[] = [2, 3, 3, 4, 4];
   const level = levels[Math.floor(Math.random() * levels.length)] ?? 3;
   return {
     date: date.toISOString().split('T')[0] ?? '',

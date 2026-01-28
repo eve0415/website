@@ -41,15 +41,15 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
 
     const observer = new IntersectionObserver(
       entries => {
-        if (entries[0]?.isIntersecting) {
-          setInternalVisible(true);
-        }
+        if (entries[0]?.isIntersecting === true) setInternalVisible(true);
       },
       { threshold: 0.5 },
     );
 
     observer.observe(element);
-    return () => observer.disconnect();
+    return () => {
+      observer.disconnect();
+    };
   }, [isVisible, shouldSkipAnimation]);
 
   // Animate when visible
@@ -66,7 +66,7 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
         setCount(end);
       } else {
         // Ease out expo
-        const easeProgress = 1 - Math.pow(2, -10 * progress);
+        const easeProgress = 1 - 2 ** (-10 * progress);
         setCount(Math.floor(end * easeProgress));
         requestAnimationFrame(animate);
       }

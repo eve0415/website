@@ -59,7 +59,7 @@ const initialState: KeyboardState = {
   wipInput: '',
 };
 
-function keyboardReducer(state: KeyboardState, action: KeyboardAction): KeyboardState {
+const keyboardReducer = (state: KeyboardState, action: KeyboardAction): KeyboardState => {
   switch (action.type) {
     case 'TYPE_CHAR': {
       const newInput = state.input.slice(0, state.cursorPosition) + action.char + state.input.slice(state.cursorPosition);
@@ -230,7 +230,7 @@ function keyboardReducer(state: KeyboardState, action: KeyboardAction): Keyboard
     default:
       return state;
   }
-}
+};
 
 /**
  * Hook for capturing keyboard input with tab autocomplete.
@@ -267,9 +267,8 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
   // Tab handling function
   const handleTab = useCallback((currentInput: string, tabId: number): { result: string; suggestions: string[] } => {
     // If already processed, return the cached result (React Strict Mode double-call)
-    if (tabId === lastProcessedTabId.current) {
-      return lastTabResult.current;
-    }
+    if (tabId === lastProcessedTabId.current) return lastTabResult.current;
+
     lastProcessedTabId.current = tabId;
 
     const cacheAndReturn = (result: string, suggestions: string[]): { result: string; suggestions: string[] } => {
@@ -281,9 +280,7 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
     const cmds = commandsRef.current;
     const matches = cmds.filter(cmd => cmd.startsWith(trimmedInput));
 
-    if (matches.length === 0) {
-      return cacheAndReturn(currentInput, []);
-    }
+    if (matches.length === 0) return cacheAndReturn(currentInput, []);
 
     if (matches.length === 1 && matches[0] !== undefined) {
       tabPressCount.current = 0;
@@ -326,9 +323,7 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
 
     const handleKeyDown = (e: KeyboardEvent) => {
       // Ignore if typing in an input/textarea
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
-        return;
-      }
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
       // Ctrl+C
       if (e.ctrlKey && e.key === 'c') {
@@ -354,9 +349,8 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       if (e.key === 'Enter') {
         e.preventDefault();
         const trimmed = state.input.trim();
-        if (trimmed) {
-          onSubmitRef.current(trimmed);
-        }
+        if (trimmed) onSubmitRef.current(trimmed);
+
         dispatch({ type: 'SUBMIT' });
         onInputChangeRef.current?.('');
         tabPressCount.current = 0;
@@ -424,16 +418,12 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         if (hist.length === 0) return;
 
         let newInput: string | undefined;
-        if (idx === -1) {
-          newInput = hist[hist.length - 1];
-        } else if (idx > 0) {
-          newInput = hist[idx - 1];
-        }
+        if (idx === -1) newInput = hist.at(-1);
+        else if (idx > 0) newInput = hist[idx - 1];
 
         dispatch({ type: 'HISTORY_UP' });
-        if (newInput !== undefined) {
-          onInputChangeRef.current?.(newInput);
-        }
+        if (newInput !== undefined) onInputChangeRef.current?.(newInput);
+
         tabPressCount.current = 0;
         return;
       }
@@ -445,11 +435,8 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         if (idx === -1) return;
 
         let newInput: string;
-        if (idx < state.history.length - 1) {
-          newInput = state.history[idx + 1] ?? '';
-        } else {
-          newInput = state.wipInput;
-        }
+        if (idx < state.history.length - 1) newInput = state.history[idx + 1] ?? '';
+        else newInput = state.wipInput;
 
         dispatch({ type: 'HISTORY_DOWN' });
         onInputChangeRef.current?.(newInput);
@@ -467,8 +454,10 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
+    globalThis.addEventListener('keydown', handleKeyDown);
+    return () => {
+      globalThis.removeEventListener('keydown', handleKeyDown);
+    };
   }, [enabled, handleTab, state]);
 
   return {
@@ -483,8 +472,8 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
 /**
  * Find the longest common prefix among an array of strings.
  */
-function findCommonPrefix(strings: string[]): string {
-  const first = strings[0];
+const findCommonPrefix = (strings: string[]): string => {
+  const [first] = strings;
   if (strings.length === 0 || first === undefined) return '';
   if (strings.length === 1) return first;
 
@@ -498,4 +487,4 @@ function findCommonPrefix(strings: string[]): string {
     }
   }
   return prefix;
-}
+};

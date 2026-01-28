@@ -5,20 +5,20 @@
  * Generate a cryptographically secure nonce using Web Crypto API.
  * Returns a base64url-encoded 16-byte random value (URL-safe, no padding).
  */
-export function generateNonce(): string {
+export const generateNonce = (): string => {
   const array = new Uint8Array(16);
   crypto.getRandomValues(array);
-  const base64 = btoa(Array.from(array, byte => String.fromCharCode(byte)).join(''));
+  const base64 = btoa(Array.from(array, byte => String.fromCodePoint(byte)).join(''));
   // Convert to base64url (URL-safe, no padding)
-  return base64.replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
-}
+  return base64.replaceAll('+', '-').replaceAll('/', '_').replaceAll(/[=]/g, '');
+};
 
 /**
  * Build Content-Security-Policy header value.
  * Development mode is relaxed to allow HMR and debugging.
  * Production mode uses strict CSP with nonces.
  */
-export function buildCspHeader(nonce: string): string {
+export const buildCspHeader = (nonce: string): string => {
   if (import.meta.env.DEV) {
     // Relaxed CSP for development - allows HMR, inline scripts, eval
     return [
@@ -55,13 +55,13 @@ export function buildCspHeader(nonce: string): string {
     'report-to default',
     'report-uri /api/csp-report',
   ].join('; ');
-}
+};
 
 /**
  * Build all security headers including CSP.
  * Returns a record of header name to value.
  */
-export function buildSecurityHeaders(csp: string): Record<string, string> {
+export const buildSecurityHeaders = (csp: string): Record<string, string> => {
   // Note: X-Frame-Options omitted - frame-ancestors 'none' in CSP supersedes it
   const headers: Record<string, string> = {
     'Content-Security-Policy': csp,
@@ -71,9 +71,7 @@ export function buildSecurityHeaders(csp: string): Record<string, string> {
   };
 
   // Add Reporting-Endpoints header for report-to directive (production only)
-  if (import.meta.env.PROD) {
-    headers['Reporting-Endpoints'] = 'default="/api/csp-report"';
-  }
+  if (import.meta.env.PROD) headers['Reporting-Endpoints'] = 'default="/api/csp-report"';
 
   return headers;
-}
+};

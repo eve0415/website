@@ -26,15 +26,21 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
 
   useEffect(() => {
     if (prefersReducedMotion) return; // Skip entrance animation when reduced motion is enabled
-    const timer = setTimeout(() => setIsVisible(true), index * 100);
-    return () => clearTimeout(timer);
+    const timer = setTimeout(() => {
+      setIsVisible(true);
+    }, index * 100);
+    return () => {
+      clearTimeout(timer);
+    };
   }, [index, prefersReducedMotion]);
 
   const handleCopy = async () => {
     try {
       await navigator.clipboard.writeText(link.handle);
       setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 1500);
+      setTimeout(() => {
+        setIsCopied(false);
+      }, 1500);
     } catch {
       // Clipboard API failed, fallback silently
     }
@@ -57,8 +63,9 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
     </>
   );
 
-  if (link.copyAction) {
+  if (link.copyAction === true) {
     return (
+      // oxlint-disable-next-line typescript-eslint(no-misused-promises) -- Event handler, Promise is intentionally not awaited
       <button type='button' onClick={handleCopy} className={`${cardClasses} cursor-pointer text-left`}>
         {content}
       </button>
@@ -66,7 +73,7 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
   }
 
   return (
-    <a href={link.url} target={link.url !== '#' ? '_blank' : undefined} rel={link.url !== '#' ? 'noopener noreferrer' : undefined} className={cardClasses}>
+    <a href={link.url} target={link.url === '#' ? undefined : '_blank'} rel={link.url === '#' ? undefined : 'noopener noreferrer'} className={cardClasses}>
       {content}
     </a>
   );

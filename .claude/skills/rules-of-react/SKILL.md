@@ -9,14 +9,14 @@ Effects are an **escape hatch** from React. They let you synchronize with extern
 
 ## Quick Reference
 
-| Situation | DON'T | DO |
-|-----------|-------|-----|
-| Derived state from props/state | `useState` + `useEffect` | Calculate during render |
-| Expensive calculations | `useEffect` to cache | `useMemo` |
-| Reset state on prop change | `useEffect` with `setState` | `key` prop |
-| User event responses | `useEffect` watching state | Event handler directly |
-| Notify parent of changes | `useEffect` calling `onChange` | Call in event handler |
-| Fetch data | `useEffect` without cleanup | `useEffect` with cleanup OR framework |
+| Situation                      | DON'T                          | DO                                    |
+| ------------------------------ | ------------------------------ | ------------------------------------- |
+| Derived state from props/state | `useState` + `useEffect`       | Calculate during render               |
+| Expensive calculations         | `useEffect` to cache           | `useMemo`                             |
+| Reset state on prop change     | `useEffect` with `setState`    | `key` prop                            |
+| User event responses           | `useEffect` watching state     | Event handler directly                |
+| Notify parent of changes       | `useEffect` calling `onChange` | Call in event handler                 |
+| Fetch data                     | `useEffect` without cleanup    | `useEffect` with cleanup OR framework |
 
 ## When You DO Need Effects
 

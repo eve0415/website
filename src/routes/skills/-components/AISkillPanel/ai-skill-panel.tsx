@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-array-index-key) -- Static evidence list items */
 // AISkillPanel - Expandable panel with typewriter effect for AI skill details
 
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
@@ -18,9 +19,7 @@ const AISkillPanel: FC<Props> = ({ skill, isExpanded, onClose }) => {
     enabled: isExpanded,
   });
 
-  if (!isExpanded) {
-    return null;
-  }
+  if (!isExpanded) return;
 
   const levelLabels: Record<string, string> = {
     expert: 'Expert',

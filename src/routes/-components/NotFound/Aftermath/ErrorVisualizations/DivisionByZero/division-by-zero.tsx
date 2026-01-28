@@ -1,3 +1,4 @@
+/* oxlint-disable eslint-plugin-react(no-unescaped-entities), typescript-eslint(no-non-null-assertion) -- Code snippets with quotes, array indexing with modulo is always safe */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
@@ -15,6 +16,12 @@ interface FloatingNumber {
   speed: number;
 }
 
+// Seeded random for deterministic values
+const seededRandom = (seed: number): number => {
+  const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
+  return x - Math.floor(x);
+};
+
 // Black hole visualization for division by zero
 const DivisionByZero: FC = () => {
   const reducedMotion = useReducedMotion();
@@ -22,12 +29,6 @@ const DivisionByZero: FC = () => {
   const [collapsed, setCollapsed] = useState(() => reducedMotion);
   const [pullStrength, setPullStrength] = useState(() => (reducedMotion ? 1 : 0));
   const [rotation, setRotation] = useState(0);
-
-  // Seeded random for deterministic values
-  const seededRandom = (seed: number): number => {
-    const x = Math.sin(seed * 12.9898 + 78.233) * 43758.5453;
-    return x - Math.floor(x);
-  };
 
   // Floating numbers that get sucked in
   const numbers = useMemo((): FloatingNumber[] => {
@@ -64,7 +65,9 @@ const DivisionByZero: FC = () => {
       }
     }, 50);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   // Rotation animation
@@ -75,7 +78,9 @@ const DivisionByZero: FC = () => {
       setRotation(r => r + 2);
     }, 30);
 
-    return () => clearInterval(interval);
+    return () => {
+      clearInterval(interval);
+    };
   }, [reducedMotion]);
 
   const getNumberPosition = (num: FloatingNumber) => {

@@ -1,3 +1,4 @@
+/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Test assertions verify existence */
 import type { Skill } from '../../-config/skills-config';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
@@ -13,7 +14,7 @@ const mockSkill: Skill = {
   description: 'A strongly typed programming language',
 };
 
-describe('SkillCard', () => {
+describe('skillCard', () => {
   beforeEach(() => {
     vi.useFakeTimers();
   });
@@ -81,7 +82,7 @@ describe('SkillCard', () => {
     expect(card).not.toBeNull();
 
     // Check actual computed opacity instead of class presence
-    const opacity = window.getComputedStyle(card!).opacity;
+    const { opacity } = globalThis.getComputedStyle(card!);
     expect(opacity).toBe('1');
   });
 
