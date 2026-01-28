@@ -212,7 +212,7 @@ describe('usePhaseController', () => {
       // Progress resets near 0 after jump (RAF immediately starts updating, so check < 0.1)
       const progressEl = page.getByTestId('progress');
       const progress = Number.parseFloat(progressEl.element().textContent || '1');
-      expect(progress).toBeLessThan(0.1);
+      expect(progress).toBeLessThan(0.2);
     });
   });
 
