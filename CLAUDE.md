@@ -39,7 +39,7 @@ pnpm generate     # Generate Cloudflare Worker types
 
 ## Requirements
 
-- Node.js 24.12.x (see `.node-version`)
+- Node.js 24.13.x (see `.node-version`)
 - pnpm 10.x package manager
 
 ## Language Requirements
