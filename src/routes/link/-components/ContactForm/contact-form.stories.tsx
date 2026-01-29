@@ -1,6 +1,6 @@
 import type { ContactFormResult } from '../../-utils/contact-form';
 import type { ContactFormData, ValidationErrors } from '../../-utils/validation';
-import type { FC } from 'react';
+import type { FC, SubmitEvent } from 'react';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { expect, userEvent, waitFor, within } from 'storybook/test';
@@ -85,7 +85,7 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
   };
 
   const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
+    async (e: SubmitEvent) => {
       e.preventDefault();
       setGlobalError(null);
 
