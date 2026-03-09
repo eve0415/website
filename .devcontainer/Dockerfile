@@ -1,7 +1,7 @@
 # syntax=docker/dockerfile:1
 
 # For config options, see the README at: https://github.com/devcontainers/templates/tree/main/src/typescript-node
-FROM mcr.microsoft.com/devcontainers/typescript-node:4.0.5-24-trixie
+FROM mcr.microsoft.com/devcontainers/typescript-node:4.0.6-24-trixie
 
 RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
   --mount=type=cache,target=/var/lib/apt,sharing=locked \
@@ -14,7 +14,6 @@ RUN echo 'store-dir=/home/node/.local/share/pnpm/store/.pnpm-store' >> /usr/loca
 
 USER node:node
 
-RUN curl -LsSf https://astral.sh/uv/install.sh | sh
 RUN curl -fsSL https://claude.ai/install.sh | bash
 
 RUN pnpm completion zsh >> $HOME/.zshrc
