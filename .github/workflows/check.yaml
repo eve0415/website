@@ -53,7 +53,7 @@ jobs:
           echo CLOUDFLARE_ZONE_ID=test >> .dev.vars
 
       - name: Generate types
-        run: pnpm generate
+        run: vp run generate
 
       - name: Run check
         run: |
@@ -96,7 +96,7 @@ jobs:
           echo CLOUDFLARE_ZONE_ID=test >> .dev.vars
 
       - name: Generate types
-        run: vp generate
+        run: vp run generate
 
       - name: Build website
         if: matrix.project == 'unit'
