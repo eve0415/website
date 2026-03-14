@@ -582,7 +582,7 @@ export default defineConfig({
   },
   run: {
     tasks: {
-      check: { command: 'vp lint --fix --fix-suggestions --fix-dangerously && vp fmt' },
+      fix: { command: 'vp lint --fix --fix-suggestions --fix-dangerously && vp fmt' },
     },
   },
 });

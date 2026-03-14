@@ -1,20 +1,20 @@
 {
   "name": "eve0415 website devcontainer",
   "build": {
-    "dockerfile": "Dockerfile"
+    "dockerfile": "Dockerfile",
   },
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1": {}
+    "ghcr.io/devcontainers/features/github-cli:1": {},
   },
   "postCreateCommand": "git config --local core.ignorecase false",
-  "postStartCommand": "npm install -g @openai/codex @google/gemini-cli && vp install --frozen-lockfile && pnpm generate && pnpm playwright install --with-deps",
+  "postStartCommand": "npm install -g @openai/codex @google/gemini-cli && vp install --frozen-lockfile && vp run generate && vp exec playwright install --with-deps",
   "containerEnv": {
-    "TZ": "Asia/Tokyo"
+    "TZ": "Asia/Tokyo",
   },
   "mounts": [
     "type=bind,source=${localEnv:HOME}/.claude,target=/home/node/.claude,type=bind,consistency=cached",
     "type=bind,source=${localEnv:HOME}/.codex,target=/home/node/.codex,type=bind,consistency=cached",
-    "type=bind,source=${localEnv:HOME}/.gemini,target=/home/node/.gemini,type=bind,consistency=cached"
+    "type=bind,source=${localEnv:HOME}/.gemini,target=/home/node/.gemini,type=bind,consistency=cached",
   ],
   "customizations": {
     "vscode": {
@@ -33,7 +33,7 @@
         "google.gemini-cli-vscode-ide-companion",
         "TypeScriptTeam.native-preview",
         "capaj.graphql-codegen-vscode",
-        "GraphQL.vscode-graphql"
+        "GraphQL.vscode-graphql",
       ],
       "settings": {
         "diffEditor.diffAlgorithm": "advanced",
@@ -44,7 +44,7 @@
         "editor.codeActionsOnSave": {
           "source.organizeImports": "always",
           "source.addMissingImports": "always",
-          "source.fixAll.eslint": "always"
+          "source.fixAll.eslint": "always",
         },
         "editor.cursorBlinking": "smooth",
         "editor.cursorSmoothCaretAnimation": "on",
@@ -52,7 +52,7 @@
         "editor.linkedEditing": true,
         "editor.pasteAs.preferences": ["text.updateImports.jsts"],
         "editor.quickSuggestions": {
-          "strings": "on"
+          "strings": "on",
         },
         "editor.smoothScrolling": true,
         "editor.tabSize": 2,
@@ -60,7 +60,7 @@
           ".env*": "dotenv",
           ".dev.vars": "dotenv",
           ".dev.vars.*": "dotenv",
-          "*.css": "tailwindcss"
+          "*.css": "tailwindcss",
         },
         "files.insertFinalNewline": true,
         "files.eol": "\n",
@@ -68,7 +68,7 @@
           "pnpm-lock.yaml": true,
           "worker-configuration.d.ts": true,
           "src/routeTree.gen.ts": true,
-          "src/generated/*": true
+          "src/generated/*": true,
         },
         "files.trimFinalNewlines": true,
         "files.trimTrailingWhitespace": true,
@@ -76,7 +76,7 @@
           ".wrangler": true,
           "worker-configuration.d.ts": true,
           "src/routeTree.gen.ts": true,
-          "dist": true
+          "dist": true,
         },
         "oxc.fixKind": "all",
         "oxc.typeAware": true,
@@ -86,19 +86,19 @@
           ".wrangler": true,
           "worker-configuration.d.ts": true,
           "src/routeTree.gen.ts": true,
-          "dist": true
+          "dist": true,
         },
         "tailwindCSS.classAttributes": ["className", ".*Styles"],
         "tailwindCSS.experimental.classRegex": [
           ["cva\\(((?:[^()]|\\([^()]*\\))*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]"],
           ["cx\\(((?:[^()]|\\([^()]*\\))*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)"],
-          ["cva\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"]
+          ["cva\\(([^;]*)[\\);]", "[`'\"`]([^'\"`;]*)[`'\"`]"],
         ],
         "terminal.integrated.defaultProfile.linux": "zsh",
         "terminal.integrated.profiles.linux": {
           "zsh": {
-            "path": "/bin/zsh"
-          }
+            "path": "/bin/zsh",
+          },
         },
         "ts.experimental.useTsgo": true,
         "ts.implementationsCodeLens.enabled": true,
@@ -112,41 +112,41 @@
           "fallbackPolling": "dynamicPriorityPolling",
           "watchFile": "useFsEvents",
           "synchronousWatchDirectory": true,
-          "excludeDirectories": ["**/node_modules/**/*"]
+          "excludeDirectories": ["**/node_modules/**/*"],
         },
         "ts.updateImportsOnPaste.enabled": true,
         "vitest.maximumConfigs": 50,
         "[css]": {
-          "editor.defaultFormatter": "bradlc.vscode-tailwindcss"
+          "editor.defaultFormatter": "bradlc.vscode-tailwindcss",
         },
         "[javascript]": {
-          "editor.defaultFormatter": "oxc.oxc-vscode"
+          "editor.defaultFormatter": "oxc.oxc-vscode",
         },
         "[typescript]": {
-          "editor.defaultFormatter": "oxc.oxc-vscode"
+          "editor.defaultFormatter": "oxc.oxc-vscode",
         },
         "[typescriptreact]": {
-          "editor.defaultFormatter": "oxc.oxc-vscode"
+          "editor.defaultFormatter": "oxc.oxc-vscode",
         },
         "[json]": {
-          "editor.defaultFormatter": "oxc.oxc-vscode"
+          "editor.defaultFormatter": "oxc.oxc-vscode",
         },
         "[jsonc]": {
-          "editor.defaultFormatter": "oxc.oxc-vscode"
+          "editor.defaultFormatter": "oxc.oxc-vscode",
         },
         "[markdown]": {
           "diffEditor.ignoreTrimWhitespace": false,
           "editor.quickSuggestions": {
             "comments": "off",
             "strings": "off",
-            "other": "off"
+            "other": "off",
           },
           "editor.tabSize": 4,
           "editor.unicodeHighlight.ambiguousCharacters": false,
           "editor.unicodeHighlight.invisibleCharacters": false,
-          "editor.wordWrap": "on"
-        }
-      }
-    }
-  }
+          "editor.wordWrap": "on",
+        },
+      },
+    },
+  },
 }
