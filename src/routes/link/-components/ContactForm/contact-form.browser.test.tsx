@@ -1,7 +1,7 @@
 /* oxlint-disable eslint-plugin-promise(prefer-await-to-callbacks) -- Mock callback setters for Turnstile widget testing */
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
-import { render } from 'vitest-browser-react';
 import { page } from 'vite-plus/test/browser';
+import { render } from 'vitest-browser-react';
 
 // Types for mock
 type ContactFormResult =

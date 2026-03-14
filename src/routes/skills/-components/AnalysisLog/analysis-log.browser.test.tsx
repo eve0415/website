@@ -1,6 +1,6 @@
 import { describe, expect, test } from 'vite-plus/test';
-import { render } from 'vitest-browser-react';
 import { page } from 'vite-plus/test/browser';
+import { render } from 'vitest-browser-react';
 
 import AnalysisLog from './analysis-log';
 import {

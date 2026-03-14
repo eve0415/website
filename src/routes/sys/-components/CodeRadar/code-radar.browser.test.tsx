@@ -2,8 +2,8 @@
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
-import { render } from 'vitest-browser-react';
 import { page } from 'vite-plus/test/browser';
+import { render } from 'vitest-browser-react';
 
 import CodeRadar from './code-radar';
 

@@ -2,8 +2,8 @@ import type { Phase } from './usePhaseController';
 import type { FC } from 'react';
 
 import { describe, expect, test } from 'vite-plus/test';
-import { render } from 'vitest-browser-react';
 import { page } from 'vite-plus/test/browser';
+import { render } from 'vitest-browser-react';
 
 import { add, distance, normalize, scale, subtract, useMouseInfluence } from './useMouseInfluence';
 

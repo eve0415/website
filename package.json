@@ -24,6 +24,9 @@
     "storybook": "(find src -type d -name '__screenshots__' -exec rm -rf {} + 2>/dev/null || true) && storybook dev --port 6006",
     "prepare": "vp config"
   },
+  "dependencies": {
+    "@vitejs/devtools": "^0.1.0"
+  },
   "devDependencies": {
     "@browser-echo/vite": "^1.1.0",
     "@cloudflare/vite-plugin": "^1.28.0",
@@ -97,8 +100,5 @@
       "vite": "npm:@voidzero-dev/vite-plus-core@^0.1.11",
       "vitest": "npm:@voidzero-dev/vite-plus-test@^0.1.11"
     }
-  },
-  "dependencies": {
-    "@vitejs/devtools": "^0.1.0"
   }
 }

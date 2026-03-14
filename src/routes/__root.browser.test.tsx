@@ -2,8 +2,8 @@
 import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 import { describe, expect, test, vi } from 'vite-plus/test';
-import { render } from 'vitest-browser-react';
 import { page } from 'vite-plus/test/browser';
+import { render } from 'vitest-browser-react';
 
 // Mock TanStack components that require router context
 vi.mock('@tanstack/react-router', async importOriginal => {
