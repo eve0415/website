@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-assignment) -- Vite plugin array type inference limitation */
 import { exec } from 'node:child_process';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
@@ -10,7 +9,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { defineConfig, esmExternalRequirePlugin } from 'vite-plus';
 
-export default defineConfig(({command}) => ({
+export default defineConfig({
   staged: {
     '*': 'vp check --fix',
   },
@@ -566,7 +565,9 @@ export default defineConfig(({command}) => ({
       external: ['node:path', 'path'],
     }),
   ],
-  devtools: command === "serve",
+  build: {
+    minify: 'oxc',
+  },
   css: {
     transformer: 'lightningcss',
     devSourcemap: true,
@@ -582,4 +583,4 @@ export default defineConfig(({command}) => ({
       fix: { command: 'vp lint --fix --fix-suggestions --fix-dangerously && vp fmt' },
     },
   },
-}));
+});
