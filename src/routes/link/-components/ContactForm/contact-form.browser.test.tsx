@@ -1,7 +1,7 @@
 /* oxlint-disable eslint-plugin-promise(prefer-await-to-callbacks) -- Mock callback setters for Turnstile widget testing */
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
 
 // Types for mock
 type ContactFormResult =
@@ -207,7 +207,6 @@ describe('contactForm', () => {
   // not integrating well with vitest browser mode. The submission logic works correctly in
   // production as verified by manual testing. Field validation tests above cover the form's
   // validation behavior thoroughly.
-  // oxlint-disable-next-line jest/no-disabled-tests
   describe.skip('submission Flow', () => {
     // Submission tests need real timers for async form handling to work properly
     beforeEach(() => {
@@ -351,7 +350,6 @@ describe('contactForm', () => {
   // Note: UI States tests that depend on form submission are skipped for the same reason
   // as Submission Flow tests above. The submission-dependent behavior works correctly in
   // production as verified by manual testing.
-  // oxlint-disable-next-line jest/no-disabled-tests
   describe.skip('uI States', () => {
     // Note: Testing button disabled state during submission is unreliable with TanStack Form
     // and Vitest's mocking. The isSubmitting state transition happens too quickly to capture.

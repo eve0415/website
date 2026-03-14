@@ -1,9 +1,9 @@
 /* oxlint-disable typescript-eslint(no-non-null-assertion), eslint-plugin-jest(no-conditional-in-test), typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify existence; conditional in mock addEventListener captures listener; MediaQueryList mocks require type assertion */
 import type { FC } from 'react';
 
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vite-plus/test';
+import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
 
 import { useReducedMotion } from './useReducedMotion';
 

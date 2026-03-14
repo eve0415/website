@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
 
 import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
 
@@ -126,7 +126,6 @@ describe('useNodeMaterialize', () => {
       await screen.unmount();
 
       // Should have called cleanup
-      // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();

@@ -1,9 +1,9 @@
 import type { FC } from 'react';
 
 import { useState } from 'react';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
 
 import Logo from './logo';
 
@@ -92,7 +92,6 @@ describe('logo', () => {
     await expect.element(page.getByTestId('unmounted')).toBeInTheDocument();
 
     // clearTimeout should have been called during cleanup
-    // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
     expect(clearTimeoutSpy).toHaveBeenCalled();
 
     clearTimeoutSpy.mockRestore();

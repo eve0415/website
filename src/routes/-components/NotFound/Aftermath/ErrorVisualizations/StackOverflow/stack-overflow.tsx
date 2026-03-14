@@ -125,6 +125,7 @@ const StackOverflow: FC = () => {
             <div className='space-y-1'>
               {stackFrames.map((frame, i) => (
                 <div
+                  // oxlint-disable-next-line react/no-array-index-key
                   key={`${frame}-${i}`}
                   className={`border-l-2 py-1 pl-3 text-xs transition-all duration-200 ${
                     i === 0 && !crashed

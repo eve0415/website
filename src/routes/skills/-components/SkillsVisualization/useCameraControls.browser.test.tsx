@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vite-plus/test';
+import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
 
 import { useCameraControls } from './useCameraControls';
 
@@ -64,7 +64,6 @@ describe('useCameraControls', () => {
       await screen.unmount();
 
       // Animation cleanup should have been called
-      // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();

@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vite-plus/test';
 import { render } from 'vitest-browser-react';
 
 import Background from './background';
@@ -45,7 +45,6 @@ describe('background', () => {
     // Cleanup should remove resize listener
     expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
     // And cancel animation frame
-    // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
     expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
     removeEventListenerSpy.mockRestore();

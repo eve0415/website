@@ -47,7 +47,7 @@ export const createGitHubClient = (token: string): InstanceType<typeof MyOctokit
       },
     },
     retry: {
-      doNotRetry: ['429'],
+      doNotRetry: [429],
     },
   });
 

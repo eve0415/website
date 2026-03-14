@@ -1,10 +1,53 @@
+import { createRequire } from 'node:module';
 import path from 'node:path';
 
-import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
 import storybookTest from '@storybook/addon-vitest/vitest-plugin';
 import tailwindcss from '@tailwindcss/vite';
-import { playwright } from '@vitest/browser-playwright';
-import { defineConfig } from 'vitest/config';
+import { defineConfig } from 'vite-plus';
+import { playwright } from 'vite-plus/test/browser-playwright';
+
+const require = createRequire(import.meta.url);
+const vitestDir = path.dirname(require.resolve('vitest'));
+const vitestBrowserContextPath = path.join(vitestDir, 'dist/@vitest/browser/context.js');
+
+// Plugin to shim @vitest/browser/context for storybook compatibility.
+// In vite-plus-test, @vitest/browser is bundled inside vitest and the `server`
+// export is injected at runtime by the browser provider. Storybook's prebundled
+// code imports { server, page } from "@vitest/browser/context" which needs both
+// the runtime-provided context AND the server stub.
+// oxlint-disable-next-line typescript/consistent-type-imports -- Plugin type used as return type
+const vitestBrowserShim = (): import('vite-plus').Plugin => ({
+  name: 'vitest-browser-context-shim',
+  enforce: 'pre',
+  resolveId(id): string | undefined {
+    if (id === '@vitest/browser/context') return '\0vitest-browser-context';
+    if (id === '\0vitest-browser-context-original') return vitestBrowserContextPath;
+    return undefined;
+  },
+  load(id): string | undefined {
+    if (id === '\0vitest-browser-context') {
+      return `
+export { cdp, createUserEvent, locators, page, utils } from '\0vitest-browser-context-original';
+export const server = {
+  platform: 'linux',
+  version: '',
+  provider: 'playwright',
+  browser: typeof globalThis.__vitest_browser_runner__ !== 'undefined'
+    ? globalThis.__vitest_browser_runner__.config?.browser?.name ?? 'chromium'
+    : 'chromium',
+  commands: typeof globalThis.__vitest_browser_runner__ !== 'undefined'
+    ? globalThis.__vitest_browser_runner__.commands ?? { getInitialGlobals: async () => ({}) }
+    : { getInitialGlobals: async () => ({}) },
+  config: typeof globalThis.__vitest_browser_runner__ !== 'undefined'
+    ? globalThis.__vitest_browser_runner__.config ?? {}
+    : {},
+};
+export const commands = server.commands;
+`;
+    }
+    return undefined;
+  },
+});
 
 export default defineConfig({
   test: {
@@ -31,7 +74,7 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        plugins: [cloudflareTest({ wrangler: { configPath: './wrangler.json' }, remoteBindings: false }), tailwindcss()],
+        plugins: [tailwindcss()],
         resolve: {
           alias: {
             // TanStack Start internal subpath imports needed when bundling @tanstack/start-server-core
@@ -39,6 +82,11 @@ export default defineConfig({
             '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
             'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
             'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
+            // Stub cloudflare modules for node environment
+            // @cloudflare/vitest-pool-workers is incompatible with vite-plus-test
+            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
+            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
+            'cloudflare:test': path.resolve('test/stubs/cloudflare-test.ts'),
           },
         },
         test: {
@@ -112,7 +160,20 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [tailwindcss(), storybookTest()],
+        plugins: [vitestBrowserShim(), tailwindcss(), storybookTest()],
+        resolve: {
+          dedupe: ['react', 'react-dom'],
+          alias: {
+            '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
+            '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
+            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
+            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
+            'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
+            'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
+            'react-dom/server': path.resolve('test/stubs/react-dom-server.ts'),
+            '@tanstack/react-form-start': path.resolve('test/stubs/tanstack-react-form-start.tsx'),
+          },
+        },
         test: {
           name: 'storybook',
           testTimeout: 60000,
@@ -146,6 +207,7 @@ export default defineConfig({
         },
         optimizeDeps: {
           include: ['@tanstack/react-form-start > @tanstack/react-store'],
+          exclude: ['@tanstack/react-start', '@tanstack/start-client-core', '@tanstack/start-server-core', '@tanstack/start-static-server-functions'],
         },
       },
     ],

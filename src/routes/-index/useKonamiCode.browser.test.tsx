@@ -1,9 +1,9 @@
 /* oxlint-disable eslint(no-await-in-loop) -- Sequential keyboard input tests require await in loop */
 import type { FC } from 'react';
 
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vite-plus/test';
+import { page, userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page, userEvent } from 'vitest/browser';
 
 import { useKonamiCode } from './useKonamiCode';
 

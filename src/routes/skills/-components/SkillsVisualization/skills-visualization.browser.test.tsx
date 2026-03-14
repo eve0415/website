@@ -1,9 +1,9 @@
 /* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify canvas element existence before type casting */
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
 
 import SkillsVisualization from './skills-visualization';
 
@@ -118,7 +118,6 @@ describe('skillsVisualization', () => {
       await screen.unmount();
 
       // ResizeObserver disconnect is called internally, cancelAnimationFrame for animation cleanup
-      // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();

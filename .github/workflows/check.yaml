@@ -17,23 +17,18 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@b5d848f5a62488f3d3d920f8aa6ac318a60c5f07
         with:
-          node-version-file: .node-version
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          node-version-file: package.json
+          cache: true
+          run-install: true
 
       - name: Build website
-        run: pnpm build
+        run: vp build
 
-  lint:
-    name: Lint Check
+  check:
+    name: Code Check
     runs-on: ubuntu-24.04-arm
     permissions:
       contents: read
@@ -42,17 +37,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@b5d848f5a62488f3d3d920f8aa6ac318a60c5f07
         with:
-          node-version-file: .node-version
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          node-version-file: package.json
+          cache: true
+          run-install: true
 
       - name: Generate .dev.vars
         run: |
@@ -63,48 +53,11 @@ jobs:
           echo CLOUDFLARE_ZONE_ID=test >> .dev.vars
 
       - name: Generate types
-        run: pnpm generate
+        run: vp run generate
 
-      - name: Run oxlint
+      - name: Run check
         run: |
-          pnpm oxlint --type-aware --type-check --report-unused-disable-directives --deny-warnings --format github
-
-  format:
-    name: Format Check
-    runs-on: ubuntu-24.04-arm
-    permissions:
-      contents: read
-
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
-      - name: Set up pnpm
-        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
-        with:
-          node-version-file: .node-version
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Check formatting
-        run: |
-          set +e
-          output=$(pnpm oxfmt --check 2>&1)
-          exit_code=$?
-          echo "$output"
-
-          # Parse filenames and emit annotations for each file that needs formatting
-          echo "$output" | grep -E "^Would format:" | while read -r line; do
-            file=$(echo "$line" | sed 's/Would format: //')
-            echo "::error file=$file::File needs formatting. Run 'pnpm oxfmt' to fix."
-          done
-
-          exit $exit_code
+          vp check
 
   test:
     name: Test
@@ -123,21 +76,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@b5d848f5a62488f3d3d920f8aa6ac318a60c5f07
         with:
-          node-version-file: .node-version
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          node-version-file: package.json
+          cache: true
+          run-install: true
 
       - name: Install Playwright Browsers
         if: matrix.project == 'browser' || matrix.project == 'storybook'
-        run: pnpm playwright install --with-deps
+        run: vp exec playwright install --with-deps
 
       - name: Generate .dev.vars
         run: |
@@ -148,15 +96,15 @@ jobs:
           echo CLOUDFLARE_ZONE_ID=test >> .dev.vars
 
       - name: Generate types
-        run: pnpm generate
+        run: vp run generate
 
       - name: Build website
         if: matrix.project == 'unit'
-        run: pnpm build
+        run: vp build
 
       - name: Run tests
         run: |
-          pnpm vitest run \
+          vp test run \
             --project=${{ matrix.project }} \
             --reporter=verbose \
             --reporter=github-actions \
@@ -184,17 +132,12 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v6
 
-      - name: Set up pnpm
-        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v6
+      - name: Set up Vite+
+        uses: voidzero-dev/setup-vp@b5d848f5a62488f3d3d920f8aa6ac318a60c5f07
         with:
-          node-version-file: .node-version
-          cache: pnpm
-
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+          node-version-file: package.json
+          cache: true
+          run-install: true
 
       - name: Download all coverage artifacts
         uses: actions/download-artifact@v7
@@ -215,9 +158,9 @@ jobs:
             fi
           done
           # Merge all coverage files
-          pnpm nyc merge .nyc_output coverage/coverage-final.json
+          vpx nyc merge .nyc_output coverage/coverage-final.json
           # Generate summary report
-          pnpm nyc report \
+          vpx nyc report \
             --reporter=json-summary \
             --temp-dir=coverage \
             --report-dir=coverage

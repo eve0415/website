@@ -5,7 +5,7 @@ import type { RateLimitMetrics } from './github-graphql';
 
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, it } from 'vite-plus/test';
 
 import {
   DEFAULT_RATE_LIMIT_METRICS,

@@ -347,7 +347,6 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         <AINodeMaterializeTracker key={skill.name} skill={skill} index={i} onStateChange={handleMaterializeChange} />
       ))}
 
-      {/* oxlint-disable-next-line eslint-plugin-jsx-a11y(no-static-element-interactions) -- Canvas with role='application' is correct for interactive graphics */}
       <canvas
         ref={canvasRef}
         className={`size-full ${hoveredNode ? 'cursor-pointer' : ''}`}

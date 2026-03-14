@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
 
 import AnimatedCounter from './animated-counter';
 
@@ -70,23 +70,19 @@ describe('animatedCounter', () => {
     const observeMock = vi.fn();
     const disconnectMock = vi.fn();
 
-    class MockIntersectionObserver implements IntersectionObserver {
-      root: Element | Document | null = null;
-      rootMargin = '';
-      thresholds: readonly number[] = [];
-
+    class MockIntersectionObserver {
       observe = observeMock;
       disconnect = disconnectMock;
       unobserve = vi.fn();
       takeRecords = vi.fn(() => []);
     }
 
-    globalThis.IntersectionObserver = MockIntersectionObserver;
+    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- Mock assignment for testing
+    globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
     await render(<AnimatedCounter end={100} duration={500} />);
 
     // Observer should have been created and element observed
-    // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called, not the specific args
     expect(observeMock).toHaveBeenCalled();
   });
 
@@ -94,18 +90,15 @@ describe('animatedCounter', () => {
     // Mock IntersectionObserver to verify it's NOT created
     const observeMock = vi.fn();
 
-    class MockIntersectionObserver implements IntersectionObserver {
-      root: Element | Document | null = null;
-      rootMargin = '';
-      thresholds: readonly number[] = [];
-
+    class MockIntersectionObserver {
       observe = observeMock;
       disconnect = vi.fn();
       unobserve = vi.fn();
       takeRecords = vi.fn(() => []);
     }
 
-    globalThis.IntersectionObserver = MockIntersectionObserver;
+    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- Mock assignment for testing
+    globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
     await render(<AnimatedCounter end={100} duration={500} isVisible />);
 

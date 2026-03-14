@@ -7,7 +7,7 @@
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "postCreateCommand": "git config --local core.ignorecase false",
-  "postStartCommand": "npm install -g @openai/codex @google/gemini-cli && pnpm install --frozen-lockfile && pnpm generate && pnpm playwright install --with-deps",
+  "postStartCommand": "npm install -g @openai/codex @google/gemini-cli && vp install --frozen-lockfile && vp run generate && vp exec playwright install --with-deps",
   "containerEnv": {
     "TZ": "Asia/Tokyo"
   },
@@ -19,7 +19,7 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "oxc.oxc-vscode",
+        "VoidZero.vite-plus-extension-pack",
         "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "ms-azuretools.vscode-docker",
@@ -33,8 +33,7 @@
         "google.gemini-cli-vscode-ide-companion",
         "TypeScriptTeam.native-preview",
         "capaj.graphql-codegen-vscode",
-        "GraphQL.vscode-graphql",
-        "vitest.explorer"
+        "GraphQL.vscode-graphql"
       ],
       "settings": {
         "diffEditor.diffAlgorithm": "advanced",
@@ -79,7 +78,6 @@
           "src/routeTree.gen.ts": true,
           "dist": true
         },
-        "javascript.updateImportsOnPaste.enabled": true,
         "oxc.fixKind": "all",
         "oxc.typeAware": true,
         "oxc.unusedDisableDirectives": "deny",
@@ -102,20 +100,21 @@
             "path": "/bin/zsh"
           }
         },
-        "typescript.experimental.useTsgo": true,
-        "typescript.inlayHints.functionLikeReturnTypes.enabled": true,
-        "typescript.inlayHints.parameterNames.enabled": "all",
-        "typescript.inlayHints.parameterTypes.enabled": true,
-        "typescript.inlayHints.variableTypes.enabled": true,
-        "typescript.preferences.autoImportFileExcludePatterns": ["vm", "node:vm"],
-        "typescript.preferences.preferTypeOnlyAutoImports": true,
-        "typescript.implementationsCodeLens.enabled": true,
-        "typescript.tsserver.watchOptions": {
+        "ts.experimental.useTsgo": true,
+        "ts.implementationsCodeLens.enabled": true,
+        "ts.inlayHints.functionLikeReturnTypes.enabled": true,
+        "ts.inlayHints.parameterNames.enabled": "all",
+        "ts.inlayHints.parameterTypes.enabled": true,
+        "ts.inlayHints.variableTypes.enabled": true,
+        "ts.preferences.autoImportFileExcludePatterns": ["vm", "node:vm"],
+        "ts.preferences.preferTypeOnlyAutoImports": true,
+        "ts.tsserver.watchOptions": {
           "fallbackPolling": "dynamicPriorityPolling",
           "watchFile": "useFsEvents",
           "synchronousWatchDirectory": true,
           "excludeDirectories": ["**/node_modules/**/*"]
         },
+        "ts.updateImportsOnPaste.enabled": true,
         "vitest.maximumConfigs": 50,
         "[css]": {
           "editor.defaultFormatter": "bradlc.vscode-tailwindcss"
@@ -146,22 +145,6 @@
           "editor.unicodeHighlight.ambiguousCharacters": false,
           "editor.unicodeHighlight.invisibleCharacters": false,
           "editor.wordWrap": "on"
-        }
-      },
-      "mcp": {
-        "servers": {
-          "context7": {
-            "type": "http",
-            "url": "https://mcp.context7.com/mcp"
-          },
-          "tanstack": {
-            "type": "http",
-            "url": "https://tanstack.com/api/mcp"
-          },
-          "github": {
-            "type": "http",
-            "url": "https://api.githubcopilot.com/mcp/"
-          }
         }
       }
     }

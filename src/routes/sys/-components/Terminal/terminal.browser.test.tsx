@@ -2,9 +2,9 @@
 import type { ReactNode } from 'react';
 
 import { Component } from 'react';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+import { page, userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
-import { page, userEvent } from 'vitest/browser';
 
 import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
 
@@ -165,7 +165,6 @@ describe('terminal', () => {
     // The "completes boot and shows prompt after Ctrl+C during displaying" test
     // verifies the Ctrl+C → prompt transition works correctly.
 
-    // oxlint-disable-next-line no-disabled-tests
     test.skip('ctrl+C during typing skips content and shows prompt with ^C', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
@@ -197,7 +196,6 @@ describe('terminal', () => {
       await expect.element(header).toHaveTextContent('^C');
     });
 
-    // oxlint-disable-next-line no-disabled-tests
     test.skip('ctrl+C during typing transitions to prompt without content', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();

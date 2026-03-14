@@ -1,5 +1,5 @@
 /* oxlint-disable typescript-eslint(no-non-null-assertion), typescript-eslint(no-unsafe-type-assertion) -- Handler existence verified via expect().toBeDefined() assertions; type assertion needed for route options */
-import { describe, expect, test } from 'vitest';
+import { describe, expect, test } from 'vite-plus/test';
 
 // Get reference to the actual handlers from the route
 import { Route } from './csp-report';
