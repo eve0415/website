@@ -64,7 +64,6 @@ describe('useCameraControls', () => {
       await screen.unmount();
 
       // Animation cleanup should have been called
-      // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();

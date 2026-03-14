@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion), typescript-eslint(no-unsafe-type-assertion), eslint-plugin-jest(no-disabled-tests) -- Test assertions verify existence; level cast is safe for mock data; requestAnimationFrame untestable in browser tests */
+/* oxlint-disable typescript-eslint(no-non-null-assertion), typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify existence; level cast is safe for mock data */
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
@@ -168,7 +168,6 @@ describe('codeRadar', () => {
 
     await screen.unmount();
 
-    // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called, not the specific args
     expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
     cancelAnimationFrameSpy.mockRestore();

@@ -92,7 +92,6 @@ describe('logo', () => {
     await expect.element(page.getByTestId('unmounted')).toBeInTheDocument();
 
     // clearTimeout should have been called during cleanup
-    // oxlint-disable-next-line vitest(prefer-called-with) -- toHaveBeenCalled() is correct; we only care that it was called
     expect(clearTimeoutSpy).toHaveBeenCalled();
 
     clearTimeoutSpy.mockRestore();

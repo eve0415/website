@@ -119,7 +119,7 @@ export const refreshGitHubStats = async (workerEnv: Env): Promise<void> => {
       },
     },
     retry: {
-      doNotRetry: ['429'],
+      doNotRetry: [429],
     },
   });
 

@@ -165,7 +165,6 @@ describe('terminal', () => {
     // The "completes boot and shows prompt after Ctrl+C during displaying" test
     // verifies the Ctrl+C → prompt transition works correctly.
 
-    // oxlint-disable-next-line no-disabled-tests
     test.skip('ctrl+C during typing skips content and shows prompt with ^C', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
@@ -197,7 +196,6 @@ describe('terminal', () => {
       await expect.element(header).toHaveTextContent('^C');
     });
 
-    // oxlint-disable-next-line no-disabled-tests
     test.skip('ctrl+C during typing transitions to prompt without content', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
