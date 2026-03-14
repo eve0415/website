@@ -1,16 +1,16 @@
 /* oxlint-disable typescript-eslint(no-unsafe-assignment) -- Vite plugin array type inference limitation */
 import { exec } from 'node:child_process';
 
-import browserEcho from '@browser-echo/vite';
 import { cloudflare } from '@cloudflare/vite-plugin';
+import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
-import react from '@vitejs/plugin-react';
+import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import devtoolsJson from 'vite-plugin-devtools-json';
 import { defineConfig, esmExternalRequirePlugin } from 'vite-plus';
 
-export default defineConfig({
+export default defineConfig(({command}) => ({
   staged: {
     '*': 'vp check --fix',
   },
@@ -544,8 +544,9 @@ export default defineConfig({
       },
       sitemap: { host: 'https://eve0415.net' },
     }),
-    react({
-      babel: { plugins: ['babel-plugin-react-compiler'] },
+    react(),
+    babel({
+      presets: [reactCompilerPreset()],
     }),
     tailwindcss(),
     devtools({
@@ -561,15 +562,11 @@ export default defineConfig({
       },
     }),
     devtoolsJson(),
-    browserEcho({
-      injectHtml: false,
-      stackMode: 'condensed',
-    }),
     esmExternalRequirePlugin({
       external: ['node:path', 'path'],
     }),
   ],
-  devtools: true,
+  devtools: command === "serve",
   css: {
     transformer: 'lightningcss',
     devSourcemap: true,
@@ -585,4 +582,4 @@ export default defineConfig({
       fix: { command: 'vp lint --fix --fix-suggestions --fix-dangerously && vp fmt' },
     },
   },
-});
+}));
