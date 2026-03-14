@@ -158,9 +158,9 @@ jobs:
             fi
           done
           # Merge all coverage files
-          pnpm nyc merge .nyc_output coverage/coverage-final.json
+          vpx nyc merge .nyc_output coverage/coverage-final.json
           # Generate summary report
-          pnpm nyc report \
+          vpx nyc report \
             --reporter=json-summary \
             --temp-dir=coverage \
             --report-dir=coverage
