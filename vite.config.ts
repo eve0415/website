@@ -580,4 +580,9 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@tanstack/react-form-start > @tanstack/react-store'],
   },
+  run: {
+    tasks: {
+      check: { command: 'vp lint --fix --fix-suggestions --fix-dangerously && vp fmt' },
+    },
+  },
 });

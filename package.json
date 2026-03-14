@@ -13,13 +13,9 @@
     ]
   },
   "scripts": {
-    "dev": "vp dev --host",
-    "build": "vp build",
     "generate": "wrangler types && graphql-codegen && drizzle-kit generate",
     "migrate": "wrangler d1 migrations apply --local SKILLS_DB",
     "migrate:remote": "wrangler d1 migrations apply SKILLS_DB --remote",
-    "lint": "vp lint --type-aware --type-check --fix --fix-suggestions --fix-dangerously --report-unused-disable-directives && vp fmt",
-    "test": "vp test run --typecheck",
     "test:update": "vp test run --typecheck --update",
     "storybook": "(find src -type d -name '__screenshots__' -exec rm -rf {} + 2>/dev/null || true) && storybook dev --port 6006",
     "prepare": "vp config"
