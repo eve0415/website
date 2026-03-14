@@ -1,9 +1,9 @@
 /* oxlint-disable eslint(no-await-in-loop) -- Sequential debug stepping tests require await in loop */
 import type { FC, RefObject } from 'react';
 
-import { afterEach, beforeEach, describe, expect, test } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test } from 'vite-plus/test';
 import { render } from 'vitest-browser-react';
-import { page, userEvent } from 'vitest/browser';
+import { page, userEvent } from 'vite-plus/test/browser';
 
 import { useDebugMode } from './useDebugMode';
 

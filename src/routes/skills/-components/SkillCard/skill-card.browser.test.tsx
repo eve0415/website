@@ -1,9 +1,9 @@
 /* oxlint-disable typescript-eslint(no-non-null-assertion) -- Test assertions verify existence */
 import type { Skill } from '../../-config/skills-config';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
+import { page } from 'vite-plus/test/browser';
 
 import SkillCard from './skill-card';
 

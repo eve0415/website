@@ -1,9 +1,9 @@
 import type { FC } from 'react';
 
 import { useState } from 'react';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
+import { page } from 'vite-plus/test/browser';
 
 import Logo from './logo';
 

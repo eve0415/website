@@ -4,7 +4,7 @@ import type { drizzle } from 'drizzle-orm/d1';
 
 import { env } from 'cloudflare:workers';
 import { eq } from 'drizzle-orm';
-import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 
 import { workflowState } from '#db/schema';
 

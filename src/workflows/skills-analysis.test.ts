@@ -6,7 +6,7 @@
 import { env } from 'cloudflare:workers';
 import { count, desc, eq, sql, sum } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vite-plus/test';
 
 import * as schema from '#db/schema';
 import { commits, repos, workflowState } from '#db/schema';

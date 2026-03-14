@@ -1,4 +1,4 @@
-import { vi } from 'vitest';
+import { vi } from 'vite-plus/test';
 
 // Types need to be redefined here to avoid importing the real module
 export type ContactFormResult =

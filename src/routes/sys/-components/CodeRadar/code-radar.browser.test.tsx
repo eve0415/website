@@ -1,9 +1,9 @@
 /* oxlint-disable typescript-eslint(no-non-null-assertion), typescript-eslint(no-unsafe-type-assertion), eslint-plugin-jest(no-disabled-tests) -- Test assertions verify existence; level cast is safe for mock data; requestAnimationFrame untestable in browser tests */
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
+import { page } from 'vite-plus/test/browser';
 
 import CodeRadar from './code-radar';
 

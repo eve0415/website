@@ -1,6 +1,6 @@
 /* oxlint-disable typescript-eslint(no-unsafe-assignment), typescript-eslint(no-unsafe-type-assertion), typescript-eslint(no-unsafe-return) -- Vitest's expect.stringContaining() returns any by design; test mocks require type assertions */
 import { env, withEnv } from 'cloudflare:workers';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 
 // Mock @tanstack/react-start before importing contact-form
 vi.mock('@tanstack/react-start', () => ({

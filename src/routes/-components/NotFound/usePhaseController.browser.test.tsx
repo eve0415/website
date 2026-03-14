@@ -3,9 +3,9 @@ import type { Phase } from './usePhaseController';
 import type { FC } from 'react';
 
 import { useState } from 'react';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vite-plus/test';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
+import { page } from 'vite-plus/test/browser';
 
 import { usePhaseController } from './usePhaseController';
 

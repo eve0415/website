@@ -1,7 +1,7 @@
 /* oxlint-disable typescript-eslint(no-non-null-assertion) -- Test assertions verify existence */
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vite-plus/test';
 
 import { verifyTurnstile } from './turnstile';
 

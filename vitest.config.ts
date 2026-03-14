@@ -3,8 +3,8 @@ import path from 'node:path';
 import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
 import storybookTest from '@storybook/addon-vitest/vitest-plugin';
 import tailwindcss from '@tailwindcss/vite';
-import { playwright } from '@vitest/browser-playwright';
-import { defineConfig } from 'vitest/config';
+import { playwright } from 'vite-plus/test/browser-playwright';
+import { defineConfig } from 'vite-plus';
 
 export default defineConfig({
   test: {

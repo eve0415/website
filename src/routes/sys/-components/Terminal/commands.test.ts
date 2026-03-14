@@ -1,6 +1,6 @@
 import type { CommandContext } from './commands';
 
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vite-plus/test';
 
 import { COMMANDS, COMMAND_NAMES, SudoRmRfError, executeCommand, parseArgs } from './commands';
 import { mockCommandContext, mockGitHubStats } from './terminal.fixtures';

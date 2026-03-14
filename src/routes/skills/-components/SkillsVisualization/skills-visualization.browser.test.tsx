@@ -1,9 +1,9 @@
 /* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify canvas element existence before type casting */
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
+import { page } from 'vite-plus/test/browser';
 
 import SkillsVisualization from './skills-visualization';
 

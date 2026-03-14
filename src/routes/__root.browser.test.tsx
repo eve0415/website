@@ -1,9 +1,9 @@
 /* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test file requires type assertions for Route internal structure */
 import type { FC, PropsWithChildren, ReactNode } from 'react';
 
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vite-plus/test';
 import { render } from 'vitest-browser-react';
-import { page } from 'vitest/browser';
+import { page } from 'vite-plus/test/browser';
 
 // Mock TanStack components that require router context
 vi.mock('@tanstack/react-router', async importOriginal => {
