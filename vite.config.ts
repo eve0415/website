@@ -565,6 +565,9 @@ export default defineConfig({
       external: ['node:path', 'path'],
     }),
   ],
+  server: {
+    host: true,
+  },
   build: {
     minify: 'oxc',
   },
