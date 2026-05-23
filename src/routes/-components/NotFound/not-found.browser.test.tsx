@@ -1,25 +1,15 @@
-import type { FC } from 'react';
-
-import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } from '@tanstack/react-router';
+import { createRouterHarness } from '@tanstack-router-testing/react-router-testing';
+import { createRootRoute } from '@tanstack/react-router';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
 
 import NotFound from './not-found';
 
-// Mock @tanstack/react-start's createServerFn (uses Node.js APIs not available in browser)
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: () => ({
-    handler: (fn: () => unknown) => fn,
-  }),
-}));
-
-// Mock useReducedMotion
 vi.mock('#hooks/useReducedMotion', () => ({
   useReducedMotion: vi.fn(() => false),
 }));
 
-// Mock connection-info module (imports cloudflare:workers which isn't available in browser)
 vi.mock('./BootSequence/connection-info', () => ({
   // oxlint-disable-next-line typescript/require-await -- Mock async function for testing
   getConnectionInfo: vi.fn(async () => ({
@@ -33,43 +23,36 @@ vi.mock('./BootSequence/connection-info', () => ({
   })),
 }));
 
-// Create a router wrapper
-const createTestRouter = () => {
-  const rootRoute = createRootRoute({
-    component: () => <NotFound />,
+const createHarness = () =>
+  createRouterHarness({
+    routeTree: createRootRoute({ component: () => <NotFound /> }),
+    initialEntries: ['/not-found'],
   });
-
-  return createRouter({
-    routeTree: rootRoute,
-    history: createMemoryHistory({ initialEntries: ['/not-found'] }),
-  });
-};
-
-const TestWrapper: FC = () => {
-  const router = createTestRouter();
-  return <RouterProvider router={router} />;
-};
 
 describe('notFound', () => {
+  let harness: ReturnType<typeof createHarness>;
+
   beforeEach(() => {
     vi.useFakeTimers();
+    harness = createHarness();
   });
 
   afterEach(() => {
+    harness.cleanup();
     vi.useRealTimers();
     vi.restoreAllMocks();
   });
 
   describe('accessibility', () => {
     test('has aria-label on main element', async () => {
-      await render(<TestWrapper />);
+      await render(<harness.TestRouterProvider />);
 
       const main = document.querySelector('main');
       expect(main?.getAttribute('aria-label')).toBe('ページが見つかりません');
     });
 
     test('has screen reader content', async () => {
-      await render(<TestWrapper />);
+      await render(<harness.TestRouterProvider />);
 
       // Screen reader only content
       const srContent = document.querySelector('.sr-only');
@@ -79,7 +62,7 @@ describe('notFound', () => {
 
   describe('boot phase', () => {
     test('renders BootSequence in boot phase', async () => {
-      await render(<TestWrapper />);
+      await render(<harness.TestRouterProvider />);
 
       // Boot sequence should be visible initially
       // Look for boot-related content (terminal style messages)
@@ -97,7 +80,7 @@ describe('notFound', () => {
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
-      await render(<TestWrapper />);
+      await render(<harness.TestRouterProvider />);
 
       // Should show 404 text in the large heading - verify via DOM query
       const heading404 = document.querySelector('.text-8xl');
@@ -108,7 +91,7 @@ describe('notFound', () => {
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
-      await render(<TestWrapper />);
+      await render(<harness.TestRouterProvider />);
 
       await expect.element(page.getByText('[ERROR_CONTAINED]')).toBeInTheDocument();
     });
@@ -117,7 +100,7 @@ describe('notFound', () => {
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
-      await render(<TestWrapper />);
+      await render(<harness.TestRouterProvider />);
 
       // Use exact match to find the link text specifically (not the sr-only content)
       const link = page.getByText('ホームに戻る', { exact: true });
@@ -131,7 +114,7 @@ describe('notFound', () => {
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
-      await render(<TestWrapper />);
+      await render(<harness.TestRouterProvider />);
 
       await expect.element(page.getByText('次元境界に異常が発生しました')).toBeInTheDocument();
     });
@@ -142,7 +125,7 @@ describe('notFound', () => {
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
-      await render(<TestWrapper />);
+      await render(<harness.TestRouterProvider />);
 
       // Check for the green dot indicator
       const dots = document.querySelectorAll('.rounded-full.bg-neon');
