@@ -1,4 +1,4 @@
-/* oxlint-disable eslint(no-await-in-loop), eslint-plugin-promise(prefer-await-to-then) -- Pagination requires sequential await; .catch() in Promise.all is valid error handling */
+/* oxlint-disable no-await-in-loop, promise/prefer-await-to-then -- Pagination requires sequential await; .catch() in Promise.all is valid error handling */
 import type { GetGitHubStatsQuery } from '#generated/github-graphql';
 import type { GitHubStats, LanguageStat } from './github-stats-utils';
 
@@ -58,12 +58,7 @@ const GET_GITHUB_STATS_QUERY = /* GraphQL */ `
       following {
         totalCount
       }
-      repositories(
-        first: 100
-        ownerAffiliations: OWNER
-        orderBy: { field: PUSHED_AT, direction: DESC }
-        after: $cursor
-      ) {
+      repositories(first: 100, ownerAffiliations: OWNER, orderBy: { field: PUSHED_AT, direction: DESC }, after: $cursor) {
         totalCount
         pageInfo {
           hasNextPage
