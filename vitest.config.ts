@@ -3,6 +3,7 @@ import path from 'node:path';
 
 import storybookTest from '@storybook/addon-vitest/vitest-plugin';
 import tailwindcss from '@tailwindcss/vite';
+import { tanstackStartTesting } from '@tanstack-router-testing/react-start-testing/vite';
 import { defineConfig } from 'vite-plus';
 import { playwright } from 'vite-plus/test/browser-playwright';
 
@@ -108,6 +109,7 @@ export default defineConfig({
       },
       {
         extends: true,
+        plugins: [tanstackStartTesting()],
         resolve: {
           dedupe: ['react', 'react-dom'],
           alias: {
@@ -162,7 +164,7 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [vitestBrowserShim(), tailwindcss(), storybookTest()],
+        plugins: [tanstackStartTesting(), vitestBrowserShim(), tailwindcss(), storybookTest()],
         resolve: {
           dedupe: ['react', 'react-dom'],
           alias: {
