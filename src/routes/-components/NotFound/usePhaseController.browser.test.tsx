@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-jest(no-conditional-in-test) -- Fallback patterns for parsing text content are safe */
+/* oxlint-disable vitest/no-conditional-in-test -- Fallback patterns for parsing text content are safe */
 import type { Phase } from './usePhaseController';
 import type { FC } from 'react';
 

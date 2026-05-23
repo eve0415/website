@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test mocks require type assertions for request.json() parsing */
 // Unit tests for GitHub GraphQL client utility
 
 import type { RateLimitMetrics } from './github-graphql';
@@ -143,223 +142,226 @@ const server = setupServer(
   }),
 );
 
-beforeAll(() => {
-  server.listen();
-});
-afterEach(() => {
-  server.resetHandlers();
-});
-afterAll(() => {
-  server.close();
-});
-
-describe('createGitHubClient', () => {
-  it('creates an Octokit client with auth token', () => {
-    const client = createGitHubClient('test-token');
-    expect(client).toBeDefined();
+describe('github-graphql', () => {
+  beforeAll(() => {
+    server.listen();
   });
-});
-
-describe('extractRateLimit', () => {
-  it('extracts rate limit from response with rateLimit field', () => {
-    const response = {
-      rateLimit: {
-        remaining: 4500,
-        cost: 1,
-        resetAt: '2024-01-15T12:00:00Z',
-      },
-    };
-
-    const result = extractRateLimit(response);
-
-    expect(result.remaining).toBe(4500);
-    expect(result.cost).toBe(1);
-    expect(result.resetAt).toBe(Math.floor(new Date('2024-01-15T12:00:00Z').getTime() / 1000));
+  afterEach(() => {
+    server.resetHandlers();
+  });
+  afterAll(() => {
+    server.close();
   });
 
-  it('returns default rate limit when rateLimit is null', () => {
-    const result = extractRateLimit({ rateLimit: null });
-
-    expect(result.remaining).toBe(5000);
-    expect(result.cost).toBe(1);
+  describe('createGitHubClient', () => {
+    it('creates an Octokit client with auth token', () => {
+      const client = createGitHubClient('test-token');
+      expect(client).toBeDefined();
+    });
   });
 
-  it('returns default rate limit when rateLimit is undefined', () => {
-    const result = extractRateLimit({});
+  describe('extractRateLimit', () => {
+    it('extracts rate limit from response with rateLimit field', () => {
+      const response = {
+        rateLimit: {
+          remaining: 4500,
+          cost: 1,
+          resetAt: '2024-01-15T12:00:00Z',
+        },
+      };
 
-    expect(result.remaining).toBe(5000);
-    expect(result.cost).toBe(1);
-  });
-});
+      const result = extractRateLimit(response);
 
-describe('fetchUserRepos', () => {
-  it('fetches user repositories with rate limit', async () => {
-    const client = createGitHubClient('test-token');
-    const result = await fetchUserRepos(client);
+      expect(result.remaining).toBe(4500);
+      expect(result.cost).toBe(1);
+      expect(result.resetAt).toBe(Math.floor(new Date('2024-01-15T12:00:00Z').getTime() / 1000));
+    });
 
-    expect(result.data.viewer.repositories.nodes).toHaveLength(1);
-    expect(result.data.viewer.repositories.nodes?.[0]?.name).toBe('test-repo');
-    expect(result.rateLimit.remaining).toBe(4500);
-  });
+    it('returns default rate limit when rateLimit is null', () => {
+      const result = extractRateLimit({ rateLimit: null });
 
-  it('passes cursor for pagination', async () => {
-    let capturedVariables: Record<string, unknown> | undefined;
+      expect(result.remaining).toBe(5000);
+      expect(result.cost).toBe(1);
+    });
 
-    server.use(
-      http.post('https://api.github.com/graphql', async ({ request }) => {
-        const body = (await request.json()) as { query: string; variables?: Record<string, unknown> };
-        capturedVariables = body.variables;
-        return HttpResponse.json({ data: mockUserReposResponse });
-      }),
-    );
+    it('returns default rate limit when rateLimit is undefined', () => {
+      const result = extractRateLimit({});
 
-    const client = createGitHubClient('test-token');
-    await fetchUserRepos(client, 'cursor123');
-
-    expect(capturedVariables?.['cursor']).toBe('cursor123');
-  });
-});
-
-describe('fetchRepoCommits', () => {
-  it('fetches commits for a repository', async () => {
-    const client = createGitHubClient('test-token');
-    const result = await fetchRepoCommits(client, 'eve0415', 'test-repo');
-
-    const history = result.data.repository?.defaultBranchRef?.target;
-    expect(history && 'history' in history ? history.history.nodes : []).toHaveLength(1);
-    expect(result.rateLimit.remaining).toBe(4500);
+      expect(result.remaining).toBe(5000);
+      expect(result.cost).toBe(1);
+    });
   });
 
-  it('passes since parameter for incremental sync', async () => {
-    let capturedVariables: Record<string, unknown> | undefined;
+  describe('fetchUserRepos', () => {
+    it('fetches user repositories with rate limit', async () => {
+      const client = createGitHubClient('test-token');
+      const result = await fetchUserRepos(client);
 
-    server.use(
-      http.post('https://api.github.com/graphql', async ({ request }) => {
-        const body = (await request.json()) as { query: string; variables?: Record<string, unknown> };
-        capturedVariables = body.variables;
-        return HttpResponse.json({ data: mockCommitsResponse });
-      }),
-    );
+      expect(result.data.viewer.repositories.nodes).toHaveLength(1);
+      expect(result.data.viewer.repositories.nodes?.[0]?.name).toBe('test-repo');
+      expect(result.rateLimit.remaining).toBe(4500);
+    });
 
-    const client = createGitHubClient('test-token');
-    await fetchRepoCommits(client, 'eve0415', 'test-repo', '2024-01-01T00:00:00Z', 'cursor456');
+    it('passes cursor for pagination', async () => {
+      let capturedVariables: Record<string, unknown> | undefined;
 
-    expect(capturedVariables?.['since']).toBe('2024-01-01T00:00:00Z');
-    expect(capturedVariables?.['cursor']).toBe('cursor456');
-  });
-});
+      server.use(
+        http.post('https://api.github.com/graphql', async ({ request }) => {
+          const body = (await request.json()) as { query: string; variables?: Record<string, unknown> };
+          capturedVariables = body.variables;
+          return HttpResponse.json({ data: mockUserReposResponse });
+        }),
+      );
 
-describe('fetchRepoPRs', () => {
-  it('fetches pull requests for a repository', async () => {
-    const client = createGitHubClient('test-token');
-    const result = await fetchRepoPRs(client, 'eve0415', 'test-repo');
+      const client = createGitHubClient('test-token');
+      await fetchUserRepos(client, 'cursor123');
 
-    expect(result.data.repository?.pullRequests.nodes).toHaveLength(1);
-    expect(result.data.repository?.pullRequests.nodes?.[0]?.title).toBe('Add new feature');
-    expect(result.rateLimit.remaining).toBe(4500);
-  });
-
-  it('includes nested reviews in response', async () => {
-    const client = createGitHubClient('test-token');
-    const result = await fetchRepoPRs(client, 'eve0415', 'test-repo');
-
-    const pr = result.data.repository?.pullRequests.nodes?.[0];
-    expect(pr?.reviews?.nodes).toHaveLength(1);
-    expect(pr?.reviews?.nodes?.[0]?.state).toBe('APPROVED');
-  });
-});
-
-describe('calculateDynamicThreshold', () => {
-  it('calculates threshold based on remaining work', () => {
-    const metrics: RateLimitMetrics = {
-      avgRequestsPerRepo: 10,
-      lastRunRepoCount: 50,
-      lastRunRequestCount: 500,
-      updatedAt: '2024-01-01T00:00:00Z',
-    };
-
-    // 30 repos remaining * 10 avg = 300 estimated requests
-    const threshold = calculateDynamicThreshold(metrics, 50, 20);
-    expect(threshold).toBe(300);
+      expect(capturedVariables?.['cursor']).toBe('cursor123');
+    });
   });
 
-  it('returns minimum threshold of 50', () => {
-    const metrics: RateLimitMetrics = {
-      avgRequestsPerRepo: 1,
-      lastRunRepoCount: 10,
-      lastRunRequestCount: 10,
-      updatedAt: '2024-01-01T00:00:00Z',
-    };
+  describe('fetchRepoCommits', () => {
+    it('fetches commits for a repository', async () => {
+      const client = createGitHubClient('test-token');
+      const result = await fetchRepoCommits(client, 'eve0415', 'test-repo');
 
-    // 2 repos remaining * 1 avg = 2, but minimum is 50
-    const threshold = calculateDynamicThreshold(metrics, 10, 8);
-    expect(threshold).toBe(50);
+      const history = result.data.repository?.defaultBranchRef?.target;
+      // oxlint-disable-next-line vitest/no-conditional-in-test -- Narrowing discriminated union from GraphQL response
+      expect(history && 'history' in history ? history.history.nodes : []).toHaveLength(1);
+      expect(result.rateLimit.remaining).toBe(4500);
+    });
+
+    it('passes since parameter for incremental sync', async () => {
+      let capturedVariables: Record<string, unknown> | undefined;
+
+      server.use(
+        http.post('https://api.github.com/graphql', async ({ request }) => {
+          const body = (await request.json()) as { query: string; variables?: Record<string, unknown> };
+          capturedVariables = body.variables;
+          return HttpResponse.json({ data: mockCommitsResponse });
+        }),
+      );
+
+      const client = createGitHubClient('test-token');
+      await fetchRepoCommits(client, 'eve0415', 'test-repo', '2024-01-01T00:00:00Z', 'cursor456');
+
+      expect(capturedVariables?.['since']).toBe('2024-01-01T00:00:00Z');
+      expect(capturedVariables?.['cursor']).toBe('cursor456');
+    });
   });
 
-  it('returns maximum threshold of 500', () => {
-    const metrics: RateLimitMetrics = {
-      avgRequestsPerRepo: 100,
-      lastRunRepoCount: 100,
-      lastRunRequestCount: 10000,
-      updatedAt: '2024-01-01T00:00:00Z',
-    };
+  describe('fetchRepoPRs', () => {
+    it('fetches pull requests for a repository', async () => {
+      const client = createGitHubClient('test-token');
+      const result = await fetchRepoPRs(client, 'eve0415', 'test-repo');
 
-    // 50 repos remaining * 100 avg = 5000, but max is 500
-    const threshold = calculateDynamicThreshold(metrics, 100, 50);
-    expect(threshold).toBe(500);
+      expect(result.data.repository?.pullRequests.nodes).toHaveLength(1);
+      expect(result.data.repository?.pullRequests.nodes?.[0]?.title).toBe('Add new feature');
+      expect(result.rateLimit.remaining).toBe(4500);
+    });
+
+    it('includes nested reviews in response', async () => {
+      const client = createGitHubClient('test-token');
+      const result = await fetchRepoPRs(client, 'eve0415', 'test-repo');
+
+      const pr = result.data.repository?.pullRequests.nodes?.[0];
+      expect(pr?.reviews?.nodes).toHaveLength(1);
+      expect(pr?.reviews?.nodes?.[0]?.state).toBe('APPROVED');
+    });
   });
 
-  it('uses default metrics values correctly', () => {
-    // DEFAULT_RATE_LIMIT_METRICS.avgRequestsPerRepo = 12
-    const threshold = calculateDynamicThreshold(DEFAULT_RATE_LIMIT_METRICS, 20, 10);
-    // 10 remaining * 12 = 120
-    expect(threshold).toBe(120);
-  });
-});
+  describe('calculateDynamicThreshold', () => {
+    it('calculates threshold based on remaining work', () => {
+      const metrics: RateLimitMetrics = {
+        avgRequestsPerRepo: 10,
+        lastRunRepoCount: 50,
+        lastRunRequestCount: 500,
+        updatedAt: '2024-01-01T00:00:00Z',
+      };
 
-describe('isPRAuthoredByUser', () => {
-  it('returns true for matching login (case-insensitive)', () => {
-    expect(isPRAuthoredByUser('eve0415')).toBeTruthy();
-    expect(isPRAuthoredByUser('EVE0415')).toBeTruthy();
-    expect(isPRAuthoredByUser('Eve0415')).toBeTruthy();
+      // 30 repos remaining * 10 avg = 300 estimated requests
+      const threshold = calculateDynamicThreshold(metrics, 50, 20);
+      expect(threshold).toBe(300);
+    });
+
+    it('returns minimum threshold of 50', () => {
+      const metrics: RateLimitMetrics = {
+        avgRequestsPerRepo: 1,
+        lastRunRepoCount: 10,
+        lastRunRequestCount: 10,
+        updatedAt: '2024-01-01T00:00:00Z',
+      };
+
+      // 2 repos remaining * 1 avg = 2, but minimum is 50
+      const threshold = calculateDynamicThreshold(metrics, 10, 8);
+      expect(threshold).toBe(50);
+    });
+
+    it('returns maximum threshold of 500', () => {
+      const metrics: RateLimitMetrics = {
+        avgRequestsPerRepo: 100,
+        lastRunRepoCount: 100,
+        lastRunRequestCount: 10000,
+        updatedAt: '2024-01-01T00:00:00Z',
+      };
+
+      // 50 repos remaining * 100 avg = 5000, but max is 500
+      const threshold = calculateDynamicThreshold(metrics, 100, 50);
+      expect(threshold).toBe(500);
+    });
+
+    it('uses default metrics values correctly', () => {
+      // DEFAULT_RATE_LIMIT_METRICS.avgRequestsPerRepo = 12
+      const threshold = calculateDynamicThreshold(DEFAULT_RATE_LIMIT_METRICS, 20, 10);
+      // 10 remaining * 12 = 120
+      expect(threshold).toBe(120);
+    });
   });
 
-  it('returns false for non-matching login', () => {
-    expect(isPRAuthoredByUser('other-user')).toBeFalsy();
+  describe('isPRAuthoredByUser', () => {
+    it('returns true for matching login (case-insensitive)', () => {
+      expect(isPRAuthoredByUser('eve0415')).toBeTruthy();
+      expect(isPRAuthoredByUser('EVE0415')).toBeTruthy();
+      expect(isPRAuthoredByUser('Eve0415')).toBeTruthy();
+    });
+
+    it('returns false for non-matching login', () => {
+      expect(isPRAuthoredByUser('other-user')).toBeFalsy();
+    });
+
+    it('returns false when login is null', () => {
+      expect(isPRAuthoredByUser(null)).toBeFalsy();
+    });
+
+    it('returns false when login is undefined', () => {
+      const undefinedValue = undefined;
+      expect(isPRAuthoredByUser(undefinedValue)).toBeFalsy();
+    });
   });
 
-  it('returns false when login is null', () => {
-    expect(isPRAuthoredByUser(null)).toBeFalsy();
+  describe('gITHUB_USERNAME constant', () => {
+    it('is exported and has expected value', () => {
+      expect(GITHUB_USERNAME).toBe('eve0415');
+    });
   });
 
-  it('returns false when login is undefined', () => {
-    const undefinedValue = undefined;
-    expect(isPRAuthoredByUser(undefinedValue)).toBeFalsy();
-  });
-});
-
-describe('gITHUB_USERNAME constant', () => {
-  it('is exported and has expected value', () => {
-    expect(GITHUB_USERNAME).toBe('eve0415');
-  });
-});
-
-describe('error handling', () => {
-  it('handles GraphQL errors gracefully', async () => {
-    server.use(
-      http.post('https://api.github.com/graphql', () =>
-        HttpResponse.json(
-          {
-            errors: [{ message: 'API rate limit exceeded' }],
-          },
-          { status: 200 },
+  describe('error handling', () => {
+    it('handles GraphQL errors gracefully', async () => {
+      server.use(
+        http.post('https://api.github.com/graphql', () =>
+          HttpResponse.json(
+            {
+              errors: [{ message: 'API rate limit exceeded' }],
+            },
+            { status: 200 },
+          ),
         ),
-      ),
-    );
+      );
 
-    const client = createGitHubClient('test-token');
+      const client = createGitHubClient('test-token');
 
-    // Octokit throws on GraphQL errors
-    await expect(fetchUserRepos(client)).rejects.toThrow(/rate limit/i);
+      // Octokit throws on GraphQL errors
+      await expect(fetchUserRepos(client)).rejects.toThrow(/rate limit/i);
+    });
   });
 });

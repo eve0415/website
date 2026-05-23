@@ -90,7 +90,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
   const handleMaterializeChange = useCallback((index: number, phase: MaterializePhase, progress: number) => {
     setAIMaterializeStates(prev => {
       const next = new Map(prev);
-      // oxlint-disable-next-line eslint-plugin-unicorn(no-immediate-mutation) -- React immutable state update pattern
+      // oxlint-disable-next-line unicorn/no-immediate-mutation -- React immutable state update pattern
       next.set(index, { phase, progress });
       return next;
     });

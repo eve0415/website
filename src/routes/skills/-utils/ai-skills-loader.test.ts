@@ -44,10 +44,6 @@ describe('ai-skills-loader', () => {
     mockWorkflowBinding = { create: vi.fn<() => Promise<unknown>>().mockResolvedValue({}) };
   });
 
-  afterAll(async () => {
-    await env.SKILLS_DB.prepare('DROP TABLE IF EXISTS workflow_state').run();
-  });
-
   beforeEach(async () => {
     // Clean up KV
     await env.CACHE.delete('ai_skills_content_ja');
@@ -59,6 +55,10 @@ describe('ai-skills-loader', () => {
 
     // Reset mocks
     vi.clearAllMocks();
+  });
+
+  afterAll(async () => {
+    await env.SKILLS_DB.prepare('DROP TABLE IF EXISTS workflow_state').run();
   });
 
   describe('loadAISkillsContentHandler', () => {
@@ -163,6 +163,7 @@ describe('ai-skills-loader', () => {
     });
 
     // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
+    // oxlint-disable-next-line vitest/no-disabled-tests
     it.skip('falls back to D1 when KV is empty', async () => {
       // Insert state into D1
       await db.insert(workflowState).values({
@@ -197,6 +198,7 @@ describe('ai-skills-loader', () => {
     });
 
     // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
+    // oxlint-disable-next-line vitest/no-disabled-tests
     it.skip('self-heals corrupted KV by falling back to D1 and rewriting cache', async () => {
       await env.CACHE.put('ai_skills_state', 'undefined');
       await db.insert(workflowState).values({
@@ -297,6 +299,7 @@ describe('ai-skills-loader', () => {
     });
 
     // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
+    // oxlint-disable-next-line vitest/no-disabled-tests
     it.skip('self-heals corrupted workflow KV from D1', async () => {
       await env.CACHE.put('ai_skills_state', 'undefined');
       await db.insert(workflowState).values({
@@ -323,6 +326,7 @@ describe('ai-skills-loader', () => {
   });
 
   // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
+  // oxlint-disable-next-line vitest/no-disabled-tests
   describe.skip('triggerSkillsAnalysisHandler', () => {
     beforeEach(async () => {
       // Initialize workflow state

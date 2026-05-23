@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Test assertions verify existence */
+/* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
 import type { Skill } from '../../-config/skills-config';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';

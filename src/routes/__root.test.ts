@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test file uses type assertions for Route.options internal structure */
 import { describe, expect, test } from 'vite-plus/test';
 
 import { Route } from './__root';

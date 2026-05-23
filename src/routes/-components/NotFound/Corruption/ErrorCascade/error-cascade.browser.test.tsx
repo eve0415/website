@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion), eslint-plugin-jest(no-conditional-in-test), typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify existence; filtering empty animation delays requires conditional; NodeList items need type assertion */
+/* oxlint-disable typescript/no-non-null-assertion, vitest/no-conditional-in-test -- Test assertions verify existence; filtering empty animation delays requires conditional */
 import { describe, expect, test, vi } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';

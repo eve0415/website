@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Test assertions verify existence */
+/* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vite-plus/test';
@@ -10,17 +10,17 @@ const TURNSTILE_URL = 'https://challenges.cloudflare.com/turnstile/v0/siteverify
 // MSW server setup
 const server = setupServer();
 
-beforeAll(() => {
-  server.listen({ onUnhandledRequest: 'bypass' });
-});
-afterEach(() => {
-  server.resetHandlers();
-});
-afterAll(() => {
-  server.close();
-});
-
 describe('verifyTurnstile', () => {
+  beforeAll(() => {
+    server.listen({ onUnhandledRequest: 'bypass' });
+  });
+  afterEach(() => {
+    server.resetHandlers();
+  });
+  afterAll(() => {
+    server.close();
+  });
+
   describe('token validation', () => {
     test('returns error for empty token', async () => {
       const result = await verifyTurnstile('', 'secret-key');

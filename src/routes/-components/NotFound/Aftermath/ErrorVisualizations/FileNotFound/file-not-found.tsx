@@ -1,3 +1,4 @@
+/* oxlint-disable react-compiler/memo-dependencies -- buildTree is recursive and defined inside useMemo, not an external dependency */
 import type { FC, ReactNode } from 'react';
 
 import { Link, useLocation } from '@tanstack/react-router';

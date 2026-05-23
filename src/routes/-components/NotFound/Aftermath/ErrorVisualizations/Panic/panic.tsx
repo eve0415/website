@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-react(no-array-index-key) -- Static stack frame display */
+/* oxlint-disable react/no-array-index-key -- Static stack frame display */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';

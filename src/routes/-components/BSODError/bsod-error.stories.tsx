@@ -217,7 +217,7 @@ export const LongErrorMessage = meta.story({
  */
 export const EmptyErrorMessage = meta.story({
   args: {
-    // oxlint-disable-next-line eslint-plugin-unicorn(error-message) -- Intentionally testing empty error handling
+    // oxlint-disable-next-line unicorn/error-message -- Intentionally testing empty error handling
     error: new Error(''),
     reset: fn(),
   },

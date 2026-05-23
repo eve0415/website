@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion), typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify existence; level cast is safe for mock data */
+/* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
@@ -74,6 +74,7 @@ describe('codeRadar', () => {
   // SKIP: Fake timers don't properly mock requestAnimationFrame in browser test environment.
   // The animation uses requestAnimationFrame which is tied to display refresh, not timer-based.
   // The reduced motion test below verifies onBootComplete works correctly.
+  // oxlint-disable-next-line vitest/no-disabled-tests
   test.skip('calls onBootComplete when animation finishes (lines 216-217)', async () => {
     const onBootComplete = vi.fn();
 
@@ -168,6 +169,7 @@ describe('codeRadar', () => {
 
     await screen.unmount();
 
+    // oxlint-disable-next-line vitest/prefer-called-with
     expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
     cancelAnimationFrameSpy.mockRestore();

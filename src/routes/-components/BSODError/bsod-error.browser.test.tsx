@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-jest(no-conditional-in-test) -- Vitest poll() callbacks require null-coalescing for safe DOM access */
+/* oxlint-disable vitest/no-conditional-in-test -- Vitest poll() callbacks require null-coalescing for safe DOM access */
 import type { FC } from 'react';
 
 import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } from '@tanstack/react-router';
@@ -157,7 +157,7 @@ describe('bSODError', () => {
     });
 
     test('displays fallback for empty error message', async () => {
-      // oxlint-disable-next-line eslint-plugin-unicorn(error-message) -- Intentionally testing empty error handling
+      // oxlint-disable-next-line unicorn/error-message -- Intentionally testing empty error handling
       const emptyError = new Error('');
       await render(<TestWrapper error={emptyError} />);
 

@@ -62,7 +62,7 @@ const LinkPage: FC = () => (
     <div className='grid gap-16 lg:grid-cols-2'>
       {/* Social Links */}
       <section>
-        {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
+        {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
         <h2 className='text-subtle-foreground mb-8 font-mono text-sm tracking-wider uppercase'>// Social</h2>
         <div className='grid gap-4'>
           {socialLinks.map((link, index) => (
@@ -73,7 +73,7 @@ const LinkPage: FC = () => (
 
       {/* Contact Form */}
       <section>
-        {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
+        {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
         <h2 className='text-subtle-foreground mb-8 font-mono text-sm tracking-wider uppercase'>// Contact</h2>
         <ContactForm />
       </section>

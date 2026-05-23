@@ -126,6 +126,7 @@ describe('useNodeMaterialize', () => {
       await screen.unmount();
 
       // Should have called cleanup
+      // oxlint-disable-next-line vitest/prefer-called-with
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();

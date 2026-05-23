@@ -1,4 +1,4 @@
-/* oxlint-disable eslint(no-await-in-loop) -- Terminal commands must execute sequentially to simulate real user interaction */
+/* oxlint-disable no-await-in-loop -- Terminal commands must execute sequentially to simulate real user interaction */
 import type { ReactNode } from 'react';
 
 import { Component } from 'react';
@@ -19,7 +19,7 @@ class TestErrorBoundary extends Component<{ children: ReactNode }, { caughtError
     return { caughtError: error };
   }
 
-  // oxlint-disable-next-line typescript-eslint(promise-function-async) -- React render() returns ReactNode, not Promise
+  // oxlint-disable-next-line typescript/promise-function-async -- React render() returns ReactNode, not Promise
   override render() {
     const { caughtError } = this.state;
     if (caughtError) return <div data-testid='error-caught'>{caughtError.name}</div>;
@@ -38,7 +38,6 @@ const dispatchCtrlC = () => {
     bubbles: true,
     cancelable: true,
     composed: true,
-    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- globalThis is Window in browser context
     view: globalThis as Window & typeof globalThis,
   });
   globalThis.dispatchEvent(event);
@@ -165,6 +164,7 @@ describe('terminal', () => {
     // The "completes boot and shows prompt after Ctrl+C during displaying" test
     // verifies the Ctrl+C → prompt transition works correctly.
 
+    // oxlint-disable-next-line vitest/no-disabled-tests
     test.skip('ctrl+C during typing skips content and shows prompt with ^C', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
@@ -196,6 +196,7 @@ describe('terminal', () => {
       await expect.element(header).toHaveTextContent('^C');
     });
 
+    // oxlint-disable-next-line vitest/no-disabled-tests
     test.skip('ctrl+C during typing transitions to prompt without content', async () => {
       mockTouchDevice(false);
       const onBootComplete = vi.fn();

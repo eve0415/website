@@ -45,6 +45,7 @@ describe('background', () => {
     // Cleanup should remove resize listener
     expect(removeEventListenerSpy).toHaveBeenCalledWith('resize', expect.any(Function));
     // And cancel animation frame
+    // oxlint-disable-next-line vitest/prefer-called-with
     expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
     removeEventListenerSpy.mockRestore();

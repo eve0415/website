@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-react(jsx-no-comment-textnodes), eslint-plugin-react(no-unescaped-entities), eslint-plugin-react(no-array-index-key) -- Code snippets with comments and quotes are intentional visual elements, static arrays */
+/* oxlint-disable react/jsx-no-comment-textnodes, react/no-unescaped-entities, react/no-array-index-key -- Code snippets with comments and quotes are intentional visual elements, static arrays */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';

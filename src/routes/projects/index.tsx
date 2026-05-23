@@ -119,7 +119,7 @@ const ProjectsPage: FC = () => {
 
         {/* Tech breakdown */}
         <div className='border-line bg-surface mt-8 rounded-lg border p-6'>
-          {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
+          {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
           <h3 className='text-subtle-foreground mb-4 font-mono text-sm tracking-wider uppercase'>// 主要言語</h3>
           <div className='flex flex-wrap gap-3'>
             {['TypeScript', 'JavaScript', 'Java', 'Kotlin', 'Rust', 'Go', 'Python'].map(lang => (

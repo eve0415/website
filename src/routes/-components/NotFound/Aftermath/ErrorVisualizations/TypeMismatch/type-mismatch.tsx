@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-react(jsx-no-comment-textnodes), eslint-plugin-react(no-array-index-key) -- Intentionally displays code comments as visual elements, static arrays */
+/* oxlint-disable react/jsx-no-comment-textnodes, react/no-array-index-key -- Intentionally displays code comments as visual elements, static arrays */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';

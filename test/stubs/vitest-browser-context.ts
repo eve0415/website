@@ -14,7 +14,7 @@ export const server = {
   provider: 'playwright',
   browser: 'chromium',
   commands: {
-    // oxlint-disable-next-line typescript-eslint(require-await) -- Matches vitest async API
+    // oxlint-disable-next-line typescript/require-await -- Matches vitest async API
     getInitialGlobals: async () => ({}),
   },
   config: {},

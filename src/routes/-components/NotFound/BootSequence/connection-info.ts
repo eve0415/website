@@ -128,7 +128,6 @@ const getCachedCert = createServerOnlyFn(async (): Promise<CertificatePack | nul
  * Server function to get connection metadata.
  * Reads real data from Cloudflare request headers and API.
  */
-/* oxlint-disable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access -- tsgo bug: getRequestHeaders() typed as any */
 export const getConnectionInfo = createServerFn().handler(async (): Promise<ConnectionInfo> => {
   const headers = getRequestHeaders();
   const certificatePack = await getCachedCert();
@@ -152,4 +151,3 @@ export const getConnectionInfo = createServerFn().handler(async (): Promise<Conn
     certificatePack,
   };
 });
-/* oxlint-enable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access */

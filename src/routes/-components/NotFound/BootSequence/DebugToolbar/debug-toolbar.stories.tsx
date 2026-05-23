@@ -1,4 +1,4 @@
-/* oxlint-disable eslint(no-await-in-loop) -- Sequential click tests require await in loop */
+/* oxlint-disable no-await-in-loop -- Sequential click tests require await in loop */
 import { expect, fn, userEvent, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';

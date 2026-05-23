@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-react(no-unescaped-entities) -- Code snippets and static arrays are intentional visual elements */
+/* oxlint-disable react/no-unescaped-entities -- Code snippets and static arrays are intentional visual elements */
 import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
