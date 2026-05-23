@@ -78,7 +78,6 @@ export default defineConfig({
         plugins: [tailwindcss()],
         resolve: {
           alias: {
-            // TanStack Start internal subpath imports needed when bundling @tanstack/start-server-core
             '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
             '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
             '#tanstack-start-plugin-adapters': path.resolve('test/stubs/tanstack-start-plugin-adapters.ts'),
@@ -97,8 +96,6 @@ export default defineConfig({
           environment: 'node',
           server: {
             deps: {
-              // Inline @tanstack packages so that our virtual module plugin can intercept
-              // the #tanstack-start-server-fn-manifest import
               inline: ['@tanstack/start-server-core', '@tanstack/react-start'],
             },
           },
