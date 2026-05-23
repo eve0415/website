@@ -27,7 +27,7 @@ interface TerminalProps {
 const INITIAL_COMMAND = 'sys.diagnostic --user=eve0415';
 
 // Touch device detection using useSyncExternalStore to avoid setState in effect
-// oxlint-disable-next-line eslint-plugin-promise(prefer-await-to-callbacks) -- useSyncExternalStore requires callback subscription pattern
+// oxlint-disable-next-line promise/prefer-await-to-callbacks -- useSyncExternalStore requires callback subscription pattern
 const subscribeTouchDevice = (callback: () => void) => {
   const coarseQuery = globalThis.matchMedia('(pointer: coarse)');
   const fineQuery = globalThis.matchMedia('(pointer: fine)');
@@ -313,7 +313,7 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
       {/* Footer hint - only in prompt mode */}
       {state === 'prompt' && !isTouchDevice && (
         <footer data-testid='terminal-footer' className='text-subtle-foreground mt-8 flex items-center justify-center gap-2 text-xs'>
-          {/* oxlint-disable-next-line eslint-plugin-react(no-unescaped-entities) -- Terminal-style text with quotes */}
+          {/* oxlint-disable-next-line react/no-unescaped-entities -- Terminal-style text with quotes */}
           <span className='font-mono'># type 'help' for commands</span>
         </footer>
       )}

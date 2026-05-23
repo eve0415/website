@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion), eslint(no-await-in-loop), typescript-eslint(no-unsafe-type-assertion), typescript-eslint(no-unsafe-assignment) -- GitHub/AI API responses have known shape; workflow pagination requires sequential await; JSON.parse returns any */
+/* oxlint-disable typescript/no-non-null-assertion, no-await-in-loop, typescript/no-unsafe-type-assertion, typescript/no-unsafe-assignment -- GitHub/AI API responses have known shape; workflow pagination requires sequential await; JSON.parse returns any */
 // Cloudflare Workflow for AI Skills Analysis
 // Uses GitHub GraphQL API with sleepUntil for rate limits
 // Supports incremental syncing and singleton execution

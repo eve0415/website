@@ -131,7 +131,7 @@ const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { succ
   return (
     <form
       data-testid='contact-form'
-      // oxlint-disable-next-line typescript-eslint(no-misused-promises) -- Event handler, Promise is intentionally not awaited
+      // oxlint-disable-next-line typescript/no-misused-promises -- Event handler, Promise is intentionally not awaited
       onSubmit={async e => {
         try {
           await handleSubmit(e);

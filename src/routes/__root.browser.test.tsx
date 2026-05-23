@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test file requires type assertions for Route internal structure */
 import type { FC, PropsWithChildren, ReactNode } from 'react';
 
 import { describe, expect, test, vi } from 'vite-plus/test';

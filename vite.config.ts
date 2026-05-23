@@ -485,10 +485,10 @@ export default defineConfig({
       'react-compiler/unsupported-syntax': 'error',
       'react-compiler/use-memo': 'error',
       'react-compiler/incompatible-library': 'error',
-      'react-compiler/automatic-effect-dependencies': 'error',
+      'react-compiler/exhaustive-effect-dependencies': 'error',
       'react-compiler/capitalized-calls': 'error',
       'react-compiler/fbt': 'error',
-      'react-compiler/fire': 'error',
+      'react-compiler/memo-dependencies': 'error',
       'react-compiler/invariant': 'error',
       'react-compiler/hooks': 'error',
       'react-compiler/memoized-effect-dependencies': 'error',
@@ -500,9 +500,16 @@ export default defineConfig({
     },
     overrides: [
       {
-        files: ['**/*.spec.ts', '**/*.test.ts'],
+        files: ['**/*.spec.ts', '**/*.test.ts', '**/*.spec.tsx', '**/*.test.tsx'],
         rules: {
           'import/first': 'off',
+          'typescript/no-unsafe-call': 'off',
+          'typescript/no-unsafe-member-access': 'off',
+          'typescript/no-unsafe-assignment': 'off',
+          'typescript/no-unsafe-return': 'off',
+          'typescript/no-unsafe-argument': 'off',
+          'typescript/no-unsafe-type-assertion': 'off',
+          'vitest/require-mock-type-parameters': 'off',
         },
       },
       {
@@ -528,7 +535,6 @@ export default defineConfig({
     ],
     options: {
       typeAware: true,
-      typeCheck: true,
       reportUnusedDisableDirectives: 'deny',
     },
   },

@@ -303,7 +303,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         <span className='text-neon'>[</span>
         <span>CODE_RADAR</span>
         <span className='text-neon'>]</span>
-        {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
+        {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
         <span className='text-subtle-foreground ml-2'>// 52週間の活動</span>
       </div>
 

@@ -80,6 +80,7 @@ export default defineConfig({
             // TanStack Start internal subpath imports needed when bundling @tanstack/start-server-core
             '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
             '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
+            '#tanstack-start-plugin-adapters': path.resolve('test/stubs/tanstack-start-plugin-adapters.ts'),
             'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
             'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
             // Stub cloudflare modules for node environment
@@ -112,6 +113,7 @@ export default defineConfig({
           alias: {
             '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
             '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
+            '#tanstack-start-plugin-adapters': path.resolve('test/stubs/tanstack-start-plugin-adapters.ts'),
             'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
             'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
             'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
@@ -166,6 +168,7 @@ export default defineConfig({
           alias: {
             '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
             '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
+            '#tanstack-start-plugin-adapters': path.resolve('test/stubs/tanstack-start-plugin-adapters.ts'),
             'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
             'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
             'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),

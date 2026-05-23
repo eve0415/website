@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- MediaQueryList mock stubs require type assertion */
+/* oxlint-disable typescript/no-unsafe-type-assertion -- MediaQueryList mock stubs require type assertion */
 import type { GitHubStats } from '../../-utils/github-stats-utils';
 import type { FC, ReactNode } from 'react';
 
@@ -73,7 +73,7 @@ const dispatchCtrlC = (canvasElement: HTMLElement) => {
     bubbles: true,
     cancelable: true,
     composed: true,
-    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- defaultView is Window in browser context
+    // oxlint-disable-next-line typescript/no-unsafe-type-assertion -- defaultView is Window in browser context
     view: win as Window & typeof globalThis,
   });
   // Try body first (most realistic - where real events originate)

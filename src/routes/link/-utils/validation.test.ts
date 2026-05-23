@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Intentionally casting to invalid types to test runtime type guards */
 import { describe, expect, test } from 'vite-plus/test';
 
 import { hasErrors, validateContactForm } from './validation';

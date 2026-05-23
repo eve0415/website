@@ -77,12 +77,12 @@ describe('animatedCounter', () => {
       takeRecords = vi.fn(() => []);
     }
 
-    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- Mock assignment for testing
     globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
     await render(<AnimatedCounter end={100} duration={500} />);
 
     // Observer should have been created and element observed
+    // oxlint-disable-next-line vitest/prefer-called-with
     expect(observeMock).toHaveBeenCalled();
   });
 
@@ -97,7 +97,6 @@ describe('animatedCounter', () => {
       takeRecords = vi.fn(() => []);
     }
 
-    // oxlint-disable-next-line typescript-eslint(no-unsafe-type-assertion) -- Mock assignment for testing
     globalThis.IntersectionObserver = MockIntersectionObserver as unknown as typeof IntersectionObserver;
 
     await render(<AnimatedCounter end={100} duration={500} isVisible />);

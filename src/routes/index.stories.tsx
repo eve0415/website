@@ -19,7 +19,7 @@ const IndexPageForStory: FC<{ showKonami?: boolean }> = ({ showKonami = false })
       <div className='bg-background/80 pointer-events-none fixed inset-0 z-50 flex items-center justify-center'>
         <div className='text-center'>
           <span className='text-neon block font-mono text-xl'>SECRET_UNLOCKED</span>
-          {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
+          {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
           <span className='text-subtle-foreground mt-2 block text-sm'>// 何かを見つけた...</span>
         </div>
       </div>
@@ -40,7 +40,7 @@ const IndexPageForStory: FC<{ showKonami?: boolean }> = ({ showKonami = false })
 
       {/* Navigation prompt */}
       <nav className='text-subtle-foreground mt-12 flex flex-col items-center gap-6 text-sm'>
-        {/* oxlint-disable-next-line eslint-plugin-react(jsx-no-comment-textnodes) -- Decorative code comment style */}
+        {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
         <span className='font-mono text-xs tracking-wider'>// 探索を始める</span>
         <div className='flex gap-6'>
           <a href='/projects' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>

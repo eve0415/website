@@ -47,7 +47,6 @@ export const handleForm = createServerFn({ method: 'POST' })
     if (hasErrors(validationErrors)) return { success: false, error: 'validation', errors: validationErrors };
 
     // 3. Get client IP from request headers
-    /* oxlint-disable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access, typescript/no-unsafe-argument -- tsgo false positive: getRequestHeaders returns Headers */
     const headers = getRequestHeaders();
     const clientIp = headers.get('CF-Connecting-IP') ?? 'unknown';
 
@@ -66,7 +65,6 @@ export const handleForm = createServerFn({ method: 'POST' })
 
     // 5. Check and increment rate limit atomically
     const rateLimitResult = await checkAndIncrementRateLimit(clientIp);
-    /* oxlint-enable typescript/no-unsafe-assignment, typescript/no-unsafe-call, typescript/no-unsafe-member-access, typescript/no-unsafe-argument */
     if (!rateLimitResult.allowed) {
       return {
         success: false,

@@ -8,7 +8,7 @@ declare global {
 
 const getServerSnapshot = () => false;
 
-// oxlint-disable-next-line eslint-plugin-promise(prefer-await-to-callbacks) -- useSyncExternalStore requires callback subscription pattern
+// oxlint-disable-next-line promise/prefer-await-to-callbacks -- useSyncExternalStore requires callback subscription pattern
 const subscribe = (callback: () => void) => {
   const mediaQuery = globalThis.matchMedia('(prefers-reduced-motion: reduce)');
   mediaQuery.addEventListener('change', callback);

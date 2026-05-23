@@ -1,4 +1,3 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify canvas element existence before type casting */
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
@@ -118,6 +117,7 @@ describe('skillsVisualization', () => {
       await screen.unmount();
 
       // ResizeObserver disconnect is called internally, cancelAnimationFrame for animation cleanup
+      // oxlint-disable-next-line vitest/prefer-called-with
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
 
       cancelAnimationFrameSpy.mockRestore();

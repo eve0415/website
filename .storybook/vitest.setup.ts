@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion) -- MediaQueryList mock stubs require type assertion */
+/* oxlint-disable typescript/no-unsafe-type-assertion -- MediaQueryList mock stubs require type assertion */
 import { beforeAll, beforeEach } from 'vitest';
 
 import preview from './preview';
@@ -61,16 +61,16 @@ const mockDesktopMatchMedia = () => {
 };
 
 // Apply mocks immediately at module load
-// oxlint-disable-next-line eslint-plugin-jest(require-hook) -- Setup file runs at module load
+// oxlint-disable-next-line vitest/require-hook -- Setup file runs at module load
 mockDesktopMatchMedia();
-// oxlint-disable-next-line eslint-plugin-jest(require-hook) -- Setup file runs at module load
+// oxlint-disable-next-line vitest/require-hook -- Setup file runs at module load
 injectReducedMotionCSS();
 
-// oxlint-disable-next-line eslint-plugin-jest(require-top-level-describe) -- Setup file, not a test file
+// oxlint-disable-next-line vitest/require-top-level-describe -- Setup file, not a test file
 beforeAll(preview.composed.beforeAll);
 
 // Also apply before each test to ensure it's in place after any resets
-// oxlint-disable-next-line eslint-plugin-jest(require-top-level-describe) -- Setup file, not a test file
+// oxlint-disable-next-line vitest/require-top-level-describe -- Setup file, not a test file
 beforeEach(() => {
   mockDesktopMatchMedia();
   injectReducedMotionCSS();

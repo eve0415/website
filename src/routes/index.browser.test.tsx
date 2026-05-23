@@ -1,4 +1,4 @@
-/* oxlint-disable eslint(no-await-in-loop) -- Sequential keyboard input tests require await in loop */
+/* oxlint-disable no-await-in-loop -- Sequential keyboard input tests require await in loop */
 import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';

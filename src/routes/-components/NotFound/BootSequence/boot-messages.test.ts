@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion) -- Test assertions verify existence */
+/* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
 import type { BootContext, BootMessage } from './boot-messages';
 
 import { describe, expect, it } from 'vite-plus/test';
@@ -193,6 +193,7 @@ describe('boot-messages', () => {
       const msg: BootMessage = {
         id: 'test',
         text: c => {
+          // oxlint-disable-next-line vitest/no-conditional-in-test -- Optional chaining on nullable API response
           const hosts = c.connection.certificatePack?.hosts?.join(', ') ?? 'none';
           return `Hosts: ${hosts}`;
         },
@@ -267,6 +268,7 @@ describe('boot-messages', () => {
     it('hydration section ends with error messages', () => {
       const messages = createBootMessages(mockConnection);
       const hydrate = messages.find(m => m.id === 'hydrate');
+      // oxlint-disable-next-line vitest/no-conditional-in-test -- Optional chaining on tree traversal
       const hydrateChildren = hydrate?.children ?? [];
       const lastTwo = hydrateChildren.slice(-2);
 
@@ -324,6 +326,7 @@ describe('boot-messages', () => {
       const messages = createBootMessages(mockConnection);
       const certGroup = findCertGroup(messages);
       const leafCert = certGroup?.children?.[0];
+      // oxlint-disable-next-line vitest/no-conditional-in-test -- Optional chaining on tree traversal
       const leafChildIds = leafCert?.children?.map(c => c.id) ?? [];
 
       expect(leafChildIds).toContain('tls-cert-eve0415-net-san');
@@ -336,6 +339,7 @@ describe('boot-messages', () => {
       const messages = createBootMessages(mockConnection);
       const certGroup = findCertGroup(messages);
       const intermediateCert = certGroup?.children?.[1];
+      // oxlint-disable-next-line vitest/no-conditional-in-test -- Optional chaining on tree traversal
       const intermediateChildIds = intermediateCert?.children?.map(c => c.id) ?? [];
 
       expect(intermediateChildIds).toContain('tls-cert-intermediate-ca-1-ca');

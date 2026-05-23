@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-unsafe-type-assertion), eslint(no-await-in-loop) -- Test file requires HTMLDivElement casts; sequential click tests require await in loop */
+/* oxlint-disable no-await-in-loop -- sequential click tests require await in loop */
 import type { FC } from 'react';
 
 import { useRef, useState } from 'react';

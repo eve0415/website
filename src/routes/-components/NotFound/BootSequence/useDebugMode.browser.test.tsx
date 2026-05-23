@@ -1,4 +1,4 @@
-/* oxlint-disable eslint(no-await-in-loop) -- Sequential debug stepping tests require await in loop */
+/* oxlint-disable no-await-in-loop -- Sequential debug stepping tests require await in loop */
 import type { FC, RefObject } from 'react';
 
 import { afterEach, beforeEach, describe, expect, test } from 'vite-plus/test';

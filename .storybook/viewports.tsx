@@ -1,4 +1,4 @@
-/* oxlint-disable eslint(no-await-in-loop) -- Sequential viewport screenshots require await in loop */
+/* oxlint-disable no-await-in-loop -- Sequential viewport screenshots require await in loop */
 // Global type declaration for test environment flag
 declare global {
   interface Window {

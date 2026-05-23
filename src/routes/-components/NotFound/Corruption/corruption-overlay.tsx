@@ -1,4 +1,4 @@
-/* oxlint-disable eslint-plugin-react(no-array-index-key) -- Static decorative arrays for visual effects */
+/* oxlint-disable react/no-array-index-key -- Static decorative arrays for visual effects */
 import type { MouseInfluence } from '../useMouseInfluence';
 import type { FC } from 'react';
 

@@ -1,4 +1,4 @@
-// Camera controls for panning/zooming to selected nodes
+/* oxlint-disable react-compiler/memo-dependencies -- frame is recursive rAF callback defined inside useEffect, not an external dependency */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 

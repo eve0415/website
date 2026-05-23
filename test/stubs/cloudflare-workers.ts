@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(require-await), typescript-eslint(no-unsafe-type-assertion) -- Stub implementations match Cloudflare's async API surface */
+/* oxlint-disable typescript/require-await, typescript/no-unsafe-type-assertion -- Stub implementations match Cloudflare's async API surface */
 // Stub for cloudflare:workers in non-cloudflare test environments
 // Provides in-memory KV and minimal D1 implementations
 

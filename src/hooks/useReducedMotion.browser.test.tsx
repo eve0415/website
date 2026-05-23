@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion), eslint-plugin-jest(no-conditional-in-test), typescript-eslint(no-unsafe-type-assertion) -- Test assertions verify existence; conditional in mock addEventListener captures listener; MediaQueryList mocks require type assertion */
+/* oxlint-disable typescript/no-non-null-assertion, vitest/no-conditional-in-test -- Test assertions verify existence; conditional in mock addEventListener captures listener */
 import type { FC } from 'react';
 
 import { describe, expect, test, vi } from 'vite-plus/test';

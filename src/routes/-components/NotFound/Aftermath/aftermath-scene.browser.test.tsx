@@ -1,4 +1,4 @@
-/* oxlint-disable typescript-eslint(no-non-null-assertion), eslint(no-await-in-loop) -- Test assertions verify existence; sequential error type tests require await in loop */
+/* oxlint-disable typescript/no-non-null-assertion, no-await-in-loop -- Test assertions verify existence; sequential error type tests require await in loop */
 import type { FC } from 'react';
 
 import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } from '@tanstack/react-router';
