@@ -87,11 +87,6 @@ export default defineConfig({
           name: 'unit',
           include: ['src/**/*.test.ts'],
           environment: 'node',
-          server: {
-            deps: {
-              inline: ['@tanstack/start-server-core', '@tanstack/react-start'],
-            },
-          },
         },
         optimizeDeps: {
           include: ['@tanstack/react-form-start > @tanstack/react-store'],
