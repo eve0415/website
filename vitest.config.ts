@@ -75,16 +75,9 @@ export default defineConfig({
     projects: [
       {
         extends: true,
-        plugins: [tailwindcss()],
+        plugins: [tanstackStartTesting({ aliasReactStart: false }), tailwindcss()],
         resolve: {
           alias: {
-            '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
-            '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
-            '#tanstack-start-plugin-adapters': path.resolve('test/stubs/tanstack-start-plugin-adapters.ts'),
-            'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
-            'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
-            // Stub cloudflare modules for node environment
-            // @cloudflare/vitest-pool-workers is incompatible with vite-plus-test
             'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
             'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
             'cloudflare:test': path.resolve('test/stubs/cloudflare-test.ts'),
