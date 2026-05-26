@@ -96,13 +96,7 @@ export default defineConfig({
         test: {
           name: 'workers',
           include: ['src/**/*.test.ts'],
-          exclude: [
-            'src/workflows/-utils/github-graphql.test.ts',
-            'src/routes/sys/-utils/github-stats.test.ts',
-            'src/routes/link/-utils/turnstile.test.ts',
-            'src/routes/link/-utils/contact-form.test.ts',
-            'src/server.test.ts',
-          ],
+          exclude: ['src/routes/link/-utils/contact-form.test.ts', 'src/server.test.ts'],
         },
       },
       {
@@ -117,13 +111,7 @@ export default defineConfig({
         },
         test: {
           name: 'unit',
-          include: [
-            'src/workflows/-utils/github-graphql.test.ts',
-            'src/routes/sys/-utils/github-stats.test.ts',
-            'src/routes/link/-utils/turnstile.test.ts',
-            'src/routes/link/-utils/contact-form.test.ts',
-            'src/server.test.ts',
-          ],
+          include: ['src/routes/link/-utils/contact-form.test.ts', 'src/server.test.ts'],
           environment: 'node',
         },
         optimizeDeps: {
