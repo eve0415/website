@@ -94,7 +94,7 @@ export default defineConfig({
           tailwindcss(),
         ],
         test: {
-          name: 'workers',
+          name: 'unit',
           include: ['src/**/*.test.ts'],
           exclude: ['src/routes/link/-utils/contact-form.test.ts'],
         },
@@ -110,7 +110,7 @@ export default defineConfig({
           },
         },
         test: {
-          name: 'unit',
+          name: 'unit-node',
           include: ['src/routes/link/-utils/contact-form.test.ts'],
           environment: 'node',
         },
