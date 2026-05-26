@@ -2,13 +2,13 @@
 paths: '**/*.test.ts'
 ---
 
-# Unit Tests (Node Environment)
+# Unit Tests (workerd via miniflare)
 
-Node environment tests for pure functions, server functions, and utilities.
+Tests run inside workerd via `@cloudflare/vitest-pool-workers`. Real Cloudflare bindings (KV, D1) available.
 
 ## MSW for HTTP Mocking
 
-**DO**: Use MSW for mocking external HTTP calls
+The cloudflareTest plugin rewrites `msw/node` → `msw/native` automatically. Keep imports as-is.
 
 ```ts
 import { http, HttpResponse } from 'msw';
@@ -23,40 +23,45 @@ afterAll(() => server.close());
 
 **DON'T**: Use `vi.mock('fetch')` or mock the entire module
 
-## Miniflare KV Bindings
+## KV Bindings
 
-**DO**: Access KV directly via `env` in Cloudflare Vitest pool
+Access KV directly via `env` from `cloudflare:workers`:
 
 ```ts
-import { env } from 'cloudflare:test';
+import { env } from 'cloudflare:workers';
 
 test('reads from KV', async () => {
-  await env.MY_KV.put('key', JSON.stringify(data));
+  await env.CACHE.put('key', JSON.stringify(data));
   const result = await myFunction();
   expect(result).toEqual(data);
 });
 ```
 
-## Server Function Testing
+## D1 Testing
 
-**DO**: Use `runWithStartContext` for TanStack Start server functions
+Use inline SQL migrations with `env.SKILLS_DB.batch()`. `readD1Migrations` from `@cloudflare/vitest-pool-workers` causes Vite resolution conflicts with TanStack Start.
 
 ```ts
-import { runWithStartContext } from '@tanstack/start-storage-context';
+const MIGRATIONS = [`CREATE TABLE IF NOT EXISTS ...`, ...];
 
-const result = await runWithStartContext(
-  {
-    getRouter: () => ({}) as any,
-    request: new Request('http://localhost/test'),
-    startOptions: {},
-    contextAfterGlobalMiddlewares: {},
-  },
-  () => myServerFn(),
-);
+beforeAll(async () => {
+  const statements = MIGRATIONS.map(m => env.SKILLS_DB.prepare(m));
+  await env.SKILLS_DB.batch(statements);
+});
 ```
+
+## env Mutation
+
+`env` properties are writable in miniflare. Override bindings per-test via direct assignment:
+
+```ts
+(env as Record<string, unknown>).MY_BINDING = mockValue;
+```
+
+## vi.mock Limitations
+
+`vi.mock` does NOT intercept workerd-native modules (`cloudflare:email`) or packages inlined by `server.deps.inline = true` (e.g., `mimetext`). Tests requiring these mocks stay in the `unit-node` project with Node stubs.
 
 ## Fake Timers
 
-**DO**: Use `vi.useFakeTimers()` freely in Node tests - works correctly
-
-**DON'T**: Forget to restore: `vi.useRealTimers()` in afterEach
+`vi.useFakeTimers()` works in workerd. Always restore: `vi.useRealTimers()` in afterEach.
