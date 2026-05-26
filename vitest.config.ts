@@ -90,13 +90,13 @@ export default defineConfig({
               },
             },
           }),
-          tanstackStartTesting({ aliasReactStart: false }),
+          tanstackStartTesting(),
           tailwindcss(),
         ],
         test: {
           name: 'workers',
           include: ['src/**/*.test.ts'],
-          exclude: ['src/routes/link/-utils/contact-form.test.ts', 'src/server.test.ts'],
+          exclude: ['src/routes/link/-utils/contact-form.test.ts'],
         },
       },
       {
@@ -111,7 +111,7 @@ export default defineConfig({
         },
         test: {
           name: 'unit',
-          include: ['src/routes/link/-utils/contact-form.test.ts', 'src/server.test.ts'],
+          include: ['src/routes/link/-utils/contact-form.test.ts'],
           environment: 'node',
         },
         optimizeDeps: {
