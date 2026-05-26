@@ -90,7 +90,7 @@ export default defineConfig({
               },
             },
           }),
-          tanstackStartTesting(),
+          tanstackStartTesting({ aliasReactStart: false }),
           tailwindcss(),
         ],
         test: {
