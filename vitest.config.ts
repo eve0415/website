@@ -1,6 +1,7 @@
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
+import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
 import storybookTest from '@storybook/addon-vitest/vitest-plugin';
 import tailwindcss from '@tailwindcss/vite';
 import { tanstackStartTesting } from '@tanstack-router-testing/react-start-testing/vite';
@@ -75,6 +76,30 @@ export default defineConfig({
     projects: [
       {
         extends: true,
+        plugins: [
+          cloudflareTest({
+            remoteBindings: false,
+            wrangler: { configPath: './wrangler.json' },
+            miniflare: {
+              bindings: {
+                GITHUB_PAT: 'test-pat',
+                MAIL_ADDRESS: 'test@example.com',
+                TURNSTILE_SECRET_KEY: 'test-turnstile-secret',
+                CLOUDFLARE_API_TOKEN: 'test-cf-token',
+                CLOUDFLARE_ZONE_ID: 'test-zone-id',
+              },
+            },
+          }),
+          tanstackStartTesting({ aliasReactStart: false }),
+          tailwindcss(),
+        ],
+        test: {
+          name: 'workers',
+          include: ['src/middleware/security.test.ts', 'src/routes/skills/-utils/ai-skills-loader.test.ts'],
+        },
+      },
+      {
+        extends: true,
         plugins: [tanstackStartTesting({ aliasReactStart: false }), tailwindcss()],
         resolve: {
           alias: {
@@ -86,6 +111,7 @@ export default defineConfig({
         test: {
           name: 'unit',
           include: ['src/**/*.test.ts'],
+          exclude: ['src/middleware/security.test.ts', 'src/routes/skills/-utils/ai-skills-loader.test.ts'],
           environment: 'node',
         },
         optimizeDeps: {
