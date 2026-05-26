@@ -41,7 +41,6 @@ describe('aftermathScene', () => {
   });
 
   afterEach(() => {
-    harness?.cleanup();
     vi.restoreAllMocks();
   });
 

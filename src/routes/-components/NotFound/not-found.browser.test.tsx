@@ -38,7 +38,6 @@ describe('notFound', () => {
   });
 
   afterEach(() => {
-    harness.cleanup();
     vi.useRealTimers();
     vi.restoreAllMocks();
   });

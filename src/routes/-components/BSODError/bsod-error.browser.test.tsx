@@ -1,7 +1,7 @@
 import { createRouterHarness } from '@tanstack-router-testing/react-router-testing';
 /* oxlint-disable vitest/no-conditional-in-test -- Vitest poll() callbacks require null-coalescing for safe DOM access */
 import { createRootRoute } from '@tanstack/react-router';
-import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
+import { describe, expect, test, vi } from 'vite-plus/test';
 import { page, userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
 
@@ -18,10 +18,6 @@ const createHarness = (error: Error, onReset: () => void = () => {}) =>
 
 describe('bSODError', () => {
   let harness: ReturnType<typeof createHarness>;
-
-  afterEach(() => {
-    harness?.cleanup();
-  });
 
   describe('renders BSOD for all errors', () => {
     test('renders BSOD layout for SudoRmRfError', async () => {

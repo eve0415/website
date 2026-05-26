@@ -131,7 +131,7 @@ export default defineConfig({
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
           },
-          setupFiles: ['test/setup.ts'],
+          setupFiles: ['@tanstack-router-testing/react-start-testing/cleanup', 'test/setup.ts'],
         },
       },
       {
@@ -168,7 +168,7 @@ export default defineConfig({
               },
             },
           },
-          setupFiles: ['.storybook/vitest.setup.ts'],
+          setupFiles: ['@tanstack-router-testing/react-start-testing/cleanup', '.storybook/vitest.setup.ts'],
         },
         optimizeDeps: {
           include: ['@tanstack/react-form-start > @tanstack/react-store'],
