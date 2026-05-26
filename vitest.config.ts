@@ -124,8 +124,6 @@ export default defineConfig({
         resolve: {
           dedupe: ['react', 'react-dom'],
           alias: {
-            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
-            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
             'react-dom/server': path.resolve('test/stubs/react-dom-server.ts'),
             '@tanstack/react-form-start': path.resolve('test/stubs/tanstack-react-form-start.tsx'),
           },
@@ -166,8 +164,6 @@ export default defineConfig({
         resolve: {
           dedupe: ['react', 'react-dom'],
           alias: {
-            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
-            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
             'react-dom/server': path.resolve('test/stubs/react-dom-server.ts'),
             '@tanstack/react-form-start': path.resolve('test/stubs/tanstack-react-form-start.tsx'),
           },
