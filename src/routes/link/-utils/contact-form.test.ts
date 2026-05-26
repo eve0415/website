@@ -1,20 +1,6 @@
 import { env, withEnv } from 'cloudflare:workers';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 
-// Mock @tanstack/react-start before importing contact-form
-vi.mock('@tanstack/react-start', () => ({
-  createServerFn: vi.fn(() => ({
-    inputValidator: vi.fn(() => ({
-      handler: vi.fn(),
-    })),
-  })),
-  createServerOnlyFn: vi.fn(fn => fn),
-}));
-
-vi.mock('@tanstack/react-start/server', () => ({
-  getRequestHeaders: vi.fn(() => new Headers({ 'CF-Connecting-IP': '192.168.1.1' })),
-}));
-
 // Create tracked mock functions for mimetext
 const mockSetSender = vi.fn();
 const mockSetRecipient = vi.fn();
