@@ -51,6 +51,33 @@ export const commands = server.commands;
   },
 });
 
+// Stub TanStack Start's build-time virtual modules so they resolve in workerd.
+// These are normally provided at build time and by tanstackStartTesting's
+// virtual stubs plugin (aliasReactStart: true), but we use aliasReactStart: false
+// to keep the real createServerFn/createServerOnlyFn behavior.
+const TANSTACK_VIRTUAL_IDS = new Set([
+  '#tanstack-router-entry',
+  '#tanstack-start-entry',
+  '#tanstack-start-plugin-adapters',
+  '#tanstack-start-server-fn-resolver',
+  'virtual:tanstack-rsc-ssr-decode',
+  'virtual:tanstack-rsc-browser-decode',
+  'tanstack-start-manifest:v',
+  'tanstack-start-injected-head-scripts:v',
+]);
+
+// oxlint-disable-next-line typescript/consistent-type-imports -- Plugin type used as return type
+const tanstackVirtualStubs = (): import('vite-plus').Plugin => ({
+  name: 'tanstack-virtual-stubs',
+  enforce: 'pre',
+  resolveId(id) {
+    return TANSTACK_VIRTUAL_IDS.has(id) ? `\0${id}` : undefined;
+  },
+  load(id) {
+    return id.startsWith('\0') && TANSTACK_VIRTUAL_IDS.has(id.slice(1)) ? 'export default {}; export {};' : undefined;
+  },
+});
+
 export default defineConfig({
   test: {
     clearMocks: true,
@@ -91,31 +118,12 @@ export default defineConfig({
             },
           }),
           tanstackStartTesting({ aliasReactStart: false }),
+          tanstackVirtualStubs(),
           tailwindcss(),
         ],
         test: {
           name: 'unit',
           include: ['src/**/*.test.ts'],
-          exclude: ['src/routes/link/-utils/contact-form.test.ts'],
-        },
-      },
-      {
-        extends: true,
-        plugins: [tanstackStartTesting({ aliasReactStart: false }), tailwindcss()],
-        resolve: {
-          alias: {
-            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
-            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
-            'cloudflare:test': path.resolve('test/stubs/cloudflare-test.ts'),
-          },
-        },
-        test: {
-          name: 'unit-node',
-          include: ['src/routes/link/-utils/contact-form.test.ts'],
-          environment: 'node',
-        },
-        optimizeDeps: {
-          include: ['@tanstack/react-form-start > @tanstack/react-store'],
         },
       },
       {

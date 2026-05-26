@@ -112,31 +112,26 @@ export const checkAndIncrementRateLimit = createServerOnlyFn(async (ip: string) 
   };
 });
 
-/**
- * Send contact form email.
- * @internal Exported for testing purposes only
- */
-export const sendContactEmail = createServerOnlyFn(async (formData: ContactFormData) => {
+/** @internal Exported for testing */
+export const buildContactEmailRaw = (formData: ContactFormData, recipientAddress: string): string => {
   const msg = createMimeMessage();
   msg.setSender({ name: 'Contact Form', addr: SENDER_ADDRESS });
-  msg.setRecipient(env.MAIL_ADDRESS);
+  msg.setRecipient(recipientAddress);
 
-  // Sanitize name for subject to prevent email header injection
   const safeSubjectName = formData.name.trim().replaceAll(/[\r\n]+/g, ' ');
   msg.setSubject(`[Contact] ${safeSubjectName}`);
 
-  const body = `お名前: ${formData.name.trim()}
-メールアドレス: ${formData.email.trim()}
-
-メッセージ:
-${formData.message.trim()}`;
-
   msg.addMessage({
     contentType: 'text/plain',
-    data: body,
+    data: `お名前: ${formData.name.trim()}\nメールアドレス: ${formData.email.trim()}\n\nメッセージ:\n${formData.message.trim()}`,
   });
 
-  const message = new EmailMessage(SENDER_ADDRESS, env.MAIL_ADDRESS, msg.asRaw());
+  return msg.asRaw();
+};
 
+/** @internal Exported for testing */
+export const sendContactEmail = createServerOnlyFn(async (formData: ContactFormData) => {
+  const raw = buildContactEmailRaw(formData, env.MAIL_ADDRESS);
+  const message = new EmailMessage(SENDER_ADDRESS, env.MAIL_ADDRESS, raw);
   await env.CONTACT_EMAIL.send(message);
 });
