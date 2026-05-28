@@ -51,16 +51,18 @@ const projects: Project[] = [
     featured: true,
   },
   {
+    title: 'cella',
+    description: 'AIエージェント時代のターミナルネイティブ devcontainer CLI。公式 CLI では未実装のポートフォワーディングや認証転送を単一バイナリで実現。',
+    tags: ['Rust', 'Devcontainer', 'CLI'],
+    links: [{ label: 'GitHub', url: 'https://github.com/eve0415/cella' }],
+    highlight: 'Rust',
+    featured: true,
+  },
+  {
     title: 'eve0415.net',
     description: 'このウェブサイト自体がポートフォリオ。TanStack Start + Tailwind CSS 4 で構築。',
     tags: ['TypeScript', 'React', 'Cloudflare'],
     links: [{ label: 'ソースコード', url: 'https://github.com/eve0415/website' }],
-  },
-  {
-    title: 'DevTool',
-    description: '開発者向け Discord Bot。各種ユーティリティ機能を提供。',
-    tags: ['TypeScript', 'Discord.js'],
-    links: [{ label: 'GitHub', url: 'https://github.com/eve0415/DevTool' }],
   },
 ];
 
