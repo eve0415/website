@@ -4,7 +4,7 @@ paths: '**/*.test.ts'
 
 # Unit Tests (workerd via miniflare)
 
-Tests run inside workerd via `@cloudflare/vitest-pool-workers`. Real Cloudflare bindings (KV, D1) available.
+Tests run inside workerd via `@cloudflare/vitest-pool-workers`. Real Cloudflare bindings (KV, D1, Email) and npm packages available — no stubs needed.
 
 ## MSW for HTTP Mocking
 
@@ -39,7 +39,7 @@ test('reads from KV', async () => {
 
 ## D1 Testing
 
-Use inline SQL migrations with `env.SKILLS_DB.batch()`. `readD1Migrations` from `@cloudflare/vitest-pool-workers` causes Vite resolution conflicts with TanStack Start.
+Use inline SQL migrations with `env.SKILLS_DB.batch()`. `readD1Migrations` from `@cloudflare/vitest-pool-workers` imports wrangler which requires `node:process` — unavailable in workerd.
 
 ```ts
 const MIGRATIONS = [`CREATE TABLE IF NOT EXISTS ...`, ...];
@@ -50,17 +50,20 @@ beforeAll(async () => {
 });
 ```
 
-## env Mutation
+## Mocking Side-Effectful Bindings
 
-`env` properties are writable in miniflare. Override bindings per-test via direct assignment:
+`env` properties are writable in miniflare. Mock bindings that have side effects (e.g., sending emails) via direct assignment:
 
 ```ts
-(env as Record<string, unknown>).MY_BINDING = mockValue;
+const mockSend = vi.fn().mockResolvedValue();
+(env as Record<string, unknown>).CONTACT_EMAIL = { send: mockSend };
 ```
 
-## vi.mock Limitations
+npm packages (mimetext, drizzle-orm, etc.) and `cloudflare:*` modules (cloudflare:email, cloudflare:test) work natively in workerd — don't mock them.
 
-`vi.mock` does NOT intercept workerd-native modules (`cloudflare:email`) or packages inlined by `server.deps.inline = true` (e.g., `mimetext`). Tests requiring these mocks stay in the `unit-node` project with Node stubs.
+## vi.mock Scope
+
+`vi.mock` works for **local modules** and **aliased modules** (e.g., `@tanstack/react-start/server-entry`). It does NOT intercept npm packages inlined by `server.deps.inline = true`. This is rarely an issue — use real implementations and mock only the side-effectful endpoint (env bindings).
 
 ## Fake Timers
 

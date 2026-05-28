@@ -10,17 +10,15 @@ import { commits, repos, workflowState } from '#db/schema';
 
 import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
 
-// Inline SQL for migration - matches ./migrations/ but avoids importing readD1Migrations
-// which triggers Vite module resolution conflicts with TanStack Start's subpath imports
+// readD1Migrations imports wrangler which requires node:process — unavailable in workerd.
+// Inline SQL mirrors ./migrations/ files.
 const MIGRATIONS = [
-  // 0000_even_trauma.sql (tables + indexes)
   `CREATE TABLE IF NOT EXISTS repos (id INTEGER PRIMARY KEY NOT NULL, github_id INTEGER NOT NULL UNIQUE, full_name TEXT NOT NULL, name TEXT NOT NULL, owner TEXT NOT NULL, is_private INTEGER DEFAULT 0 NOT NULL, is_fork INTEGER DEFAULT 0 NOT NULL, privacy_class TEXT NOT NULL, default_branch TEXT, language TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, fetched_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS commits (id INTEGER PRIMARY KEY NOT NULL, sha TEXT NOT NULL UNIQUE, repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE, message TEXT NOT NULL, author_date TEXT NOT NULL, additions INTEGER DEFAULT 0 NOT NULL, deletions INTEGER DEFAULT 0 NOT NULL, files_changed INTEGER DEFAULT 0 NOT NULL, languages TEXT, fetched_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS pull_requests (id INTEGER PRIMARY KEY NOT NULL, github_id INTEGER NOT NULL UNIQUE, repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE, number INTEGER NOT NULL, title TEXT NOT NULL, body TEXT, state TEXT NOT NULL, merged INTEGER DEFAULT 0 NOT NULL, additions INTEGER DEFAULT 0 NOT NULL, deletions INTEGER DEFAULT 0 NOT NULL, changed_files INTEGER DEFAULT 0 NOT NULL, commits_count INTEGER DEFAULT 0 NOT NULL, comments_count INTEGER DEFAULT 0 NOT NULL, review_comments_count INTEGER DEFAULT 0 NOT NULL, created_at TEXT NOT NULL, merged_at TEXT, closed_at TEXT, fetched_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS pr_reviews (id INTEGER PRIMARY KEY NOT NULL, github_id INTEGER NOT NULL UNIQUE, repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE, pr_number INTEGER NOT NULL, pr_title TEXT, state TEXT NOT NULL, body TEXT, submitted_at TEXT NOT NULL, fetched_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
   `CREATE TABLE IF NOT EXISTS workflow_state (id INTEGER PRIMARY KEY DEFAULT 1 NOT NULL, phase TEXT DEFAULT 'idle' NOT NULL, progress_pct INTEGER DEFAULT 0 NOT NULL, current_repo TEXT, repos_total INTEGER DEFAULT 0 NOT NULL, repos_processed INTEGER DEFAULT 0 NOT NULL, last_run_at TEXT, last_completed_at TEXT, error_message TEXT)`,
   `CREATE TABLE IF NOT EXISTS history_summaries (id INTEGER PRIMARY KEY NOT NULL, summary_type TEXT NOT NULL, time_range TEXT NOT NULL, content TEXT NOT NULL, token_estimate INTEGER DEFAULT 0 NOT NULL, created_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
-  // indexes
   `CREATE INDEX IF NOT EXISTS idx_repos_privacy ON repos (privacy_class)`,
   `CREATE INDEX IF NOT EXISTS idx_repos_language ON repos (language)`,
   `CREATE INDEX IF NOT EXISTS idx_commits_repo ON commits (repo_id)`,
@@ -31,7 +29,6 @@ const MIGRATIONS = [
   `CREATE INDEX IF NOT EXISTS idx_reviews_repo ON pr_reviews (repo_id)`,
   `CREATE INDEX IF NOT EXISTS idx_reviews_submitted ON pr_reviews (submitted_at)`,
   `CREATE UNIQUE INDEX IF NOT EXISTS idx_summaries_type_range ON history_summaries (summary_type, time_range)`,
-  // 0001_mighty_goliath.sql (incremental sync columns)
   `ALTER TABLE repos ADD COLUMN last_commit_at TEXT`,
   `ALTER TABLE repos ADD COLUMN last_pr_updated_at TEXT`,
   `ALTER TABLE repos ADD COLUMN commits_cursor TEXT`,
