@@ -31,6 +31,12 @@ const projects: Project[] = [
     featured: true,
   },
   {
+    title: 'ActivityManager',
+    description: 'macOSネイティブのプロセスモニター。子プロセスを親アプリケーションバンドルごとにグループ化 — Windows タスクマネージャーの Mac 版。',
+    tags: ['Swift', 'macOS', 'SwiftUI'],
+    links: [{ label: 'GitHub', url: 'https://github.com/eve0415/ActivityManager' }],
+  },
+  {
     title: 'eve0415.net',
     description: 'このウェブサイト自体がポートフォリオ。TanStack Start + Tailwind CSS 4 で構築。',
     tags: ['TypeScript', 'React', 'Cloudflare'],
@@ -84,7 +90,7 @@ const ProjectsPage: FC = () => (
         {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
         <h3 className='text-subtle-foreground mb-4 font-mono text-sm tracking-wider uppercase'>// 主要言語</h3>
         <div className='flex flex-wrap gap-3'>
-          {['TypeScript', 'JavaScript', 'Java', 'Kotlin', 'Rust', 'Go', 'Python'].map(lang => (
+          {['TypeScript', 'JavaScript', 'Java', 'Kotlin', 'Swift', 'Rust', 'Go', 'Python'].map(lang => (
             <span
               key={lang}
               className='bg-muted text-muted-foreground hover:bg-neon/10 hover:text-neon rounded-full px-3 py-1 font-mono text-sm transition-colors'
@@ -118,6 +124,7 @@ export const Default = meta.story({
     await expect(canvas.getByText('IFPatcher')).toBeInTheDocument();
     await expect(canvas.getByText('eve0415.net')).toBeInTheDocument();
     await expect(canvas.getByText('cella')).toBeInTheDocument();
+    await expect(canvas.getByText('ActivityManager')).toBeInTheDocument();
     await expect(canvas.getByText('GitHub Activity')).toBeInTheDocument();
   },
 });
