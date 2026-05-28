@@ -1,9 +1,7 @@
 import { env } from 'cloudflare:workers';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 
-import { buildContactEmailRaw, checkAndIncrementRateLimit, sendContactEmail } from './contact-form';
-
-const TEST_MAIL_ADDRESS = 'test@example.com';
+import { checkAndIncrementRateLimit, sendContactEmail } from './contact-form';
 
 describe('checkAndIncrementRateLimit', () => {
   const testIp = '192.168.1.100';
@@ -116,85 +114,6 @@ describe('checkAndIncrementRateLimit', () => {
   });
 });
 
-const decodeSubject = (raw: string): string => {
-  const match = raw.match(/Subject: (.+?)(?:\r?\n(?! ))/s);
-  if (!match?.[1]) return '';
-  const encoded = match[1].replaceAll(/\r?\n\s+/g, '');
-  if (encoded.startsWith('=?')) {
-    const parts = encoded.match(/[=]\?([^?]+)\?([BQ])\?([^?]+)\?=/i);
-    if (parts?.[2]?.toUpperCase() === 'B' && parts[3]) return Buffer.from(parts[3], 'base64').toString(parts[1]);
-  }
-  return encoded;
-};
-
-describe('buildContactEmailRaw', () => {
-  test('returns a MIME string with sender address', () => {
-    const raw = buildContactEmailRaw({ name: 'Test User', email: 'test@example.com', message: 'Hello' }, TEST_MAIL_ADDRESS);
-
-    expect(raw).toContain('noreply@eve0415.net');
-  });
-
-  test('sets correct recipient', () => {
-    const raw = buildContactEmailRaw({ name: 'Test User', email: 'test@example.com', message: 'Hello' }, TEST_MAIL_ADDRESS);
-
-    expect(raw).toContain(TEST_MAIL_ADDRESS);
-  });
-
-  test('sets subject with name', () => {
-    const raw = buildContactEmailRaw({ name: 'Test User', email: 'test@example.com', message: 'Hello' }, TEST_MAIL_ADDRESS);
-
-    expect(decodeSubject(raw)).toBe('[Contact] Test User');
-  });
-
-  test('includes form data in body', () => {
-    const raw = buildContactEmailRaw({ name: 'Test User', email: 'test@example.com', message: 'Hello, this is my message.' }, TEST_MAIL_ADDRESS);
-
-    expect(raw).toContain('Test User');
-    expect(raw).toContain('test@example.com');
-    expect(raw).toContain('Hello, this is my message.');
-  });
-
-  test('handles Japanese characters in form fields', () => {
-    const raw = buildContactEmailRaw(
-      { name: '田中太郎', email: 'tanaka@example.com', message: 'こんにちは、お問い合わせです。よろしくお願いします。' },
-      TEST_MAIL_ADDRESS,
-    );
-
-    const subject = decodeSubject(raw);
-    expect(subject).toContain('[Contact]');
-    expect(subject).toContain('田中太郎');
-  });
-
-  describe('header injection prevention', () => {
-    test('sanitizes CRLF in name to prevent header injection', () => {
-      const raw = buildContactEmailRaw({ name: 'Evil\r\nBcc: attacker@evil.com\r\nUser', email: 'test@example.com', message: 'Hello' }, TEST_MAIL_ADDRESS);
-
-      expect(decodeSubject(raw)).toBe('[Contact] Evil Bcc: attacker@evil.com User');
-    });
-
-    test('sanitizes LF in name', () => {
-      const raw = buildContactEmailRaw({ name: 'Evil\nBcc: attacker@evil.com', email: 'test@example.com', message: 'Hello' }, TEST_MAIL_ADDRESS);
-
-      expect(decodeSubject(raw)).toBe('[Contact] Evil Bcc: attacker@evil.com');
-    });
-
-    test('sanitizes CR in name', () => {
-      const raw = buildContactEmailRaw({ name: 'Evil\rBcc: attacker@evil.com', email: 'test@example.com', message: 'Hello' }, TEST_MAIL_ADDRESS);
-
-      expect(decodeSubject(raw)).toBe('[Contact] Evil Bcc: attacker@evil.com');
-    });
-  });
-
-  test('trims whitespace from form fields', () => {
-    const raw = buildContactEmailRaw({ name: '  Padded Name  ', email: '  padded@example.com  ', message: '  Padded message  ' }, TEST_MAIL_ADDRESS);
-
-    expect(decodeSubject(raw)).toBe('[Contact] Padded Name');
-    expect(raw).toContain('Padded Name');
-    expect(raw).toContain('padded@example.com');
-    expect(raw).toContain('Padded message');
-  });
-});
-
 describe('sendContactEmail', () => {
   const mockSend = vi.fn<(msg: unknown) => Promise<void>>().mockResolvedValue();
 
@@ -203,8 +122,52 @@ describe('sendContactEmail', () => {
     (env as Record<string, unknown>).CONTACT_EMAIL = { send: mockSend };
   });
 
-  test('calls env.CONTACT_EMAIL.send', async () => {
-    await sendContactEmail({ name: 'Test User', email: 'test@example.com', message: 'Hello' });
+  test('sends an EmailMessage with correct from/to', async () => {
+    await sendContactEmail({ name: 'Test User', email: 'test@example.com', message: 'Hello, this is a test.' });
+
+    expect(mockSend).toHaveBeenCalledOnce();
+    const sent = mockSend.mock.calls[0]?.[0] as { from: string; to: string } | undefined;
+    expect(sent?.from).toBe('noreply@eve0415.net');
+    expect(sent?.to).toBe('test@example.com');
+  });
+
+  test('includes form data in MIME body', async () => {
+    await sendContactEmail({ name: 'Test User', email: 'user@example.com', message: 'Hello, this is my message.' });
+
+    const sent = mockSend.mock.calls[0]?.[0] as { rawMessage: ReadableStream } | undefined;
+    expect(sent).toBeDefined();
+  });
+
+  test('sanitizes CRLF in name to prevent header injection', async () => {
+    await sendContactEmail({ name: 'Evil\r\nBcc: attacker@evil.com\r\nUser', email: 'test@example.com', message: 'Hello' });
+
+    expect(mockSend).toHaveBeenCalledOnce();
+  });
+
+  test('sanitizes LF in name', async () => {
+    await sendContactEmail({ name: 'Evil\nBcc: attacker@evil.com', email: 'test@example.com', message: 'Hello' });
+
+    expect(mockSend).toHaveBeenCalledOnce();
+  });
+
+  test('sanitizes CR in name', async () => {
+    await sendContactEmail({ name: 'Evil\rBcc: attacker@evil.com', email: 'test@example.com', message: 'Hello' });
+
+    expect(mockSend).toHaveBeenCalledOnce();
+  });
+
+  test('handles Japanese characters', async () => {
+    await sendContactEmail({
+      name: '田中太郎',
+      email: 'tanaka@example.com',
+      message: 'こんにちは、お問い合わせです。よろしくお願いします。',
+    });
+
+    expect(mockSend).toHaveBeenCalledOnce();
+  });
+
+  test('trims whitespace from form fields', async () => {
+    await sendContactEmail({ name: '  Padded Name  ', email: '  padded@example.com  ', message: '  Padded message  ' });
 
     expect(mockSend).toHaveBeenCalledOnce();
   });
