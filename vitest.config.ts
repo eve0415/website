@@ -71,7 +71,7 @@ export default defineConfig({
       enabled: true,
       provider: 'istanbul',
       include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['src/routeTree.gen.ts', 'src/**/*.fixtures.tsx'],
+      exclude: ['src/routeTree.gen.ts', 'src/generated/**', 'src/**/*.fixtures.tsx'],
     },
     projects: [
       {
