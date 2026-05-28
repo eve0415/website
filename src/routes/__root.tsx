@@ -17,16 +17,14 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => (
 
       <Scripts />
 
-      {import.meta.env.DEV && (
-        <TanStackDevtools
-          plugins={[
-            {
-              name: 'TanStack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-      )}
+      <TanStackDevtools
+        plugins={[
+          {
+            name: 'TanStack Router',
+            render: <TanStackRouterDevtoolsPanel />,
+          },
+        ]}
+      />
     </body>
   </html>
 );
