@@ -1,8 +1,10 @@
 import { createRequire } from 'node:module';
 import path from 'node:path';
 
+import { cloudflareTest } from '@cloudflare/vitest-pool-workers';
 import storybookTest from '@storybook/addon-vitest/vitest-plugin';
 import tailwindcss from '@tailwindcss/vite';
+import { tanstackStartTesting } from '@tanstack-router-testing/react-start-testing/vite';
 import { defineConfig } from 'vite-plus';
 import { playwright } from 'vite-plus/test/browser-playwright';
 
@@ -69,56 +71,39 @@ export default defineConfig({
       enabled: true,
       provider: 'istanbul',
       include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['src/routeTree.gen.ts', 'src/**/*.fixtures.tsx'],
+      exclude: ['src/routeTree.gen.ts', 'src/generated/**', 'src/**/*.fixtures.tsx'],
     },
     projects: [
       {
         extends: true,
-        plugins: [tailwindcss()],
-        resolve: {
-          alias: {
-            // TanStack Start internal subpath imports needed when bundling @tanstack/start-server-core
-            '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
-            '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
-            '#tanstack-start-plugin-adapters': path.resolve('test/stubs/tanstack-start-plugin-adapters.ts'),
-            'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
-            'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
-            // Stub cloudflare modules for node environment
-            // @cloudflare/vitest-pool-workers is incompatible with vite-plus-test
-            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
-            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
-            'cloudflare:test': path.resolve('test/stubs/cloudflare-test.ts'),
-          },
-        },
+        plugins: [
+          cloudflareTest({
+            remoteBindings: false,
+            wrangler: { configPath: './wrangler.json' },
+            miniflare: {
+              bindings: {
+                GITHUB_PAT: 'test-pat',
+                MAIL_ADDRESS: 'test@example.com',
+                TURNSTILE_SECRET_KEY: 'test-turnstile-secret',
+                CLOUDFLARE_API_TOKEN: 'test-cf-token',
+                CLOUDFLARE_ZONE_ID: 'test-zone-id',
+              },
+            },
+          }),
+          tanstackStartTesting(),
+          tailwindcss(),
+        ],
         test: {
           name: 'unit',
           include: ['src/**/*.test.ts'],
-          environment: 'node',
-          server: {
-            deps: {
-              // Inline @tanstack packages so that our virtual module plugin can intercept
-              // the #tanstack-start-server-fn-manifest import
-              inline: ['@tanstack/start-server-core', '@tanstack/react-start'],
-            },
-          },
-        },
-        optimizeDeps: {
-          include: ['@tanstack/react-form-start > @tanstack/react-store'],
         },
       },
       {
         extends: true,
+        plugins: [tanstackStartTesting()],
         resolve: {
           dedupe: ['react', 'react-dom'],
           alias: {
-            '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
-            '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
-            '#tanstack-start-plugin-adapters': path.resolve('test/stubs/tanstack-start-plugin-adapters.ts'),
-            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
-            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
-            'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
-            'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
-            // Stub SSR utilities not needed in browser tests
             'react-dom/server': path.resolve('test/stubs/react-dom-server.ts'),
             '@tanstack/react-form-start': path.resolve('test/stubs/tanstack-react-form-start.tsx'),
           },
@@ -150,29 +135,15 @@ export default defineConfig({
             provider: playwright({}),
             instances: [{ browser: 'chromium' }],
           },
-          setupFiles: ['test/setup.ts'],
-          server: {
-            deps: {
-              // Inline @tanstack packages so that our virtual module plugin can intercept
-              // the #tanstack-start-server-fn-manifest import
-              inline: ['@tanstack/start-server-core', '@tanstack/react-start'],
-            },
-          },
+          setupFiles: ['@tanstack-router-testing/react-start-testing/cleanup', 'test/setup.ts'],
         },
       },
       {
         extends: true,
-        plugins: [vitestBrowserShim(), tailwindcss(), storybookTest()],
+        plugins: [tanstackStartTesting(), vitestBrowserShim(), tailwindcss(), storybookTest()],
         resolve: {
           dedupe: ['react', 'react-dom'],
           alias: {
-            '#tanstack-router-entry': path.resolve('test/tanstack-router-entry.ts'),
-            '#tanstack-start-entry': path.resolve('test/tanstack-start-entry.ts'),
-            '#tanstack-start-plugin-adapters': path.resolve('test/stubs/tanstack-start-plugin-adapters.ts'),
-            'cloudflare:email': path.resolve('test/stubs/cloudflare-email.ts'),
-            'cloudflare:workers': path.resolve('test/stubs/cloudflare-workers.ts'),
-            'tanstack-start-manifest:v': path.resolve('test/stubs/tanstack-start-manifest.ts'),
-            'tanstack-start-injected-head-scripts:v': path.resolve('test/stubs/tanstack-start-head-scripts.ts'),
             'react-dom/server': path.resolve('test/stubs/react-dom-server.ts'),
             '@tanstack/react-form-start': path.resolve('test/stubs/tanstack-react-form-start.tsx'),
           },
@@ -199,14 +170,7 @@ export default defineConfig({
               },
             },
           },
-          setupFiles: ['.storybook/vitest.setup.ts'],
-          server: {
-            deps: {
-              // Inline @tanstack packages so that our virtual module plugin can intercept
-              // the #tanstack-start-server-fn-manifest import
-              inline: ['@tanstack/start-server-core', '@tanstack/react-start'],
-            },
-          },
+          setupFiles: ['@tanstack-router-testing/react-start-testing/cleanup', '.storybook/vitest.setup.ts'],
         },
         optimizeDeps: {
           include: ['@tanstack/react-form-start > @tanstack/react-store'],

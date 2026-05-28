@@ -112,16 +112,12 @@ export const checkAndIncrementRateLimit = createServerOnlyFn(async (ip: string) 
   };
 });
 
-/**
- * Send contact form email.
- * @internal Exported for testing purposes only
- */
+/** @internal Exported for testing */
 export const sendContactEmail = createServerOnlyFn(async (formData: ContactFormData) => {
   const msg = createMimeMessage();
   msg.setSender({ name: 'Contact Form', addr: SENDER_ADDRESS });
   msg.setRecipient(env.MAIL_ADDRESS);
 
-  // Sanitize name for subject to prevent email header injection
   const safeSubjectName = formData.name.trim().replaceAll(/[\r\n]+/g, ' ');
   msg.setSubject(`[Contact] ${safeSubjectName}`);
 

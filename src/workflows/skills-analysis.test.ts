@@ -1,7 +1,4 @@
 /* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
-// Unit tests for Skills Analysis Workflow utilities
-// Note: Full workflow testing requires Cloudflare Workflows runtime.
-// These tests validate utility functions and database operations.
 
 import { env } from 'cloudflare:workers';
 import { count, desc, eq, sql, sum } from 'drizzle-orm';
@@ -13,110 +10,38 @@ import { commits, repos, workflowState } from '#db/schema';
 
 import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
 
-// SQL migrations - must be applied before tests
+// readD1Migrations imports wrangler which requires node:process — unavailable in workerd.
+// Inline SQL mirrors ./migrations/ files.
 const MIGRATIONS = [
-  `CREATE TABLE IF NOT EXISTS repos (
-    id INTEGER PRIMARY KEY NOT NULL,
-    github_id INTEGER NOT NULL UNIQUE,
-    full_name TEXT NOT NULL,
-    name TEXT NOT NULL,
-    owner TEXT NOT NULL,
-    is_private INTEGER DEFAULT 0 NOT NULL,
-    is_fork INTEGER DEFAULT 0 NOT NULL,
-    privacy_class TEXT NOT NULL,
-    default_branch TEXT,
-    language TEXT,
-    created_at TEXT NOT NULL,
-    updated_at TEXT NOT NULL,
-    fetched_at TEXT DEFAULT (datetime('now')) NOT NULL,
-    last_commit_at TEXT,
-    last_pr_updated_at TEXT,
-    commits_cursor TEXT,
-    prs_cursor TEXT
-  )`,
+  `CREATE TABLE IF NOT EXISTS repos (id INTEGER PRIMARY KEY NOT NULL, github_id INTEGER NOT NULL UNIQUE, full_name TEXT NOT NULL, name TEXT NOT NULL, owner TEXT NOT NULL, is_private INTEGER DEFAULT 0 NOT NULL, is_fork INTEGER DEFAULT 0 NOT NULL, privacy_class TEXT NOT NULL, default_branch TEXT, language TEXT, created_at TEXT NOT NULL, updated_at TEXT NOT NULL, fetched_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS commits (id INTEGER PRIMARY KEY NOT NULL, sha TEXT NOT NULL UNIQUE, repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE, message TEXT NOT NULL, author_date TEXT NOT NULL, additions INTEGER DEFAULT 0 NOT NULL, deletions INTEGER DEFAULT 0 NOT NULL, files_changed INTEGER DEFAULT 0 NOT NULL, languages TEXT, fetched_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS pull_requests (id INTEGER PRIMARY KEY NOT NULL, github_id INTEGER NOT NULL UNIQUE, repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE, number INTEGER NOT NULL, title TEXT NOT NULL, body TEXT, state TEXT NOT NULL, merged INTEGER DEFAULT 0 NOT NULL, additions INTEGER DEFAULT 0 NOT NULL, deletions INTEGER DEFAULT 0 NOT NULL, changed_files INTEGER DEFAULT 0 NOT NULL, commits_count INTEGER DEFAULT 0 NOT NULL, comments_count INTEGER DEFAULT 0 NOT NULL, review_comments_count INTEGER DEFAULT 0 NOT NULL, created_at TEXT NOT NULL, merged_at TEXT, closed_at TEXT, fetched_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS pr_reviews (id INTEGER PRIMARY KEY NOT NULL, github_id INTEGER NOT NULL UNIQUE, repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE, pr_number INTEGER NOT NULL, pr_title TEXT, state TEXT NOT NULL, body TEXT, submitted_at TEXT NOT NULL, fetched_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
+  `CREATE TABLE IF NOT EXISTS workflow_state (id INTEGER PRIMARY KEY DEFAULT 1 NOT NULL, phase TEXT DEFAULT 'idle' NOT NULL, progress_pct INTEGER DEFAULT 0 NOT NULL, current_repo TEXT, repos_total INTEGER DEFAULT 0 NOT NULL, repos_processed INTEGER DEFAULT 0 NOT NULL, last_run_at TEXT, last_completed_at TEXT, error_message TEXT)`,
+  `CREATE TABLE IF NOT EXISTS history_summaries (id INTEGER PRIMARY KEY NOT NULL, summary_type TEXT NOT NULL, time_range TEXT NOT NULL, content TEXT NOT NULL, token_estimate INTEGER DEFAULT 0 NOT NULL, created_at TEXT DEFAULT (datetime('now')) NOT NULL)`,
   `CREATE INDEX IF NOT EXISTS idx_repos_privacy ON repos (privacy_class)`,
   `CREATE INDEX IF NOT EXISTS idx_repos_language ON repos (language)`,
-  `CREATE TABLE IF NOT EXISTS commits (
-    id INTEGER PRIMARY KEY NOT NULL,
-    sha TEXT NOT NULL UNIQUE,
-    repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE,
-    message TEXT NOT NULL,
-    author_date TEXT NOT NULL,
-    additions INTEGER DEFAULT 0 NOT NULL,
-    deletions INTEGER DEFAULT 0 NOT NULL,
-    files_changed INTEGER DEFAULT 0 NOT NULL,
-    languages TEXT,
-    fetched_at TEXT DEFAULT (datetime('now')) NOT NULL
-  )`,
   `CREATE INDEX IF NOT EXISTS idx_commits_repo ON commits (repo_id)`,
   `CREATE INDEX IF NOT EXISTS idx_commits_date ON commits (author_date)`,
-  `CREATE TABLE IF NOT EXISTS pull_requests (
-    id INTEGER PRIMARY KEY NOT NULL,
-    github_id INTEGER NOT NULL UNIQUE,
-    repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE,
-    number INTEGER NOT NULL,
-    title TEXT NOT NULL,
-    body TEXT,
-    state TEXT NOT NULL,
-    merged INTEGER DEFAULT 0 NOT NULL,
-    additions INTEGER DEFAULT 0 NOT NULL,
-    deletions INTEGER DEFAULT 0 NOT NULL,
-    changed_files INTEGER DEFAULT 0 NOT NULL,
-    commits_count INTEGER DEFAULT 0 NOT NULL,
-    comments_count INTEGER DEFAULT 0 NOT NULL,
-    review_comments_count INTEGER DEFAULT 0 NOT NULL,
-    created_at TEXT NOT NULL,
-    merged_at TEXT,
-    closed_at TEXT,
-    fetched_at TEXT DEFAULT (datetime('now')) NOT NULL
-  )`,
   `CREATE INDEX IF NOT EXISTS idx_prs_repo ON pull_requests (repo_id)`,
   `CREATE INDEX IF NOT EXISTS idx_prs_state ON pull_requests (state)`,
   `CREATE INDEX IF NOT EXISTS idx_prs_created ON pull_requests (created_at)`,
-  `CREATE TABLE IF NOT EXISTS pr_reviews (
-    id INTEGER PRIMARY KEY NOT NULL,
-    github_id INTEGER NOT NULL UNIQUE,
-    repo_id INTEGER NOT NULL REFERENCES repos(id) ON DELETE CASCADE,
-    pr_number INTEGER NOT NULL,
-    pr_title TEXT,
-    state TEXT NOT NULL,
-    body TEXT,
-    submitted_at TEXT NOT NULL,
-    fetched_at TEXT DEFAULT (datetime('now')) NOT NULL
-  )`,
   `CREATE INDEX IF NOT EXISTS idx_reviews_repo ON pr_reviews (repo_id)`,
   `CREATE INDEX IF NOT EXISTS idx_reviews_submitted ON pr_reviews (submitted_at)`,
-  `CREATE TABLE IF NOT EXISTS workflow_state (
-    id INTEGER PRIMARY KEY DEFAULT 1 NOT NULL,
-    phase TEXT DEFAULT 'idle' NOT NULL,
-    progress_pct INTEGER DEFAULT 0 NOT NULL,
-    current_repo TEXT,
-    repos_total INTEGER DEFAULT 0 NOT NULL,
-    repos_processed INTEGER DEFAULT 0 NOT NULL,
-    last_run_at TEXT,
-    last_completed_at TEXT,
-    error_message TEXT
-  )`,
-  `CREATE TABLE IF NOT EXISTS history_summaries (
-    id INTEGER PRIMARY KEY NOT NULL,
-    summary_type TEXT NOT NULL,
-    time_range TEXT NOT NULL,
-    content TEXT NOT NULL,
-    token_estimate INTEGER DEFAULT 0 NOT NULL,
-    created_at TEXT DEFAULT (datetime('now')) NOT NULL
-  )`,
   `CREATE UNIQUE INDEX IF NOT EXISTS idx_summaries_type_range ON history_summaries (summary_type, time_range)`,
+  `ALTER TABLE repos ADD COLUMN last_commit_at TEXT`,
+  `ALTER TABLE repos ADD COLUMN last_pr_updated_at TEXT`,
+  `ALTER TABLE repos ADD COLUMN commits_cursor TEXT`,
+  `ALTER TABLE repos ADD COLUMN prs_cursor TEXT`,
 ];
 
 describe('skills-analysis', () => {
   beforeAll(async () => {
-    // Apply migrations using D1's batch API
-    const statements = MIGRATIONS.map(sql => env.SKILLS_DB.prepare(sql));
+    const statements = MIGRATIONS.map(m => env.SKILLS_DB.prepare(m));
     await env.SKILLS_DB.batch(statements);
   });
 
   afterAll(async () => {
-    // Clean up tables
     await env.SKILLS_DB.prepare('DROP TABLE IF EXISTS history_summaries').run();
     await env.SKILLS_DB.prepare('DROP TABLE IF EXISTS pr_reviews').run();
     await env.SKILLS_DB.prepare('DROP TABLE IF EXISTS pull_requests').run();
@@ -228,9 +153,7 @@ describe('skills-analysis', () => {
     });
   });
 
-  // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
-  // oxlint-disable-next-line vitest/no-disabled-tests
-  describe.skip('database operations', () => {
+  describe('database operations', () => {
     let db: ReturnType<typeof drizzle<typeof schema>>;
 
     beforeEach(async () => {
@@ -451,9 +374,7 @@ describe('skills-analysis', () => {
     });
   });
 
-  // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
-  // oxlint-disable-next-line vitest/no-disabled-tests
-  describe.skip('squashHistory query patterns', () => {
+  describe('squashHistory query patterns', () => {
     let db: ReturnType<typeof drizzle<typeof schema>>;
 
     beforeEach(async () => {

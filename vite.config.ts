@@ -549,11 +549,6 @@ export default defineConfig({
       },
       sitemap: { host: 'https://eve0415.net' },
     }),
-    react(),
-    babel({
-      presets: [reactCompilerPreset()],
-    }),
-    tailwindcss(),
     devtools({
       eventBusConfig: {
         enabled: true,
@@ -566,6 +561,11 @@ export default defineConfig({
         },
       },
     }),
+    react(),
+    babel({
+      presets: [reactCompilerPreset()],
+    }),
+    tailwindcss(),
     devtoolsJson(),
     esmExternalRequirePlugin({
       external: ['node:path', 'path'],

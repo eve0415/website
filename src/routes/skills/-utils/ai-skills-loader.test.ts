@@ -162,9 +162,7 @@ describe('ai-skills-loader', () => {
       expect(result).toStrictEqual(mockState);
     });
 
-    // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
-    // oxlint-disable-next-line vitest/no-disabled-tests
-    it.skip('falls back to D1 when KV is empty', async () => {
+    it('falls back to D1 when KV is empty', async () => {
       // Insert state into D1
       await db.insert(workflowState).values({
         id: 1,
@@ -197,9 +195,7 @@ describe('ai-skills-loader', () => {
       expect(result.error_message).toBeNull();
     });
 
-    // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
-    // oxlint-disable-next-line vitest/no-disabled-tests
-    it.skip('self-heals corrupted KV by falling back to D1 and rewriting cache', async () => {
+    it('self-heals corrupted KV by falling back to D1 and rewriting cache', async () => {
       await env.CACHE.put('ai_skills_state', 'undefined');
       await db.insert(workflowState).values({
         id: 1,
@@ -298,9 +294,7 @@ describe('ai-skills-loader', () => {
       await expect(env.CACHE.get('ai_profile_summary_ja')).resolves.toBeNull();
     });
 
-    // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
-    // oxlint-disable-next-line vitest/no-disabled-tests
-    it.skip('self-heals corrupted workflow KV from D1', async () => {
+    it('self-heals corrupted workflow KV from D1', async () => {
       await env.CACHE.put('ai_skills_state', 'undefined');
       await db.insert(workflowState).values({
         id: 1,
@@ -325,9 +319,7 @@ describe('ai-skills-loader', () => {
     });
   });
 
-  // TODO: Re-enable when @cloudflare/vitest-pool-workers supports vite-plus-test
-  // oxlint-disable-next-line vitest/no-disabled-tests
-  describe.skip('triggerSkillsAnalysisHandler', () => {
+  describe('triggerSkillsAnalysisHandler', () => {
     beforeEach(async () => {
       // Initialize workflow state
       await db.insert(workflowState).values({
