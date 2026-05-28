@@ -40,6 +40,15 @@ export const featuredWithHighlight: Project = {
   highlightSub: 'downloads',
 };
 
+export const featuredHighlightOnly: Project = {
+  title: 'cella',
+  description: 'A featured project with a highlight badge but no sub text.',
+  tags: ['Rust', 'Devcontainer', 'CLI'],
+  links: [{ label: 'GitHub', url: 'https://github.com/example' }],
+  featured: true,
+  highlight: 'Rust',
+};
+
 export const minimalProject: Project = {
   title: 'Minimal',
   description: 'Just the basics.',
