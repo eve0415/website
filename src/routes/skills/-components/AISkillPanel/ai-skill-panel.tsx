@@ -3,7 +3,7 @@
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 import type { FC } from 'react';
 
-import { useTypewriter } from './useTypewriter';
+import { useTypedText } from '#hooks/useTypedText';
 
 interface Props {
   skill: AISkill;
@@ -12,7 +12,7 @@ interface Props {
 }
 
 const AISkillPanel: FC<Props> = ({ skill, isExpanded, onClose }) => {
-  const { displayedText, isTyping, skipToEnd } = useTypewriter({
+  const { displayedText, isTyping, skipToEnd } = useTypedText({
     text: skill.description_ja,
     speed: 10,
     enabled: isExpanded,
