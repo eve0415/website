@@ -4,9 +4,9 @@
 import type { Repo } from '#db/types';
 import type { GitHubRepo, PrivacyClass } from './ai-skills-types';
 
-import { HIDDEN_ORGS } from './ai-skills-types';
+import { GITHUB_USERNAME } from '#lib/github-client';
 
-const GITHUB_USERNAME = 'eve0415';
+import { HIDDEN_ORGS } from './ai-skills-types';
 
 /**
  * Classify repository privacy level
