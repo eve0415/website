@@ -1,29 +1,21 @@
 import { formOptions } from '@tanstack/react-form-start';
 
-import { validateContactForm } from './validation';
+interface ContactFormValues {
+  name: string;
+  email: string;
+  message: string;
+  turnstileToken: string;
+}
 
+const defaultValues: ContactFormValues = {
+  name: '',
+  email: '',
+  message: '',
+  turnstileToken: '',
+};
+
+// Validation lives on each form.Field (per-field onBlur validators in
+// contact-form.tsx) so a blur only ever touches its own field's errors
 export const contactFormOpts = formOptions({
-  defaultValues: {
-    name: '',
-    email: '',
-    message: '',
-    turnstileToken: '' as string,
-  },
-  validators: {
-    onBlur: ({ value }) => {
-      const errors = validateContactForm({
-        name: value.name,
-        email: value.email,
-        message: value.message,
-      });
-      // Return field errors in the format TanStack Form expects
-      return {
-        fields: {
-          name: errors.name,
-          email: errors.email,
-          message: errors.message,
-        },
-      };
-    },
-  },
+  defaultValues,
 });

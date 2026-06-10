@@ -3,56 +3,6 @@ import { describe, expect, test } from 'vite-plus/test';
 import { hasErrors, validateContactForm } from './validation';
 
 describe('validateContactForm', () => {
-  describe('type guards', () => {
-    test('returns error when name is not a string', () => {
-      const result = validateContactForm({
-        name: 123 as unknown as string,
-        email: 'test@example.com',
-        message: 'Hello',
-      });
-
-      expect(result.name).toBe('お名前を入力してください');
-      expect(result.email).toBeUndefined();
-      expect(result.message).toBeUndefined();
-    });
-
-    test('returns error when email is not a string', () => {
-      const result = validateContactForm({
-        name: 'Test User',
-        email: undefined as unknown as string,
-        message: 'Hello',
-      });
-
-      expect(result.name).toBeUndefined();
-      expect(result.email).toBe('メールアドレスを入力してください');
-      expect(result.message).toBeUndefined();
-    });
-
-    test('returns error when message is not a string', () => {
-      const result = validateContactForm({
-        name: 'Test User',
-        email: 'test@example.com',
-        message: undefined as unknown as string,
-      });
-
-      expect(result.name).toBeUndefined();
-      expect(result.email).toBeUndefined();
-      expect(result.message).toBe('メッセージを入力してください');
-    });
-
-    test('returns errors for all non-string fields and does not proceed to value validation', () => {
-      const result = validateContactForm({
-        name: {} as unknown as string,
-        email: [] as unknown as string,
-        message: 42 as unknown as string,
-      });
-
-      expect(result.name).toBe('お名前を入力してください');
-      expect(result.email).toBe('メールアドレスを入力してください');
-      expect(result.message).toBe('メッセージを入力してください');
-    });
-  });
-
   describe('name validation', () => {
     test('returns error for empty name', () => {
       const result = validateContactForm({

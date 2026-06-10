@@ -197,17 +197,33 @@ describe('contactForm', () => {
 
       await expect.element(page.getByTestId('char-counter')).toHaveTextContent('3/2000');
     });
+
+    test('clears field error when typing', async () => {
+      await render(<ContactForm />);
+
+      const nameInput = page.getByTestId('name-input');
+      await nameInput.click();
+      await triggerBlur();
+      await expect.element(page.getByTestId('name-error')).toBeVisible();
+
+      await nameInput.fill('山');
+
+      await expect.element(page.getByTestId('name-error')).not.toBeInTheDocument();
+    });
+
+    test('marks invalid fields with aria-invalid and links the error message', async () => {
+      await render(<ContactForm />);
+
+      const nameInput = page.getByTestId('name-input');
+      await nameInput.click();
+      await triggerBlur();
+
+      await expect.element(nameInput).toHaveAttribute('aria-invalid', 'true');
+      await expect.element(nameInput).toHaveAttribute('aria-describedby', 'name-error');
+    });
   });
 
-  // Note: Error clearing on focus is tested implicitly via the validation tests
-  // TanStack Form's setMeta has complex timing that makes direct testing unreliable
-
-  // Note: Submission flow tests are temporarily skipped due to TanStack Form's async handleSubmit
-  // not integrating well with vitest browser mode. The submission logic works correctly in
-  // production as verified by manual testing. Field validation tests above cover the form's
-  // validation behavior thoroughly.
-  // oxlint-disable-next-line vitest/no-disabled-tests
-  describe.skip('submission Flow', () => {
+  describe('submission Flow', () => {
     // Submission tests need real timers for async form handling to work properly
     beforeEach(() => {
       vi.useRealTimers();
@@ -215,6 +231,16 @@ describe('contactForm', () => {
 
     afterEach(() => {
       vi.useFakeTimers();
+    });
+
+    test('shows validation errors when submitting an empty form', async () => {
+      await render(<ContactForm />);
+
+      await page.getByTestId('submit-button').click();
+
+      await expect.element(page.getByTestId('name-error')).toBeInTheDocument();
+      await expect.element(page.getByTestId('email-error')).toBeInTheDocument();
+      await expect.element(page.getByTestId('message-error')).toBeInTheDocument();
     });
 
     test('shows error when Turnstile token is missing', async () => {
@@ -347,15 +373,17 @@ describe('contactForm', () => {
     });
   });
 
-  // Note: UI States tests that depend on form submission are skipped for the same reason
-  // as Submission Flow tests above. The submission-dependent behavior works correctly in
-  // production as verified by manual testing.
-  // oxlint-disable-next-line vitest/no-disabled-tests
-  describe.skip('uI States', () => {
-    // Note: Testing button disabled state during submission is unreliable with TanStack Form
-    // and Vitest's mocking. The isSubmitting state transition happens too quickly to capture.
+  describe('uI States', () => {
+    // Submission tests need real timers for async form handling to work properly
+    beforeEach(() => {
+      vi.useRealTimers();
+    });
 
-    test('shows alternative contact when error mentions Discord', async () => {
+    afterEach(() => {
+      vi.useFakeTimers();
+    });
+
+    test('shows alternative contact for email_failed errors', async () => {
       submitMock.mockResolvedValue({
         success: false,
         error: 'email_failed',
@@ -379,7 +407,7 @@ describe('contactForm', () => {
       await expect.element(page.getByText('Discord (eve0415)')).toBeVisible();
     });
 
-    test('shows alternative contact when error mentions 制限', async () => {
+    test('shows alternative contact for rate_limit errors', async () => {
       submitMock.mockResolvedValue({
         success: false,
         error: 'rate_limit',
@@ -403,7 +431,7 @@ describe('contactForm', () => {
       await expect.element(page.getByText('Discord (eve0415)')).toBeVisible();
     });
 
-    test('success message auto-dismisses after 5 seconds', async () => {
+    test('success message persists until the user edits a field', async () => {
       submitMock.mockResolvedValue({ success: true } as ContactFormResult);
 
       await render(<ContactForm />);
@@ -419,18 +447,35 @@ describe('contactForm', () => {
       // Submit
       await page.getByTestId('submit-button').click();
 
-      // Wait for success state
+      // Success message stays (no timed dismissal - WCAG 2.2.1)
       await expect.element(page.getByTestId('success-message')).toBeVisible();
+      await expect.element(page.getByTestId('success-text')).toHaveTextContent('送信完了!');
 
-      // Fast-forward 5 seconds
-      await vi.advanceTimersByTimeAsync(5000);
+      // Editing a field returns the form to idle
+      await page.getByTestId('name-input').fill('再');
 
-      // Success message should be dismissed
-      const successMessage = page.getByTestId('success-message');
-      await expect.element(successMessage).not.toBeInTheDocument();
-
-      // Button should return to idle state
+      await expect.element(page.getByTestId('success-message')).not.toBeInTheDocument();
       await expect.element(page.getByTestId('idle-text')).toHaveTextContent('送信する');
+    });
+
+    test('announces errors via role=alert and success via role=status', async () => {
+      submitMock.mockResolvedValue({ success: true } as ContactFormResult);
+
+      await render(<ContactForm />);
+
+      // Submit without a Turnstile token to trigger the global error
+      await page.getByTestId('name-input').fill('山田太郎');
+      await page.getByTestId('email-input').fill('test@example.com');
+      await page.getByTestId('message-input').fill('テストメッセージ');
+      await page.getByTestId('submit-button').click();
+
+      await expect.element(page.getByRole('alert')).toHaveTextContent('セキュリティ認証を完了してください');
+
+      // Complete Turnstile and submit again - success lands in role=status
+      getTurnstileCallback()?.('mock-token');
+      await page.getByTestId('submit-button').click();
+
+      await expect.element(page.getByRole('status')).toHaveTextContent('メッセージが送信されました');
     });
   });
 });

@@ -14,33 +14,41 @@ export interface ContactFormData {
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
+// Per-field validators: each validates ONLY its own field so that blurring
+// one field never stamps errors onto untouched fields (which also caused
+// layout shifts mid-click that swallowed submit-button clicks)
+export const validateName = (name: string): string | undefined => {
+  const trimmed = name.trim();
+  if (!trimmed) return 'お名前を入力してください';
+  if (trimmed.length > 100) return 'お名前は100文字以内で入力してください';
+  return undefined;
+};
+
+export const validateEmail = (email: string): string | undefined => {
+  const trimmed = email.trim();
+  if (!trimmed) return 'メールアドレスを入力してください';
+  if (!EMAIL_REGEX.test(trimmed)) return '有効なメールアドレスを入力してください';
+  return undefined;
+};
+
+export const validateMessage = (message: string): string | undefined => {
+  const trimmed = message.trim();
+  if (!trimmed) return 'メッセージを入力してください';
+  if (trimmed.length > 2000) return 'メッセージは2000文字以内で入力してください';
+  return undefined;
+};
+
 export const validateContactForm = (data: ContactFormData): ValidationErrors => {
   const errors: ValidationErrors = {};
 
-  // Type guards - ensure all fields are strings to prevent runtime errors
-  if (typeof data.name !== 'string') errors.name = 'お名前を入力してください';
+  const name = validateName(data.name);
+  if (name) errors.name = name;
 
-  if (typeof data.email !== 'string') errors.email = 'メールアドレスを入力してください';
+  const email = validateEmail(data.email);
+  if (email) errors.email = email;
 
-  if (typeof data.message !== 'string') errors.message = 'メッセージを入力してください';
-
-  // Return early if type guards fail
-  if (Object.keys(errors).length > 0) return errors;
-
-  // Name validation
-  const trimmedName = data.name.trim();
-  if (!trimmedName) errors.name = 'お名前を入力してください';
-  else if (trimmedName.length > 100) errors.name = 'お名前は100文字以内で入力してください';
-
-  // Email validation
-  const trimmedEmail = data.email.trim();
-  if (!trimmedEmail) errors.email = 'メールアドレスを入力してください';
-  else if (!EMAIL_REGEX.test(trimmedEmail)) errors.email = '有効なメールアドレスを入力してください';
-
-  // Message validation
-  const trimmedMessage = data.message.trim();
-  if (!trimmedMessage) errors.message = 'メッセージを入力してください';
-  else if (trimmedMessage.length > 2000) errors.message = 'メッセージは2000文字以内で入力してください';
+  const message = validateMessage(data.message);
+  if (message) errors.message = message;
 
   return errors;
 };
