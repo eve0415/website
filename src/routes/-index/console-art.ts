@@ -46,7 +46,3 @@ export const printConsoleArt = (): void => {
   console.log('%c💡 Hint: Konami Code を知ってる？', STYLES.secret);
   console.log('');
 };
-
-export const printSecretMessage = (message: string): void => {
-  console.log(`%c🎉 ${message}`, STYLES.highlight);
-};
