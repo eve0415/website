@@ -2,6 +2,8 @@ import type { GitHubStats } from '../../-utils/github-stats-utils';
 import type { AIToolMode } from './AIToolOutput/ai-tool-output';
 import type { ReactNode } from 'react';
 
+import { SudoRmRfError } from '#lib/sudo-rm-rf-error';
+
 import ClaudeOutput from './ClaudeOutput/claude-output';
 import CodexOutput from './CodexOutput/codex-output';
 import EchoOutput from './EchoOutput/echo-output';
@@ -10,13 +12,8 @@ import HelpOutput from './HelpOutput/help-output';
 import NeofetchOutput from './NeofetchOutput/neofetch-output';
 import WhoamiOutput from './WhoamiOutput/whoami-output';
 
-// Custom error class for intentional BSOD trigger
-export class SudoRmRfError extends Error {
-  constructor() {
-    super('SYSTEM_DIAGNOSTIC_FAILURE');
-    this.name = 'SudoRmRfError';
-  }
-}
+// Re-exported for terminal.tsx and the command tests that import from here
+export { SudoRmRfError };
 
 export interface CommandContext {
   stats: GitHubStats;

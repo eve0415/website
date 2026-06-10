@@ -5,7 +5,7 @@ import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
-import { SudoRmRfError } from '#routes/sys/-components/Terminal/commands';
+import { SudoRmRfError } from '#lib/sudo-rm-rf-error';
 
 import { QR_DESTINATIONS, REPO_LABEL, REPO_URL } from './destinations';
 import { getRandomMessage } from './messages';
