@@ -1,4 +1,4 @@
-/* oxlint-disable typescript/no-non-null-assertion, no-await-in-loop, typescript/no-unsafe-type-assertion, typescript/no-unsafe-assignment -- GitHub/AI API responses have known shape; workflow pagination requires sequential await; JSON.parse returns any */
+/* oxlint-disable typescript/no-non-null-assertion, no-await-in-loop -- GitHub GraphQL non-null fields lack type-level guarantees; workflow pagination requires sequential await */
 // Cloudflare Workflow for AI Skills Analysis
 // Uses GitHub GraphQL API with sleepUntil for rate limits
 // Supports incremental syncing and singleton execution
@@ -16,6 +16,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '#db/schema';
 import { commits, historySummaries, prReviews, pullRequests, repos, workflowState } from '#db/schema';
 
+import { isAIProfileDraft, isAISkillDraft } from './-utils/ai-skills-types';
 import {
   DEFAULT_RATE_LIMIT_METRICS,
   GITHUB_USERNAME,
@@ -48,6 +49,13 @@ interface WorkflowLock {
   instanceId: string;
   startedAt: string;
 }
+
+// Workers AI returns either a raw string or { response: string } depending on model
+const extractAIText = (response: unknown): string => {
+  if (typeof response === 'string') return response;
+  if (typeof response === 'object' && response !== null && 'response' in response && typeof response.response === 'string') return response.response;
+  return '';
+};
 
 interface SyncState {
   repos: {
@@ -184,6 +192,16 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
         await this.storeResults(db, content);
         await this.updateState(db, 'completed', 100);
       });
+    } catch (error) {
+      // Surface the failure - otherwise the phase sticks at its last value,
+      // the UI reads "running" forever, and re-runs are blocked
+      await step.do('mark_error', async () => {
+        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        const message = error instanceof Error ? error.message : String(error);
+        await db.update(workflowState).set({ phase: 'error', errorMessage: message }).where(eq(workflowState.id, 1));
+        await this.env.CACHE.delete(WORKFLOW_STATE_KV_KEY);
+      });
+      throw error;
     } finally {
       // Always release lock
       await this.releaseLock(instanceId);
@@ -637,9 +655,12 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       reposTotal: number;
       reposProcessed: number;
       lastCompletedAt: ReturnType<typeof sql>;
+      errorMessage: string | null;
     }> = {
       phase,
       progressPct: progress,
+      // Forward progress means any previous run's error is stale
+      errorMessage: null,
     };
 
     if (currentRepo !== undefined) updates.currentRepo = currentRepo;
@@ -795,17 +816,25 @@ Output as JSON array of skills. Nothing else.`;
       max_tokens: 4096,
     });
 
-    // Parse AI response
-    const text = typeof response === 'string' ? response : ((response as { response?: string }).response ?? '');
-
     // Extract JSON from response (AI might include markdown)
-    const jsonMatch = /\[[\s\S]*\]/.exec(text);
+    const jsonMatch = /\[[\s\S]*\]/.exec(extractAIText(response));
     if (!jsonMatch) return [];
 
-    const skills: AISkill[] = JSON.parse(jsonMatch[0]);
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch {
+      return [];
+    }
+    if (!Array.isArray(parsed)) return [];
 
-    // Mark all as AI-discovered, add placeholders for Japanese
-    return skills.map(s => Object.assign(s, { description_ja: ``, last_active: new Date().toISOString(), is_ai_discovered: true }));
+    // Validate at the model boundary; drop entries that don't match the contract
+    return parsed.filter(isAISkillDraft).map(draft => ({
+      ...draft,
+      description_ja: '',
+      last_active: new Date().toISOString(),
+      is_ai_discovered: true,
+    }));
   }
 
   private async generateJapaneseDescriptions(db: DB, skills: AISkill[], summary: string): Promise<AISkillsContent> {
@@ -833,8 +862,7 @@ Output as JSON array of skills. Nothing else.`;
           max_tokens: 512,
         });
 
-        const text = typeof response === 'string' ? response : ((response as { response?: string }).response ?? '');
-        skill.description_ja = text.trim();
+        skill.description_ja = extractAIText(response).trim();
       } catch (error) {
         console.error(`Error generating Japanese for skill ${skill.name}:`, error);
         skill.description_ja = `${skill.name}のスキル`;
@@ -860,18 +888,15 @@ JSONのみ出力してください。`;
         max_tokens: 1024,
       });
 
-      const profileText = typeof profileResponse === 'string' ? profileResponse : ((profileResponse as { response?: string }).response ?? '');
-      const jsonMatch = /\{[\s\S]*\}/.exec(profileText);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        profile = {
-          ...parsed,
-          generated_at: new Date().toISOString(),
-          model_used: '@cf/google/gemma-3-12b-it',
-        };
-      } else {
-        throw new Error('No JSON found');
-      }
+      const jsonMatch = /\{[\s\S]*\}/.exec(extractAIText(profileResponse));
+      const parsed: unknown = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+      if (!isAIProfileDraft(parsed)) throw new Error('AI profile response failed validation');
+
+      profile = {
+        ...parsed,
+        generated_at: new Date().toISOString(),
+        model_used: '@cf/google/gemma-3-12b-it',
+      };
     } catch {
       profile = {
         summary_ja: 'プロフィール生成中にエラーが発生しました。',
