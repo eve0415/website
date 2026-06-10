@@ -230,8 +230,10 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages = 0, vi
   // Keyboard event handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // F5 or Ctrl+Shift+D - Toggle debug mode / Continue
-      if (e.key === 'F5' || (e.ctrlKey && e.shiftKey && e.key === 'D')) {
+      // Ctrl+Shift+D - Toggle debug mode / Continue. Bare F5 is deliberately
+      // NOT used: hijacking the browser's reload shortcut on a 404 page (where
+      // users reflexively refresh) is a keyboard-accessibility trap.
+      if (e.ctrlKey && e.shiftKey && e.key === 'D') {
         e.preventDefault();
         if (!debugState.isEnabled) enableDebugMode();
         else if (debugState.isPaused) stepContinue();

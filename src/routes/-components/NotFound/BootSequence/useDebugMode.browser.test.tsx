@@ -9,6 +9,9 @@ import { useDebugMode } from './useDebugMode';
 
 const DEBUG_STORAGE_KEY = '404-debug';
 
+// Debug mode toggles on Ctrl+Shift+D (bare F5 is left for browser reload)
+const pressDebugToggle = async () => userEvent.keyboard('{Control>}{Shift>}D{/Shift}{/Control}');
+
 // Sample message depths for testing: [0, 1, 1, 2, 0, 1]
 // Index 0: depth 0 (root)
 // Index 1: depth 1 (child)
@@ -104,41 +107,41 @@ describe('useDebugMode', () => {
   });
 
   describe('keyboard shortcuts', () => {
-    test('f5 enables debug mode when disabled', async () => {
+    test('chord enables debug mode when disabled', async () => {
       await render(<TestComponent />);
 
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('false');
 
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
     });
 
-    test('f5 continues when paused', async () => {
+    test('chord continues when paused', async () => {
       await render(<TestComponent />);
 
       // Enable debug mode first
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
 
       // Press F5 again to continue
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('false');
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
     });
 
-    test('f5 has no effect when running (enabled but not paused)', async () => {
+    test('chord has no effect when running (enabled but not paused)', async () => {
       await render(<TestComponent />);
 
       // Enable and continue
-      await userEvent.keyboard('{F5}');
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('false');
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
 
       // Another F5 should not change state
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('false');
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
     });
@@ -147,8 +150,8 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable and continue (running state)
-      await userEvent.keyboard('{F5}');
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('false');
 
       // F6 to pause
@@ -160,7 +163,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable (starts paused)
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
 
       // F6 should not change anything
@@ -182,7 +185,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable debug mode
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
 
       // At index 0 (depth 0), step over should skip children and go to index 4 (next depth 0)
@@ -194,8 +197,8 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable and continue (running)
-      await userEvent.keyboard('{F5}');
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('false');
 
       const indexBefore = page.getByTestId('debug-index');
@@ -211,7 +214,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable debug mode
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
 
       // Step into should go to next message (index 1)
@@ -227,7 +230,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable and step to index 3 (depth 2)
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await page.getByTestId('step-into').click();
       await page.getByTestId('step-into').click();
       await page.getByTestId('step-into').click();
@@ -242,7 +245,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable and step forward twice
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await page.getByTestId('step-into').click();
       await page.getByTestId('step-into').click();
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('2');
@@ -256,7 +259,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable debug mode
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
 
       // Escape to stop
@@ -282,7 +285,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable and go to last message (index 5)
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       for (let i = 0; i < 5; i++) await page.getByTestId('step-into').click();
 
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('5');
@@ -297,7 +300,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable debug mode (starts at index 0)
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
 
       // Step back should stay at 0
@@ -313,7 +316,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable and go to index 4 (last depth-0 message)
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await page.getByTestId('step-over').click();
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('4');
 
@@ -326,7 +329,7 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable at index 0 (depth 0, shallowest possible)
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
 
       // Step out should stay at 0 (no shallower depth exists)
@@ -341,8 +344,8 @@ describe('useDebugMode', () => {
       await render(<TestComponent visibleCountRef={visibleCountRef} />);
 
       // Enable and continue (running state)
-      await userEvent.keyboard('{F5}');
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
+      await pressDebugToggle();
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('false');
 
       // Simulate time passing - visibleCount would be updated by animation
@@ -357,11 +360,11 @@ describe('useDebugMode', () => {
       await render(<TestComponent />);
 
       // Enable debug mode
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('max-visible-depth')).toHaveTextContent('Infinity');
 
       // Continue
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await expect.element(page.getByTestId('max-visible-depth')).toHaveTextContent('Infinity');
     });
   });
@@ -420,7 +423,7 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('false');
 
       // Enable via F5 - this uses enableDebugMode which has its own sync logic
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       // Should use enableDebugMode's sync, not localStorage sync
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('9');
@@ -433,7 +436,7 @@ describe('useDebugMode', () => {
 
       expect(localStorage.getItem(DEBUG_STORAGE_KEY)).toBeNull();
 
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       expect(localStorage.getItem(DEBUG_STORAGE_KEY)).toBe('true');
     });
@@ -455,7 +458,7 @@ describe('useDebugMode', () => {
       const screen1 = await render(<TestComponent />);
 
       // Enable and step forward
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
       await page.getByTestId('step-into').click();
       await page.getByTestId('step-into').click();
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('2');
@@ -476,7 +479,7 @@ describe('useDebugMode', () => {
       // depths: [0, 1, 1, 2, 0, 1]
       await render(<TestComponent />);
 
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       // At index 0 (depth 0), step over should skip to index 4 (next depth 0)
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
@@ -488,7 +491,7 @@ describe('useDebugMode', () => {
       // depths: [0, 1, 1, 2, 0, 1]
       await render(<TestComponent />);
 
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       // Go to index 1 (depth 1)
       await page.getByTestId('step-into').click();
@@ -504,7 +507,7 @@ describe('useDebugMode', () => {
       // depths: [0, 1, 1, 2, 0, 1]
       await render(<TestComponent />);
 
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       // Go to index 2 (depth 1)
       await page.getByTestId('step-into').click();
@@ -517,14 +520,14 @@ describe('useDebugMode', () => {
     });
   });
 
-  describe('f5 enableDebugMode sync (regression)', () => {
-    test('f5 syncs debugIndex to current visible message count mid-stream', async () => {
+  describe('chord enableDebugMode sync (regression)', () => {
+    test('chord syncs debugIndex to current visible message count mid-stream', async () => {
       // Simulate 10 messages already visible when F5 is pressed
       const visibleCountRef = { current: 10 };
       await render(<TestComponent visibleCountRef={visibleCountRef} />);
 
       // Press F5 to enable debug mode mid-stream
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       // debugIndex should be synced to visibleCount - 1 (0-indexed)
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('9');
@@ -532,25 +535,25 @@ describe('useDebugMode', () => {
       await expect.element(page.getByTestId('is-paused')).toHaveTextContent('true');
     });
 
-    test('f5 pressed immediately shows at least first message', async () => {
+    test('chord pressed immediately shows at least first message', async () => {
       // Simulate no messages visible yet (or just starting)
       const visibleCountRef = { current: 0 };
       await render(<TestComponent visibleCountRef={visibleCountRef} />);
 
       // Press F5 immediately before any messages stream
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       // debugIndex should be 0 (shows first message)
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');
       await expect.element(page.getByTestId('is-enabled')).toHaveTextContent('true');
     });
 
-    test('f5 with visibleCount of 1 sets debugIndex to 0', async () => {
+    test('chord with visibleCount of 1 sets debugIndex to 0', async () => {
       // Simulate exactly 1 message visible
       const visibleCountRef = { current: 1 };
       await render(<TestComponent visibleCountRef={visibleCountRef} />);
 
-      await userEvent.keyboard('{F5}');
+      await pressDebugToggle();
 
       // debugIndex should be 0 (1 - 1 = 0)
       await expect.element(page.getByTestId('debug-index')).toHaveTextContent('0');

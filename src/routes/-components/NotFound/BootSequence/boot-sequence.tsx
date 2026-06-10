@@ -232,7 +232,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
         </div>
 
         {/* Debug hint */}
-        {!debugState.isEnabled && <div className='text-subtle-foreground mt-2 text-center text-[10px]'>Press F5 to enter debug mode</div>}
+        {!debugState.isEnabled && <div className='text-subtle-foreground mt-2 text-center text-[10px]'>Press Ctrl+Shift+D to enter debug mode</div>}
       </div>
     </div>
   );
