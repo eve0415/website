@@ -97,6 +97,18 @@ describe('buildCspHeader', () => {
     expect(csp).toContain('report-to default');
     expect(csp).toContain('report-uri /api/csp-report');
   });
+
+  test.skipIf(import.meta.env.DEV)('production connect-src allows the Cloudflare Web Analytics beacon host', () => {
+    const csp = buildCspHeader('test');
+
+    expect(csp).toContain("connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com");
+  });
+
+  test.skipIf(!import.meta.env.DEV)('development connect-src does not include the analytics beacon host', () => {
+    const csp = buildCspHeader('test');
+
+    expect(csp).not.toContain('https://cloudflareinsights.com');
+  });
 });
 
 describe('buildSecurityHeaders', () => {

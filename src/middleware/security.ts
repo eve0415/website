@@ -43,7 +43,8 @@ export const buildCspHeader = (nonce: string): string => {
     "default-src 'self'",
     `script-src 'strict-dynamic' 'nonce-${nonce}' 'unsafe-inline' https://challenges.cloudflare.com https://static.cloudflareinsights.com`,
     "style-src 'self' 'unsafe-inline'",
-    "connect-src 'self' https://challenges.cloudflare.com",
+    // cloudflareinsights.com is the Web Analytics beacon (RUM) ingestion host; without it the beacon POST is blocked
+    "connect-src 'self' https://challenges.cloudflare.com https://cloudflareinsights.com",
     'frame-src https://challenges.cloudflare.com',
     "img-src 'self' data: blob:",
     "font-src 'self' data:",
