@@ -4,10 +4,6 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useMemo, useState } from 'react';
 
-interface NullPointerProps {
-  onNavigateHome?: () => void;
-}
-
 // Memory cell data structure
 interface MemoryCell {
   address: string;
@@ -17,7 +13,7 @@ interface MemoryCell {
 }
 
 // VS Code-style debugger visualization for NullPointerException
-const NullPointer: FC<NullPointerProps> = () => {
+const NullPointer: FC = () => {
   const [highlightedCell, setHighlightedCell] = useState<number | null>(null);
   const [showPointerPath, setShowPointerPath] = useState(false);
 
