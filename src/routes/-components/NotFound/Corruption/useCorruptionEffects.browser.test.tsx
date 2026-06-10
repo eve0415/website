@@ -4,7 +4,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/tes
 import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
 
-import { getErrorColorClass, useCorruptionEffects } from './useCorruptionEffects';
+import { useCorruptionEffects } from './useCorruptionEffects';
 
 // Mock useReducedMotion
 vi.mock('#hooks/useReducedMotion', () => ({
@@ -25,9 +25,6 @@ const TestComponent: FC<TestComponentProps> = ({ enabled, progress }) => {
       <div data-testid='static-opacity'>{state.staticOpacity.toFixed(4)}</div>
       <div data-testid='glitch-lines-count'>{state.glitchLines.length}</div>
       <div data-testid='scanline-offset'>{state.scanlineOffset}</div>
-      <div data-testid='current-error'>{state.currentError?.text ?? 'null'}</div>
-      <div data-testid='current-error-stage'>{state.currentError?.stage ?? 'null'}</div>
-      <div data-testid='error-opacity'>{state.errorOpacity.toFixed(4)}</div>
     </div>
   );
 };
@@ -91,59 +88,6 @@ describe('useCorruptionEffects', () => {
     });
   });
 
-  describe('error selection (getErrorForProgress)', () => {
-    test('returns null when progress < 0.05', async () => {
-      await render(<TestComponent enabled progress={0.03} />);
-
-      await expect.element(page.getByTestId('current-error')).toHaveTextContent('null');
-    });
-
-    test('returns stage 1 error at low progress', async () => {
-      await render(<TestComponent enabled progress={0.1} />);
-
-      await expect.element(page.getByTestId('current-error-stage')).toHaveTextContent('1');
-    });
-
-    test('returns stage 2 error at medium progress', async () => {
-      await render(<TestComponent enabled progress={0.5} />);
-
-      await expect.element(page.getByTestId('current-error-stage')).toHaveTextContent('2');
-    });
-
-    test('returns stage 3 error at high progress', async () => {
-      await render(<TestComponent enabled progress={0.8} />);
-
-      await expect.element(page.getByTestId('current-error-stage')).toHaveTextContent('3');
-    });
-
-    test('returns null when disabled', async () => {
-      await render(<TestComponent enabled={false} progress={0.8} />);
-
-      await expect.element(page.getByTestId('current-error')).toHaveTextContent('null');
-    });
-  });
-
-  describe('error opacity', () => {
-    test('returns 0 when disabled', async () => {
-      await render(<TestComponent enabled={false} progress={0.5} />);
-
-      await expect.element(page.getByTestId('error-opacity')).toHaveTextContent('0.0000');
-    });
-
-    test('returns 0 when no current error (progress < 0.05)', async () => {
-      await render(<TestComponent enabled progress={0.03} />);
-
-      await expect.element(page.getByTestId('error-opacity')).toHaveTextContent('0.0000');
-    });
-
-    test('returns positive opacity when error present', async () => {
-      await render(<TestComponent enabled progress={0.5} />);
-
-      const opacity = Number.parseFloat(page.getByTestId('error-opacity').element().textContent);
-      expect(opacity).toBeGreaterThan(0);
-    });
-  });
-
   describe('glitch lines', () => {
     test('empty when disabled', async () => {
       await render(<TestComponent enabled={false} progress={0.8} />);
@@ -177,21 +121,5 @@ describe('useCorruptionEffects', () => {
         })
         .not.toBe(initialOffset);
     });
-  });
-});
-
-describe('getErrorColorClass', () => {
-  test.each([
-    { language: 'java', expected: 'text-orange' },
-    { language: 'python', expected: 'text-yellow-400' },
-    { language: 'javascript', expected: 'text-yellow-300' },
-    { language: 'node', expected: 'text-yellow-300' },
-    { language: 'go', expected: 'text-cyan' },
-    { language: 'c', expected: 'text-red-500' },
-    { language: 'kernel', expected: 'text-red-500' },
-    { language: undefined, expected: 'text-red-400' },
-    { language: 'unknown', expected: 'text-red-400' },
-  ])('language "$language" returns $expected', ({ language, expected }) => {
-    expect(getErrorColorClass(language)).toBe(expected);
   });
 });

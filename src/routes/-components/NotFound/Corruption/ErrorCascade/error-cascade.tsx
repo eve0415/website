@@ -5,7 +5,15 @@ import { useMemo } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
-import { getErrorColorClass } from '../useCorruptionEffects';
+// Get color class for error language
+const getErrorColorClass = (language: string): string => {
+  if (language === 'java') return 'text-orange';
+  if (language === 'python') return 'text-yellow-400';
+  if (language === 'javascript' || language === 'node') return 'text-yellow-300';
+  if (language === 'go') return 'text-cyan';
+  if (language === 'c' || language === 'kernel') return 'text-red-500';
+  return 'text-red-400';
+};
 
 interface CascadeError {
   id: number;
