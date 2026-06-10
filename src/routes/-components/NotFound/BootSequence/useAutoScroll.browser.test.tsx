@@ -19,7 +19,7 @@ const TestComponent: FC<TestComponentProps> = ({ initialDependency = 0, smooth =
   const containerRef = useRef<HTMLDivElement>(null);
   const [dependency, setDependency] = useState(initialDependency);
 
-  const { isAutoScrolling, handleScroll } = useAutoScroll({
+  const { handleScroll } = useAutoScroll({
     containerRef,
     dependency,
     smooth,
@@ -27,7 +27,6 @@ const TestComponent: FC<TestComponentProps> = ({ initialDependency = 0, smooth =
 
   return (
     <div>
-      <div data-testid='is-auto-scrolling'>{String(isAutoScrolling)}</div>
       <div data-testid='dependency'>{dependency}</div>
       <div
         ref={containerRef}
@@ -53,15 +52,6 @@ const TestComponent: FC<TestComponentProps> = ({ initialDependency = 0, smooth =
         Increment
       </button>
       <button
-        data-testid='increment-5'
-        onClick={() => {
-          setDependency(d => d + 5);
-        }}
-        type='button'
-      >
-        Increment +5
-      </button>
-      <button
         data-testid='set-10'
         onClick={() => {
           setDependency(10);
@@ -81,17 +71,10 @@ const waitForScroll = async () =>
   });
 
 describe('useAutoScroll', () => {
-  test('starts with auto-scrolling enabled (at bottom)', async () => {
-    await render(<TestComponent />);
-
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('true');
-  });
-
   test('scrolls to bottom on dependency change (instant mode)', async () => {
     await render(<TestComponent smooth={false} />);
 
-    const container = page.getByTestId('scroll-container');
-    const containerEl = container.element() as HTMLDivElement;
+    const containerEl = page.getByTestId('scroll-container').element();
 
     // Initial scroll position is 0
     expect(containerEl.scrollTop).toBe(0);
@@ -107,55 +90,10 @@ describe('useAutoScroll', () => {
     expect(containerEl.scrollTop).toBe(expectedScrollTop);
   });
 
-  test('pauses auto-scroll when user scrolls up', async () => {
-    await render(<TestComponent smooth={false} initialDependency={1} />);
-
-    const container = page.getByTestId('scroll-container');
-    const containerEl = container.element() as HTMLDivElement;
-
-    // First scroll to bottom by triggering a dependency change
-    await page.getByTestId('increment').click();
-    await waitForScroll();
-
-    // Confirm we're at bottom
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('true');
-
-    // Now user scrolls up manually (simulate user action)
-    containerEl.scrollTop = 0;
-    containerEl.dispatchEvent(new Event('scroll', { bubbles: true }));
-
-    // Auto-scrolling should be disabled
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('false');
-  });
-
-  test('resumes auto-scroll when user scrolls to exact bottom', async () => {
-    await render(<TestComponent smooth={false} initialDependency={1} />);
-
-    const container = page.getByTestId('scroll-container');
-    const containerEl = container.element() as HTMLDivElement;
-
-    // First trigger scroll to bottom
-    await page.getByTestId('increment').click();
-    await waitForScroll();
-
-    // User scrolls up
-    containerEl.scrollTop = 0;
-    containerEl.dispatchEvent(new Event('scroll', { bubbles: true }));
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('false');
-
-    // User scrolls back to bottom (exact)
-    containerEl.scrollTop = containerEl.scrollHeight - containerEl.clientHeight;
-    containerEl.dispatchEvent(new Event('scroll', { bubbles: true }));
-
-    // Auto-scrolling should re-engage
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('true');
-  });
-
   test('does not scroll when user has scrolled up', async () => {
     await render(<TestComponent smooth={false} initialDependency={1} />);
 
-    const container = page.getByTestId('scroll-container');
-    const containerEl = container.element() as HTMLDivElement;
+    const containerEl = page.getByTestId('scroll-container').element();
 
     // Trigger initial scroll to bottom
     await page.getByTestId('increment').click();
@@ -164,7 +102,7 @@ describe('useAutoScroll', () => {
     // User scrolls up
     containerEl.scrollTop = 50;
     containerEl.dispatchEvent(new Event('scroll', { bubbles: true }));
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('false');
+    await waitForScroll();
 
     const scrollTopAfterUserScroll = containerEl.scrollTop;
 
@@ -176,11 +114,37 @@ describe('useAutoScroll', () => {
     expect(containerEl.scrollTop).toBe(scrollTopAfterUserScroll);
   });
 
+  test('resumes auto-scroll when user scrolls back to exact bottom', async () => {
+    await render(<TestComponent smooth={false} initialDependency={1} />);
+
+    const containerEl = page.getByTestId('scroll-container').element();
+
+    // Trigger initial scroll to bottom
+    await page.getByTestId('increment').click();
+    await waitForScroll();
+
+    // User scrolls up - auto-scroll pauses
+    containerEl.scrollTop = 0;
+    containerEl.dispatchEvent(new Event('scroll', { bubbles: true }));
+    await waitForScroll();
+
+    // User scrolls back to the exact bottom - auto-scroll re-engages
+    containerEl.scrollTop = containerEl.scrollHeight - containerEl.clientHeight;
+    containerEl.dispatchEvent(new Event('scroll', { bubbles: true }));
+    await waitForScroll();
+
+    // Next dependency change should auto-scroll again
+    await page.getByTestId('increment').click();
+    await waitForScroll();
+
+    const expectedScrollTop = containerEl.scrollHeight - containerEl.clientHeight;
+    expect(containerEl.scrollTop).toBe(expectedScrollTop);
+  });
+
   test('handles dependency not changing', async () => {
     await render(<TestComponent smooth={false} initialDependency={10} />);
 
-    const container = page.getByTestId('scroll-container');
-    const containerEl = container.element() as HTMLDivElement;
+    const containerEl = page.getByTestId('scroll-container').element();
 
     const initialScrollTop = containerEl.scrollTop;
 
@@ -195,23 +159,25 @@ describe('useAutoScroll', () => {
   test('respects 1px tolerance for bottom detection', async () => {
     await render(<TestComponent smooth={false} />);
 
-    const container = page.getByTestId('scroll-container');
-    const containerEl = container.element() as HTMLDivElement;
+    const containerEl = page.getByTestId('scroll-container').element();
 
     // Scroll to almost bottom (within 1px tolerance)
     const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
     containerEl.scrollTop = maxScroll - 0.5; // Within 1px tolerance
     containerEl.dispatchEvent(new Event('scroll', { bubbles: true }));
+    await waitForScroll();
 
-    // Should still be considered "at bottom"
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('true');
+    // Still considered "at bottom" - dependency change should auto-scroll
+    await page.getByTestId('increment').click();
+    await waitForScroll();
+
+    expect(containerEl.scrollTop).toBe(maxScroll);
   });
 
-  test('detects not at bottom when more than 1px away', async () => {
+  test('treats more than 1px from bottom as scrolled up', async () => {
     await render(<TestComponent smooth={false} initialDependency={1} />);
 
-    const container = page.getByTestId('scroll-container');
-    const containerEl = container.element() as HTMLDivElement;
+    const containerEl = page.getByTestId('scroll-container').element();
 
     // First get to bottom
     await page.getByTestId('increment').click();
@@ -221,13 +187,19 @@ describe('useAutoScroll', () => {
     const maxScroll = containerEl.scrollHeight - containerEl.clientHeight;
     containerEl.scrollTop = maxScroll - 2; // More than 1px tolerance
     containerEl.dispatchEvent(new Event('scroll', { bubbles: true }));
+    await waitForScroll();
 
-    // Should NOT be considered "at bottom"
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('false');
+    // NOT considered "at bottom" - dependency change should not auto-scroll
+    await page.getByTestId('increment').click();
+    await waitForScroll();
+
+    expect(containerEl.scrollTop).toBe(maxScroll - 2);
   });
 
   test('rapid dependency changes do not break state', async () => {
     await render(<TestComponent smooth={false} />);
+
+    const containerEl = page.getByTestId('scroll-container').element();
 
     // Rapidly click multiple times
     for (let i = 0; i < 5; i++) await page.getByTestId('increment').click();
@@ -235,8 +207,9 @@ describe('useAutoScroll', () => {
     // Wait for all effects to settle
     await waitForScroll();
 
-    // Component should still function
+    // Component should still function and stay pinned to the bottom
     await expect.element(page.getByTestId('dependency')).toHaveTextContent('5');
-    await expect.element(page.getByTestId('is-auto-scrolling')).toHaveTextContent('true');
+    const expectedScrollTop = containerEl.scrollHeight - containerEl.clientHeight;
+    expect(containerEl.scrollTop).toBe(expectedScrollTop);
   });
 });

@@ -13,8 +13,6 @@ interface UseAutoScrollOptions {
 }
 
 interface UseAutoScrollReturn {
-  // Whether auto-scroll is active (user is at bottom)
-  isAutoScrolling: boolean;
   // Call when container scrolls to track position
   handleScroll: () => void;
 }
@@ -122,7 +120,6 @@ export const useAutoScroll = ({ containerRef, dependency, smooth = 'auto' }: Use
   }, [dependency, isAtBottom, containerRef, smooth]);
 
   return {
-    isAutoScrolling: isAtBottom,
     handleScroll,
   };
 };
