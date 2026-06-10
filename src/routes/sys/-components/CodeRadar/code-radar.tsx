@@ -51,6 +51,9 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
   const bootProgressRef = useRef(0);
   const animationRef = useRef<number>(0);
   const bootCompleteCalledRef = useRef(false);
+  // Whether the canvas is on-screen; gates the per-frame redraw. Defaults to
+  // true so the boot animation still runs before the observer's first callback.
+  const isVisibleRef = useRef(true);
 
   // Store callbacks in refs to avoid effect re-runs when callback references change
   const onBootCompleteRef = useRef(onBootComplete);
@@ -246,7 +249,10 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
         }
       }
 
-      drawRef.current?.(ctx, rect.width, rect.height, timestamp, false);
+      // Skip the (expensive) full redraw when the radar is scrolled out of
+      // view; keep the cheap rAF tick alive so it resumes on scroll-in.
+      // Always draw during boot so the intro completes regardless.
+      if (isVisibleRef.current || bootPhase === 'booting') drawRef.current?.(ctx, rect.width, rect.height, timestamp, false);
       animationRef.current = requestAnimationFrame(animate);
     };
 
@@ -275,7 +281,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     };
   }, [bootPhase, prefersReducedMotion]);
 
-  // Intersection observer to trigger animation only when visible
+  // Pause the per-frame redraw when the radar is scrolled out of view
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas || prefersReducedMotion) return;
@@ -283,18 +289,16 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
     const observer = new IntersectionObserver(
       entries => {
         const [entry] = entries;
-        if (entry?.isIntersecting === true && bootPhase === 'booting') {
-          // Animation will auto-start via useEffect
-        }
+        isVisibleRef.current = entry?.isIntersecting ?? false;
       },
-      { threshold: 0.5 },
+      { threshold: 0.1 },
     );
 
     observer.observe(canvas);
     return () => {
       observer.disconnect();
     };
-  }, [bootPhase, prefersReducedMotion]);
+  }, [prefersReducedMotion]);
 
   return (
     <div className='relative w-full max-w-md'>
