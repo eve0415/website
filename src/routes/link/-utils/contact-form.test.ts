@@ -1,7 +1,19 @@
 import { env } from 'cloudflare:workers';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 
-import { checkAndIncrementRateLimit, sendContactEmail } from './contact-form';
+import { buildContactEmail, checkAndIncrementRateLimit, sendContactEmail } from './contact-form';
+
+// mimetext base64-encodes the Subject header (RFC 2047); decode it for assertions
+const decodeSubject = (raw: string): string => {
+  const match = /Subject: =\?utf-8\?B\?([A-Za-z0-9+/=]+)\?=/.exec(raw);
+  const encoded = match?.[1];
+  if (!encoded) return '';
+  return new TextDecoder().decode(Uint8Array.from(atob(encoded), c => c.codePointAt(0) ?? 0));
+};
+
+// Header injection only matters in the header section (before the first blank line);
+// the body may legitimately contain the unsanitized name as inert content
+const headersOf = (raw: string): string => raw.split(/\r?\n\r?\n/)[0] ?? '';
 
 describe('checkAndIncrementRateLimit', () => {
   const testIp = '192.168.1.100';
@@ -122,54 +134,61 @@ describe('sendContactEmail', () => {
     (env as Record<string, unknown>).CONTACT_EMAIL = { send: mockSend };
   });
 
-  test('sends an EmailMessage with correct from/to', async () => {
-    await sendContactEmail({ name: 'Test User', email: 'test@example.com', message: 'Hello, this is a test.' });
+  test('sends to the site owner (MAIL_ADDRESS), not the submitter', async () => {
+    await sendContactEmail({ name: 'Test User', email: 'visitor@example.com', message: 'Hello, this is a test.' });
 
     expect(mockSend).toHaveBeenCalledOnce();
     const sent = mockSend.mock.calls[0]?.[0] as { from: string; to: string } | undefined;
     expect(sent?.from).toBe('noreply@eve0415.net');
-    expect(sent?.to).toBe('test@example.com');
+    expect(sent?.to).toBe(env.MAIL_ADDRESS);
+    expect(sent?.to).not.toBe('visitor@example.com');
   });
 
-  test('includes form data in MIME body', async () => {
-    await sendContactEmail({ name: 'Test User', email: 'user@example.com', message: 'Hello, this is my message.' });
+  test('includes form data in MIME body', () => {
+    const raw = buildContactEmail({ name: 'Test User', email: 'user@example.com', message: 'Hello, this is my message.' });
 
-    const sent = mockSend.mock.calls[0]?.[0] as { rawMessage: ReadableStream } | undefined;
-    expect(sent).toBeDefined();
+    expect(raw).toContain('お名前: Test User');
+    expect(raw).toContain('メールアドレス: user@example.com');
+    expect(raw).toContain('Hello, this is my message.');
   });
 
-  test('sanitizes CRLF in name to prevent header injection', async () => {
-    await sendContactEmail({ name: 'Evil\r\nBcc: attacker@evil.com\r\nUser', email: 'test@example.com', message: 'Hello' });
+  test('sanitizes CRLF in name to prevent header injection', () => {
+    const raw = buildContactEmail({ name: 'Evil\r\nBcc: attacker@evil.com\r\nUser', email: 'test@example.com', message: 'Hello' });
 
-    expect(mockSend).toHaveBeenCalledOnce();
+    expect(decodeSubject(raw)).toBe('[Contact] Evil Bcc: attacker@evil.com User');
+    expect(headersOf(raw)).not.toMatch(/^Bcc:/im);
   });
 
-  test('sanitizes LF in name', async () => {
-    await sendContactEmail({ name: 'Evil\nBcc: attacker@evil.com', email: 'test@example.com', message: 'Hello' });
+  test('sanitizes LF in name', () => {
+    const raw = buildContactEmail({ name: 'Evil\nBcc: attacker@evil.com', email: 'test@example.com', message: 'Hello' });
 
-    expect(mockSend).toHaveBeenCalledOnce();
+    expect(decodeSubject(raw)).toBe('[Contact] Evil Bcc: attacker@evil.com');
+    expect(headersOf(raw)).not.toMatch(/^Bcc:/im);
   });
 
-  test('sanitizes CR in name', async () => {
-    await sendContactEmail({ name: 'Evil\rBcc: attacker@evil.com', email: 'test@example.com', message: 'Hello' });
+  test('sanitizes CR in name', () => {
+    const raw = buildContactEmail({ name: 'Evil\rBcc: attacker@evil.com', email: 'test@example.com', message: 'Hello' });
 
-    expect(mockSend).toHaveBeenCalledOnce();
+    expect(decodeSubject(raw)).toBe('[Contact] Evil Bcc: attacker@evil.com');
+    expect(headersOf(raw)).not.toMatch(/^Bcc:/im);
   });
 
-  test('handles Japanese characters', async () => {
-    await sendContactEmail({
+  test('handles Japanese characters in the subject', () => {
+    const raw = buildContactEmail({
       name: '田中太郎',
       email: 'tanaka@example.com',
       message: 'こんにちは、お問い合わせです。よろしくお願いします。',
     });
 
-    expect(mockSend).toHaveBeenCalledOnce();
+    expect(decodeSubject(raw)).toBe('[Contact] 田中太郎');
   });
 
-  test('trims whitespace from form fields', async () => {
-    await sendContactEmail({ name: '  Padded Name  ', email: '  padded@example.com  ', message: '  Padded message  ' });
+  test('trims whitespace from form fields', () => {
+    const raw = buildContactEmail({ name: '  Padded Name  ', email: '  padded@example.com  ', message: '  Padded message  ' });
 
-    expect(mockSend).toHaveBeenCalledOnce();
+    expect(decodeSubject(raw)).toBe('[Contact] Padded Name');
+    expect(raw).toContain('お名前: Padded Name');
+    expect(raw).toContain('メールアドレス: padded@example.com');
   });
 
   test('propagates error when send fails', async () => {
