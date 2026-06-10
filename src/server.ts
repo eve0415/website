@@ -14,7 +14,8 @@ export default {
     }),
   scheduled(event, env, ctx) {
     // Hourly: refresh GitHub stats
-    ctx.waitUntil(refreshGitHubStats(env));
+    // Cron: "0 * * * *" in wrangler.json
+    if (event.cron === '0 * * * *') ctx.waitUntil(refreshGitHubStats(env));
 
     // Weekly (Sunday 3:30 AM JST = Saturday 18:30 UTC): trigger skills analysis
     // Cron: "30 18 * * 6" in wrangler.json
