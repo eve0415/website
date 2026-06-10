@@ -5,7 +5,7 @@ import { describe, expect, test, vi } from 'vite-plus/test';
 import { page, userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
 
-import { SudoRmRfError } from '#routes/sys/-components/Terminal/commands';
+import { SudoRmRfError } from '#lib/sudo-rm-rf-error';
 
 import BSODError from './bsod-error';
 import { REPO_URL } from './destinations';

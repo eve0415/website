@@ -8,12 +8,13 @@ import type {
   UserReposQuery,
   UserReposQueryVariables,
 } from '#generated/github-graphql';
+import type { GitHubClient } from '#lib/github-client';
 
-import { Octokit } from '@octokit/core';
-import { retry } from '@octokit/plugin-retry';
-import { throttling } from '@octokit/plugin-throttling';
+import { GITHUB_USERNAME } from '#lib/github-client';
 
-const GITHUB_USERNAME = 'eve0415';
+// The Octokit factory and GITHUB_USERNAME constant are shared from #lib/github-client.
+// Re-exported below so existing importers of this module (skills-analysis, tests) keep working.
+export { createGitHubClient, GITHUB_USERNAME } from '#lib/github-client';
 
 /** Rate limit info extracted from GraphQL response */
 export interface GraphQLRateLimit {
@@ -28,28 +29,6 @@ const DEFAULT_RATE_LIMIT: GraphQLRateLimit = {
   cost: 1,
   resetAt: Math.floor(Date.now() / 1000) + 3600,
 };
-
-// Create Octokit with plugins
-const MyOctokit = Octokit.plugin(throttling, retry);
-
-/** Create an Octokit instance configured for GitHub GraphQL */
-export const createGitHubClient = (token: string): InstanceType<typeof MyOctokit> =>
-  new MyOctokit({
-    auth: token,
-    throttle: {
-      onRateLimit: (retryAfter: number, options: { method: string; url: string }, _octokit: Octokit, retryCount: number) => {
-        console.warn(`Rate limit hit for ${options.method} ${options.url}. Retry ${retryCount + 1} after ${retryAfter}s`);
-        return retryCount < 3;
-      },
-      onSecondaryRateLimit: (retryAfter: number, options: { method: string; url: string }) => {
-        console.warn(`Secondary rate limit hit for ${options.method} ${options.url}. Waiting ${retryAfter}s`);
-        return true;
-      },
-    },
-    retry: {
-      doNotRetry: [429],
-    },
-  });
 
 /** Extract rate limit from GraphQL response */
 export const extractRateLimit = (response: { rateLimit?: { remaining: number; cost: number; resetAt: string } | null }): GraphQLRateLimit => {
@@ -206,7 +185,7 @@ export interface FetchRepoPRsResult {
 }
 
 /** Fetch user repositories with rate limit info */
-export const fetchUserRepos = async (octokit: InstanceType<typeof MyOctokit>, cursor?: string | null): Promise<FetchUserReposResult> => {
+export const fetchUserRepos = async (octokit: InstanceType<typeof GitHubClient>, cursor?: string | null): Promise<FetchUserReposResult> => {
   const variables: UserReposQueryVariables = {};
   if (cursor) variables.cursor = cursor;
 
@@ -220,7 +199,7 @@ export const fetchUserRepos = async (octokit: InstanceType<typeof MyOctokit>, cu
 
 /** Fetch commits for a repository with rate limit info */
 export const fetchRepoCommits = async (
-  octokit: InstanceType<typeof MyOctokit>,
+  octokit: InstanceType<typeof GitHubClient>,
   owner: string,
   name: string,
   since?: string | null,
@@ -240,7 +219,7 @@ export const fetchRepoCommits = async (
 
 /** Fetch pull requests for a repository with rate limit info */
 export const fetchRepoPRs = async (
-  octokit: InstanceType<typeof MyOctokit>,
+  octokit: InstanceType<typeof GitHubClient>,
   owner: string,
   name: string,
   cursor?: string | null,
@@ -285,5 +264,3 @@ export const isPRAuthoredByUser = (authorLogin: string | null | undefined): bool
   if (!authorLogin) return false;
   return authorLogin.toLowerCase() === GITHUB_USERNAME.toLowerCase();
 };
-
-export { GITHUB_USERNAME };

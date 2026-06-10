@@ -1,8 +1,10 @@
 import type { FC, ReactNode } from 'react';
 
-import { startTransition, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
+
+type CopyState = 'idle' | 'copied' | 'error';
 
 export interface SocialLink {
   name: string;
@@ -22,7 +24,7 @@ interface SocialLinkCardProps {
 const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
   const prefersReducedMotion = useReducedMotion();
   const [isVisible, setIsVisible] = useState(prefersReducedMotion);
-  const [isCopied, setIsCopied] = useState(false);
+  const [copyState, setCopyState] = useState<CopyState>('idle');
 
   useEffect(() => {
     if (prefersReducedMotion) return; // Skip entrance animation when reduced motion is enabled
@@ -34,15 +36,29 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
     };
   }, [index, prefersReducedMotion]);
 
-  const handleCopyClick = () => {
-    startTransition(async () => {
-      await navigator.clipboard.writeText(link.handle);
-    });
-    setIsCopied(true);
-    setTimeout(() => {
-      setIsCopied(false);
+  // Reset the copied/error feedback after a short delay
+  useEffect(() => {
+    if (copyState === 'idle') return;
+    const timer = setTimeout(() => {
+      setCopyState('idle');
     }, 1500);
+    return () => {
+      clearTimeout(timer);
+    };
+  }, [copyState]);
+
+  const handleCopyClick = async () => {
+    try {
+      await navigator.clipboard.writeText(link.handle);
+      setCopyState('copied');
+    } catch {
+      // Surface the failure instead of silently swallowing it
+      setCopyState('error');
+    }
   };
+
+  const statusText = copyState === 'copied' ? 'コピーしました' : copyState === 'error' ? 'コピーに失敗しました' : link.handle;
+  const statusColor = copyState === 'copied' ? 'text-neon' : copyState === 'error' ? 'text-orange' : 'text-subtle-foreground';
 
   const cardClasses = `group flex items-center gap-4 rounded-lg border border-line bg-surface p-4 transition-all duration-normal ${link.color} hover:shadow-lg ${
     isVisible ? 'translate-y-0 opacity-100' : 'translate-y-4 opacity-0'
@@ -55,7 +71,9 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
       </span>
       <div>
         <span className='text-foreground group-hover:text-neon block font-medium'>{link.name}</span>
-        <span className='text-subtle-foreground font-mono text-sm'>{isCopied ? 'Copied!' : link.handle}</span>
+        <span className={`${statusColor} font-mono text-sm`} role={link.copyAction === true ? 'status' : undefined}>
+          {statusText}
+        </span>
       </div>
       <span className='text-subtle-foreground ml-auto transition-transform group-hover:translate-x-1'>→</span>
     </>
@@ -63,6 +81,7 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
 
   if (link.copyAction === true) {
     return (
+      // oxlint-disable-next-line typescript/no-misused-promises -- Event handler, Promise is intentionally not awaited
       <button type='button' onClick={handleCopyClick} className={`${cardClasses} cursor-pointer text-left`}>
         {content}
       </button>

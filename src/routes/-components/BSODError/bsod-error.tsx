@@ -5,7 +5,7 @@ import { Link } from '@tanstack/react-router';
 import { useCallback, useEffect, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
-import { SudoRmRfError } from '#routes/sys/-components/Terminal/commands';
+import { SudoRmRfError } from '#lib/sudo-rm-rf-error';
 
 import { QR_DESTINATIONS, REPO_LABEL, REPO_URL } from './destinations';
 import { getRandomMessage } from './messages';
@@ -54,6 +54,10 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
       // Allow browser shortcuts (modifier keys) and function keys to pass through
       if (e.metaKey || e.ctrlKey || e.altKey || e.key.startsWith('F')) return;
 
+      // Don't hijack keys aimed at the focused Restart/Home/Revert controls -
+      // otherwise Enter/Space can't activate them by keyboard (WCAG 2.1.1)
+      if (e.target instanceof HTMLElement && e.target.closest('a, button')) return;
+
       // Trigger restart on activation keys (printable, Enter, Space, Escape)
       if (e.key.length === 1 || e.key === 'Enter' || e.key === ' ' || e.key === 'Escape') {
         e.preventDefault();
@@ -72,7 +76,9 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
   }, [reset]);
 
   return (
-    <div className='fixed inset-0 z-9999 overflow-y-auto bg-[#0078d4] p-4 text-white md:p-8'>
+    // role=alert announces the crash to screen readers; lang=en so Japanese
+    // TTS doesn't mangle the deliberately-English parody copy
+    <div role='alert' lang='en' className='fixed inset-0 z-9999 overflow-y-auto bg-[#0078d4] p-4 text-white md:p-8'>
       <div className='flex min-h-full flex-col items-center justify-center py-8'>
         {/* Sad face */}
         <div className='mb-6 font-sans text-[80px] leading-none sm:text-[120px] md:mb-8 md:text-[180px]'>:(</div>
@@ -84,9 +90,12 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
         </div>
 
         {/* Progress */}
-        <div data-testid='bsod-progress' className='mb-8 text-xl md:text-2xl'>
+        <div data-testid='bsod-progress' className='mb-2 text-xl md:text-2xl'>
           {Math.min(Math.floor(progress), 100)}% complete
         </div>
+
+        {/* Keyboard affordance, once the controls are available */}
+        {isComplete && <p className='mb-8 text-sm text-white'>Press any key to restart</p>}
 
         {/* QR Code section */}
         <div className='flex flex-col items-center gap-4 md:flex-row md:gap-8'>

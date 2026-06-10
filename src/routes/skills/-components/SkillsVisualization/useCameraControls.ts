@@ -42,6 +42,15 @@ export const useCameraControls = ({ targetX, targetY, canvasWidth, canvasHeight,
   const [isAnimating, setIsAnimating] = useState(false);
   const animationRef = useRef<number | null>(null);
 
+  // Mirror the latest camera into a ref so the animation effect can read it
+  // as a start snapshot WITHOUT depending on `camera` - depending on it would
+  // restart the rAF every frame (resetting startTime so the animation never
+  // converges and loops at 60fps while a node is selected).
+  const cameraRef = useRef(camera);
+  useEffect(() => {
+    cameraRef.current = camera;
+  }, [camera]);
+
   // Animate camera to target
   useEffect(() => {
     // Cancel any existing animation
@@ -55,7 +64,8 @@ export const useCameraControls = ({ targetX, targetY, canvasWidth, canvasHeight,
 
     if (targetX === null || targetY === null) {
       // No target - reset to default
-      if (camera.offsetX === 0 && camera.offsetY === 0 && camera.zoom === 1) {
+      const { offsetX, offsetY, zoom } = cameraRef.current;
+      if (offsetX === 0 && offsetY === 0 && zoom === 1) {
         // Already at default, nothing to do
         return;
       }
@@ -79,9 +89,9 @@ export const useCameraControls = ({ targetX, targetY, canvasWidth, canvasHeight,
       };
     }
 
-    // Animate to target
+    // Animate to target - snapshot the start position once
     const startTime = performance.now();
-    const fromCamera = { ...camera };
+    const fromCamera = { ...cameraRef.current };
 
     const frame = () => {
       const elapsed = performance.now() - startTime;
@@ -115,7 +125,7 @@ export const useCameraControls = ({ targetX, targetY, canvasWidth, canvasHeight,
         animationRef.current = null;
       }
     };
-  }, [targetX, targetY, canvasWidth, canvasHeight, duration, prefersReducedMotion, camera]);
+  }, [targetX, targetY, canvasWidth, canvasHeight, duration, prefersReducedMotion]);
 
   const reset = useCallback(() => {
     if (prefersReducedMotion) {

@@ -1,5 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
-import { page } from 'vite-plus/test/browser';
+import { page, userEvent } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
 
 import AISkillPanel from './ai-skill-panel';
@@ -43,6 +43,33 @@ describe('aISkillPanel', () => {
       await closeButton.click();
 
       expect(onClose).toHaveBeenCalledOnce();
+    });
+  });
+
+  describe('dialog semantics', () => {
+    test('exposes a modal dialog labelled by the skill name', async () => {
+      await render(<AISkillPanel skill={expertSkill} isExpanded onClose={vi.fn()} />);
+
+      const dialog = page.getByRole('dialog', { name: expertSkill.name });
+      await expect.element(dialog).toBeInTheDocument();
+      expect(dialog.element().getAttribute('aria-modal')).toBe('true');
+    });
+
+    test('moves focus into the panel on open', async () => {
+      const { container } = await render(<AISkillPanel skill={expertSkill} isExpanded onClose={vi.fn()} />);
+
+      const dialog = container.querySelector('[role="dialog"]');
+      expect(document.activeElement).toBe(dialog);
+    });
+
+    test('closes on Escape', async () => {
+      const onClose = vi.fn();
+
+      await render(<AISkillPanel skill={expertSkill} isExpanded onClose={onClose} />);
+
+      await userEvent.keyboard('{Escape}');
+
+      expect(onClose).toHaveBeenCalledWith();
     });
   });
 

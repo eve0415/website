@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
 
-import { printConsoleArt, printSecretMessage } from './console-art';
+import { printConsoleArt } from './console-art';
 
 describe('printConsoleArt', () => {
   let consoleSpy: {
@@ -95,36 +95,5 @@ describe('printConsoleArt', () => {
     // Count empty string calls for spacing
     const emptyLineCalls = consoleSpy.log.mock.calls.filter((call: string[]) => call[0] === '');
     expect(emptyLineCalls.length).toBeGreaterThan(0);
-  });
-});
-
-describe('printSecretMessage', () => {
-  let consoleSpy: ReturnType<typeof vi.spyOn>;
-
-  beforeEach(() => {
-    consoleSpy = vi.spyOn(console, 'log').mockImplementation(() => {});
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
-  });
-
-  test('logs message with emoji prefix and highlight styling', () => {
-    printSecretMessage('You found the secret!');
-
-    expect(consoleSpy).toHaveBeenCalledOnce();
-    expect(consoleSpy).toHaveBeenCalledWith('%c🎉 You found the secret!', 'color: #00d4ff; font-weight: bold;');
-  });
-
-  test('handles empty message', () => {
-    printSecretMessage('');
-
-    expect(consoleSpy).toHaveBeenCalledWith('%c🎉 ', 'color: #00d4ff; font-weight: bold;');
-  });
-
-  test('handles Japanese message', () => {
-    printSecretMessage('コナミコマンド発動！');
-
-    expect(consoleSpy).toHaveBeenCalledWith('%c🎉 コナミコマンド発動！', 'color: #00d4ff; font-weight: bold;');
   });
 });

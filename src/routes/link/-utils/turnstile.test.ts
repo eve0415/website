@@ -78,7 +78,7 @@ describe('verifyTurnstile', () => {
       expect(result.success).toBeTruthy();
     });
 
-    test('returns success for valid response with allowed hostname localhost', async () => {
+    test.skipIf(!import.meta.env.DEV)('accepts localhost only in development', async () => {
       server.use(
         http.post(TURNSTILE_URL, () =>
           HttpResponse.json({
@@ -91,6 +91,26 @@ describe('verifyTurnstile', () => {
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
       expect(result.success).toBeTruthy();
+    });
+
+    test.skipIf(import.meta.env.DEV)('rejects localhost in production', async () => {
+      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+
+      server.use(
+        http.post(TURNSTILE_URL, () =>
+          HttpResponse.json({
+            success: true,
+            hostname: 'localhost',
+          }),
+        ),
+      );
+
+      const result = await verifyTurnstile('valid-token', 'secret-key');
+
+      expect(result.success).toBeFalsy();
+      expect(result.error).toBe('認証に失敗しました。もう一度お試しください。');
+
+      consoleWarnSpy.mockRestore();
     });
 
     test('returns success when no hostname is provided in response', async () => {
@@ -119,9 +139,9 @@ describe('verifyTurnstile', () => {
 
       expect(result.success).toBeFalsy();
       expect(result.error).toBe('認証に失敗しました。もう一度お試しください。');
-      expect(consoleWarnSpy).toHaveBeenCalledWith(
-        'Turnstile hostname mismatch: expected one of eve0415.net, www.eve0415.net, localhost, got malicious-site.com',
-      );
+      // The allowed-host list in the message varies by environment (localhost is dev-only),
+      // so assert the stable prefix and the rejected hostname rather than the exact enumeration.
+      expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringMatching(/^Turnstile hostname mismatch: expected one of .+, got malicious-site\.com$/));
 
       consoleWarnSpy.mockRestore();
     });

@@ -38,7 +38,7 @@ export const Idle = meta.story({
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText('IDLE')).toBeInTheDocument();
+    await expect(canvas.getByText('待機中')).toBeInTheDocument();
   },
 });
 
@@ -48,7 +48,7 @@ export const ListingRepos = meta.story({
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText('LIVE ANALYZING')).toBeInTheDocument();
+    await expect(canvas.getByText('分析中')).toBeInTheDocument();
     await expect(canvas.getByText('リポジトリを取得中...')).toBeInTheDocument();
   },
 });
@@ -60,7 +60,7 @@ export const FetchingCommits = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
     await expect(canvas.getByText('コミット履歴を取得中...')).toBeInTheDocument();
-    await expect(canvas.getByText('Scanning eve0415/website...')).toBeInTheDocument();
+    await expect(canvas.getByText('スキャン中: eve0415/website')).toBeInTheDocument();
     await expect(canvas.getByText('2/10 repos')).toBeInTheDocument();
   },
 });
@@ -136,7 +136,7 @@ export const Completed = meta.story({
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText('COMPLETE')).toBeInTheDocument();
+    await expect(canvas.getByText('完了')).toBeInTheDocument();
     await expect(canvas.getByText('10/10 repos')).toBeInTheDocument();
   },
 });
@@ -147,7 +147,7 @@ export const Error = meta.story({
   },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(canvas.getByText('IDLE')).toBeInTheDocument();
+    await expect(canvas.getByText('エラー')).toBeInTheDocument();
     await expect(canvas.getByText('Rate limit exceeded. Please try again later.')).toBeInTheDocument();
   },
 });

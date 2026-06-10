@@ -84,6 +84,18 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
   const [dimensions, setDimensions] = useState({ width: 0, height: 0 });
   const [hoveredNode, setHoveredNode] = useState<string | null>();
 
+  // Mirror hover/selection into refs so the draw loop can read them without
+  // being in its dep array - otherwise every mousemove tears down and
+  // recreates the rAF loop and the ResizeObserver.
+  const hoveredRef = useRef(hoveredNode);
+  useEffect(() => {
+    hoveredRef.current = hoveredNode;
+  }, [hoveredNode]);
+  const selectedRef = useRef(selectedSkillId);
+  useEffect(() => {
+    selectedRef.current = selectedSkillId;
+  }, [selectedSkillId]);
+
   // Track AI node materialize states
   const [aiMaterializeStates, setAIMaterializeStates] = useState<Map<number, { phase: MaterializePhase; progress: number }>>(new Map());
 
@@ -99,6 +111,8 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
   // Compute nodes from static skills + AI skills
   const nodesRef = useRef<VisualizationNode[]>([]);
   const connectionsRef = useRef<Connection[]>([]);
+  // Holds the active draw fn so the non-animating redraw effect can call it
+  const drawRef = useRef<(() => void) | null>(null);
 
   // Recompute nodes when dimensions or skills change
   useEffect(() => {
@@ -238,6 +252,9 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
     let animationId = 0;
     let time = 0;
 
+    // Resize the backing store only on mount and on actual resize - doing it
+    // per frame forces layout and reallocates/clears the buffer 60x/sec
+    let dims = { width: 0, height: 0 };
     const setupCanvas = () => {
       const dpr = window.devicePixelRatio || 1;
       const width = canvas.offsetWidth;
@@ -247,12 +264,16 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
       canvas.height = height * dpr;
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
 
-      return { width, height };
+      dims = { width, height };
+      return dims;
     };
 
     const draw = () => {
-      const { width, height } = setupCanvas();
+      const { width, height } = dims;
       ctx.clearRect(0, 0, width, height);
+
+      const selectedSkillId = selectedRef.current;
+      const hoveredNode = hoveredRef.current;
 
       if (shouldAnimate) time += 0.01;
 
@@ -316,8 +337,9 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
       if (shouldAnimate) animationId = requestAnimationFrame(draw);
     };
 
-    const { width, height } = setupCanvas();
-    setDimensions({ width, height });
+    const initial = setupCanvas();
+    setDimensions({ width: initial.width, height: initial.height });
+    drawRef.current = draw;
     draw();
 
     const resizeObserver = new ResizeObserver(entries => {
@@ -326,6 +348,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         const rect = entry.contentRect;
         setDimensions({ width: rect.width, height: rect.height });
       }
+      setupCanvas();
       cancelAnimationFrame(animationId);
       draw();
     });
@@ -334,8 +357,16 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
     return () => {
       resizeObserver.disconnect();
       cancelAnimationFrame(animationId);
+      drawRef.current = null;
     };
-  }, [shouldAnimate, selectedSkillId, hoveredNode]);
+  }, [shouldAnimate]);
+
+  // When not animating, a hover/selection change still needs a single redraw
+  // (the rAF loop that would otherwise pick it up isn't running)
+  useEffect(() => {
+    if (shouldAnimate) return;
+    drawRef.current?.();
+  }, [hoveredNode, selectedSkillId, shouldAnimate]);
 
   // AI-discovered skills need individual materialize trackers
   const aiOnlySkills = aiSkills.filter(s => s.is_ai_discovered);
@@ -352,12 +383,8 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         className={`size-full ${hoveredNode ? 'cursor-pointer' : ''}`}
         onClick={handleCanvasClick}
         onMouseMove={handleMouseMove}
-        onKeyDown={e => {
-          if (e.key === 'Escape' && onNodeSelect) onNodeSelect(null);
-        }}
-        tabIndex={0}
-        role='application'
-        aria-label='Interactive skills visualization - click nodes to select, press Escape to deselect'
+        role='img'
+        aria-label='スキルの関係性を示すネットワーク図。各スキルは下のスキル一覧から選択できます。'
       />
 
       {/* Legend overlay */}

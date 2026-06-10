@@ -45,4 +45,12 @@ const SysPage: FC = () => {
 export const Route = createFileRoute('/sys/')({
   component: SysPage,
   loader: async () => getGitHubStats(),
+  head: () => ({
+    meta: [
+      { title: 'システム情報 | eve0415' },
+      { property: 'og:title', content: 'システム情報 | eve0415' },
+      { property: 'og:url', content: 'https://eve0415.net/sys' },
+    ],
+    links: [{ rel: 'canonical', href: 'https://eve0415.net/sys' }],
+  }),
 });

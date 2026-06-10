@@ -8,16 +8,8 @@ import { useMousePosition } from './useMousePosition';
 
 const Background: FC = () => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mousePosition = useMousePosition();
+  const mousePositionRef = useMousePosition();
   const reducedMotion = useReducedMotion();
-
-  // Store latest mouse position in ref for access in animation loop without triggering effect re-runs
-  const mousePositionRef = useRef(mousePosition);
-
-  // Sync ref with latest mouse position (only when mousePosition changes)
-  useEffect(() => {
-    mousePositionRef.current = mousePosition;
-  }, [mousePosition]);
 
   // Store static mouse position for reduced motion mode
   // This ensures stable rendering for visual regression tests
@@ -92,7 +84,7 @@ const Background: FC = () => {
       window.removeEventListener('resize', resize);
       cancelAnimationFrame(animationId);
     };
-  }, [reducedMotion]);
+  }, [reducedMotion, mousePositionRef]);
 
   return <canvas ref={canvasRef} className='pointer-events-none fixed inset-0 -z-10' aria-hidden='true' />;
 };

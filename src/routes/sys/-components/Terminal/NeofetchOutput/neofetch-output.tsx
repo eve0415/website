@@ -22,7 +22,9 @@ const NeofetchOutput: FC<NeofetchOutputProps> = ({ stats }) => {
     <div className='font-mono text-sm'>
       <div className='flex flex-col gap-4 md:flex-row md:gap-8'>
         {/* ASCII Art */}
-        <pre className='text-neon text-xs leading-tight'>{ASCII_LOGO}</pre>
+        <pre className='text-neon text-xs leading-tight' aria-hidden='true'>
+          {ASCII_LOGO}
+        </pre>
 
         {/* System Info */}
         <div className='flex flex-col gap-1'>

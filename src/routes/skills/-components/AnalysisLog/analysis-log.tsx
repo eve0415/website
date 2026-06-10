@@ -5,14 +5,12 @@ import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';
 
-import { canShowRepoName } from '#workflows/-utils/privacy-filter';
-
 interface Props {
   state: WorkflowState;
 }
 
-const phaseMessages: Record<string, string> = {
-  idle: '待機中',
+const phaseMessages: Record<WorkflowPhase, string> = {
+  idle: '次回の実行を待機しています',
   'listing-repos': 'リポジトリを取得中...',
   'fetching-commits': 'コミット履歴を取得中...',
   'fetching-prs': 'プルリクエストを取得中...',
@@ -28,9 +26,11 @@ const phaseMessages: Record<string, string> = {
 const AnalysisLog: FC<Props> = ({ state }) => {
   const [blinkVisible, setBlink] = useState(true);
 
+  const isActive = state.phase !== 'idle' && state.phase !== 'completed' && state.phase !== 'error';
+
   // Heartbeat blink effect
   useEffect(() => {
-    if (state.phase === 'idle' || state.phase === 'completed' || state.phase === 'error') return;
+    if (!isActive) return;
 
     const interval = setInterval(() => {
       setBlink(prev => !prev);
@@ -39,10 +39,7 @@ const AnalysisLog: FC<Props> = ({ state }) => {
     return () => {
       clearInterval(interval);
     };
-  }, [state.phase]);
-
-  const isActive = state.phase !== 'idle' && state.phase !== 'completed' && state.phase !== 'error';
-  const currentMessage = getPhaseMessage(state.phase, state);
+  }, [isActive]);
 
   return (
     <div className='border-line bg-surface/80 fixed right-4 bottom-4 z-40 w-80 max-w-[calc(100vw-2rem)] rounded-lg border backdrop-blur-sm'>
@@ -51,32 +48,40 @@ const AnalysisLog: FC<Props> = ({ state }) => {
         <div className='flex items-center gap-2'>
           <span className={`size-2 rounded-full ${isActive ? 'bg-fuchsia animate-heartbeat' : state.phase === 'completed' ? 'bg-neon' : 'bg-muted'}`} />
           <span className='text-subtle-foreground font-mono text-xs uppercase'>
-            {isActive ? 'LIVE ANALYZING' : state.phase === 'completed' ? 'COMPLETE' : 'IDLE'}
+            {isActive ? '分析中' : state.phase === 'completed' ? '完了' : state.phase === 'error' ? 'エラー' : '待機中'}
           </span>
         </div>
         {isActive && <span className='text-fuchsia font-mono text-xs'>{state.progress_pct}%</span>}
       </div>
 
       {/* Current status */}
-      <div className='h-16 overflow-hidden p-3'>
+      <div className='h-16 overflow-hidden p-3' role='status'>
         <div className='flex flex-col gap-1'>
-          {state.current_repo && (
+          {state.current_repo && isActive && (
             <p className='text-muted-foreground font-mono text-xs'>
-              <span className='text-subtle-foreground mr-2'>{'>'}</span>
-              {getRepoMessage(state.current_repo)}
+              <span className='text-subtle-foreground mr-2' aria-hidden='true'>
+                {'>'}
+              </span>
+              スキャン中: {state.current_repo}
             </p>
           )}
           {isActive && (
             <p className='text-fuchsia font-mono text-xs'>
-              <span className='mr-2'>{'>'}</span>
+              <span className='mr-2' aria-hidden='true'>
+                {'>'}
+              </span>
               {phaseMessages[state.phase]}
-              <span className={`ml-1 ${blinkVisible ? 'opacity-100' : 'opacity-0'}`}>_</span>
+              <span aria-hidden='true' className={`ml-1 ${blinkVisible ? 'opacity-100' : 'opacity-0'}`}>
+                _
+              </span>
             </p>
           )}
-          {!isActive && currentMessage && (
+          {!isActive && (
             <p className='text-muted-foreground font-mono text-xs'>
-              <span className='text-subtle-foreground mr-2'>{'>'}</span>
-              {currentMessage}
+              <span className='text-subtle-foreground mr-2' aria-hidden='true'>
+                {'>'}
+              </span>
+              {getIdleMessage(state)}
             </p>
           )}
         </div>
@@ -94,23 +99,10 @@ const AnalysisLog: FC<Props> = ({ state }) => {
   );
 };
 
-const getRepoMessage = (repoName: string): string => {
-  // Privacy check - only show public repo names
-  const isPublic = canShowRepoName({ privacyClass: 'self' }); // Simplified - would need actual repo privacy class
-  if (isPublic) return `Scanning ${repoName}...`;
-
-  return 'Scanning private repository...';
-};
-
-const getPhaseMessage = (phase: WorkflowPhase, state: WorkflowState): string | undefined => {
-  if (phase === 'listing-repos') return 'Enumerating repositories...';
-  if (phase === 'squashing-history') return 'Compressing history data...';
-  if (phase === 'ai-extracting-skills') return 'Running skill extraction model...';
-  if (phase === 'ai-generating-japanese') return 'Generating Japanese descriptions...';
-  if (phase === 'storing-results') return 'Writing to KV store...';
-  if (phase === 'completed') return `Analysis complete. ${state.repos_processed} repos processed.`;
-  if (phase === 'error') return state.error_message ?? 'An error occurred.';
-  return undefined;
+const getIdleMessage = (state: WorkflowState): string => {
+  if (state.phase === 'completed') return `分析完了（${state.repos_processed} リポジトリ）`;
+  if (state.phase === 'error') return state.error_message ?? 'エラーが発生しました';
+  return phaseMessages.idle;
 };
 
 export default AnalysisLog;

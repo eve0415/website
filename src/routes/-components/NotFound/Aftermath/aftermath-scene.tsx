@@ -8,7 +8,7 @@ import BufferOverflow from './ErrorVisualizations/BufferOverflow/buffer-overflow
 import ClassNotFound from './ErrorVisualizations/ClassNotFound/class-not-found';
 import ConcurrentModification from './ErrorVisualizations/ConcurrentModification/concurrent-modification';
 import DivisionByZero from './ErrorVisualizations/DivisionByZero/division-by-zero';
-import { getRandomError } from './ErrorVisualizations/error-types';
+import { getRandomErrorType } from './ErrorVisualizations/error-types';
 import FileNotFound from './ErrorVisualizations/FileNotFound/file-not-found';
 import IndexOutOfBounds from './ErrorVisualizations/IndexOutOfBounds/index-out-of-bounds';
 import NullPointer from './ErrorVisualizations/NullPointer/null-pointer';
@@ -51,8 +51,8 @@ const ERROR_COMPONENTS: Record<ErrorType, FC> = {
 
 const AftermathScene: FC<AftermathSceneProps> = ({ visible }) => {
   // Select random error on mount (consistent during the visit)
-  const selectedError = useMemo(() => getRandomError(), []);
-  const ErrorComponent = ERROR_COMPONENTS[selectedError.type];
+  const selectedErrorType = useMemo(() => getRandomErrorType(), []);
+  const ErrorComponent = ERROR_COMPONENTS[selectedErrorType];
 
   if (!visible) return;
 

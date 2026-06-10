@@ -13,8 +13,6 @@ export interface TerminalLine {
 interface TerminalStateData {
   state: TerminalState;
   lines: TerminalLine[];
-  currentInput: string;
-  showCursor: boolean;
   awaitingConfirmation: string | null;
   /** Whether diagnostic content (CodeRadar, StatsPanel, etc.) is visible */
   contentVisible: boolean;
@@ -28,7 +26,6 @@ type TerminalAction =
   | { type: 'TYPING_DONE' }
   | { type: 'CTRL_C' }
   | { type: 'CTRL_C_WITH_TEXT'; payload: { partialText: string } }
-  | { type: 'SET_INPUT'; payload: string }
   | { type: 'EXECUTE_COMMAND'; payload: { command: string; output: ReactNode; isError?: boolean } }
   | { type: 'CLEAR' }
   | { type: 'AWAIT_CONFIRMATION'; payload: string }
@@ -41,8 +38,6 @@ const generateId = () => Math.random().toString(36).slice(2, 9);
 const initialState: TerminalStateData = {
   state: 'typing',
   lines: [],
-  currentInput: '',
-  showCursor: true,
   awaitingConfirmation: null,
   contentVisible: false,
   bootCommandVisible: true,
@@ -71,10 +66,9 @@ const terminalReducer = (state: TerminalStateData, action: TerminalAction): Term
           contentVisible: false,
         };
       }
-      // In prompt state, Ctrl+C clears current input
+      // In prompt state, Ctrl+C cancels any pending confirmation
       return {
         ...state,
-        currentInput: '',
         awaitingConfirmation: null,
       };
 
@@ -93,12 +87,6 @@ const terminalReducer = (state: TerminalStateData, action: TerminalAction): Term
         ...state,
         state: 'displaying',
         contentVisible: true,
-      };
-
-    case 'SET_INPUT':
-      return {
-        ...state,
-        currentInput: action.payload,
       };
 
     case 'EXECUTE_COMMAND': {
@@ -123,7 +111,6 @@ const terminalReducer = (state: TerminalStateData, action: TerminalAction): Term
       return {
         ...state,
         lines: newLines,
-        currentInput: '',
         awaitingConfirmation: null,
       };
     }
@@ -133,7 +120,6 @@ const terminalReducer = (state: TerminalStateData, action: TerminalAction): Term
       return {
         ...state,
         lines: [],
-        currentInput: '',
         awaitingConfirmation: null,
         bootCommandVisible: false,
         interruptedText: null,
@@ -190,14 +176,12 @@ const terminalReducer = (state: TerminalStateData, action: TerminalAction): Term
 export interface UseTerminalResult {
   state: TerminalState;
   lines: TerminalLine[];
-  currentInput: string;
   awaitingConfirmation: string | null;
   contentVisible: boolean;
   bootCommandVisible: boolean;
   interruptedText: string | null;
   onTypingDone: () => void;
   onCtrlC: (partialText?: string) => void;
-  setInput: (input: string) => void;
   executeCommand: (command: string, output: ReactNode, isError?: boolean) => void;
   clear: () => void;
   awaitConfirmation: (command: string) => void;
@@ -214,9 +198,6 @@ export const useTerminal = (): UseTerminalResult => {
   }, []);
   const onCtrlC = useCallback((partialText?: string) => {
     dispatch(partialText ? { type: 'CTRL_C_WITH_TEXT', payload: { partialText } } : { type: 'CTRL_C' });
-  }, []);
-  const setInput = useCallback((input: string) => {
-    dispatch({ type: 'SET_INPUT', payload: input });
   }, []);
   const executeCommand = useCallback((command: string, output: ReactNode, isError = false) => {
     dispatch({ type: 'EXECUTE_COMMAND', payload: { command, output, isError } });
@@ -240,14 +221,12 @@ export const useTerminal = (): UseTerminalResult => {
   return {
     state: data.state,
     lines: data.lines,
-    currentInput: data.currentInput,
     awaitingConfirmation: data.awaitingConfirmation,
     contentVisible: data.contentVisible,
     bootCommandVisible: data.bootCommandVisible,
     interruptedText: data.interruptedText,
     onTypingDone,
     onCtrlC,
-    setInput,
     executeCommand,
     clear,
     awaitConfirmation,

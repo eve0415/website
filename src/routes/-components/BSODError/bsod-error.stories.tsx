@@ -2,7 +2,7 @@ import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } fr
 import { expect, fn, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
-import { SudoRmRfError } from '#routes/sys/-components/Terminal/commands';
+import { SudoRmRfError } from '#lib/sudo-rm-rf-error';
 
 import BSODError from './bsod-error';
 

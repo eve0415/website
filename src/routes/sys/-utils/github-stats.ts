@@ -1,23 +1,17 @@
 /* oxlint-disable no-await-in-loop, promise/prefer-await-to-then -- Pagination requires sequential await; .catch() in Promise.all is valid error handling */
 import type { GetGitHubStatsQuery } from '#generated/github-graphql';
+import type { GitHubClient } from '#lib/github-client';
 import type { GitHubStats, LanguageStat } from './github-stats-utils';
 
-import { Octokit } from '@octokit/core';
-import { retry } from '@octokit/plugin-retry';
-import { throttling } from '@octokit/plugin-throttling';
 import { createServerFn } from '@tanstack/react-start';
 import { env } from 'cloudflare:workers';
+
+import { GITHUB_USERNAME, createGitHubClient } from '#lib/github-client';
 
 import { calculateStreaksJST, getLanguageColor, levelFromContributionLevel } from './github-stats-utils';
 
 // Cache key for KV storage
 const CACHE_KEY = 'github_stats_eve0415';
-
-// GitHub username
-const GITHUB_USERNAME = 'eve0415';
-
-// Create Octokit with plugins
-const MyOctokit = Octokit.plugin(throttling, retry);
 
 // Static fallback data when KV is empty
 const FALLBACK_STATS: GitHubStats = {
@@ -100,23 +94,8 @@ export const refreshGitHubStats = async (workerEnv: Env): Promise<void> => {
   const pat = workerEnv.GITHUB_PAT;
   const kv = workerEnv.CACHE;
 
-  // Create Octokit instance with plugins
-  const octokit = new MyOctokit({
-    auth: pat,
-    throttle: {
-      onRateLimit: (retryAfter: number, options: { method: string; url: string }, _octokit: Octokit, retryCount: number) => {
-        console.warn(`Rate limit hit for ${options.method} ${options.url}. Retry ${retryCount + 1} after ${retryAfter}s`);
-        return retryCount < 3;
-      },
-      onSecondaryRateLimit: (retryAfter: number, options: { method: string; url: string }) => {
-        console.warn(`Secondary rate limit hit for ${options.method} ${options.url}. Waiting ${retryAfter}s`);
-        return true;
-      },
-    },
-    retry: {
-      doNotRetry: [429],
-    },
-  });
+  // Create Octokit instance with shared throttling/retry config
+  const octokit = createGitHubClient(pat);
 
   // Fetch all data from GitHub
   const stats = await fetchAllStats(octokit);
@@ -125,7 +104,7 @@ export const refreshGitHubStats = async (workerEnv: Env): Promise<void> => {
   await kv.put(CACHE_KEY, JSON.stringify(stats));
 };
 
-const fetchAllStats = async (octokit: InstanceType<typeof MyOctokit>): Promise<GitHubStats> => {
+const fetchAllStats = async (octokit: InstanceType<typeof GitHubClient>): Promise<GitHubStats> => {
   // Fetch GraphQL data with pagination for repos
   const allRepos: { name: string; isFork: boolean; diskUsage?: number | null }[] = [];
   let cursor;

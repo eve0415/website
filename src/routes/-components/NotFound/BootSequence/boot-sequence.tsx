@@ -1,8 +1,7 @@
 import type { MouseInfluence } from '../useMouseInfluence';
-import type { ConnectionInfo } from './connection-info';
 import type { FC } from 'react';
 
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef } from 'react';
 
 import { DebugToolbar } from './DebugToolbar/debug-toolbar';
 import { useAutoScroll } from './useAutoScroll';
@@ -20,17 +19,6 @@ interface BootSequenceProps {
   onBootComplete?: (isComplete: boolean) => void;
 }
 
-// Default connection info for initial render
-const DEFAULT_CONNECTION: ConnectionInfo = {
-  serverIp: '...',
-  tlsVersion: 'TLSv1.3',
-  tlsCipher: 'TLS_AES_128_GCM_SHA256',
-  httpVersion: 'h2',
-  cfRay: null,
-  colo: null,
-  certificatePack: null, // Will be populated from Cloudflare API
-};
-
 const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence, onDebugPausedChange, onBootComplete }) => {
   // Get real browser data
   const timing = useNavigationTiming();
@@ -41,10 +29,6 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
 
   // Ref to track current visible message count for debug mode sync
   const visibleCountRef = useRef(0);
-
-  // Fetch server-side connection info
-  const [connection] = useState<ConnectionInfo>(DEFAULT_CONNECTION);
-  useEffect(() => {}, [visible]);
 
   // Current path
   const currentPath = useMemo(() => {
@@ -59,7 +43,6 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
     elapsed,
     timing,
     dom,
-    connection,
     path: currentPath,
     isDebugMode: false,
     isPaused: false,
@@ -80,7 +63,6 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
     elapsed,
     timing,
     dom,
-    connection,
     path: currentPath,
     isDebugMode: debugState.isEnabled,
     isPaused: debugState.isPaused,
@@ -197,7 +179,11 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
                   )}
 
                   {/* Hierarchy indicator */}
-                  {msg.depth > 0 && <span className='text-line/50 mr-1.5'>{msg.type === 'group' ? '▼' : '├'}</span>}
+                  {msg.depth > 0 && (
+                    <span className='text-line/50 mr-1.5' aria-hidden='true'>
+                      {msg.type === 'group' ? '▼' : '├'}
+                    </span>
+                  )}
 
                   {/* Message text */}
                   <span
@@ -250,7 +236,7 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
         </div>
 
         {/* Debug hint */}
-        {!debugState.isEnabled && <div className='text-subtle-foreground mt-2 text-center text-[10px]'>Press F5 to enter debug mode</div>}
+        {!debugState.isEnabled && <div className='text-subtle-foreground mt-2 text-center text-[10px]'>Press Ctrl+Shift+D to enter debug mode</div>}
       </div>
     </div>
   );

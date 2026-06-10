@@ -24,3 +24,9 @@ coverage/
 *storybook.log
 storybook-static/
 .vitest-attachments/
+
+# TanStack Router codegen temp
+.tanstack/
+
+# Agent worktrees
+.claude/worktrees/

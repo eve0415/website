@@ -1,5 +1,6 @@
 import type { FC } from 'react';
 
+import { Link } from '@tanstack/react-router';
 import { useCallback, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
@@ -40,9 +41,15 @@ const NotFound: FC = () => {
   });
 
   return (
-    <main role='main' aria-label='ページが見つかりません' className='bg-background relative min-h-screen overflow-hidden'>
+    <main aria-label='ページが見つかりません' className='bg-background relative min-h-screen overflow-hidden'>
       {/* Screen reader content */}
       <div className='sr-only'>ページが見つかりません。ホームに戻るにはページ下部のリンクをクリックしてください。</div>
+
+      {/* Always-available home link for screen readers - the animated visible
+          link only appears after ~10s, so expose one immediately */}
+      <Link to='/' className='sr-only'>
+        ホームに戻る
+      </Link>
 
       {/* Phase 1: Boot Sequence */}
       <BootSequence

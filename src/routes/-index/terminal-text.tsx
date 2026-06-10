@@ -1,8 +1,9 @@
 import type { FC } from 'react';
 
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
+import { useTypedText } from '#hooks/useTypedText';
 
 interface Props {
   text: string;
@@ -41,48 +42,12 @@ const StaticTerminalText: FC<Props> = ({ text, className = '', onComplete }) => 
 
 // Extracted animated version to avoid conditional hook calls
 const AnimatedTerminalText: FC<Props> = ({ text, delay = 0, speed = 50, className = '', onComplete }) => {
-  const [displayedText, setDisplayedText] = useState('');
-  const [isComplete, setIsComplete] = useState(false);
-
-  const currentIndexRef = useRef(0);
-  const onCompleteRef = useRef(onComplete);
-
-  // Keep onComplete ref updated
-  useEffect(() => {
-    onCompleteRef.current = onComplete;
-  }, [onComplete]);
-
-  useEffect(() => {
-    currentIndexRef.current = 0;
-    let isCancelled = false;
-
-    const delayTimer = setTimeout(() => {
-      const typeInterval = setInterval(() => {
-        if (isCancelled) {
-          clearInterval(typeInterval);
-          return;
-        }
-
-        if (currentIndexRef.current < text.length) {
-          setDisplayedText(text.slice(0, currentIndexRef.current + 1));
-          currentIndexRef.current += 1;
-        } else {
-          clearInterval(typeInterval);
-          setIsComplete(true);
-          onCompleteRef.current?.();
-        }
-      }, speed);
-
-      return () => {
-        clearInterval(typeInterval);
-      };
-    }, delay);
-
-    return () => {
-      isCancelled = true;
-      clearTimeout(delayTimer);
-    };
-  }, [text, delay, speed]);
+  const { displayedText, isComplete } = useTypedText({
+    text,
+    speed,
+    initialDelay: delay,
+    ...(onComplete !== undefined && { onComplete }),
+  });
 
   return (
     <span className={`inline-block ${className}`}>

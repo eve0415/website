@@ -39,7 +39,7 @@ describe('rootDocument', () => {
   // Note: shellComponent renders <html><body>... which can't be tested inside a container
   // We test what we can: that it renders content and devtools correctly
 
-  test('renders main element containing children', async () => {
+  test('renders children inside the wrapper', async () => {
     const ShellComponent = (Route as unknown as RouteWithShell).options.shellComponent;
     await render(
       <ShellComponent>
@@ -68,7 +68,7 @@ describe('rootDocument', () => {
     expect(typeof (Route as unknown as RouteWithShell).options.shellComponent).toBe('function');
   });
 
-  test('renders main element with children wrapper', async () => {
+  test('does not render a main landmark (routes own their own main)', async () => {
     const ShellComponent = (Route as unknown as RouteWithShell).options.shellComponent;
     const { container } = await render(
       <ShellComponent>
@@ -76,11 +76,11 @@ describe('rootDocument', () => {
       </ShellComponent>,
     );
 
-    // Main element should exist in the rendered output
-    const main = container.querySelector('main');
-    expect(main).not.toBeNull();
+    // The root shell wraps children in a plain div so it does not create a
+    // duplicate/nested <main> landmark - each route renders its own <main>
+    expect(container.querySelector('main')).toBeNull();
 
-    // Content should be inside main
+    // Content should still be rendered inside the wrapper
     await expect.element(page.getByTestId('inner')).toBeInTheDocument();
   });
 });

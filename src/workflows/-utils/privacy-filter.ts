@@ -4,9 +4,9 @@
 import type { Repo } from '#db/types';
 import type { GitHubRepo, PrivacyClass } from './ai-skills-types';
 
-import { HIDDEN_ORGS } from './ai-skills-types';
+import { GITHUB_USERNAME } from '#lib/github-client';
 
-const GITHUB_USERNAME = 'eve0415';
+import { HIDDEN_ORGS } from './ai-skills-types';
 
 /**
  * Classify repository privacy level
@@ -44,28 +44,12 @@ export const getRepoDisplayName = (repo: Repo): string => {
   if (canShowRepoName(repo)) return repo.fullName;
 
   // Anonymize: show language/type hint only
-  const hint = repo.language ? `${repo.language} project` : 'project';
-  return `[private ${hint}]`;
+  return repo.language ? `非公開の${repo.language}プロジェクト` : '非公開プロジェクト';
 };
 
-/**
- * Anonymize commit message if from private repo
- * Removes specific identifiers while keeping technical content
- */
-export const anonymizeCommitMessage = (message: string, repo: Repo): string => {
-  if (canShowRepoName(repo)) return message;
-
-  // Keep first line only, truncate (use || for empty string fallback)
-  // oxlint-disable-next-line prefer-nullish-coalescing -- empty string should fall back to message
-  const firstLine = message.split('\n')[0] || message;
-  const truncated = firstLine.slice(0, 80);
-
-  // Remove potential identifiers (URLs, @mentions, issue refs)
-  return truncated
-    .replaceAll(/@[\w-]+/g, '@[user]')
-    .replaceAll(/#\d+/g, '#[ref]')
-    .replaceAll(/https?:\/\/[^\s]+/g, '[url]');
-};
+// Repo names can contain regex metacharacters (e.g. ".") - escape before
+// building a pattern from them
+const escapeRegExp = (value: string): string => value.replaceAll(/[.*+?^${}()|[\]\\]/g, String.raw`\$&`);
 
 /**
  * Filter sensitive content from AI prompt context
@@ -79,23 +63,9 @@ export const sanitizeForAI = (text: string, privateRepoNames: string[]): string 
     const parts = name.split('/');
     const repoName = parts[1] ?? name;
 
-    result = result.replaceAll(new RegExp(name, 'gi'), '[private-repo]');
-    result = result.replaceAll(new RegExp(`\\b${repoName}\\b`, 'gi'), '[private]');
+    result = result.replaceAll(new RegExp(escapeRegExp(name), 'gi'), '[private-repo]');
+    result = result.replaceAll(new RegExp(String.raw`\b${escapeRegExp(repoName)}\b`, 'gi'), '[private]');
   }
 
   return result;
-};
-
-/**
- * Create aggregate stats message for hidden repos
- * Used in progress display
- */
-export const createAggregateMessage = (phase: string, publicCount: number, privateCount: number, currentPublicRepo?: string): string => {
-  if (currentPublicRepo) return `${phase}: ${currentPublicRepo}`;
-
-  if (privateCount > 0 && publicCount === 0) return `${phase}: analyzing private repositories...`;
-
-  if (privateCount > 0) return `${phase}: ${publicCount} public + ${privateCount} private repos`;
-
-  return `${phase}: ${publicCount} repositories`;
 };

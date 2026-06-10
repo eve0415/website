@@ -89,8 +89,9 @@ export const handleForm = createServerFn({ method: 'POST' })
   });
 
 /**
- * Atomically check and increment rate limit to prevent race conditions.
- * Increments first, then checks if over limit - this ensures concurrent requests are counted correctly.
+ * Best-effort rate limiting via KV read-modify-write.
+ * KV has no atomic increment, so concurrent requests can race past the
+ * limit. Acceptable for a Turnstile-gated 3/hour contact form.
  * @internal Exported for testing purposes only
  */
 export const checkAndIncrementRateLimit = createServerOnlyFn(async (ip: string) => {
@@ -101,7 +102,7 @@ export const checkAndIncrementRateLimit = createServerOnlyFn(async (ip: string) 
   const currentCount = data?.count ?? 0;
   const newCount = currentCount + 1;
 
-  // Increment immediately to prevent race conditions
+  // Write back immediately to shrink (not eliminate) the race window
   await kv.put(key, JSON.stringify({ count: newCount }), {
     expirationTtl: RATE_LIMIT_WINDOW_SECONDS,
   });
@@ -112,8 +113,11 @@ export const checkAndIncrementRateLimit = createServerOnlyFn(async (ip: string) 
   };
 });
 
-/** @internal Exported for testing */
-export const sendContactEmail = createServerOnlyFn(async (formData: ContactFormData) => {
+/**
+ * Build the raw MIME message for a contact submission.
+ * @internal Exported for testing
+ */
+export const buildContactEmail = createServerOnlyFn((formData: ContactFormData): string => {
   const msg = createMimeMessage();
   msg.setSender({ name: 'Contact Form', addr: SENDER_ADDRESS });
   msg.setRecipient(env.MAIL_ADDRESS);
@@ -132,7 +136,12 @@ ${formData.message.trim()}`;
     data: body,
   });
 
-  const message = new EmailMessage(SENDER_ADDRESS, env.MAIL_ADDRESS, msg.asRaw());
+  return msg.asRaw();
+});
+
+/** @internal Exported for testing */
+export const sendContactEmail = createServerOnlyFn(async (formData: ContactFormData) => {
+  const message = new EmailMessage(SENDER_ADDRESS, env.MAIL_ADDRESS, buildContactEmail(formData));
 
   await env.CONTACT_EMAIL.send(message);
 });

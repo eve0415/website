@@ -121,4 +121,12 @@ const LinkPage: FC = () => (
 
 export const Route = createFileRoute('/link/')({
   component: LinkPage,
+  head: () => ({
+    meta: [
+      { title: '連絡先 / SNS | eve0415' },
+      { property: 'og:title', content: '連絡先 / SNS | eve0415' },
+      { property: 'og:url', content: 'https://eve0415.net/link' },
+    ],
+    links: [{ rel: 'canonical', href: 'https://eve0415.net/link' }],
+  }),
 });

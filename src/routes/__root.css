@@ -225,38 +225,42 @@ body {
   }
 }
 
-/* TV static / dissolve effect for BSOD trigger */
+/* TV static / dissolve effect for BSOD trigger.
+   Brightness decreases monotonically into the CRT power-off. The original
+   swung brightness 0.1<->5 about 7 times in 1.5s (~4.7 flashes/sec) over a
+   near-full viewport - a photosensitivity hazard (WCAG 2.3.1, max 3/sec).
+   The skew/scale/blur jitter keeps the "static" character without flashing. */
 @keyframes tv-static {
   0% {
     filter: none;
     transform: scale(1);
   }
   10% {
-    filter: brightness(1.5) contrast(2) saturate(0);
+    filter: brightness(1.1) contrast(2) saturate(0);
     transform: scale(1.02) skewX(-0.5deg);
   }
   20% {
-    filter: brightness(0.5) contrast(3) saturate(0);
+    filter: brightness(1) contrast(3) saturate(0);
     transform: scale(0.98) skewX(1deg);
   }
   30% {
-    filter: brightness(2) contrast(1.5) saturate(0) blur(1px);
+    filter: brightness(0.95) contrast(1.5) saturate(0) blur(1px);
     transform: scale(1.01) skewX(-1.5deg);
   }
   40% {
-    filter: brightness(0.3) contrast(2) saturate(0) blur(2px);
+    filter: brightness(0.85) contrast(2) saturate(0) blur(2px);
     transform: scale(0.99) skewX(0.5deg);
   }
   50% {
-    filter: brightness(3) contrast(0.5) saturate(0) blur(1px);
+    filter: brightness(0.7) contrast(1.5) saturate(0) blur(1px);
     transform: scale(1.03) skewX(-2deg);
   }
   60% {
-    filter: brightness(0.1) contrast(4) saturate(0) blur(3px);
+    filter: brightness(0.55) contrast(2) saturate(0) blur(3px);
     transform: scale(0.97) skewX(2deg);
   }
   70% {
-    filter: brightness(5) contrast(0.2) saturate(0);
+    filter: brightness(0.35) contrast(1.5) saturate(0);
     transform: scale(1) skewX(0);
   }
   80%,

@@ -1,5 +1,4 @@
 import type { BootContext, BootMessage, ProgressStage } from './boot-messages';
-import type { ConnectionInfo } from './connection-info';
 import type { DOMScanData } from './useDomScan';
 import type { NavigationTimingData } from './useNavigationTiming';
 
@@ -7,7 +6,7 @@ import { useEffect, useMemo, useState } from 'react';
 
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
-import { BASE_BOOT_DURATION, PROGRESS_STAGES, createBootMessages, flattenMessages, resolveMessageText } from './boot-messages';
+import { BASE_BOOT_DURATION, BOOT_MESSAGES, PROGRESS_STAGES, flattenMessages, resolveMessageText } from './boot-messages';
 
 export interface FlattenedMessage extends BootMessage {
   depth: number;
@@ -42,7 +41,6 @@ interface UseBootAnimationOptions {
   // Real data from hooks
   timing: NavigationTimingData;
   dom: DOMScanData;
-  connection: ConnectionInfo;
   path: string;
   // Debug mode state
   isDebugMode: boolean;
@@ -75,7 +73,7 @@ const calculateScaleFactor = (timing: NavigationTimingData): number => {
  * - Debug mode with stepping support
  */
 export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimationState => {
-  const { enabled, elapsed, timing, dom, connection, path, isDebugMode, isPaused, debugIndex, maxVisibleDepth } = options;
+  const { enabled, elapsed, timing, dom, path, isDebugMode, isPaused, debugIndex, maxVisibleDepth } = options;
   const reducedMotion = useReducedMotion();
 
   const [cursorVisible, setCursorVisible] = useState(true);
@@ -85,23 +83,20 @@ export const useBootAnimation = (options: UseBootAnimationOptions): BootAnimatio
     () => ({
       timing,
       dom,
-      connection,
       path,
     }),
-    [timing, dom, connection, path],
+    [timing, dom, path],
   );
 
   // Calculate scale factor for adaptive timing
   const scaleFactor = useMemo(() => calculateScaleFactor(timing), [timing]);
 
-  // Create and flatten messages (pass connection for dynamic cert messages)
+  // Flatten messages, scale delays, and resolve text
   const allMessages: FlattenedMessage[] = useMemo(() => {
-    const messages = createBootMessages(connection);
-    const flattened = flattenMessages(messages);
+    const flattened = flattenMessages(BOOT_MESSAGES);
 
-    // Scale delays and resolve text
     return flattened.map(msg => Object.assign(msg, { baseDelay: msg.baseDelay * scaleFactor, resolvedText: resolveMessageText(msg, context) }));
-  }, [connection, context, scaleFactor]);
+  }, [context, scaleFactor]);
 
   // Extract depths array for step-over calculation
   const messageDepths = useMemo(() => allMessages.map(msg => msg.depth), [allMessages]);

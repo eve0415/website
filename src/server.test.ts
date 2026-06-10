@@ -39,7 +39,7 @@ describe('server', () => {
   });
 
   describe('scheduled handler', () => {
-    test('calls refreshGitHubStats with env and ctx.waitUntil receives the promise', async () => {
+    test('hourly cron calls refreshGitHubStats with env and ctx.waitUntil receives the promise', async () => {
       mockRefreshGitHubStats.mockResolvedValue();
 
       const ctrl = createScheduledController({ cron: '0 * * * *', scheduledTime: Date.now() });
@@ -49,6 +49,22 @@ describe('server', () => {
       await waitOnExecutionContext(ctx);
 
       expect(mockRefreshGitHubStats).toHaveBeenCalledWith(env);
+    });
+
+    test('weekly cron triggers the workflow but does not call refreshGitHubStats', async () => {
+      mockRefreshGitHubStats.mockResolvedValue();
+      const createSpy = vi.spyOn(env.SKILLS_WORKFLOW, 'create').mockResolvedValue();
+
+      const ctrl = createScheduledController({ cron: '30 18 * * 6', scheduledTime: Date.now() });
+      const ctx = createExecutionContext();
+      server.scheduled(ctrl, env, ctx);
+
+      await waitOnExecutionContext(ctx);
+
+      expect(createSpy).toHaveBeenCalledOnce();
+      expect(mockRefreshGitHubStats).not.toHaveBeenCalled();
+
+      createSpy.mockRestore();
     });
   });
 });

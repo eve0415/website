@@ -10,8 +10,13 @@ const meta = preview.meta({
   tags: ['autodocs'],
   parameters: {
     layout: 'fullscreen',
-    // Disable a11y checks - component has intentional color choices for dark theme
-    a11y: { disable: true },
+    // Only the fuchsia category badge sits intentionally below the contrast
+    // threshold; keep every other a11y rule (roles, labels, dialog) active.
+    a11y: {
+      config: {
+        rules: [{ id: 'color-contrast', enabled: false }],
+      },
+    },
   },
   argTypes: {
     isExpanded: { control: 'boolean' },

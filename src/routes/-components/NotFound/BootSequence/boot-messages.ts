@@ -1,4 +1,3 @@
-import type { Certificate, CertificatePack, ConnectionInfo } from './connection-info';
 import type { DOMScanData } from './useDomScan';
 import type { NavigationTimingData } from './useNavigationTiming';
 
@@ -17,7 +16,6 @@ export interface BootMessage {
 export interface BootContext {
   timing: NavigationTimingData;
   dom: DOMScanData;
-  connection: ConnectionInfo;
   path: string;
 }
 
@@ -42,74 +40,11 @@ export const flattenMessages = (messages: BootMessage[], depth = 0): (BootMessag
 // Get text from message, resolving dynamic text functions
 export const resolveMessageText = (msg: BootMessage, ctx: BootContext): string => (typeof msg.text === 'function' ? msg.text(ctx) : msg.text);
 
-// Helper to slugify string for message ID
-const slugify = (str: string): string =>
-  str
-    .toLowerCase()
-    .replaceAll(/[^a-z0-9]+/g, '-')
-    .replaceAll(/^-|-$/g, '');
-
-/**
- * Generate certificate verification messages dynamically based on certificate chain.
- * Each certificate gets its own verification block with appropriate checks.
- */
-const createCertMessages = (certPack: CertificatePack | null, baseDelay: number): BootMessage[] => {
-  if (!certPack || !certPack.certificates || certPack.certificates.length === 0)
-    return [{ id: 'tls-cert-none', text: 'No certificates received', type: 'warning', baseDelay }];
-
-  const { certificates } = certPack;
-  return certificates.map((cert: Certificate, i: number) => {
-    const cn = cert.hosts?.[0] ?? cert.issuer ?? `cert-${i}`;
-    const slug = slugify(cn);
-    const isLeaf = i === 0;
-    const delay = baseDelay + i * 100;
-
-    return {
-      id: `tls-cert-${slug}`,
-      text: isLeaf ? `Leaf: CN=${cn}` : `Intermediate: ${cert.issuer ?? 'Unknown'}`,
-      type: 'info' as const,
-      baseDelay: delay,
-      children: [
-        { id: `tls-cert-${slug}-sig`, text: 'Signature validation: ✓', type: 'success' as const, baseDelay: delay + 20 },
-        {
-          id: `tls-cert-${slug}-validity`,
-          text: `Validity: ${cert.uploaded_on?.split('T')[0] ?? 'unknown'} - ${cert.expires_on?.split('T')[0] ?? 'unknown'}`,
-          type: 'info' as const,
-          baseDelay: delay + 40,
-        },
-        ...(isLeaf
-          ? [
-              { id: `tls-cert-${slug}-san`, text: `SAN check: ${cn} ✓`, type: 'success' as const, baseDelay: delay + 60 },
-              { id: `tls-cert-${slug}-ku`, text: 'Key usage: serverAuth ✓', type: 'success' as const, baseDelay: delay + 80 },
-              { id: `tls-cert-${slug}-ocsp`, text: 'OCSP status: good', type: 'success' as const, baseDelay: delay + 100 },
-              { id: `tls-cert-${slug}-ct`, text: 'CT SCTs: verified', type: 'success' as const, baseDelay: delay + 120 },
-            ]
-          : [
-              { id: `tls-cert-${slug}-ca`, text: 'Basic Constraints: CA:TRUE ✓', type: 'success' as const, baseDelay: delay + 60 },
-              { id: `tls-cert-${slug}-keycertsign`, text: 'Key usage: keyCertSign ✓', type: 'success' as const, baseDelay: delay + 80 },
-            ]),
-      ],
-    };
-  });
-};
-
-/**
- * Build certificate chain display string from certificate pack.
- */
-const buildChainString = (certPack: CertificatePack | null): string => {
-  if (!certPack || !certPack.certificates || certPack.certificates.length === 0) return 'no chain';
-  const { certificates } = certPack;
-  const leaf = certificates[0]?.hosts?.[0] ?? 'leaf';
-  const intermediates = certificates.slice(1).map((c: Certificate) => c.issuer ?? 'Unknown');
-  return [leaf, ...intermediates].join(' → ');
-};
-
 /**
  * Hierarchical boot messages with real data interpolation.
  * Each group can be "stepped into" in debug mode.
- * Certificate verification messages are dynamically generated based on the actual chain.
  */
-export const createBootMessages = (connection: ConnectionInfo): BootMessage[] => [
+export const BOOT_MESSAGES: BootMessage[] = [
   // Navigation group
   {
     id: 'nav',
@@ -125,7 +60,7 @@ export const createBootMessages = (connection: ConnectionInfo): BootMessage[] =>
       },
       {
         id: 'nav-dns',
-        text: ctx => `DNS 解決中... eve0415.net → ${ctx.connection.serverIp} (${ctx.timing.dns}ms)`,
+        text: ctx => `DNS 解決中... eve0415.net (${ctx.timing.dns}ms)`,
         type: 'info',
         baseDelay: 200,
       },
@@ -173,7 +108,7 @@ export const createBootMessages = (connection: ConnectionInfo): BootMessage[] =>
         children: [
           {
             id: 'tls-sh-select',
-            text: ctx => `Selected: TLS 1.3, x25519, ${ctx.connection.tlsCipher}`,
+            text: 'Selected: TLS 1.3, x25519, TLS_AES_128_GCM_SHA256',
             type: 'info',
             baseDelay: 920,
           },
@@ -210,8 +145,7 @@ export const createBootMessages = (connection: ConnectionInfo): BootMessage[] =>
         text: 'Certificate 受信',
         type: 'group',
         baseDelay: 1200,
-        // Dynamic certificate messages based on actual chain
-        children: createCertMessages(connection.certificatePack, 1220),
+        children: [{ id: 'tls-cert-chain', text: 'Chain: eve0415.net, *.eve0415.net', type: 'info', baseDelay: 1220 }],
       },
       {
         id: 'tls-verify',
@@ -219,12 +153,7 @@ export const createBootMessages = (connection: ConnectionInfo): BootMessage[] =>
         type: 'group',
         baseDelay: 1500,
         children: [
-          {
-            id: 'tls-v-chain',
-            text: `Chain: ${buildChainString(connection.certificatePack)}`,
-            type: 'info',
-            baseDelay: 1520,
-          },
+          { id: 'tls-v-chain', text: 'Signature validation: ✓', type: 'success', baseDelay: 1520 },
           { id: 'tls-v-sig', text: 'Hostname validation: ✓', type: 'success', baseDelay: 1560 },
         ],
       },
@@ -464,7 +393,3 @@ export const PROGRESS_STAGES: ProgressStage[] = [
 
 // Get the total duration of boot sequence (base, before scaling)
 export const BASE_BOOT_DURATION = 5000; // 5 seconds base
-
-// Legacy exports for compatibility during transition
-export type { BootMessage as LegacyBootMessage };
-export { createBootMessages as BOOT_MESSAGES_FACTORY };

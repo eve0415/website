@@ -1,4 +1,4 @@
-/* oxlint-disable typescript/no-non-null-assertion, no-await-in-loop, typescript/no-unsafe-type-assertion, typescript/no-unsafe-assignment -- GitHub/AI API responses have known shape; workflow pagination requires sequential await; JSON.parse returns any */
+/* oxlint-disable typescript/no-non-null-assertion, no-await-in-loop -- GitHub GraphQL non-null fields lack type-level guarantees; workflow pagination requires sequential await */
 // Cloudflare Workflow for AI Skills Analysis
 // Uses GitHub GraphQL API with sleepUntil for rate limits
 // Supports incremental syncing and singleton execution
@@ -16,6 +16,7 @@ import { drizzle } from 'drizzle-orm/d1';
 import * as schema from '#db/schema';
 import { commits, historySummaries, prReviews, pullRequests, repos, workflowState } from '#db/schema';
 
+import { isAIProfileDraft, isAISkillDraft } from './-utils/ai-skills-types';
 import {
   DEFAULT_RATE_LIMIT_METRICS,
   GITHUB_USERNAME,
@@ -26,7 +27,8 @@ import {
   fetchUserRepos,
   isPRAuthoredByUser,
 } from './-utils/github-graphql';
-import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
+import { classifyRepo, getRepoDisplayName, sanitizeForAI } from './-utils/privacy-filter';
+import { WORKFLOW_STATE_KV_KEY, WORKFLOW_STATE_KV_TTL_SECONDS, mapWorkflowStateRow } from './-utils/workflow-state';
 
 // KV keys
 const WORKFLOW_LOCK_KEY = 'skills_workflow_lock';
@@ -48,26 +50,29 @@ interface WorkflowLock {
   startedAt: string;
 }
 
-interface SyncState {
-  repos: {
-    id: number;
-    githubId: number;
-    fullName: string;
-    owner: string;
-    name: string;
-    lastCommitAt: string | null;
-    lastPrUpdatedAt: string | null;
-    commitsCursor: string | null;
-    prsCursor: string | null;
-  }[];
-  totalRepos: number;
+// Workers AI returns either a raw string or { response: string } depending on model
+const extractAIText = (response: unknown): string => {
+  if (typeof response === 'string') return response;
+  if (typeof response === 'object' && response !== null && 'response' in response && typeof response.response === 'string') return response.response;
+  return '';
+};
+
+// GitHub also returns PENDING/DISMISSED; only these states are stored
+const STORABLE_REVIEW_STATES = ['APPROVED', 'CHANGES_REQUESTED', 'COMMENTED'] as const;
+type StorableReviewState = (typeof STORABLE_REVIEW_STATES)[number];
+const isStorableReviewState = (value: string): value is StorableReviewState => STORABLE_REVIEW_STATES.some(state => state === value);
+
+interface RepoSyncResult {
+  repos: Repo[];
+  requestCount: number;
+  rateLimit: GraphQLRateLimit;
 }
 
 export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void> {
-  private metrics: RateLimitMetrics = DEFAULT_RATE_LIMIT_METRICS;
-  private processedRepos = 0;
-  private totalRepos = 0;
-  private requestCount = 0;
+  // Per-step rule: a fresh connectionless client created inside each step.do
+  private getDb(): DB {
+    return drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+  }
 
   override async run(event: WorkflowEvent<void>, step: WorkflowStep) {
     const { instanceId } = event;
@@ -80,79 +85,86 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       return;
     }
 
+    // Counters are accumulated from step return values, never instance fields:
+    // on hibernation/replay a cached step.do returns without re-running, so
+    // mutations to `this` would be silently lost.
+    let requestCount = 0;
+    let processedRepos = 0;
+
     try {
-      // Step 2: Load sync state
-      const syncState = await step.do('load_sync_state', async () => {
-        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-        await this.updateState(db, 'listing-repos', 0);
-        return await this.loadSyncState(db);
+      // Load rate limit metrics from KV inside a step (durable, retried)
+      const metrics = await step.do('load_rate_limit_metrics', async () => {
+        const stored = await this.env.CACHE.get<RateLimitMetrics>(RATE_LIMIT_METRICS_KEY, 'json');
+        return stored ?? DEFAULT_RATE_LIMIT_METRICS;
       });
 
-      this.totalRepos = syncState.totalRepos;
-
-      // Load rate limit metrics from KV
-      const storedMetrics = await this.env.CACHE.get<RateLimitMetrics>(RATE_LIMIT_METRICS_KEY, 'json');
-      if (storedMetrics) this.metrics = storedMetrics;
-
-      // Step 3: Sync repos from GitHub
-      const repoList = await step.do('sync_repos', async () => {
-        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+      // Step 2: Sync repos from GitHub (no sleep inside the step - sleepUntil
+      // must live at run() level so a hibernation doesn't replay the whole
+      // pagination from scratch)
+      const repoSync = await step.do('sync_repos', async () => {
+        const db = this.getDb();
         await this.updateState(db, 'listing-repos', 5);
-        return await this.syncRepos(db, step);
+        return await this.syncRepos(db);
       });
 
-      this.totalRepos = repoList.length;
+      const repoList = repoSync.repos;
+      const totalRepos = repoList.length;
+      requestCount += repoSync.requestCount;
 
-      // Step 4: Sync commits for each repo
+      await this.maybeSleep(step, repoSync.rateLimit, metrics, totalRepos, processedRepos, 'repos_sleep');
+
+      // Step 3: Sync commits for each repo
       for (let i = 0; i < repoList.length; i++) {
         const repo = repoList[i];
         if (!repo) continue;
 
         const result = await step.do(`sync_commits_${repo.githubId}`, async () => {
-          const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-          await this.updateState(db, 'fetching-commits', 10 + Math.floor((i / repoList.length) * 25), repo.fullName, repoList.length, i);
-          return await this.syncCommits(db, repo, syncState);
+          const db = this.getDb();
+          // Never write the raw name of a private/hidden-org repo into
+          // workflow_state - it is served verbatim to the public /skills page
+          await this.updateState(db, 'fetching-commits', 10 + Math.floor((i / repoList.length) * 25), getRepoDisplayName(repo), totalRepos, i);
+          return await this.syncCommits(db, repo);
         });
 
-        this.processedRepos++;
-        this.requestCount += result.requestCount;
+        processedRepos++;
+        requestCount += result.requestCount;
 
-        await this.checkRateLimitAndSleep(step, result.rateLimit, `commits_sleep_${repo.githubId}`);
+        await this.maybeSleep(step, result.rateLimit, metrics, totalRepos, processedRepos, `commits_sleep_${repo.githubId}`);
       }
 
-      // Step 5: Sync PRs and reviews for each repo
+      // Step 4: Sync PRs and reviews for each repo
       for (let i = 0; i < repoList.length; i++) {
         const repo = repoList[i];
         if (!repo) continue;
 
         const result = await step.do(`sync_prs_${repo.githubId}`, async () => {
-          const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-          await this.updateState(db, 'fetching-prs', 35 + Math.floor((i / repoList.length) * 20), repo.fullName);
-          return await this.syncPRsAndReviews(db, repo, syncState);
+          const db = this.getDb();
+          await this.updateState(db, 'fetching-prs', 35 + Math.floor((i / repoList.length) * 20), getRepoDisplayName(repo));
+          return await this.syncPRsAndReviews(db, repo);
         });
 
-        this.requestCount += result.requestCount;
+        requestCount += result.requestCount;
 
-        await this.checkRateLimitAndSleep(step, result.rateLimit, `prs_sleep_${repo.githubId}`);
+        await this.maybeSleep(step, result.rateLimit, metrics, totalRepos, processedRepos, `prs_sleep_${repo.githubId}`);
       }
 
-      // Step 6: Finalize sync state
+      // Step 5: Finalize sync state
       await step.do('finalize_sync', async () => {
-        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        const db = this.getDb();
         await this.updateState(db, 'fetching-reviews', 55);
         await this.finalizeSyncState(db, repoList);
       });
 
       // AI Steps: Squash history for AI context
       const summary = await step.do('squash_history', async () => {
-        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        const db = this.getDb();
         await this.updateState(db, 'squashing-history', 60);
         return await this.squashHistory(db);
       });
 
       // AI Step: Extract skills
       const skills = await step.do('ai_extract_skills', async () => {
-        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        const db = this.getDb();
         await this.updateState(db, 'ai-extracting-skills', 70);
         try {
           return await this.extractSkillsWithAI(summary);
@@ -164,7 +176,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
 
       // AI Step: Generate Japanese descriptions
       const content = await step.do('ai_generate_japanese', async () => {
-        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        const db = this.getDb();
         await this.updateState(db, 'ai-generating-japanese', 85);
         try {
           return await this.generateJapaneseDescriptions(db, skills, summary);
@@ -176,25 +188,39 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
 
       // Final Step: Store results
       await step.do('store_results', async () => {
-        const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+        const db = this.getDb();
         await this.updateState(db, 'storing-results', 95);
         await this.storeResults(db, content);
         await this.updateState(db, 'completed', 100);
       });
-    } finally {
-      // Always release lock
-      await this.releaseLock(instanceId);
 
-      // Update rate limit metrics
-      if (this.totalRepos > 0 && this.requestCount > 0) {
-        const newMetrics: RateLimitMetrics = {
-          avgRequestsPerRepo: this.requestCount / this.totalRepos,
-          lastRunRepoCount: this.totalRepos,
-          lastRunRequestCount: this.requestCount,
-          updatedAt: new Date().toISOString(),
-        };
-        await this.env.CACHE.put(RATE_LIMIT_METRICS_KEY, JSON.stringify(newMetrics));
-      }
+      // Persist rate-limit metrics for the next run's dynamic threshold
+      await step.do('store_rate_limit_metrics', async () => {
+        if (totalRepos > 0 && requestCount > 0) {
+          const newMetrics: RateLimitMetrics = {
+            avgRequestsPerRepo: requestCount / totalRepos,
+            lastRunRepoCount: totalRepos,
+            lastRunRequestCount: requestCount,
+            updatedAt: new Date().toISOString(),
+          };
+          await this.env.CACHE.put(RATE_LIMIT_METRICS_KEY, JSON.stringify(newMetrics));
+        }
+      });
+    } catch (error) {
+      // Surface the failure - otherwise the phase sticks at its last value,
+      // the UI reads "running" forever, and re-runs are blocked
+      await step.do('mark_error', async () => {
+        const db = this.getDb();
+        const message = error instanceof Error ? error.message : String(error);
+        await db.update(workflowState).set({ phase: 'error', errorMessage: message }).where(eq(workflowState.id, 1));
+        await this.env.CACHE.delete(WORKFLOW_STATE_KV_KEY);
+      });
+      throw error;
+    } finally {
+      // Always release the lock, in a step so it is retried and not re-run on replay
+      await step.do('release_lock', async () => {
+        await this.releaseLock(instanceId);
+      });
     }
   }
 
@@ -236,36 +262,17 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     if (existingLock?.instanceId === instanceId) await this.env.CACHE.delete(WORKFLOW_LOCK_KEY);
   }
 
-  private async loadSyncState(db: DB): Promise<SyncState> {
-    const repoData = await db
-      .select({
-        id: repos.id,
-        githubId: repos.githubId,
-        fullName: repos.fullName,
-        owner: repos.owner,
-        name: repos.name,
-        lastCommitAt: repos.lastCommitAt,
-        lastPrUpdatedAt: repos.lastPrUpdatedAt,
-        commitsCursor: repos.commitsCursor,
-        prsCursor: repos.prsCursor,
-      })
-      .from(repos)
-      .all();
-
-    return {
-      repos: repoData,
-      totalRepos: repoData.length,
-    };
-  }
-
-  private async syncRepos(db: DB, step: WorkflowStep): Promise<Repo[]> {
+  private async syncRepos(db: DB): Promise<RepoSyncResult> {
     const octokit = createGitHubClient(this.env.GITHUB_PAT);
     const repoList: Repo[] = [];
+    let requestCount = 0;
+    let rateLimit: GraphQLRateLimit = { remaining: 5000, cost: 1, resetAt: 0 };
     let cursor;
 
     do {
-      const { data, rateLimit } = await fetchUserRepos(octokit, cursor);
-      this.requestCount++;
+      const { data, rateLimit: pageRateLimit } = await fetchUserRepos(octokit, cursor);
+      rateLimit = pageRateLimit;
+      requestCount++;
 
       const nodes = data.viewer.repositories.nodes ?? [];
 
@@ -288,11 +295,9 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       }
 
       cursor = data.viewer.repositories.pageInfo.hasNextPage ? (data.viewer.repositories.pageInfo.endCursor ?? undefined) : undefined;
-
-      await this.checkRateLimitAndSleep(step, rateLimit, `repos_sleep_${cursor ?? 'final'}`);
     } while (cursor);
 
-    return repoList;
+    return { repos: repoList, requestCount, rateLimit };
   }
 
   private async upsertRepo(
@@ -350,21 +355,23 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
         },
       });
 
-    const result = await db.select().from(repos).where(eq(repos.githubId, repo.id)).get();
-
-    return result!;
+    // Read back the upserted row; guard instead of asserting non-null so a
+    // failed insert surfaces as an explicit error rather than a crash
+    const record = await db.select().from(repos).where(eq(repos.githubId, repo.id)).get();
+    if (!record) throw new Error(`upsertRepo: row not found after upsert for githubId=${repo.id}`);
+    return record;
   }
 
-  private async syncCommits(db: DB, repo: Repo, syncState: SyncState): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
+  private async syncCommits(db: DB, repo: Repo): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
     const octokit = createGitHubClient(this.env.GITHUB_PAT);
 
-    // Find existing sync state for this repo
-    const existingState = syncState.repos.find(r => r.githubId === repo.githubId);
-    const since = existingState?.lastCommitAt ?? undefined;
-    let cursor = existingState?.commitsCursor ?? undefined;
+    // Incremental cursor lives on the repo row itself (preserved across upserts)
+    const since = repo.lastCommitAt ?? undefined;
+    let cursor = repo.commitsCursor ?? undefined;
     let lastRateLimit: GraphQLRateLimit = { remaining: 5000, cost: 1, resetAt: 0 };
     let requestCount = 0;
     let latestCommitDate;
+    const rows: (typeof commits.$inferInsert)[] = [];
 
     try {
       do {
@@ -386,8 +393,9 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
           // Track latest commit date
           if (!latestCommitDate || node.committedDate > latestCommitDate) latestCommitDate = node.committedDate;
 
-          await this.upsertCommit(db, repo.id, {
+          rows.push({
             sha: node.oid,
+            repoId: repo.id,
             message: node.messageHeadline,
             authorDate: node.committedDate,
             additions: node.additions,
@@ -399,6 +407,9 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
         cursor = target.history.pageInfo.hasNextPage ? (target.history.pageInfo.endCursor ?? undefined) : undefined;
       } while (cursor);
 
+      // One batched insert instead of a round trip per commit
+      if (rows.length > 0) await db.insert(commits).values(rows).onConflictDoNothing();
+
       // Update repo with latest commit date
       if (latestCommitDate) await db.update(repos).set({ lastCommitAt: latestCommitDate }).where(eq(repos.id, repo.id));
     } catch (error) {
@@ -409,38 +420,12 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     return { rateLimit: lastRateLimit, requestCount };
   }
 
-  private async upsertCommit(
-    db: DB,
-    repoId: number,
-    commit: {
-      sha: string;
-      message: string;
-      authorDate: string;
-      additions: number;
-      deletions: number;
-      filesChanged: number;
-    },
-  ) {
-    await db
-      .insert(commits)
-      .values({
-        sha: commit.sha,
-        repoId,
-        message: commit.message,
-        authorDate: commit.authorDate,
-        additions: commit.additions,
-        deletions: commit.deletions,
-        filesChanged: commit.filesChanged,
-      })
-      .onConflictDoNothing();
-  }
-
-  private async syncPRsAndReviews(db: DB, repo: Repo, syncState: SyncState): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
+  private async syncPRsAndReviews(db: DB, repo: Repo): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
     const octokit = createGitHubClient(this.env.GITHUB_PAT);
 
-    const existingState = syncState.repos.find(r => r.githubId === repo.githubId);
-    const lastPrUpdatedAt = existingState?.lastPrUpdatedAt ?? undefined;
-    let cursor = existingState?.prsCursor ?? undefined;
+    // Incremental cursor lives on the repo row itself
+    const lastPrUpdatedAt = repo.lastPrUpdatedAt ?? undefined;
+    let cursor = repo.prsCursor ?? undefined;
     let lastRateLimit: GraphQLRateLimit = { remaining: 5000, cost: 1, resetAt: 0 };
     let requestCount = 0;
     let latestPrUpdatedAt;
@@ -582,8 +567,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       submittedAt: string;
     },
   ) {
-    const validStates = ['APPROVED', 'CHANGES_REQUESTED', 'COMMENTED'] as const;
-    if (!validStates.includes(review.state as (typeof validStates)[number])) return;
+    if (!isStorableReviewState(review.state)) return;
 
     await db
       .insert(prReviews)
@@ -592,7 +576,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
         repoId,
         prNumber,
         prTitle,
-        state: review.state as 'APPROVED' | 'CHANGES_REQUESTED' | 'COMMENTED',
+        state: review.state,
         body: review.body,
         submittedAt: review.submittedAt,
       })
@@ -600,20 +584,25 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
   }
 
   private async finalizeSyncState(db: DB, repoList: Repo[]): Promise<void> {
-    // Clear cursors after successful sync
-    for (const repo of repoList) {
-      await db
-        .update(repos)
-        .set({
-          commitsCursor: null,
-          prsCursor: null,
-        })
-        .where(eq(repos.id, repo.id));
-    }
+    // Clear cursors after successful sync - single UPDATE over all synced repos
+    const ids = repoList.map(repo => repo.id);
+    if (ids.length === 0) return;
+
+    await db.update(repos).set({ commitsCursor: null, prsCursor: null }).where(inArray(repos.id, ids));
   }
 
-  private async checkRateLimitAndSleep(step: WorkflowStep, rateLimit: GraphQLRateLimit, stepName: string): Promise<void> {
-    const threshold = calculateDynamicThreshold(this.metrics, this.totalRepos, this.processedRepos);
+  // Sleep until the GitHub rate limit resets if we're below the dynamic
+  // threshold. Called at run() level (never nested inside a step.do) so a
+  // hibernation here doesn't replay a half-finished step.
+  private async maybeSleep(
+    step: WorkflowStep,
+    rateLimit: GraphQLRateLimit,
+    metrics: RateLimitMetrics,
+    totalRepos: number,
+    processedRepos: number,
+    stepName: string,
+  ): Promise<void> {
+    const threshold = calculateDynamicThreshold(metrics, totalRepos, processedRepos);
 
     if (rateLimit.remaining < threshold) {
       const resetDate = new Date(rateLimit.resetAt * 1000);
@@ -634,9 +623,12 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       reposTotal: number;
       reposProcessed: number;
       lastCompletedAt: ReturnType<typeof sql>;
+      errorMessage: string | null;
     }> = {
       phase,
       progressPct: progress,
+      // Forward progress means any previous run's error is stale
+      errorMessage: null,
     };
 
     if (currentRepo !== undefined) updates.currentRepo = currentRepo;
@@ -792,17 +784,36 @@ Output as JSON array of skills. Nothing else.`;
       max_tokens: 4096,
     });
 
-    // Parse AI response
-    const text = typeof response === 'string' ? response : ((response as { response?: string }).response ?? '');
-
     // Extract JSON from response (AI might include markdown)
-    const jsonMatch = /\[[\s\S]*\]/.exec(text);
+    const jsonMatch = /\[[\s\S]*\]/.exec(extractAIText(response));
     if (!jsonMatch) return [];
 
-    const skills: AISkill[] = JSON.parse(jsonMatch[0]);
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(jsonMatch[0]);
+    } catch {
+      return [];
+    }
+    if (!Array.isArray(parsed)) return [];
 
-    // Mark all as AI-discovered, add placeholders for Japanese
-    return skills.map(s => Object.assign(s, { description_ja: ``, last_active: new Date().toISOString(), is_ai_discovered: true }));
+    // Validate at the model boundary; drop entries that don't match the contract
+    const now = new Date().toISOString();
+    const skills: AISkill[] = [];
+    for (const entry of parsed) {
+      if (!isAISkillDraft(entry)) continue;
+      skills.push({
+        name: entry.name,
+        category: entry.category,
+        level: entry.level,
+        confidence: entry.confidence,
+        evidence: entry.evidence,
+        trend: entry.trend,
+        description_ja: '',
+        last_active: now,
+        is_ai_discovered: true,
+      });
+    }
+    return skills;
   }
 
   private async generateJapaneseDescriptions(db: DB, skills: AISkill[], summary: string): Promise<AISkillsContent> {
@@ -830,8 +841,7 @@ Output as JSON array of skills. Nothing else.`;
           max_tokens: 512,
         });
 
-        const text = typeof response === 'string' ? response : ((response as { response?: string }).response ?? '');
-        skill.description_ja = text.trim();
+        skill.description_ja = extractAIText(response).trim();
       } catch (error) {
         console.error(`Error generating Japanese for skill ${skill.name}:`, error);
         skill.description_ja = `${skill.name}のスキル`;
@@ -857,18 +867,15 @@ JSONのみ出力してください。`;
         max_tokens: 1024,
       });
 
-      const profileText = typeof profileResponse === 'string' ? profileResponse : ((profileResponse as { response?: string }).response ?? '');
-      const jsonMatch = /\{[\s\S]*\}/.exec(profileText);
-      if (jsonMatch) {
-        const parsed = JSON.parse(jsonMatch[0]);
-        profile = {
-          ...parsed,
-          generated_at: new Date().toISOString(),
-          model_used: '@cf/google/gemma-3-12b-it',
-        };
-      } else {
-        throw new Error('No JSON found');
-      }
+      const jsonMatch = /\{[\s\S]*\}/.exec(extractAIText(profileResponse));
+      const parsed: unknown = jsonMatch ? JSON.parse(jsonMatch[0]) : null;
+      if (!isAIProfileDraft(parsed)) throw new Error('AI profile response failed validation');
+
+      profile = {
+        ...parsed,
+        generated_at: new Date().toISOString(),
+        model_used: '@cf/google/gemma-3-12b-it',
+      };
     } catch {
       profile = {
         summary_ja: 'プロフィール生成中にエラーが発生しました。',
@@ -927,8 +934,10 @@ JSONのみ出力してください。`;
 
     const state = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
     if (state) {
-      await this.env.CACHE.put('ai_skills_state', JSON.stringify(state), {
-        expirationTtl: 60 * 60 * 24,
+      // Write the snake_case wire shape, not the raw camelCase row -
+      // the /skills loader reads this key as WorkflowState
+      await this.env.CACHE.put(WORKFLOW_STATE_KV_KEY, JSON.stringify(mapWorkflowStateRow(state)), {
+        expirationTtl: WORKFLOW_STATE_KV_TTL_SECONDS,
       });
     }
   }

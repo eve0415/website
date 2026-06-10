@@ -1,4 +1,4 @@
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 import { testAllViewports } from '#.storybook/viewports';
@@ -63,6 +63,15 @@ export const Discord = meta.story({
     // Discord uses button for copy action, not a link
     const button = canvas.getByRole('button');
     await expect(button).toBeInTheDocument();
+
+    // Clicking copies and announces the outcome in Japanese via a status region.
+    // Clipboard may or may not be permitted in the runner, so accept either the
+    // success or the failure message - both are announced, neither is English.
+    await userEvent.click(button);
+    await waitFor(async () => {
+      const status = canvas.getByRole('status');
+      await expect(status).toHaveTextContent(/コピーしました|コピーに失敗しました/);
+    });
   },
 });
 

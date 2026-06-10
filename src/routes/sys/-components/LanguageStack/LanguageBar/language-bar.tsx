@@ -88,7 +88,9 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
       <div className='flex flex-wrap items-center'>
         {/* Name section - full width on mobile forces bar to wrap */}
         <div className='flex w-full items-center sm:w-auto sm:shrink-0'>
-          <span className='text-subtle-foreground'>{isLast ? '└──' : '├──'}</span>
+          <span className='text-subtle-foreground' aria-hidden='true'>
+            {isLast ? '└──' : '├──'}
+          </span>
           <span className='ml-1'>
             {isLoading ? (
               <span className='animate-blink text-orange'>[LOADING...]</span>
@@ -103,21 +105,27 @@ const LanguageBar: FC<LanguageBarProps> = ({ language, index, animate, isLast = 
         {/* Bar section - wraps to second row on mobile, inline on tablet+ */}
         <div className='flex w-full items-center pl-4 sm:w-auto sm:grow sm:pl-0'>
           {/* Mobile: vertical tree connector */}
-          <span className='text-subtle-foreground sm:hidden'>│</span>
+          <span className='text-subtle-foreground sm:hidden' aria-hidden='true'>
+            │
+          </span>
           {/* Growing dashed line */}
           <span className='border-subtle-foreground/30 ml-2 grow border-b sm:mx-1 sm:ml-0' />
-          <span className='text-subtle-foreground'>┤</span>
+          <span className='text-subtle-foreground' aria-hidden='true'>
+            ┤
+          </span>
           {/* Responsive bars - only bar length differs, decorative so OK to toggle visibility */}
-          <span className='sm:hidden' style={{ color: barColor }}>
+          <span className='sm:hidden' style={{ color: barColor }} aria-hidden='true'>
             {barMobile}
           </span>
-          <span className='hidden sm:inline lg:hidden' style={{ color: barColor }}>
+          <span className='hidden sm:inline lg:hidden' style={{ color: barColor }} aria-hidden='true'>
             {barTablet}
           </span>
-          <span className='hidden lg:inline' style={{ color: barColor }}>
+          <span className='hidden lg:inline' style={{ color: barColor }} aria-hidden='true'>
             {barDesktop}
           </span>
-          <span className='text-subtle-foreground'>│</span>
+          <span className='text-subtle-foreground' aria-hidden='true'>
+            │
+          </span>
           <span className='text-subtle-foreground ml-1 tabular-nums'>
             {isLoading ? '---' : `${progress.toFixed(1)}%`}
             {/* Hex value - desktop only, supplementary info */}

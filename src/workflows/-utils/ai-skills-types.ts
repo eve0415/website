@@ -71,12 +71,30 @@ export interface AISkillsState {
   workflow: WorkflowState;
 }
 
-/** GitHub API rate limit info */
-export interface RateLimitInfo {
-  remaining: number;
-  limit: number;
-  resetAt: number; // Unix timestamp
-}
+// --- AI output validation ---
+// LLM responses are an untrusted boundary: a model can return any shape,
+// and unvalidated output propagates into KV and the public UI.
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === 'object' && value !== null;
+
+/** Shape the skill-extraction model must return (description_ja etc. are added afterwards) */
+export type AISkillDraft = Pick<AISkill, 'name' | 'category' | 'level' | 'confidence' | 'evidence' | 'trend'>;
+
+export const isAISkillDraft = (value: unknown): value is AISkillDraft =>
+  isRecord(value) &&
+  typeof value.name === 'string' &&
+  (value.category === 'language' || value.category === 'infrastructure' || value.category === 'domain') &&
+  (value.level === 'expert' || value.level === 'proficient' || value.level === 'learning') &&
+  typeof value.confidence === 'number' &&
+  Array.isArray(value.evidence) &&
+  value.evidence.every(item => typeof item === 'string') &&
+  (value.trend === 'rising' || value.trend === 'stable' || value.trend === 'declining');
+
+/** Shape the profile model must return */
+export type AIProfileDraft = Pick<AIProfileSummary, 'summary_ja' | 'activity_narrative_ja' | 'skill_comparison_ja'>;
+
+export const isAIProfileDraft = (value: unknown): value is AIProfileDraft =>
+  isRecord(value) && typeof value.summary_ja === 'string' && typeof value.activity_narrative_ja === 'string' && typeof value.skill_comparison_ja === 'string';
 
 /** GitHub repository from API */
 export interface GitHubRepo {
@@ -90,46 +108,4 @@ export interface GitHubRepo {
   language: string | null;
   created_at: string;
   updated_at: string;
-}
-
-/** GitHub commit from API */
-export interface GitHubCommit {
-  sha: string;
-  commit: {
-    message: string;
-    author: { date: string };
-  };
-  stats?: {
-    additions: number;
-    deletions: number;
-  };
-  files?: { filename: string }[];
-}
-
-/** GitHub PR from API */
-export interface GitHubPR {
-  id: number;
-  number: number;
-  title: string;
-  body: string | null;
-  state: string;
-  merged: boolean;
-  additions: number;
-  deletions: number;
-  changed_files: number;
-  commits: number;
-  comments: number;
-  review_comments: number;
-  created_at: string;
-  merged_at: string | null;
-  closed_at: string | null;
-}
-
-/** GitHub PR review from API */
-export interface GitHubReview {
-  id: number;
-  state: 'APPROVED' | 'CHANGES_REQUESTED' | 'COMMENTED' | 'PENDING' | 'DISMISSED';
-  body: string | null;
-  submitted_at: string;
-  pull_request_url: string;
 }
