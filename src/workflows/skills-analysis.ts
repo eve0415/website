@@ -27,6 +27,7 @@ import {
   isPRAuthoredByUser,
 } from './-utils/github-graphql';
 import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
+import { WORKFLOW_STATE_KV_KEY, WORKFLOW_STATE_KV_TTL_SECONDS, mapWorkflowStateRow } from './-utils/workflow-state';
 
 // KV keys
 const WORKFLOW_LOCK_KEY = 'skills_workflow_lock';
@@ -927,8 +928,10 @@ JSONのみ出力してください。`;
 
     const state = await db.select().from(workflowState).where(eq(workflowState.id, 1)).get();
     if (state) {
-      await this.env.CACHE.put('ai_skills_state', JSON.stringify(state), {
-        expirationTtl: 60 * 60 * 24,
+      // Write the snake_case wire shape, not the raw camelCase row -
+      // the /skills loader reads this key as WorkflowState
+      await this.env.CACHE.put(WORKFLOW_STATE_KV_KEY, JSON.stringify(mapWorkflowStateRow(state)), {
+        expirationTtl: WORKFLOW_STATE_KV_TTL_SECONDS,
       });
     }
   }
