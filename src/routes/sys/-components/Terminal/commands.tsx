@@ -1,4 +1,5 @@
 import type { GitHubStats } from '../../-utils/github-stats-utils';
+import type { AIToolMode } from './AIToolOutput/ai-tool-output';
 import type { ReactNode } from 'react';
 
 import ClaudeOutput from './ClaudeOutput/claude-output';
@@ -35,6 +36,21 @@ export type CommandResult =
   | { type: 'error'; message: string }
   | { type: 'crash' }
   | { type: 'diagnostic' };
+
+/**
+ * Resolve the output mode for an AI-tool command (claude / codex / gemini)
+ * from its first argument. Defaults to `login` when no recognised flag or
+ * subcommand is given.
+ */
+const parseAIToolMode = (args: string[]): AIToolMode => {
+  const firstArg = args[0]?.toLowerCase();
+
+  if (firstArg === '--help' || firstArg === '-h') return 'help';
+  if (firstArg === '--version' || firstArg === '-v') return 'version';
+  if (firstArg === 'about') return 'about';
+  if (firstArg === 'philosophy') return 'philosophy';
+  return 'login';
+};
 
 export const COMMANDS: Command[] = [
   {
@@ -97,47 +113,17 @@ export const COMMANDS: Command[] = [
   {
     name: 'claude',
     description: 'Anthropic AI assistant',
-    execute: args => {
-      const firstArg = args[0]?.toLowerCase();
-      let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
-
-      if (firstArg === '--help' || firstArg === '-h') mode = 'help';
-      else if (firstArg === '--version' || firstArg === '-v') mode = 'version';
-      else if (firstArg === 'about') mode = 'about';
-      else if (firstArg === 'philosophy') mode = 'philosophy';
-
-      return { type: 'output', content: <ClaudeOutput mode={mode} /> };
-    },
+    execute: args => ({ type: 'output', content: <ClaudeOutput mode={parseAIToolMode(args)} /> }),
   },
   {
     name: 'codex',
     description: 'OpenAI code assistant',
-    execute: args => {
-      const firstArg = args[0]?.toLowerCase();
-      let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
-
-      if (firstArg === '--help' || firstArg === '-h') mode = 'help';
-      else if (firstArg === '--version' || firstArg === '-v') mode = 'version';
-      else if (firstArg === 'about') mode = 'about';
-      else if (firstArg === 'philosophy') mode = 'philosophy';
-
-      return { type: 'output', content: <CodexOutput mode={mode} /> };
-    },
+    execute: args => ({ type: 'output', content: <CodexOutput mode={parseAIToolMode(args)} /> }),
   },
   {
     name: 'gemini',
     description: 'Google AI assistant',
-    execute: args => {
-      const firstArg = args[0]?.toLowerCase();
-      let mode: 'login' | 'help' | 'version' | 'about' | 'philosophy' = 'login';
-
-      if (firstArg === '--help' || firstArg === '-h') mode = 'help';
-      else if (firstArg === '--version' || firstArg === '-v') mode = 'version';
-      else if (firstArg === 'about') mode = 'about';
-      else if (firstArg === 'philosophy') mode = 'philosophy';
-
-      return { type: 'output', content: <GeminiOutput mode={mode} /> };
-    },
+    execute: args => ({ type: 'output', content: <GeminiOutput mode={parseAIToolMode(args)} /> }),
   },
   {
     name: 'sudo',
