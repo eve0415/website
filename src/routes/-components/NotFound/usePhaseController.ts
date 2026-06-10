@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 export type Phase = 'boot' | 'corruption' | 'aftermath';
 
@@ -17,7 +17,6 @@ export interface PhaseState {
   current: Phase;
   progress: number; // 0-1 within current phase
   elapsed: number; // ms since phase started
-  totalElapsed: number; // ms since mount
 }
 
 interface UsePhaseControllerOptions {
@@ -34,10 +33,8 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
     current: skipToAftermath ? 'aftermath' : 'boot',
     progress: skipToAftermath ? 1 : 0,
     elapsed: 0,
-    totalElapsed: 0,
   }));
 
-  const startTimeRef = useRef<number>(0);
   const phaseStartTimeRef = useRef<number>(0);
   const animationRef = useRef<number>(0);
   const phaseRef = useRef<Phase>(state.current);
@@ -45,8 +42,6 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
   const bootCompleteRef = useRef(bootComplete);
 
   // Pause time tracking for elapsed freeze/resume
-  const pauseOffsetRef = useRef<number>(0); // Accumulated pause duration
-  const pausedAtElapsedRef = useRef<number | null>(null); // Elapsed time when pause started
   const phasePauseOffsetRef = useRef<number>(0); // Pause offset for current phase
   const phasePausedAtRef = useRef<number | null>(null); // Phase elapsed when pause started
 
@@ -61,80 +56,31 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
     debugPausedRef.current = debugPaused;
 
     if (debugPaused && !wasPaused) {
-      // Entering pause: capture current elapsed values
+      // Entering pause: capture current phase elapsed
       const now = performance.now();
-      if (startTimeRef.current > 0) {
-        pausedAtElapsedRef.current = now - startTimeRef.current - pauseOffsetRef.current;
+      if (phaseStartTimeRef.current > 0) {
         phasePausedAtRef.current = now - phaseStartTimeRef.current - phasePauseOffsetRef.current;
       }
     } else if (!debugPaused && wasPaused) {
       // Leaving pause: calculate how long we were paused and add to offset
       const now = performance.now();
-      if (pausedAtElapsedRef.current !== null && startTimeRef.current > 0) {
-        const currentRawElapsed = now - startTimeRef.current;
-        const pauseDuration = currentRawElapsed - pausedAtElapsedRef.current - pauseOffsetRef.current;
-        pauseOffsetRef.current += pauseDuration;
-      }
       if (phasePausedAtRef.current !== null && phaseStartTimeRef.current > 0) {
         const currentRawPhaseElapsed = now - phaseStartTimeRef.current;
         const phasePauseDuration = currentRawPhaseElapsed - phasePausedAtRef.current - phasePauseOffsetRef.current;
         phasePauseOffsetRef.current += phasePauseDuration;
       }
-      pausedAtElapsedRef.current = null;
       phasePausedAtRef.current = null;
     }
   }, [debugPaused]);
-
-  const advancePhase = useCallback(() => {
-    const config = PHASE_CONFIG[phaseRef.current];
-    const nextPhase = config.next;
-    if (nextPhase) {
-      phaseRef.current = nextPhase;
-      setState(prev => ({
-        ...prev,
-        current: nextPhase,
-        progress: 0,
-        elapsed: 0,
-      }));
-      phaseStartTimeRef.current = performance.now();
-      // Reset phase pause offset to prevent accumulated pause time from affecting new phase
-      phasePauseOffsetRef.current = 0;
-      phasePausedAtRef.current = null;
-      onPhaseChange?.(nextPhase);
-    }
-  }, [onPhaseChange]);
-
-  // Force advance to specific phase (for debugging/testing)
-  const jumpToPhase = useCallback(
-    (phase: Phase) => {
-      phaseRef.current = phase;
-      setState(prev => ({
-        ...prev,
-        current: phase,
-        progress: 0,
-        elapsed: 0,
-      }));
-      phaseStartTimeRef.current = performance.now();
-      // Reset phase pause offset to prevent accumulated pause time from affecting new phase
-      phasePauseOffsetRef.current = 0;
-      phasePausedAtRef.current = null;
-      onPhaseChange?.(phase);
-    },
-    [onPhaseChange],
-  );
 
   useEffect(() => {
     if (skipToAftermath) return;
 
     const animate = (timestamp: number) => {
-      if (startTimeRef.current === 0) {
-        startTimeRef.current = timestamp;
-        phaseStartTimeRef.current = timestamp;
-      }
+      if (phaseStartTimeRef.current === 0) phaseStartTimeRef.current = timestamp;
 
       // Calculate elapsed with pause offset adjustment
-      // When paused, use frozen values; when running, subtract accumulated pause time
-      const totalElapsed = debugPausedRef.current ? (pausedAtElapsedRef.current ?? 0) : timestamp - startTimeRef.current - pauseOffsetRef.current;
+      // When paused, use frozen value; when running, subtract accumulated pause time
       const phaseElapsed = debugPausedRef.current ? (phasePausedAtRef.current ?? 0) : timestamp - phaseStartTimeRef.current - phasePauseOffsetRef.current;
       const currentPhase = phaseRef.current;
       const config = PHASE_CONFIG[currentPhase];
@@ -146,7 +92,6 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
         ...prev,
         progress,
         elapsed: phaseElapsed,
-        totalElapsed,
       }));
 
       // Auto-advance to next phase (blocked when debug mode is paused or boot not complete)
@@ -178,12 +123,6 @@ export const usePhaseController = (options: UsePhaseControllerOptions = {}) => {
 
   return {
     ...state,
-    advancePhase,
-    jumpToPhase,
     isPhase: (phase: Phase) => state.current === phase,
-    isPastPhase: (phase: Phase) => {
-      const order: Phase[] = ['boot', 'corruption', 'aftermath'];
-      return order.indexOf(state.current) > order.indexOf(phase);
-    },
   };
 };

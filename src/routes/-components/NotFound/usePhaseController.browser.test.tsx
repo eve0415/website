@@ -1,9 +1,8 @@
 /* oxlint-disable vitest/no-conditional-in-test -- Fallback patterns for parsing text content are safe */
-import type { Phase } from './usePhaseController';
 import type { FC } from 'react';
 
 import { useState } from 'react';
-import { describe, expect, test, vi } from 'vite-plus/test';
+import { describe, expect, test } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
 
@@ -11,66 +10,21 @@ import { usePhaseController } from './usePhaseController';
 
 interface TestComponentProps {
   skipToAftermath?: boolean;
-  onPhaseChange?: (phase: Phase) => void;
   debugPaused?: boolean;
   bootComplete?: boolean;
 }
 
-const TestComponent: FC<TestComponentProps> = ({ skipToAftermath = false, onPhaseChange, debugPaused = false, bootComplete = false }) => {
-  const phase = usePhaseController({
-    skipToAftermath,
-    debugPaused,
-    bootComplete,
-    ...(onPhaseChange && { onPhaseChange }),
-  });
+const TestComponent: FC<TestComponentProps> = ({ skipToAftermath = false, debugPaused = false, bootComplete = false }) => {
+  const phase = usePhaseController({ skipToAftermath, debugPaused, bootComplete });
 
   return (
     <div>
       <div data-testid='current'>{phase.current}</div>
       <div data-testid='progress'>{phase.progress.toFixed(4)}</div>
       <div data-testid='elapsed'>{phase.elapsed}</div>
-      <div data-testid='total-elapsed'>{phase.totalElapsed}</div>
       <div data-testid='is-boot'>{String(phase.isPhase('boot'))}</div>
       <div data-testid='is-corruption'>{String(phase.isPhase('corruption'))}</div>
       <div data-testid='is-aftermath'>{String(phase.isPhase('aftermath'))}</div>
-      <div data-testid='past-boot'>{String(phase.isPastPhase('boot'))}</div>
-      <div data-testid='past-corruption'>{String(phase.isPastPhase('corruption'))}</div>
-      <button
-        data-testid='jump-boot'
-        onClick={() => {
-          phase.jumpToPhase('boot');
-        }}
-        type='button'
-      >
-        Jump Boot
-      </button>
-      <button
-        data-testid='jump-corruption'
-        onClick={() => {
-          phase.jumpToPhase('corruption');
-        }}
-        type='button'
-      >
-        Jump Corruption
-      </button>
-      <button
-        data-testid='jump-aftermath'
-        onClick={() => {
-          phase.jumpToPhase('aftermath');
-        }}
-        type='button'
-      >
-        Jump Aftermath
-      </button>
-      <button
-        data-testid='advance'
-        onClick={() => {
-          phase.advancePhase();
-        }}
-        type='button'
-      >
-        Advance
-      </button>
     </div>
   );
 };
@@ -94,15 +48,6 @@ const DebugPausedTestComponent: FC = () => {
         type='button'
       >
         Toggle Pause
-      </button>
-      <button
-        data-testid='jump-boot'
-        onClick={() => {
-          phase.jumpToPhase('boot');
-        }}
-        type='button'
-      >
-        Jump Boot
       </button>
     </div>
   );
@@ -138,15 +83,6 @@ const BootCompleteTestComponent: FC = () => {
         type='button'
       >
         Toggle Boot Complete
-      </button>
-      <button
-        data-testid='jump-boot'
-        onClick={() => {
-          phase.jumpToPhase('boot');
-        }}
-        type='button'
-      >
-        Jump Boot
       </button>
     </div>
   );
@@ -184,141 +120,6 @@ describe('usePhaseController', () => {
     });
   });
 
-  describe('jumpToPhase', () => {
-    test('immediately transitions to corruption', async () => {
-      await render(<TestComponent />);
-
-      await expect.element(page.getByTestId('current')).toHaveTextContent('boot');
-      await page.getByTestId('jump-corruption').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('corruption');
-      await expect.element(page.getByTestId('progress')).toHaveTextContent('0.0000');
-    });
-
-    test('immediately transitions to aftermath', async () => {
-      await render(<TestComponent />);
-
-      await page.getByTestId('jump-aftermath').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('aftermath');
-    });
-
-    test('can jump backwards to boot from corruption', async () => {
-      await render(<TestComponent />);
-
-      await page.getByTestId('jump-corruption').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('corruption');
-
-      await page.getByTestId('jump-boot').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('boot');
-      // Progress resets near 0 after jump (RAF immediately starts updating, so check < 0.1)
-      const progressEl = page.getByTestId('progress');
-      const progress = Number.parseFloat(progressEl.element().textContent || '1');
-      expect(progress).toBeLessThan(0.2);
-    });
-  });
-
-  describe('advancePhase', () => {
-    test('advances from boot to corruption', async () => {
-      await render(<TestComponent />);
-
-      await expect.element(page.getByTestId('current')).toHaveTextContent('boot');
-      await page.getByTestId('advance').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('corruption');
-    });
-
-    test('advances from corruption to aftermath', async () => {
-      await render(<TestComponent />);
-
-      await page.getByTestId('jump-corruption').click();
-      await page.getByTestId('advance').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('aftermath');
-    });
-
-    test('does nothing in aftermath (no next phase)', async () => {
-      await render(<TestComponent />);
-
-      await page.getByTestId('jump-aftermath').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('aftermath');
-
-      await page.getByTestId('advance').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('aftermath');
-    });
-  });
-
-  describe('onPhaseChange callback', () => {
-    test('fires when jumpToPhase is called', async () => {
-      const onPhaseChange = vi.fn();
-      await render(<TestComponent onPhaseChange={onPhaseChange} />);
-
-      await page.getByTestId('jump-corruption').click();
-
-      await expect.poll(() => onPhaseChange.mock.calls.length).toBe(1);
-      expect(onPhaseChange).toHaveBeenCalledWith('corruption');
-    });
-
-    test('fires when advancePhase is called', async () => {
-      const onPhaseChange = vi.fn();
-      await render(<TestComponent onPhaseChange={onPhaseChange} />);
-
-      await page.getByTestId('advance').click();
-
-      await expect.poll(() => onPhaseChange.mock.calls.length).toBe(1);
-      expect(onPhaseChange).toHaveBeenCalledWith('corruption');
-    });
-
-    test('fires for each phase transition', async () => {
-      const onPhaseChange = vi.fn();
-      await render(<TestComponent onPhaseChange={onPhaseChange} />);
-
-      await page.getByTestId('advance').click(); // boot -> corruption
-      await page.getByTestId('advance').click(); // corruption -> aftermath
-
-      await expect.poll(() => onPhaseChange.mock.calls.length).toBe(2);
-      expect(onPhaseChange).toHaveBeenNthCalledWith(1, 'corruption');
-      expect(onPhaseChange).toHaveBeenNthCalledWith(2, 'aftermath');
-    });
-  });
-
-  describe('isPhase and isPastPhase', () => {
-    test('isPhase returns true only for current phase', async () => {
-      await render(<TestComponent />);
-
-      // In boot
-      await expect.element(page.getByTestId('is-boot')).toHaveTextContent('true');
-      await expect.element(page.getByTestId('is-corruption')).toHaveTextContent('false');
-      await expect.element(page.getByTestId('is-aftermath')).toHaveTextContent('false');
-
-      // Jump to corruption
-      await page.getByTestId('jump-corruption').click();
-      await expect.element(page.getByTestId('is-boot')).toHaveTextContent('false');
-      await expect.element(page.getByTestId('is-corruption')).toHaveTextContent('true');
-      await expect.element(page.getByTestId('is-aftermath')).toHaveTextContent('false');
-
-      // Jump to aftermath
-      await page.getByTestId('jump-aftermath').click();
-      await expect.element(page.getByTestId('is-boot')).toHaveTextContent('false');
-      await expect.element(page.getByTestId('is-corruption')).toHaveTextContent('false');
-      await expect.element(page.getByTestId('is-aftermath')).toHaveTextContent('true');
-    });
-
-    test('isPastPhase returns true for earlier phases', async () => {
-      await render(<TestComponent />);
-
-      // In boot - nothing is past
-      await expect.element(page.getByTestId('past-boot')).toHaveTextContent('false');
-      await expect.element(page.getByTestId('past-corruption')).toHaveTextContent('false');
-
-      // Jump to corruption - boot is past
-      await page.getByTestId('jump-corruption').click();
-      await expect.element(page.getByTestId('past-boot')).toHaveTextContent('true');
-      await expect.element(page.getByTestId('past-corruption')).toHaveTextContent('false');
-
-      // Jump to aftermath - boot and corruption are past
-      await page.getByTestId('jump-aftermath').click();
-      await expect.element(page.getByTestId('past-boot')).toHaveTextContent('true');
-      await expect.element(page.getByTestId('past-corruption')).toHaveTextContent('true');
-    });
-  });
-
   describe('progress tracking', () => {
     test('progress increases over time in boot phase', async () => {
       await render(<TestComponent />);
@@ -345,53 +146,9 @@ describe('usePhaseController', () => {
 
       expect(elapsed).toBeGreaterThan(0);
     });
-
-    test('total elapsed time increases', async () => {
-      await render(<TestComponent />);
-
-      await waitForRAF(5);
-
-      const totalEl = page.getByTestId('total-elapsed');
-      const total = Number.parseFloat(totalEl.element().textContent || '0');
-
-      expect(total).toBeGreaterThan(0);
-    });
-
-    test('progress resets to 0 when jumping to new phase', async () => {
-      await render(<TestComponent />);
-
-      // Wait for some progress
-      await waitForRAF(5);
-
-      // Jump to corruption
-      await page.getByTestId('jump-corruption').click();
-
-      // Progress should reset
-      await expect.element(page.getByTestId('progress')).toHaveTextContent('0.0000');
-    });
   });
 
   describe('debugPaused behavior', () => {
-    test('freezes auto-advance when paused at phase boundary', async () => {
-      // This test verifies that debugPaused blocks the auto-advance logic
-      // We can't easily test the timing without mocking, but we can test that
-      // when debugPaused=true, the phase doesn't auto-advance
-
-      // Start with debugPaused=true
-      await render(<TestComponent debugPaused />);
-
-      // Jump to near the end of boot phase using jumpToPhase
-      // Since debugPaused only affects auto-advance (not jumpToPhase),
-      // we test by advancing to a phase and checking it stays there
-
-      await page.getByTestId('jump-corruption').click();
-      await expect.element(page.getByTestId('current')).toHaveTextContent('corruption');
-
-      // Wait and verify phase doesn't auto-advance
-      await waitForRAF(10);
-      await expect.element(page.getByTestId('current')).toHaveTextContent('corruption');
-    });
-
     test('can toggle debugPaused state', async () => {
       await render(<DebugPausedTestComponent />);
 
@@ -498,8 +255,7 @@ describe('usePhaseController', () => {
     test('progress percentage freezes during pause', async () => {
       await render(<DebugPausedTestComponent />);
 
-      // Jump to boot phase (has duration) and wait for some progress
-      await page.getByTestId('jump-boot').click();
+      // Boot phase has a duration, so progress accumulates from mount
       await waitForRAF(10);
 
       // Pause first
@@ -573,20 +329,6 @@ describe('usePhaseController', () => {
       // Phase should still be boot initially (duration hasn't passed)
       // This is a unit test - full timing behavior needs integration test
       await expect.element(page.getByTestId('current')).toHaveTextContent('boot');
-    });
-
-    test('bootComplete does not affect corruption or aftermath phases', async () => {
-      // bootComplete should only affect boot -> corruption transition
-      await render(<BootCompleteTestComponent />);
-
-      // Jump to corruption phase
-      await page.getByTestId('jump-boot').click();
-      await waitForRAF(2);
-
-      await expect.element(page.getByTestId('current')).toHaveTextContent('boot');
-
-      // Even with bootComplete=false, we should be able to manually advance
-      // (bootComplete only blocks auto-advance in boot phase)
     });
   });
 });
