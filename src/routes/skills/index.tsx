@@ -170,7 +170,14 @@ const SkillsPage: FC = () => {
             <p className='text-muted-foreground mt-2 text-sm'>
               システムプログラミングとパフォーマンス最適化のため学習中。 メモリ安全性と並行処理の理解を深めている。
             </p>
-            <div className='bg-muted mt-4 h-1 w-full rounded-full'>
+            <div
+              className='bg-muted mt-4 h-1 w-full rounded-full'
+              role='progressbar'
+              aria-label='Rustの学習進捗'
+              aria-valuenow={35}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            >
               <div className='bg-orange duration-slow h-full rounded-full transition-all' style={{ width: '35%' }} />
             </div>
           </div>
@@ -179,7 +186,14 @@ const SkillsPage: FC = () => {
             <p className='text-muted-foreground mt-2 text-sm'>
               マイクロサービスとインフラツーリングのため学習中。 シンプルで効率的なバックエンドサービスの構築を目指す。
             </p>
-            <div className='bg-muted mt-4 h-1 w-full rounded-full'>
+            <div
+              className='bg-muted mt-4 h-1 w-full rounded-full'
+              role='progressbar'
+              aria-label='Goの学習進捗'
+              aria-valuenow={25}
+              aria-valuemin={0}
+              aria-valuemax={100}
+            >
               <div className='bg-orange duration-slow h-full rounded-full transition-all' style={{ width: '25%' }} />
             </div>
           </div>

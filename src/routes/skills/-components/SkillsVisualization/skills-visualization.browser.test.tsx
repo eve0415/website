@@ -177,7 +177,7 @@ describe('skillsVisualization', () => {
       expect(canvas).not.toBeNull();
     });
 
-    test('canvas has keyboard handler for escape', async () => {
+    test('canvas still selects nodes on click', async () => {
       const onNodeSelect = vi.fn();
 
       const { container } = await render(<SkillsVisualization selectedSkillId='TypeScript' onNodeSelect={onNodeSelect} />);
@@ -185,38 +185,30 @@ describe('skillsVisualization', () => {
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;
       expect(canvas).not.toBeNull();
 
-      // Press escape
-      canvas.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true }));
+      // Clicking empty space still deselects for sighted mouse users
+      canvas.dispatchEvent(new MouseEvent('click', { bubbles: true, clientX: 10, clientY: 10 }));
 
-      // Should call onNodeSelect with null
       expect(onNodeSelect).toHaveBeenCalledWith(null);
-    });
-
-    test('canvas has cursor pointer class when hovering node', async () => {
-      const { container } = await render(<SkillsVisualization />);
-
-      const canvas = container.querySelector('canvas') as HTMLCanvasElement;
-      expect(canvas).not.toBeNull();
-
-      // Canvas should be focusable with application role
-      expect(canvas.tabIndex).toBe(0);
-      expect(canvas.getAttribute('role')).toBe('application');
     });
   });
 
   describe('accessibility', () => {
-    test('canvas has aria-label', async () => {
+    test('canvas is exposed as an image with a Japanese label', async () => {
       const { container } = await render(<SkillsVisualization />);
 
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;
-      expect(canvas.getAttribute('aria-label')).toBe('Interactive skills visualization - click nodes to select, press Escape to deselect');
+      expect(canvas.getAttribute('role')).toBe('img');
+      expect(canvas.getAttribute('aria-label')).toBe('スキルの関係性を示すネットワーク図。各スキルは下のスキル一覧から選択できます。');
     });
 
-    test('canvas is focusable', async () => {
+    test('canvas is not a keyboard focus trap (no tabindex / application role)', async () => {
       const { container } = await render(<SkillsVisualization />);
 
+      // role='application' + tabIndex trapped screen readers in an opaque canvas.
+      // Keyboard selection is provided by the skill grid buttons instead.
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;
-      expect(canvas.tabIndex).toBe(0);
+      expect(canvas.getAttribute('role')).not.toBe('application');
+      expect(canvas.hasAttribute('tabindex')).toBeFalsy();
     });
   });
 });

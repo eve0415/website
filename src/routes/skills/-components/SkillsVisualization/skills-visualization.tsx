@@ -383,12 +383,8 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         className={`size-full ${hoveredNode ? 'cursor-pointer' : ''}`}
         onClick={handleCanvasClick}
         onMouseMove={handleMouseMove}
-        onKeyDown={e => {
-          if (e.key === 'Escape' && onNodeSelect) onNodeSelect(null);
-        }}
-        tabIndex={0}
-        role='application'
-        aria-label='Interactive skills visualization - click nodes to select, press Escape to deselect'
+        role='img'
+        aria-label='スキルの関係性を示すネットワーク図。各スキルは下のスキル一覧から選択できます。'
       />
 
       {/* Legend overlay */}
