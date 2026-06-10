@@ -71,13 +71,6 @@ export interface AISkillsState {
   workflow: WorkflowState;
 }
 
-/** GitHub API rate limit info */
-export interface RateLimitInfo {
-  remaining: number;
-  limit: number;
-  resetAt: number; // Unix timestamp
-}
-
 /** GitHub repository from API */
 export interface GitHubRepo {
   id: number;
@@ -90,46 +83,4 @@ export interface GitHubRepo {
   language: string | null;
   created_at: string;
   updated_at: string;
-}
-
-/** GitHub commit from API */
-export interface GitHubCommit {
-  sha: string;
-  commit: {
-    message: string;
-    author: { date: string };
-  };
-  stats?: {
-    additions: number;
-    deletions: number;
-  };
-  files?: { filename: string }[];
-}
-
-/** GitHub PR from API */
-export interface GitHubPR {
-  id: number;
-  number: number;
-  title: string;
-  body: string | null;
-  state: string;
-  merged: boolean;
-  additions: number;
-  deletions: number;
-  changed_files: number;
-  commits: number;
-  comments: number;
-  review_comments: number;
-  created_at: string;
-  merged_at: string | null;
-  closed_at: string | null;
-}
-
-/** GitHub PR review from API */
-export interface GitHubReview {
-  id: number;
-  state: 'APPROVED' | 'CHANGES_REQUESTED' | 'COMMENTED' | 'PENDING' | 'DISMISSED';
-  body: string | null;
-  submitted_at: string;
-  pull_request_url: string;
 }
