@@ -2,8 +2,8 @@ import type { AISkill, AISkillsState } from '#workflows/-utils/ai-skills-types';
 import type { Skill } from './-config/skills-config';
 import type { FC } from 'react';
 
-import { Link, createFileRoute } from '@tanstack/react-router';
-import { useState } from 'react';
+import { Link, createFileRoute, useRouter } from '@tanstack/react-router';
+import { useEffect, useState } from 'react';
 
 import AISkillPanel from './-components/AISkillPanel/ai-skill-panel';
 import AnalysisLog from './-components/AnalysisLog/analysis-log';
@@ -25,6 +25,27 @@ const SkillsPage: FC = () => {
 
   // Show analysis log when workflow is running
   const isWorkflowActive = workflowState.phase !== 'idle' && workflowState.phase !== 'completed' && workflowState.phase !== 'error';
+
+  const router = useRouter();
+
+  // Re-fetch the loader while the workflow runs so the analysis log shows
+  // live progress instead of page-load values
+  useEffect(() => {
+    if (!isWorkflowActive) return;
+
+    // oxlint-disable-next-line typescript/no-misused-promises -- fire-and-forget refresh
+    const interval = setInterval(async () => {
+      try {
+        await router.invalidate();
+      } catch {
+        // best-effort polling; transient errors retry on the next tick
+      }
+    }, 5000);
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [isWorkflowActive, router]);
 
   const groupedSkills: Record<string, Skill[]> = {};
   for (const skill of skills) {
