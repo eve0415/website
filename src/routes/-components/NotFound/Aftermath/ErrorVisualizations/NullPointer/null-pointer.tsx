@@ -134,7 +134,7 @@ const NullPointer: FC = () => {
             <div className='text-[#f14c4c]'>→ processPage(null)</div>
             <div className='text-[#a0a0a0]'>{'  '}renderContent()</div>
             <div className='text-[#959595]'>{'    '}handleRequest()</div>
-            <div className='text-[#8a8a8a]'>{'      '}main()</div>
+            <div className='text-[#909090]'>{'      '}main()</div>
           </div>
         </div>
 
