@@ -3,6 +3,8 @@ import type { FC } from 'react';
 import { Link, createFileRoute, useNavigate } from '@tanstack/react-router';
 import { startTransition, useEffect, useState } from 'react';
 
+import { useReducedMotion } from '#hooks/useReducedMotion';
+
 import Background from './-index/Background/background';
 import { printConsoleArt } from './-index/console-art';
 import Logo from './-index/logo';
@@ -10,10 +12,16 @@ import TerminalText from './-index/terminal-text';
 import { useKonamiCode } from './-index/useKonamiCode';
 
 const IndexPage: FC = () => {
+  const reducedMotion = useReducedMotion();
   const [showTagline, setShowTagline] = useState(false);
   const [showNav, setShowNav] = useState(false);
   const [konamiActivated, setKonamiActivated] = useState(false);
   const navigate = useNavigate();
+
+  // Reveal the tagline and nav immediately for reduced-motion users so keyboard
+  // users have something to Tab to without waiting out the staggered animation.
+  const taglineVisible = showTagline || reducedMotion;
+  const navVisible = showNav || reducedMotion;
 
   // Konami code Easter egg
   useKonamiCode(() => {
@@ -29,6 +37,10 @@ const IndexPage: FC = () => {
     // Print console art on mount
     printConsoleArt();
 
+    // Reduced-motion users get the tagline and nav immediately via derived
+    // visibility, so skip the staggered reveal timers entirely.
+    if (reducedMotion) return;
+
     // Stagger the animations
     const taglineTimer = setTimeout(() => {
       setShowTagline(true);
@@ -41,13 +53,17 @@ const IndexPage: FC = () => {
       clearTimeout(taglineTimer);
       clearTimeout(navTimer);
     };
-  }, []);
+  }, [reducedMotion]);
 
   // Keyboard navigation
   useEffect(() => {
     const listener = (e: KeyboardEvent) => {
-      // Skip if user is typing in an input
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      // Scope these single-key shortcuts to "not typing anywhere": only act when
+      // focus rests on the body, never mid-IME-composition, and never while a
+      // modifier is held (so browser/OS chords keep working) - WCAG 2.1.4.
+      if (document.activeElement !== document.body) return;
+      if (e.isComposing) return;
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
       startTransition(async () => {
         switch (e.key) {
           case '1':
@@ -103,14 +119,14 @@ const IndexPage: FC = () => {
         </h1>
 
         {/* Tagline */}
-        {showTagline && (
+        {taglineVisible && (
           <p className='animate-fade-in-up text-muted-foreground text-center'>
             <TerminalText text='エンジニア' delay={0} speed={60} />
           </p>
         )}
 
         {/* Navigation prompt */}
-        {showNav && (
+        {navVisible && (
           <nav className='animate-fade-in-up text-subtle-foreground mt-12 flex flex-col items-center gap-6 text-sm'>
             {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
             <span className='font-mono text-xs tracking-wider'>// 探索を始める</span>

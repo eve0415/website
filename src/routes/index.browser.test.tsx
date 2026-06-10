@@ -42,7 +42,10 @@ const TestIndexPage: FC = () => {
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
+      // Mirror the real route's WCAG 2.1.4 scoping guards
+      if (document.activeElement !== document.body) return;
+      if (e.isComposing) return;
+      if (e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
       switch (e.key) {
         case '1':
           setNavigatedTo('/projects');
@@ -155,6 +158,13 @@ describe('indexPage', () => {
     await render(<TestIndexPage />);
     await userEvent.keyboard('4');
     await expect.element(page.getByTestId('navigated-to')).toHaveTextContent('/sys');
+  });
+
+  test('key with a modifier held does not navigate (WCAG 2.1.4)', async () => {
+    await render(<TestIndexPage />);
+    // Holding Ctrl turns "1" into a browser/OS chord - the shortcut must stand down
+    await userEvent.keyboard('{Control>}1{/Control}');
+    await expect.element(page.getByTestId('navigated-to')).not.toBeInTheDocument();
   });
 
   test('konami code activates easter egg', async () => {
