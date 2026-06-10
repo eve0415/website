@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vite-plus/test';
 
-import { ERROR_VISUALIZATIONS, getRandomError } from './error-types';
+import { ERROR_TYPES, getRandomErrorType } from './error-types';
 
 describe('error-types', () => {
-  describe('getRandomError', () => {
+  describe('getRandomErrorType', () => {
     beforeEach(() => {
       vi.spyOn(Date, 'now');
     });
@@ -21,66 +21,52 @@ describe('error-types', () => {
       { seed: 5, expected: 'index-out-of-bounds' },
     ])('seed $seed returns $expected', ({ seed, expected }) => {
       vi.mocked(Date.now).mockReturnValue(seed * 1000);
-      const result = getRandomError();
-      expect(result.type).toBe(expected);
+      expect(getRandomErrorType()).toBe(expected);
+    });
+
+    it('always returns a member of ERROR_TYPES', () => {
+      vi.mocked(Date.now).mockReturnValue(1234567);
+      expect(ERROR_TYPES).toContain(getRandomErrorType());
     });
 
     it('cycles through all 18 error types with consecutive seeds', () => {
       const types = new Set<string>();
       for (let i = 0; i < 18; i++) {
         vi.mocked(Date.now).mockReturnValue(i * 1000);
-        types.add(getRandomError().type);
+        types.add(getRandomErrorType());
       }
       expect(types.size).toBe(18);
     });
 
     it('returns consistent result within same second', () => {
       vi.mocked(Date.now).mockReturnValue(1234567);
-      const result1 = getRandomError();
+      const result1 = getRandomErrorType();
 
       vi.mocked(Date.now).mockReturnValue(1234999);
-      const result2 = getRandomError();
+      const result2 = getRandomErrorType();
 
-      expect(result1).toStrictEqual(result2);
+      expect(result1).toBe(result2);
     });
 
     it('wraps around after 18 seconds', () => {
       vi.mocked(Date.now).mockReturnValue(0);
-      const first = getRandomError();
+      const first = getRandomErrorType();
 
       vi.mocked(Date.now).mockReturnValue(18000);
-      const nineteenth = getRandomError();
+      const nineteenth = getRandomErrorType();
 
-      expect(first).toStrictEqual(nineteenth);
+      expect(first).toBe(nineteenth);
     });
   });
 
-  describe('eRROR_VISUALIZATIONS', () => {
+  describe('eRROR_TYPES', () => {
     it('contains exactly 18 error types', () => {
-      expect(ERROR_VISUALIZATIONS).toHaveLength(18);
-    });
-
-    it('each error has required properties', () => {
-      for (const error of ERROR_VISUALIZATIONS) {
-        expect(error).toHaveProperty('type');
-        expect(error).toHaveProperty('title');
-        expect(error).toHaveProperty('subtitle');
-        expect(error).toHaveProperty('language');
-        expect(error).toHaveProperty('fixAction');
-      }
+      expect(ERROR_TYPES).toHaveLength(18);
     });
 
     it('all types are unique', () => {
-      const types = ERROR_VISUALIZATIONS.map(e => e.type);
-      const uniqueTypes = new Set(types);
-      expect(uniqueTypes.size).toBe(types.length);
-    });
-
-    it('all fixAction values are non-empty strings', () => {
-      for (const error of ERROR_VISUALIZATIONS) {
-        expect(typeof error.fixAction).toBe('string');
-        expect(error.fixAction.length).toBeGreaterThan(0);
-      }
+      const uniqueTypes = new Set(ERROR_TYPES);
+      expect(uniqueTypes.size).toBe(ERROR_TYPES.length);
     });
   });
 });
