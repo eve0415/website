@@ -57,6 +57,11 @@ const extractAIText = (response: unknown): string => {
   return '';
 };
 
+// GitHub also returns PENDING/DISMISSED; only these states are stored
+const STORABLE_REVIEW_STATES = ['APPROVED', 'CHANGES_REQUESTED', 'COMMENTED'] as const;
+type StorableReviewState = (typeof STORABLE_REVIEW_STATES)[number];
+const isStorableReviewState = (value: string): value is StorableReviewState => STORABLE_REVIEW_STATES.some(state => state === value);
+
 interface SyncState {
   repos: {
     id: number;
@@ -603,8 +608,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       submittedAt: string;
     },
   ) {
-    const validStates = ['APPROVED', 'CHANGES_REQUESTED', 'COMMENTED'] as const;
-    if (!validStates.includes(review.state as (typeof validStates)[number])) return;
+    if (!isStorableReviewState(review.state)) return;
 
     await db
       .insert(prReviews)
@@ -613,7 +617,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
         repoId,
         prNumber,
         prTitle,
-        state: review.state as 'APPROVED' | 'CHANGES_REQUESTED' | 'COMMENTED',
+        state: review.state,
         body: review.body,
         submittedAt: review.submittedAt,
       })
@@ -829,12 +833,23 @@ Output as JSON array of skills. Nothing else.`;
     if (!Array.isArray(parsed)) return [];
 
     // Validate at the model boundary; drop entries that don't match the contract
-    return parsed.filter(isAISkillDraft).map(draft => ({
-      ...draft,
-      description_ja: '',
-      last_active: new Date().toISOString(),
-      is_ai_discovered: true,
-    }));
+    const now = new Date().toISOString();
+    const skills: AISkill[] = [];
+    for (const entry of parsed) {
+      if (!isAISkillDraft(entry)) continue;
+      skills.push({
+        name: entry.name,
+        category: entry.category,
+        level: entry.level,
+        confidence: entry.confidence,
+        evidence: entry.evidence,
+        trend: entry.trend,
+        description_ja: '',
+        last_active: now,
+        is_ai_discovered: true,
+      });
+    }
+    return skills;
   }
 
   private async generateJapaneseDescriptions(db: DB, skills: AISkill[], summary: string): Promise<AISkillsContent> {
