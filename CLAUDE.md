@@ -10,11 +10,17 @@ Personal website (eve0415.net) built with TanStack Start, React 19, and deployed
 
 ## Commands
 
+This project uses the Vite+ toolchain (`vp`), not raw pnpm scripts.
+
 ```bash
-pnpm dev          # Start dev server with hot reload
-pnpm build        # Production build
-pnpm lint         # Ru+ oxfmt (auto-fixes enabled)
-pnpm generate     # Generate Cloudflare Worker types
+vp dev              # Start dev server with hot reload
+vp build            # Production build
+vp check            # Format + lint + type check (oxlint + oxfmt, auto-fixes enabled)
+vp test run         # Run all tests once
+vp test run <path>  # Run a specific test file/dir
+vp run generate     # Generate Worker types, GraphQL types, and D1 migrations
+vp run migrate      # Apply D1 migrations locally
+vp run storybook    # Start Storybook
 ```
 
 ## Architecture
@@ -39,8 +45,8 @@ pnpm generate     # Generate Cloudflare Worker types
 
 ## Requirements
 
-- Node.js 24.13.x (see `.node-version`)
-- pnpm 10.x package manager
+- Node.js 24.15.x (see `devEngines` in `package.json`)
+- pnpm 11.x package manager (see `packageManager` in `package.json`)
 
 ## Language Requirements
 
@@ -49,6 +55,8 @@ pnpm generate     # Generate Cloudflare Worker types
 - **Variable/Function Names**: English only
 
 This is strictly enforced. User-facing strings must be Japanese. Technical content must be English.
+
+**Exception**: The retro-terminal, BSOD, and 404-boot screens deliberately use English as a stylistic choice to sell their authentic system-UI aesthetic.
 
 ## Rules Philosophy
 
