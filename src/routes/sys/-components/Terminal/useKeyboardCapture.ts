@@ -292,8 +292,10 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       // Ignore if typing in an input/textarea
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
 
-      // Ctrl+C
+      // Ctrl+C: let the browser copy when there's a selection instead of
+      // hijacking it to clear the prompt
       if (e.ctrlKey && e.key === 'c') {
+        if (globalThis.getSelection()?.isCollapsed === false) return;
         e.preventDefault();
         dispatch({ type: 'CANCEL' });
         onCtrlCRef.current();
@@ -301,8 +303,12 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         return;
       }
 
-      // Tab for autocomplete
+      // Tab for autocomplete. With an empty prompt there's nothing to
+      // complete, so let Tab move focus normally - otherwise a keyboard user
+      // is trapped in the terminal (WCAG 2.1.2). Ctrl+C clears a non-empty
+      // prompt, giving an escape path.
       if (e.key === 'Tab') {
+        if (state.input.length === 0) return;
         e.preventDefault();
         const tabId = ++pendingTabId.current;
         const { result, suggestions } = handleTab(state.input, tabId);

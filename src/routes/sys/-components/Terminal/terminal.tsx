@@ -220,6 +220,8 @@ const Terminal: FC<TerminalProps> = ({ stats, children, onBootComplete, __forceT
 
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.ctrlKey && e.key === 'c') {
+        // Don't hijack Ctrl+C when the user is copying a text selection
+        if (globalThis.getSelection()?.isCollapsed === false) return;
         e.preventDefault();
         handleCtrlCRef.current();
       }
