@@ -24,6 +24,11 @@ export const useDecryptAnimation = (finalValue: string | number, options: UseDec
     // Skip if not animating or already animated
     if (!shouldAnimate || hasAnimatedRef.current) return;
 
+    // Hoisted so the effect cleanup can cancel the interval started inside
+    // the timeout - returning a cleanup from setTimeout's callback does
+    // nothing (React never sees it), leaking the interval past unmount
+    let interval: ReturnType<typeof setInterval> | null = null;
+
     const timeoutId = setTimeout(() => {
       hasAnimatedRef.current = true;
 
@@ -31,7 +36,7 @@ export const useDecryptAnimation = (finalValue: string | number, options: UseDec
       const frameCount = Math.floor(duration / 30); // ~30ms per frame
       const frameRef = { current: 0 };
 
-      const interval = setInterval(() => {
+      interval = setInterval(() => {
         frameRef.current += 1;
         const progress = frameRef.current / frameCount;
 
@@ -52,18 +57,15 @@ export const useDecryptAnimation = (finalValue: string | number, options: UseDec
         setDisplayValue(result);
 
         if (frameRef.current >= frameCount) {
-          clearInterval(interval);
+          if (interval !== null) clearInterval(interval);
           setDisplayValue(finalStr);
         }
       }, 30);
-
-      return () => {
-        clearInterval(interval);
-      };
     }, delay);
 
     return () => {
       clearTimeout(timeoutId);
+      if (interval !== null) clearInterval(interval);
     };
   }, [finalStr, duration, delay, shouldAnimate]);
 

@@ -56,23 +56,32 @@ const AnimatedCounter: FC<AnimatedCounterProps> = ({ end, duration = 2000, suffi
   useEffect(() => {
     if (shouldSkipAnimation || hasAnimatedRef.current || !shouldAnimate) return;
 
-    hasAnimatedRef.current = true;
     const startTime = Date.now();
+    let frame = 0;
 
     const animate = () => {
       const elapsed = Date.now() - startTime;
       const progress = Math.min(elapsed / duration, 1);
       if (progress >= 1) {
         setCount(end);
+        // Mark complete here (not at start) so StrictMode's mount/cleanup/
+        // remount cycle re-runs the animation instead of bailing on the ref
+        hasAnimatedRef.current = true;
       } else {
         // Ease out expo
         const easeProgress = 1 - 2 ** (-10 * progress);
         setCount(Math.floor(end * easeProgress));
-        requestAnimationFrame(animate);
+        frame = requestAnimationFrame(animate);
       }
     };
 
-    requestAnimationFrame(animate);
+    frame = requestAnimationFrame(animate);
+
+    // Cancel the rAF chain on unmount - otherwise it keeps setting state
+    // for up to `duration` ms after the component is gone
+    return () => {
+      cancelAnimationFrame(frame);
+    };
   }, [shouldAnimate, end, duration, shouldSkipAnimation]);
 
   return (
