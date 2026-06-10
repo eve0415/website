@@ -22,13 +22,13 @@ describe('analysisLog', () => {
     test('renders idle phase message', async () => {
       await render(<AnalysisLog state={idleState} />);
 
-      await expect.element(page.getByText('IDLE')).toBeInTheDocument();
+      await expect.element(page.getByText('待機中')).toBeInTheDocument();
     });
 
     test('renders listing-repos phase message', async () => {
       await render(<AnalysisLog state={listingReposState} />);
 
-      await expect.element(page.getByText('LIVE ANALYZING')).toBeInTheDocument();
+      await expect.element(page.getByText('分析中')).toBeInTheDocument();
       await expect.element(page.getByText('リポジトリを取得中...')).toBeInTheDocument();
     });
 
@@ -77,8 +77,8 @@ describe('analysisLog', () => {
     test('renders completed phase message', async () => {
       const { container } = await render(<AnalysisLog state={completedState} />);
 
-      // Check for COMPLETE status text in header
-      expect(container.textContent).toContain('COMPLETE');
+      // Check for completed status text in header
+      expect(container.textContent).toContain('完了');
     });
 
     test('renders error phase message', async () => {
@@ -108,9 +108,9 @@ describe('analysisLog', () => {
     test('does not show progress percentage when completed', async () => {
       const { container } = await render(<AnalysisLog state={completedState} />);
 
-      // Header should show COMPLETE, not percentage
+      // Header should show 完了, not percentage
       const header = container.querySelector('.border-b');
-      expect(header?.textContent).toContain('COMPLETE');
+      expect(header?.textContent).toContain('完了');
       expect(header?.textContent).not.toContain('100%');
     });
   });
@@ -137,14 +137,14 @@ describe('analysisLog', () => {
       await render(<AnalysisLog state={fetchingCommitsState} />);
 
       // current_repo is 'eve0415/website'
-      await expect.element(page.getByText('Scanning eve0415/website...')).toBeInTheDocument();
+      await expect.element(page.getByText('スキャン中: eve0415/website')).toBeInTheDocument();
     });
 
     test('does not show repo name when current_repo is null', async () => {
       const { container } = await render(<AnalysisLog state={squashingHistoryState} />);
 
-      // Should not have "Scanning" text
-      expect(container.textContent).not.toContain('Scanning');
+      // Should not have scanning text
+      expect(container.textContent).not.toContain('スキャン中');
     });
   });
 
