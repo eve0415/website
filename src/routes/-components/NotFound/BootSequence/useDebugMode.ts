@@ -19,8 +19,6 @@ export interface UseDebugModeReturn {
   debugState: DebugState;
   // Actions
   enableDebugMode: () => void;
-  disableDebugMode: () => void;
-  toggleDebugMode: () => void;
   // Stepping controls (need message count and depths to calculate next index)
   stepContinue: () => void;
   pause: () => void;
@@ -29,11 +27,6 @@ export interface UseDebugModeReturn {
   stepOut: (messageDepths: number[]) => void;
   stepBack: () => void;
   stopDebug: () => void;
-  // State updates
-  setDebugIndex: (index: number) => void;
-  setPaused: (paused: boolean) => void;
-  // Check if message at depth should be visible
-  isMessageVisible: (depth: number) => boolean;
 }
 
 const DEFAULT_STATE: DebugState = {
@@ -126,30 +119,6 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages = 0, vi
     });
     persistDebugMode(true);
   }, [persistDebugMode, visibleCountRef]);
-
-  const disableDebugMode = useCallback(() => {
-    setDebugState(prev => ({
-      ...prev,
-      isEnabled: false,
-      isPaused: false,
-      debugIndex: 0,
-    }));
-    persistDebugMode(false);
-  }, [persistDebugMode]);
-
-  const toggleDebugMode = useCallback(() => {
-    setDebugState(prev => {
-      const newEnabled = !prev.isEnabled;
-      persistDebugMode(newEnabled);
-      return {
-        ...prev,
-        isEnabled: newEnabled,
-        isPaused: newEnabled,
-        debugIndex: 0,
-        maxVisibleDepth: Infinity,
-      };
-    });
-  }, [persistDebugMode]);
 
   const stepContinue = useCallback(() => {
     setDebugState(prev => {
@@ -258,28 +227,6 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages = 0, vi
     persistDebugMode(false);
   }, [persistDebugMode]);
 
-  const setDebugIndex = useCallback((index: number) => {
-    setDebugState(prev => ({
-      ...prev,
-      debugIndex: index,
-    }));
-  }, []);
-
-  const setPaused = useCallback((paused: boolean) => {
-    setDebugState(prev => ({
-      ...prev,
-      isPaused: paused,
-    }));
-  }, []);
-
-  const isMessageVisible = useCallback(
-    (depth: number): boolean => {
-      if (!debugState.isEnabled) return true;
-      return depth <= debugState.maxVisibleDepth;
-    },
-    [debugState.isEnabled, debugState.maxVisibleDepth],
-  );
-
   // Keyboard event handler
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -365,8 +312,6 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages = 0, vi
   return {
     debugState,
     enableDebugMode,
-    disableDebugMode,
-    toggleDebugMode,
     stepContinue,
     pause,
     stepOver,
@@ -374,16 +319,5 @@ export const useDebugMode = (messageDepths: number[] = [], totalMessages = 0, vi
     stepOut,
     stepBack,
     stopDebug,
-    setDebugIndex,
-    setPaused,
-    isMessageVisible,
   };
-};
-
-/**
- * Check if debug mode is enabled (for conditional rendering)
- */
-export const isDebugModeEnabled = (): boolean => {
-  if (globalThis.window === undefined) return false;
-  return localStorage.getItem(DEBUG_STORAGE_KEY) === 'true';
 };
