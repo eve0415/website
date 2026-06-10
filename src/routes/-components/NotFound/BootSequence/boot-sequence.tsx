@@ -179,7 +179,11 @@ const BootSequence: FC<BootSequenceProps> = ({ elapsed, visible, mouseInfluence,
                   )}
 
                   {/* Hierarchy indicator */}
-                  {msg.depth > 0 && <span className='text-line/50 mr-1.5'>{msg.type === 'group' ? '▼' : '├'}</span>}
+                  {msg.depth > 0 && (
+                    <span className='text-line/50 mr-1.5' aria-hidden='true'>
+                      {msg.type === 'group' ? '▼' : '├'}
+                    </span>
+                  )}
 
                   {/* Message text */}
                   <span
