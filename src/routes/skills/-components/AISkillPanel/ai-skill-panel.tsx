@@ -3,6 +3,8 @@
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 import type { FC } from 'react';
 
+import { useEffect, useRef } from 'react';
+
 import { useTypedText } from '#hooks/useTypedText';
 
 interface Props {
@@ -17,6 +19,32 @@ const AISkillPanel: FC<Props> = ({ skill, isExpanded, onClose }) => {
     speed: 10,
     enabled: isExpanded,
   });
+
+  const panelRef = useRef<HTMLDivElement>(null);
+  const triggerRef = useRef<HTMLElement | null>(null);
+
+  // Move focus into the panel on open and return it to the trigger on close
+  // so keyboard and screen-reader users aren't stranded.
+  useEffect(() => {
+    if (!isExpanded) return;
+    triggerRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    panelRef.current?.focus();
+    return () => {
+      triggerRef.current?.focus();
+    };
+  }, [isExpanded]);
+
+  // Close on Escape from anywhere while the panel is open
+  useEffect(() => {
+    if (!isExpanded) return;
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [isExpanded, onClose]);
 
   if (!isExpanded) return;
 
@@ -39,7 +67,14 @@ const AISkillPanel: FC<Props> = ({ skill, isExpanded, onClose }) => {
   };
 
   return (
-    <div className='border-fuchsia/30 bg-surface/95 animate-fade-in-scale fixed right-4 bottom-4 z-50 w-96 max-w-[calc(100vw-2rem)] rounded-lg border backdrop-blur-sm md:right-8 md:bottom-8'>
+    <div
+      ref={panelRef}
+      role='dialog'
+      aria-modal='true'
+      aria-label={skill.name}
+      tabIndex={-1}
+      className='border-fuchsia/30 bg-surface/95 animate-fade-in-scale fixed right-4 bottom-4 z-50 w-96 max-w-[calc(100vw-2rem)] rounded-lg border backdrop-blur-sm focus:outline-none md:right-8 md:bottom-8'
+    >
       {/* Header */}
       <div className='border-fuchsia/20 flex items-center justify-between border-b p-4'>
         <div className='flex items-center gap-3'>
