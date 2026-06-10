@@ -12,8 +12,9 @@ export interface TurnstileResult {
   error?: string;
 }
 
-// Allowed hostnames for Turnstile verification
-const ALLOWED_HOSTNAMES = ['eve0415.net', 'www.eve0415.net', 'localhost'];
+// Allowed hostnames for Turnstile verification.
+// localhost is only trusted in development; production must never accept it.
+const ALLOWED_HOSTNAMES = ['eve0415.net', 'www.eve0415.net', ...(import.meta.env.DEV ? ['localhost'] : [])];
 
 export const verifyTurnstile = async (token: string, secretKey: string, remoteIp?: string): Promise<TurnstileResult> => {
   // Basic token validation
