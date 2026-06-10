@@ -27,3 +27,6 @@ storybook-static/
 
 # TanStack Router codegen temp
 .tanstack/
+
+# Agent worktrees
+.claude/worktrees/
