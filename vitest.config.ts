@@ -85,8 +85,6 @@ export default defineConfig({
                 GITHUB_PAT: 'test-pat',
                 MAIL_ADDRESS: 'test@example.com',
                 TURNSTILE_SECRET_KEY: 'test-turnstile-secret',
-                CLOUDFLARE_API_TOKEN: 'test-cf-token',
-                CLOUDFLARE_ZONE_ID: 'test-zone-id',
               },
             },
           }),

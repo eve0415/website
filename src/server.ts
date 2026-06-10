@@ -6,23 +6,12 @@ import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
 export { SkillsAnalysisWorkflow } from './workflows/skills-analysis';
 
 export default {
-  fetch: async (request, env, _ctx) => {
-    const { cf } = request;
-    const headers = new Headers(request.headers);
-
-    // Inject Cloudflare request properties as custom headers
-    // These are not exposed by TanStack Start, so we pass them through headers
-    if (cf?.tlsVersion) headers.set('X-CF-TLS-Version', cf.tlsVersion);
-    if (cf?.tlsCipher) headers.set('X-CF-TLS-Cipher', cf.tlsCipher);
-    if (cf?.httpProtocol) headers.set('X-CF-HTTP-Protocol', cf.httpProtocol);
-    if (cf?.colo) headers.set('X-CF-Colo', String(cf.colo));
-
-    return handler.fetch(new Request(request, { headers }), {
+  fetch: async (request, env, _ctx) =>
+    handler.fetch(request, {
       context: {
         db: drizzle(env.SKILLS_DB, { schema, casing: 'snake_case' }),
       },
-    });
-  },
+    }),
   scheduled(event, env, ctx) {
     // Hourly: refresh GitHub stats
     ctx.waitUntil(refreshGitHubStats(env));

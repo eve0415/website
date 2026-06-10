@@ -10,19 +10,6 @@ vi.mock('#hooks/useReducedMotion', () => ({
   useReducedMotion: vi.fn(() => false),
 }));
 
-vi.mock('./BootSequence/connection-info', () => ({
-  // oxlint-disable-next-line typescript/require-await -- Mock async function for testing
-  getConnectionInfo: vi.fn(async () => ({
-    serverIp: '127.0.0.1',
-    tlsVersion: 'TLSv1.3',
-    tlsCipher: 'TLS_AES_128_GCM_SHA256',
-    httpVersion: 'h2',
-    cfRay: 'mock-ray-id',
-    colo: 'NRT',
-    certificatePack: undefined,
-  })),
-}));
-
 const createHarness = () =>
   createRouterHarness({
     routeTree: createRootRoute({ component: () => <NotFound /> }),
