@@ -160,4 +160,8 @@ const IndexPage: FC = () => {
 
 export const Route = createFileRoute('/')({
   component: IndexPage,
+  head: () => ({
+    meta: [{ title: 'eve0415' }, { property: 'og:title', content: 'eve0415' }, { property: 'og:url', content: 'https://eve0415.net' }],
+    links: [{ rel: 'canonical', href: 'https://eve0415.net' }],
+  }),
 });

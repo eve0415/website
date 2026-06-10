@@ -157,4 +157,12 @@ const ProjectsPage: FC = () => {
 
 export const Route = createFileRoute('/projects/')({
   component: ProjectsPage,
+  head: () => ({
+    meta: [
+      { title: '実績とプロジェクト | eve0415' },
+      { property: 'og:title', content: '実績とプロジェクト | eve0415' },
+      { property: 'og:url', content: 'https://eve0415.net/projects' },
+    ],
+    links: [{ rel: 'canonical', href: 'https://eve0415.net/projects' }],
+  }),
 });

@@ -210,4 +210,12 @@ const SkillsPage: FC = () => {
 export const Route = createFileRoute('/skills/')({
   component: SkillsPage,
   loader: async () => loadAISkillsState(),
+  head: () => ({
+    meta: [
+      { title: '技術スタック | eve0415' },
+      { property: 'og:title', content: '技術スタック | eve0415' },
+      { property: 'og:url', content: 'https://eve0415.net/skills' },
+    ],
+    links: [{ rel: 'canonical', href: 'https://eve0415.net/skills' }],
+  }),
 });
