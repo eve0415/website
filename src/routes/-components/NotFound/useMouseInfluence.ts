@@ -121,31 +121,3 @@ export const useMouseInfluence = (options: UseMouseInfluenceOptions): MouseInflu
     [mouseState, multipliers],
   );
 };
-
-// Utility functions for physics calculations
-export const distance = (a: Vec2, b: Vec2): number => {
-  const dx = b.x - a.x;
-  const dy = b.y - a.y;
-  return Math.hypot(dx, dy);
-};
-
-export const normalize = (v: Vec2): Vec2 => {
-  const mag = Math.hypot(v.x, v.y);
-  if (mag === 0) return { x: 0, y: 0 };
-  return { x: v.x / mag, y: v.y / mag };
-};
-
-export const subtract = (a: Vec2, b: Vec2): Vec2 => ({
-  x: a.x - b.x,
-  y: a.y - b.y,
-});
-
-export const add = (a: Vec2, b: Vec2): Vec2 => ({
-  x: a.x + b.x,
-  y: a.y + b.y,
-});
-
-export const scale = (v: Vec2, s: number): Vec2 => ({
-  x: v.x * s,
-  y: v.y * s,
-});

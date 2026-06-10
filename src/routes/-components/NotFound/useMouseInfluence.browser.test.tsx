@@ -5,7 +5,7 @@ import { describe, expect, test } from 'vite-plus/test';
 import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
 
-import { add, distance, normalize, scale, subtract, useMouseInfluence } from './useMouseInfluence';
+import { useMouseInfluence } from './useMouseInfluence';
 
 interface TestComponentProps {
   phase: Phase;
@@ -112,103 +112,6 @@ describe('useMouseInfluence', () => {
 
       await expect.element(page.getByTestId('velocity-x')).toHaveTextContent('0.00');
       await expect.element(page.getByTestId('velocity-y')).toHaveTextContent('0.00');
-    });
-  });
-});
-
-describe('utility functions', () => {
-  describe('distance', () => {
-    test('calculates Euclidean distance correctly', () => {
-      // 3-4-5 triangle
-      expect(distance({ x: 0, y: 0 }, { x: 3, y: 4 })).toBe(5);
-    });
-
-    test('returns 0 for same point', () => {
-      expect(distance({ x: 5, y: 5 }, { x: 5, y: 5 })).toBe(0);
-    });
-
-    test('is symmetric', () => {
-      const a = { x: 1, y: 2 };
-      const b = { x: 4, y: 6 };
-      expect(distance(a, b)).toBe(distance(b, a));
-    });
-  });
-
-  describe('normalize', () => {
-    test('handles zero vector', () => {
-      const result = normalize({ x: 0, y: 0 });
-      expect(result).toStrictEqual({ x: 0, y: 0 });
-    });
-
-    test('returns unit vector for non-zero input', () => {
-      const result = normalize({ x: 3, y: 4 });
-      expect(result.x).toBeCloseTo(0.6);
-      expect(result.y).toBeCloseTo(0.8);
-    });
-
-    test('result has magnitude 1', () => {
-      const result = normalize({ x: 10, y: 20 });
-      const magnitude = Math.hypot(result.x, result.y);
-      expect(magnitude).toBeCloseTo(1);
-    });
-
-    test('preserves direction', () => {
-      const original = { x: -5, y: 10 };
-      const result = normalize(original);
-      // Signs should match
-      expect(Math.sign(result.x)).toBe(Math.sign(original.x));
-      expect(Math.sign(result.y)).toBe(Math.sign(original.y));
-    });
-  });
-
-  describe('add', () => {
-    test('combines vectors correctly', () => {
-      expect(add({ x: 1, y: 2 }, { x: 3, y: 4 })).toStrictEqual({ x: 4, y: 6 });
-    });
-
-    test('handles negative values', () => {
-      expect(add({ x: 5, y: -3 }, { x: -2, y: 7 })).toStrictEqual({ x: 3, y: 4 });
-    });
-
-    test('identity with zero vector', () => {
-      expect(add({ x: 5, y: 10 }, { x: 0, y: 0 })).toStrictEqual({ x: 5, y: 10 });
-    });
-  });
-
-  describe('subtract', () => {
-    test('calculates difference correctly', () => {
-      expect(subtract({ x: 5, y: 7 }, { x: 2, y: 3 })).toStrictEqual({ x: 3, y: 4 });
-    });
-
-    test('handles negative results', () => {
-      expect(subtract({ x: 1, y: 1 }, { x: 3, y: 5 })).toStrictEqual({ x: -2, y: -4 });
-    });
-
-    test('subtracting from self yields zero', () => {
-      const v = { x: 42, y: 17 };
-      expect(subtract(v, v)).toStrictEqual({ x: 0, y: 0 });
-    });
-  });
-
-  describe('scale', () => {
-    test('multiplies vector by scalar', () => {
-      expect(scale({ x: 2, y: 3 }, 2)).toStrictEqual({ x: 4, y: 6 });
-    });
-
-    test('handles zero scalar', () => {
-      expect(scale({ x: 100, y: 200 }, 0)).toStrictEqual({ x: 0, y: 0 });
-    });
-
-    test('handles negative scalar', () => {
-      expect(scale({ x: 3, y: -4 }, -2)).toStrictEqual({ x: -6, y: 8 });
-    });
-
-    test('identity with scalar 1', () => {
-      expect(scale({ x: 7, y: 11 }, 1)).toStrictEqual({ x: 7, y: 11 });
-    });
-
-    test('handles fractional scalars', () => {
-      expect(scale({ x: 10, y: 20 }, 0.5)).toStrictEqual({ x: 5, y: 10 });
     });
   });
 });
