@@ -1,128 +1,83 @@
-import type { FC } from 'react';
+import type { MousePosition } from './useMousePosition';
+import type { FC, RefObject } from 'react';
 
+import { useEffect } from 'react';
 import { describe, expect, test } from 'vite-plus/test';
-import { page } from 'vite-plus/test/browser';
 import { render } from 'vitest-browser-react';
 
 import { useMousePosition } from './useMousePosition';
 
+// The hook stores position in a ref (no re-render on mousemove). Capture the
+// ref and assert on its .current directly - clicking the DOM to force a render
+// would dispatch its own pointer events and clobber the synthetic mousemove.
+let captured: RefObject<MousePosition> | null = null;
+
 const TestComponent: FC = () => {
-  const position = useMousePosition();
-  return (
-    <div>
-      <div data-testid='x'>{position.x}</div>
-      <div data-testid='y'>{position.y}</div>
-      <div data-testid='normalized-x'>{position.normalizedX.toFixed(2)}</div>
-      <div data-testid='normalized-y'>{position.normalizedY.toFixed(2)}</div>
-    </div>
-  );
+  const ref = useMousePosition();
+  useEffect(() => {
+    captured = ref;
+  }, [ref]);
+  return null;
+};
+
+const move = (clientX: number, clientY: number) => {
+  globalThis.dispatchEvent(new MouseEvent('mousemove', { clientX, clientY }));
 };
 
 describe('useMousePosition', () => {
   test('initial state is centered', async () => {
     await render(<TestComponent />);
 
-    await expect.element(page.getByTestId('x')).toHaveTextContent('0');
-    await expect.element(page.getByTestId('y')).toHaveTextContent('0');
-    await expect.element(page.getByTestId('normalized-x')).toHaveTextContent('0.50');
-    await expect.element(page.getByTestId('normalized-y')).toHaveTextContent('0.50');
+    expect(captured?.current).toStrictEqual({ x: 0, y: 0, normalizedX: 0.5, normalizedY: 0.5 });
   });
 
   test('updates position on mousemove', async () => {
     await render(<TestComponent />);
 
-    // Simulate mouse move
-    const event = new MouseEvent('mousemove', {
-      clientX: 100,
-      clientY: 200,
-    });
-    globalThis.dispatchEvent(event);
+    move(100, 200);
 
-    await expect.element(page.getByTestId('x')).toHaveTextContent('100');
-    await expect.element(page.getByTestId('y')).toHaveTextContent('200');
+    await expect.poll(() => captured?.current.x).toBe(100);
+    expect(captured?.current.y).toBe(200);
   });
 
   test('calculates normalized values correctly', async () => {
     await render(<TestComponent />);
 
-    // Get window dimensions
     const width = window.innerWidth;
     const height = window.innerHeight;
 
-    // Move to top-left
-    globalThis.dispatchEvent(
-      new MouseEvent('mousemove', {
-        clientX: 0,
-        clientY: 0,
-      }),
-    );
+    move(0, 0);
+    await expect.poll(() => captured?.current.normalizedX).toBe(0);
+    expect(captured?.current.normalizedY).toBe(0);
 
-    await expect.element(page.getByTestId('normalized-x')).toHaveTextContent('0.00');
-    await expect.element(page.getByTestId('normalized-y')).toHaveTextContent('0.00');
+    move(width / 2, height / 2);
+    await expect.poll(() => captured?.current.normalizedX).toBeCloseTo(0.5, 2);
+    expect(captured?.current.normalizedY).toBeCloseTo(0.5, 2);
 
-    // Move to center
-    globalThis.dispatchEvent(
-      new MouseEvent('mousemove', {
-        clientX: width / 2,
-        clientY: height / 2,
-      }),
-    );
-
-    await expect.element(page.getByTestId('normalized-x')).toHaveTextContent('0.50');
-    await expect.element(page.getByTestId('normalized-y')).toHaveTextContent('0.50');
-
-    // Move to bottom-right
-    globalThis.dispatchEvent(
-      new MouseEvent('mousemove', {
-        clientX: width,
-        clientY: height,
-      }),
-    );
-
-    await expect.element(page.getByTestId('normalized-x')).toHaveTextContent('1.00');
-    await expect.element(page.getByTestId('normalized-y')).toHaveTextContent('1.00');
+    move(width, height);
+    await expect.poll(() => captured?.current.normalizedX).toBe(1);
+    expect(captured?.current.normalizedY).toBe(1);
   });
 
   test('updates on multiple mouse moves', async () => {
     await render(<TestComponent />);
 
-    // First move
-    globalThis.dispatchEvent(
-      new MouseEvent('mousemove', {
-        clientX: 100,
-        clientY: 100,
-      }),
-    );
+    move(100, 100);
+    await expect.poll(() => captured?.current.x).toBe(100);
 
-    await expect.element(page.getByTestId('x')).toHaveTextContent('100');
-
-    // Second move
-    globalThis.dispatchEvent(
-      new MouseEvent('mousemove', {
-        clientX: 250,
-        clientY: 350,
-      }),
-    );
-
-    await expect.element(page.getByTestId('x')).toHaveTextContent('250');
-    await expect.element(page.getByTestId('y')).toHaveTextContent('350');
+    move(250, 350);
+    await expect.poll(() => captured?.current.x).toBe(250);
+    expect(captured?.current.y).toBe(350);
   });
 
   test('cleans up event listener on unmount', async () => {
-    const screen = await page.render(<TestComponent />);
-
+    const screen = await render(<TestComponent />);
+    const ref = captured;
     await screen.unmount();
 
-    // After unmount, listener should be removed
-    // This is a behavioral test - we verify no errors occur
-    globalThis.dispatchEvent(
-      new MouseEvent('mousemove', {
-        clientX: 999,
-        clientY: 999,
-      }),
-    );
+    // After unmount the listener is gone, so the ref no longer tracks moves
+    move(999, 999);
 
-    // If cleanup didn't work, this would cause issues in subsequent tests
-    expect(true).toBeTruthy();
+    expect(ref?.current.x).not.toBe(999);
   });
 });
