@@ -26,7 +26,7 @@ import {
   fetchUserRepos,
   isPRAuthoredByUser,
 } from './-utils/github-graphql';
-import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
+import { classifyRepo, getRepoDisplayName, sanitizeForAI } from './-utils/privacy-filter';
 import { WORKFLOW_STATE_KV_KEY, WORKFLOW_STATE_KV_TTL_SECONDS, mapWorkflowStateRow } from './-utils/workflow-state';
 
 // KV keys
@@ -111,7 +111,9 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
 
         const result = await step.do(`sync_commits_${repo.githubId}`, async () => {
           const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-          await this.updateState(db, 'fetching-commits', 10 + Math.floor((i / repoList.length) * 25), repo.fullName, repoList.length, i);
+          // Never write the raw name of a private/hidden-org repo into
+          // workflow_state - it is served verbatim to the public /skills page
+          await this.updateState(db, 'fetching-commits', 10 + Math.floor((i / repoList.length) * 25), getRepoDisplayName(repo), repoList.length, i);
           return await this.syncCommits(db, repo, syncState);
         });
 
@@ -128,7 +130,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
 
         const result = await step.do(`sync_prs_${repo.githubId}`, async () => {
           const db = drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
-          await this.updateState(db, 'fetching-prs', 35 + Math.floor((i / repoList.length) * 20), repo.fullName);
+          await this.updateState(db, 'fetching-prs', 35 + Math.floor((i / repoList.length) * 20), getRepoDisplayName(repo));
           return await this.syncPRsAndReviews(db, repo, syncState);
         });
 
