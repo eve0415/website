@@ -14,14 +14,12 @@ const TestComponent: FC<TestProps> = () => {
   const {
     state,
     lines,
-    currentInput,
     awaitingConfirmation,
     contentVisible,
     bootCommandVisible,
     interruptedText,
     onTypingDone,
     onCtrlC,
-    setInput,
     executeCommand,
     clear,
     awaitConfirmation,
@@ -35,7 +33,6 @@ const TestComponent: FC<TestProps> = () => {
       <div data-testid='state'>{state}</div>
       <div data-testid='lines'>{JSON.stringify(lines.map(l => ({ type: l.type, content: l.content })))}</div>
       <div data-testid='lines-count'>{lines.length}</div>
-      <div data-testid='current-input'>{currentInput}</div>
       <div data-testid='awaiting-confirmation'>{awaitingConfirmation ?? ''}</div>
       <div data-testid='content-visible'>{contentVisible.toString()}</div>
       <div data-testid='boot-command-visible'>{bootCommandVisible.toString()}</div>
@@ -61,24 +58,6 @@ const TestComponent: FC<TestProps> = () => {
         }}
       >
         Ctrl+C With Text
-      </button>
-      <button
-        data-testid='set-input-btn'
-        type='button'
-        onClick={() => {
-          setInput('test input');
-        }}
-      >
-        Set Input
-      </button>
-      <button
-        data-testid='clear-input-btn'
-        type='button'
-        onClick={() => {
-          setInput('');
-        }}
-      >
-        Clear Input
       </button>
       <button
         data-testid='execute-cmd-btn'
@@ -167,12 +146,6 @@ describe('useTerminal', () => {
       await expect.element(page.getByTestId('lines-count')).toHaveTextContent('0');
     });
 
-    test('starts with empty input', async () => {
-      await render(<TestComponent />);
-
-      await expect.element(page.getByTestId('current-input')).toHaveTextContent('');
-    });
-
     test('starts with no awaiting confirmation', async () => {
       await render(<TestComponent />);
 
@@ -221,25 +194,6 @@ describe('useTerminal', () => {
     });
 
     describe('from prompt state', () => {
-      test('ctrl+C in prompt clears current input', async () => {
-        await render(<TestComponent />);
-
-        // Get to prompt state
-        await page.getByTestId('typing-done-btn').click();
-        await page.getByTestId('ctrl-c-btn').click();
-
-        // Set some input
-        await page.getByTestId('set-input-btn').click();
-        await expect.element(page.getByTestId('current-input')).toHaveTextContent('test input');
-
-        // Ctrl+C should clear it
-        await page.getByTestId('ctrl-c-btn').click();
-
-        await expect.element(page.getByTestId('current-input')).toHaveTextContent('');
-        // State should remain prompt
-        await expect.element(page.getByTestId('state')).toHaveTextContent('prompt');
-      });
-
       test('ctrl+C in prompt clears awaitingConfirmation', async () => {
         await render(<TestComponent />);
 
@@ -274,25 +228,6 @@ describe('useTerminal', () => {
     });
   });
 
-  describe('setInput action', () => {
-    test('updates currentInput', async () => {
-      await render(<TestComponent />);
-
-      await page.getByTestId('set-input-btn').click();
-
-      await expect.element(page.getByTestId('current-input')).toHaveTextContent('test input');
-    });
-
-    test('can clear input', async () => {
-      await render(<TestComponent />);
-
-      await page.getByTestId('set-input-btn').click();
-      await page.getByTestId('clear-input-btn').click();
-
-      await expect.element(page.getByTestId('current-input')).toHaveTextContent('');
-    });
-  });
-
   describe('executeCommand action', () => {
     test('adds command line with > prefix', async () => {
       await render(<TestComponent />);
@@ -316,17 +251,6 @@ describe('useTerminal', () => {
       await page.getByTestId('execute-cmd-btn').click();
 
       await expect.element(page.getByTestId('lines-count')).toHaveTextContent('2');
-    });
-
-    test('clears currentInput', async () => {
-      await render(<TestComponent />);
-
-      await page.getByTestId('set-input-btn').click();
-      await expect.element(page.getByTestId('current-input')).toHaveTextContent('test input');
-
-      await page.getByTestId('execute-cmd-btn').click();
-
-      await expect.element(page.getByTestId('current-input')).toHaveTextContent('');
     });
 
     test('clears awaitingConfirmation', async () => {
@@ -363,16 +287,6 @@ describe('useTerminal', () => {
       await page.getByTestId('clear-btn').click();
 
       await expect.element(page.getByTestId('lines-count')).toHaveTextContent('0');
-    });
-
-    test('clears currentInput', async () => {
-      await render(<TestComponent />);
-
-      await page.getByTestId('set-input-btn').click();
-
-      await page.getByTestId('clear-btn').click();
-
-      await expect.element(page.getByTestId('current-input')).toHaveTextContent('');
     });
 
     test('clears awaitingConfirmation', async () => {
