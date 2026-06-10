@@ -12,22 +12,18 @@ interface TestProps {
   commands: string[];
   onSubmit?: (input: string) => void;
   onCtrlC?: () => void;
-  onInputChange?: (input: string) => void;
 }
 
-const TestComponent: FC<TestProps> = ({ enabled, commands, onSubmit = () => {}, onCtrlC = () => {}, onInputChange }) => {
+const TestComponent: FC<TestProps> = ({ enabled, commands, onSubmit = () => {}, onCtrlC = () => {} }) => {
   // Memoize commands to prevent unnecessary re-creations of handleTab callback
   const memoizedCommands = useMemo(() => commands, [commands]);
 
-  // Build options object with only defined values
-  const options = {
+  const { input, cursorPosition, suggestions } = useKeyboardCapture({
     enabled,
     commands: memoizedCommands,
     onSubmit,
     onCtrlC,
-    ...(onInputChange !== undefined && { onInputChange }),
-  };
-  const { input, cursorPosition, suggestions, clearInput, setInput } = useKeyboardCapture(options);
+  });
 
   return (
     <div>
@@ -37,18 +33,6 @@ const TestComponent: FC<TestProps> = ({ enabled, commands, onSubmit = () => {}, 
         {input.slice(0, cursorPosition)}|{input.slice(cursorPosition)}
       </div>
       <div data-testid='suggestions'>{JSON.stringify(suggestions)}</div>
-      <button data-testid='clear-btn' type='button' onClick={clearInput}>
-        Clear
-      </button>
-      <button
-        data-testid='set-btn'
-        type='button'
-        onClick={() => {
-          setInput('preset');
-        }}
-      >
-        Set
-      </button>
     </div>
   );
 };
@@ -445,89 +429,6 @@ describe('useKeyboardCapture', () => {
     });
   });
 
-  describe('clearInput function', () => {
-    test('clears input when called', async () => {
-      await render(<TestComponent enabled commands={[]} />);
-
-      await userEvent.keyboard('test');
-      await page.getByTestId('clear-btn').click();
-
-      await expect.element(page.getByTestId('input')).toHaveTextContent('');
-    });
-
-    test('clears suggestions when called', async () => {
-      await render(<TestComponent enabled commands={['help', 'hello']} />);
-
-      await userEvent.keyboard('hel');
-      await userEvent.keyboard('{Tab}');
-      await userEvent.keyboard('{Tab}');
-
-      // Suggestions visible
-      await expect.element(page.getByTestId('suggestions')).not.toHaveTextContent('[]');
-
-      await page.getByTestId('clear-btn').click();
-
-      await expect.element(page.getByTestId('suggestions')).toHaveTextContent('[]');
-    });
-  });
-
-  describe('setInput function', () => {
-    test('sets input directly', async () => {
-      await render(<TestComponent enabled commands={[]} />);
-
-      await page.getByTestId('set-btn').click();
-
-      await expect.element(page.getByTestId('input')).toHaveTextContent('preset');
-    });
-
-    test('resets tab state', async () => {
-      await render(<TestComponent enabled commands={['help', 'hello']} />);
-
-      await userEvent.keyboard('hel');
-      await userEvent.keyboard('{Tab}');
-      await userEvent.keyboard('{Tab}');
-
-      await expect.element(page.getByTestId('suggestions')).not.toHaveTextContent('[]');
-
-      await page.getByTestId('set-btn').click();
-
-      await expect.element(page.getByTestId('suggestions')).toHaveTextContent('[]');
-    });
-  });
-
-  describe('onInputChange callback', () => {
-    test('calls onInputChange on character input', async () => {
-      const onInputChange = vi.fn();
-      await render(<TestComponent enabled commands={[]} onInputChange={onInputChange} />);
-
-      await userEvent.keyboard('a');
-
-      expect(onInputChange).toHaveBeenCalledWith('a');
-    });
-
-    test('calls onInputChange on backspace', async () => {
-      const onInputChange = vi.fn();
-      await render(<TestComponent enabled commands={[]} onInputChange={onInputChange} />);
-
-      await userEvent.keyboard('ab');
-      onInputChange.mockClear();
-      await userEvent.keyboard('{Backspace}');
-
-      expect(onInputChange).toHaveBeenCalledWith('a');
-    });
-
-    test('calls onInputChange on tab completion', async () => {
-      const onInputChange = vi.fn();
-      await render(<TestComponent enabled commands={['help']} onInputChange={onInputChange} />);
-
-      await userEvent.keyboard('hel');
-      onInputChange.mockClear();
-      await userEvent.keyboard('{Tab}');
-
-      expect(onInputChange).toHaveBeenCalledWith('help');
-    });
-  });
-
   describe('cursor position', () => {
     describe('initial state', () => {
       test('cursor starts at position 0', async () => {
@@ -686,28 +587,6 @@ describe('useKeyboardCapture', () => {
 
         await expect.element(page.getByTestId('input')).toHaveTextContent('help');
         await expect.element(page.getByTestId('cursor-position')).toHaveTextContent('4');
-      });
-    });
-
-    describe('setInput with cursor', () => {
-      test('moves cursor to end after setInput', async () => {
-        await render(<TestComponent enabled commands={[]} />);
-
-        await page.getByTestId('set-btn').click();
-
-        await expect.element(page.getByTestId('input')).toHaveTextContent('preset');
-        await expect.element(page.getByTestId('cursor-position')).toHaveTextContent('6');
-      });
-    });
-
-    describe('clearInput with cursor', () => {
-      test('resets cursor to 0 after clear', async () => {
-        await render(<TestComponent enabled commands={[]} />);
-
-        await userEvent.keyboard('hello');
-        await page.getByTestId('clear-btn').click();
-
-        await expect.element(page.getByTestId('cursor-position')).toHaveTextContent('0');
       });
     });
   });

@@ -9,8 +9,6 @@ interface UseKeyboardCaptureOptions {
   onSubmit: (input: string) => void;
   /** Callback when Ctrl+C is pressed */
   onCtrlC: () => void;
-  /** Callback when input changes */
-  onInputChange?: (input: string) => void;
 }
 
 interface UseKeyboardCaptureResult {
@@ -20,10 +18,6 @@ interface UseKeyboardCaptureResult {
   cursorPosition: number;
   /** Autocomplete suggestions to display */
   suggestions: string[];
-  /** Clear the input */
-  clearInput: () => void;
-  /** Set input directly */
-  setInput: (value: string) => void;
 }
 
 // State managed by reducer
@@ -46,9 +40,7 @@ type KeyboardAction =
   | { type: 'HISTORY_DOWN' }
   | { type: 'TAB_COMPLETE'; result: string; suggestions: string[] }
   | { type: 'SUBMIT' }
-  | { type: 'CANCEL' }
-  | { type: 'CLEAR' }
-  | { type: 'SET_INPUT'; value: string };
+  | { type: 'CANCEL' };
 
 const initialState: KeyboardState = {
   input: '',
@@ -204,23 +196,11 @@ const keyboardReducer = (state: KeyboardState, action: KeyboardAction): Keyboard
       };
     }
 
-    case 'CANCEL':
-    case 'CLEAR': {
+    case 'CANCEL': {
       return {
         ...state,
         input: '',
         cursorPosition: 0,
-        suggestions: [],
-        historyIndex: -1,
-        wipInput: '',
-      };
-    }
-
-    case 'SET_INPUT': {
-      return {
-        ...state,
-        input: action.value,
-        cursorPosition: action.value.length,
         suggestions: [],
         historyIndex: -1,
         wipInput: '',
@@ -239,7 +219,7 @@ const keyboardReducer = (state: KeyboardState, action: KeyboardAction): Keyboard
  * Uses useReducer for state management - cleaner than multiple useState + ref syncing.
  */
 export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeyboardCaptureResult => {
-  const { enabled, commands, onSubmit, onCtrlC, onInputChange } = options;
+  const { enabled, commands, onSubmit, onCtrlC } = options;
 
   const [state, dispatch] = useReducer(keyboardReducer, initialState);
 
@@ -247,14 +227,12 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
   const commandsRef = useRef(commands);
   const onSubmitRef = useRef(onSubmit);
   const onCtrlCRef = useRef(onCtrlC);
-  const onInputChangeRef = useRef(onInputChange);
 
   // Sync callback refs
   useEffect(() => {
     commandsRef.current = commands;
     onSubmitRef.current = onSubmit;
     onCtrlCRef.current = onCtrlC;
-    onInputChangeRef.current = onInputChange;
   });
 
   // Tab completion state (not in reducer - caching for double-invocation protection)
@@ -306,17 +284,6 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
     return cacheAndReturn(currentInput, matches);
   }, []);
 
-  // Stable callbacks for external use
-  const setInput = useCallback((value: string) => {
-    dispatch({ type: 'SET_INPUT', value });
-    onInputChangeRef.current?.(value);
-  }, []);
-
-  const clearInput = useCallback(() => {
-    dispatch({ type: 'CLEAR' });
-    onInputChangeRef.current?.('');
-  }, []);
-
   // Single event listener effect - only depends on `enabled`
   useEffect(() => {
     if (!enabled) return;
@@ -330,7 +297,6 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         e.preventDefault();
         dispatch({ type: 'CANCEL' });
         onCtrlCRef.current();
-        onInputChangeRef.current?.('');
         tabPressCount.current = 0;
         return;
       }
@@ -341,7 +307,6 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         const tabId = ++pendingTabId.current;
         const { result, suggestions } = handleTab(state.input, tabId);
         dispatch({ type: 'TAB_COMPLETE', result, suggestions });
-        onInputChangeRef.current?.(result);
         return;
       }
 
@@ -352,7 +317,6 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
         if (trimmed) onSubmitRef.current(trimmed);
 
         dispatch({ type: 'SUBMIT' });
-        onInputChangeRef.current?.('');
         tabPressCount.current = 0;
         return;
       }
@@ -361,9 +325,7 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       if (e.key === 'Backspace') {
         e.preventDefault();
         if (state.cursorPosition > 0) {
-          const newInput = state.input.slice(0, state.cursorPosition - 1) + state.input.slice(state.cursorPosition);
           dispatch({ type: 'BACKSPACE' });
-          onInputChangeRef.current?.(newInput);
           tabPressCount.current = 0;
         }
         return;
@@ -373,9 +335,7 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       if (e.key === 'Delete') {
         e.preventDefault();
         if (state.cursorPosition < state.input.length) {
-          const newInput = state.input.slice(0, state.cursorPosition) + state.input.slice(state.cursorPosition + 1);
           dispatch({ type: 'DELETE' });
-          onInputChangeRef.current?.(newInput);
           tabPressCount.current = 0;
         }
         return;
@@ -412,18 +372,9 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       // Arrow up - history older
       if (e.key === 'ArrowUp') {
         e.preventDefault();
-        // Need to get history entry for onInputChange callback
-        const hist = state.history;
-        const idx = state.historyIndex;
-        if (hist.length === 0) return;
-
-        let newInput: string | undefined;
-        if (idx === -1) newInput = hist.at(-1);
-        else if (idx > 0) newInput = hist[idx - 1];
+        if (state.history.length === 0) return;
 
         dispatch({ type: 'HISTORY_UP' });
-        if (newInput !== undefined) onInputChangeRef.current?.(newInput);
-
         tabPressCount.current = 0;
         return;
       }
@@ -431,15 +382,9 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       // Arrow down - history newer
       if (e.key === 'ArrowDown') {
         e.preventDefault();
-        const idx = state.historyIndex;
-        if (idx === -1) return;
-
-        let newInput: string;
-        if (idx < state.history.length - 1) newInput = state.history[idx + 1] ?? '';
-        else newInput = state.wipInput;
+        if (state.historyIndex === -1) return;
 
         dispatch({ type: 'HISTORY_DOWN' });
-        onInputChangeRef.current?.(newInput);
         tabPressCount.current = 0;
         return;
       }
@@ -447,9 +392,7 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
       // Regular character input
       if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
         e.preventDefault();
-        const newInput = state.input.slice(0, state.cursorPosition) + e.key + state.input.slice(state.cursorPosition);
         dispatch({ type: 'TYPE_CHAR', char: e.key });
-        onInputChangeRef.current?.(newInput);
         tabPressCount.current = 0;
       }
     };
@@ -464,8 +407,6 @@ export const useKeyboardCapture = (options: UseKeyboardCaptureOptions): UseKeybo
     input: state.input,
     cursorPosition: state.cursorPosition,
     suggestions: state.suggestions,
-    clearInput,
-    setInput,
   };
 };
 
