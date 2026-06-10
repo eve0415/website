@@ -88,12 +88,24 @@ describe('notFound', () => {
 
       await render(<harness.TestRouterProvider />);
 
-      // Use exact match to find the link text specifically (not the sr-only content)
-      const link = page.getByText('ホームに戻る', { exact: true });
-      await expect.element(link).toBeInTheDocument();
+      // Both the always-on sr-only link and the visible aftermath link share
+      // the accessible name "ホームに戻る" - every one must point home
+      const homeLinks = page.getByRole('link', { name: 'ホームに戻る' });
+      await expect.element(homeLinks.first()).toBeInTheDocument();
 
-      const href = link.element()?.closest('a')?.getAttribute('href');
-      expect(href).toBe('/');
+      const hrefs = homeLinks.elements().map(el => el.closest('a')?.getAttribute('href'));
+      expect(hrefs.length).toBeGreaterThanOrEqual(2);
+      for (const href of hrefs) expect(href).toBe('/');
+    });
+
+    test('exposes an sr-only home link immediately, independent of animation', async () => {
+      // Default mock: reduced motion OFF, so the visible aftermath link is NOT
+      // rendered yet - only the always-on sr-only link should be present
+      await render(<harness.TestRouterProvider />);
+
+      const homeLink = page.getByRole('link', { name: 'ホームに戻る' });
+      await expect.element(homeLink).toBeInTheDocument();
+      expect(homeLink.element().closest('a')?.getAttribute('href')).toBe('/');
     });
 
     test('shows Japanese message with reduced motion', async () => {
