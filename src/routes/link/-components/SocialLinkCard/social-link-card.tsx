@@ -81,6 +81,7 @@ const SocialLinkCard: FC<SocialLinkCardProps> = ({ link, index }) => {
 
   if (link.copyAction === true) {
     return (
+      // oxlint-disable-next-line typescript/no-misused-promises -- Event handler, Promise is intentionally not awaited
       <button type='button' onClick={handleCopyClick} className={`${cardClasses} cursor-pointer text-left`}>
         {content}
       </button>
