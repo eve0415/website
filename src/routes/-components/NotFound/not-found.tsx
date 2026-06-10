@@ -40,7 +40,7 @@ const NotFound: FC = () => {
   });
 
   return (
-    <main role='main' aria-label='ページが見つかりません' className='bg-background relative min-h-screen overflow-hidden'>
+    <main aria-label='ページが見つかりません' className='bg-background relative min-h-screen overflow-hidden'>
       {/* Screen reader content */}
       <div className='sr-only'>ページが見つかりません。ホームに戻るにはページ下部のリンクをクリックしてください。</div>
 
