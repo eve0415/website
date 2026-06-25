@@ -1,5 +1,5 @@
 // Shim for @vitest/browser/context
-// In vite-plus-test, the `server` object is dynamically injected by the browser
+// In vitest, the `server` object is dynamically injected by the browser
 // provider at runtime. This shim provides a compatible interface for storybook's
 // prebundled code which imports `{ server }` statically.
 //

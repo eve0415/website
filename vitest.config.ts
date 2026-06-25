@@ -9,11 +9,11 @@ import { defineConfig } from 'vite-plus';
 import { playwright } from 'vite-plus/test/browser-playwright';
 
 const require = createRequire(import.meta.url);
-const vitestDir = path.dirname(require.resolve('vitest'));
-const vitestBrowserContextPath = path.join(vitestDir, 'dist/@vitest/browser/context.js');
+const vitestRequire = createRequire(path.join(path.dirname(require.resolve('vitest')), 'package.json'));
+const vitestBrowserContextPath = vitestRequire.resolve('@vitest/browser/context');
 
 // Plugin to shim @vitest/browser/context for storybook compatibility.
-// In vite-plus-test, @vitest/browser is bundled inside vitest and the `server`
+// In vitest, @vitest/browser is bundled inside vitest and the `server`
 // export is injected at runtime by the browser provider. Storybook's prebundled
 // code imports { server, page } from "@vitest/browser/context" which needs both
 // the runtime-provided context AND the server stub.
