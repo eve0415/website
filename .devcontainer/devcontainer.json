@@ -1,13 +1,11 @@
 {
   "name": "eve0415 website devcontainer",
-  "build": {
-    "dockerfile": "Dockerfile"
-  },
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:4.0.10-24-trixie",
   "features": {
     "ghcr.io/devcontainers/features/github-cli:1": {}
   },
   "postCreateCommand": "git config --local core.ignorecase false",
-  "postStartCommand": "npm install -g @openai/codex @google/gemini-cli && vp install --frozen-lockfile && vp run generate && vp exec playwright install --with-deps",
+  "postStartCommand": "npm install -g @openai/codex @google/gemini-cli && pnpm install --frozen-lockfile && pnpm generate && pnpm playwright install --with-deps",
   "containerEnv": {
     "TZ": "Asia/Tokyo"
   },
@@ -19,7 +17,8 @@
   "customizations": {
     "vscode": {
       "extensions": [
-        "VoidZero.vite-plus-extension-pack",
+        "oxc.oxc-vscode",
+        "vitest.explorer",
         "redhat.vscode-yaml",
         "tamasfe.even-better-toml",
         "ms-azuretools.vscode-docker",
