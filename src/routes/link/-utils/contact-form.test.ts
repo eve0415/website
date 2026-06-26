@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:workers';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { buildContactEmail, checkAndIncrementRateLimit, sendContactEmail } from './contact-form';
 

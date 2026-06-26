@@ -1,4 +1,4 @@
-import { vi } from 'vite-plus/test';
+import { vi } from 'vitest';
 
 /**
  * Creates a properly typed MediaQueryList mock with all required properties.

@@ -1,7 +1,7 @@
 /* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
 import type { BootContext, BootMessage } from './boot-messages';
 
-import { describe, expect, it } from 'vite-plus/test';
+import { describe, expect, it } from 'vitest';
 
 import { BASE_BOOT_DURATION, BOOT_MESSAGES, PROGRESS_STAGES, flattenMessages, resolveMessageText } from './boot-messages';
 import { fastTiming, mockDOMScan } from './boot-sequence.fixtures';

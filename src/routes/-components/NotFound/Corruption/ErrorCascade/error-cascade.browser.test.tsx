@@ -1,6 +1,6 @@
 /* oxlint-disable typescript/no-non-null-assertion, vitest/no-conditional-in-test -- Test assertions verify existence; filtering empty animation delays requires conditional */
-import { describe, expect, test, vi } from 'vite-plus/test';
-import { page } from 'vite-plus/test/browser';
+import { describe, expect, test, vi } from 'vitest';
+import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import ErrorCascade from './error-cascade';

@@ -1,5 +1,5 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
-import { page, userEvent } from 'vite-plus/test/browser';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import AISkillPanel from './ai-skill-panel';

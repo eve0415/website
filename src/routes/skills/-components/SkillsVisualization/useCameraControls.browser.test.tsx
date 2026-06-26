@@ -1,7 +1,7 @@
 import type { FC } from 'react';
 
-import { describe, expect, test, vi } from 'vite-plus/test';
-import { page } from 'vite-plus/test/browser';
+import { describe, expect, test, vi } from 'vitest';
+import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { useCameraControls } from './useCameraControls';

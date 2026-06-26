@@ -3,7 +3,7 @@ import type { AIProfileSummary, AISkillsContent, WorkflowState } from '#workflow
 import type { drizzle } from 'drizzle-orm/d1';
 
 import { env } from 'cloudflare:workers';
-import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vite-plus/test';
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
 import { workflowState } from '#db/schema';
 

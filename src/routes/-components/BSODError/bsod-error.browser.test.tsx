@@ -1,8 +1,8 @@
 import { createRouterHarness } from '@tanstack-router-testing/react-router-testing';
 /* oxlint-disable vitest/no-conditional-in-test -- Vitest poll() callbacks require null-coalescing for safe DOM access */
 import { createRootRoute } from '@tanstack/react-router';
-import { describe, expect, test, vi } from 'vite-plus/test';
-import { page, userEvent } from 'vite-plus/test/browser';
+import { describe, expect, test, vi } from 'vitest';
+import { page, userEvent } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import { SudoRmRfError } from '#lib/sudo-rm-rf-error';

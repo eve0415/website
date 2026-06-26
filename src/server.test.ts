@@ -1,6 +1,6 @@
 import { createExecutionContext, createScheduledController, waitOnExecutionContext } from 'cloudflare:test';
 import { env } from 'cloudflare:workers';
-import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 const mockHandlerFetch = vi.hoisted(() => vi.fn());
 const mockRefreshGitHubStats = vi.hoisted(() => vi.fn<() => Promise<void>>());

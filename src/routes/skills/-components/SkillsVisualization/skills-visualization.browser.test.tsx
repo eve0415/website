@@ -1,7 +1,7 @@
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
-import { page } from 'vite-plus/test/browser';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
 
 import SkillsVisualization from './skills-visualization';
