@@ -1,4 +1,4 @@
-import { describe, expect, test, vi } from 'vite-plus/test';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import Background from './background';

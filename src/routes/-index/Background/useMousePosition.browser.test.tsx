@@ -2,7 +2,7 @@ import type { MousePosition } from './useMousePosition';
 import type { FC, RefObject } from 'react';
 
 import { useEffect } from 'react';
-import { describe, expect, test } from 'vite-plus/test';
+import { describe, expect, test } from 'vitest';
 import { render } from 'vitest-browser-react';
 
 import { useMousePosition } from './useMousePosition';

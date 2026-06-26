@@ -1,5 +1,5 @@
 import { env } from 'cloudflare:workers';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 
 import { buildContactEmail, checkAndIncrementRateLimit, sendContactEmail } from './contact-form';
 
@@ -131,7 +131,7 @@ describe('sendContactEmail', () => {
 
   beforeEach(() => {
     vi.clearAllMocks();
-    (env as Record<string, unknown>).CONTACT_EMAIL = { send: mockSend };
+    (env as unknown as Record<string, unknown>)['CONTACT_EMAIL'] = { send: mockSend };
   });
 
   test('sends to the site owner (MAIL_ADDRESS), not the submitter', async () => {

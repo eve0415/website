@@ -170,9 +170,10 @@ const SkillsPage: FC = () => {
             <p className='text-muted-foreground mt-2 text-sm'>
               システムプログラミングとパフォーマンス最適化のため学習中。 メモリ安全性と並行処理の理解を深めている。
             </p>
+            {/* oxlint-disable jsx-a11y/prefer-tag-over-role -- custom styled bar */}
             <div
-              className='bg-muted mt-4 h-1 w-full rounded-full'
               role='progressbar'
+              className='bg-muted mt-4 h-1 w-full rounded-full'
               aria-label='Rustの学習進捗'
               aria-valuenow={35}
               aria-valuemin={0}
@@ -180,15 +181,17 @@ const SkillsPage: FC = () => {
             >
               <div className='bg-orange duration-slow h-full rounded-full transition-all' style={{ width: '35%' }} />
             </div>
+            {/* oxlint-enable jsx-a11y/prefer-tag-over-role */}
           </div>
           <div className='group border-line bg-surface duration-normal hover:border-orange/30 rounded-lg border p-6 transition-all'>
             <h3 className='text-orange text-lg font-bold'>Go</h3>
             <p className='text-muted-foreground mt-2 text-sm'>
               マイクロサービスとインフラツーリングのため学習中。 シンプルで効率的なバックエンドサービスの構築を目指す。
             </p>
+            {/* oxlint-disable jsx-a11y/prefer-tag-over-role -- custom styled bar */}
             <div
-              className='bg-muted mt-4 h-1 w-full rounded-full'
               role='progressbar'
+              className='bg-muted mt-4 h-1 w-full rounded-full'
               aria-label='Goの学習進捗'
               aria-valuenow={25}
               aria-valuemin={0}
@@ -196,6 +199,7 @@ const SkillsPage: FC = () => {
             >
               <div className='bg-orange duration-slow h-full rounded-full transition-all' style={{ width: '25%' }} />
             </div>
+            {/* oxlint-enable jsx-a11y/prefer-tag-over-role */}
           </div>
         </div>
       </section>

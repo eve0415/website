@@ -383,6 +383,7 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
         className={`size-full ${hoveredNode ? 'cursor-pointer' : ''}`}
         onClick={handleCanvasClick}
         onMouseMove={handleMouseMove}
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- canvas is not an img
         role='img'
         aria-label='スキルの関係性を示すネットワーク図。各スキルは下のスキル一覧から選択できます。'
       />

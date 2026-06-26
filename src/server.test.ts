@@ -1,6 +1,6 @@
 import { createExecutionContext, createScheduledController, waitOnExecutionContext } from 'cloudflare:test';
 import { env } from 'cloudflare:workers';
-import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 const mockHandlerFetch = vi.hoisted(() => vi.fn());
 const mockRefreshGitHubStats = vi.hoisted(() => vi.fn<() => Promise<void>>());
@@ -53,7 +53,7 @@ describe('server', () => {
 
     test('weekly cron triggers the workflow but does not call refreshGitHubStats', async () => {
       mockRefreshGitHubStats.mockResolvedValue();
-      const createSpy = vi.spyOn(env.SKILLS_WORKFLOW, 'create').mockResolvedValue();
+      const createSpy = vi.spyOn(env.SKILLS_WORKFLOW, 'create').mockResolvedValue({} as unknown as WorkflowInstance);
 
       const ctrl = createScheduledController({ cron: '30 18 * * 6', scheduledTime: Date.now() });
       const ctx = createExecutionContext();

@@ -69,6 +69,7 @@ const AISkillPanel: FC<Props> = ({ skill, isExpanded, onClose }) => {
   return (
     <div
       ref={panelRef}
+      // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- custom positioned panel, not native dialog
       role='dialog'
       aria-modal='true'
       aria-label={skill.name}

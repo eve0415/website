@@ -1,6 +1,6 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vite-plus/test';
-import { page } from 'vite-plus/test/browser';
+import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { page } from 'vitest/browser';
 
 import AnimatedCounter from './animated-counter';
 

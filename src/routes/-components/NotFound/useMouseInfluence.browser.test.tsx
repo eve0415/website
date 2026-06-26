@@ -1,9 +1,9 @@
 import type { Phase } from './usePhaseController';
 import type { FC } from 'react';
 
-import { describe, expect, test } from 'vite-plus/test';
-import { page } from 'vite-plus/test/browser';
+import { describe, expect, test } from 'vitest';
 import { render } from 'vitest-browser-react';
+import { page } from 'vitest/browser';
 
 import { useMouseInfluence } from './useMouseInfluence';
 

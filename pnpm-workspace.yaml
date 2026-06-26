@@ -4,6 +4,3 @@ allowBuilds:
   msw: false
   sharp: false
   workerd: false
-
-overrides:
-  vite: npm:@voidzero-dev/vite-plus-core@0.2.1

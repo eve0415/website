@@ -10,17 +10,15 @@ Personal website (eve0415.net) built with TanStack Start, React 19, and deployed
 
 ## Commands
 
-This project uses the Vite+ toolchain (`vp`), not raw pnpm scripts.
-
 ```bash
-vp dev              # Start dev server with hot reload
-vp build            # Production build
-vp check            # Format + lint + type check (oxlint + oxfmt, auto-fixes enabled)
-vp test run         # Run all tests once
-vp test run <path>  # Run a specific test file/dir
-vp run generate     # Generate Worker types, GraphQL types, and D1 migrations
-vp run migrate      # Apply D1 migrations locally
-vp run storybook    # Start Storybook
+pnpm dev              # Start dev server
+pnpm build            # Production build
+pnpm lint             # oxlint + oxfmt (auto-fixes)
+pnpm test             # Run all tests
+pnpm vitest run <path>  # Run specific test
+pnpm generate         # Generate Worker types, GraphQL types, D1 migrations
+pnpm migrate          # Apply D1 migrations locally
+pnpm storybook        # Start Storybook
 ```
 
 ## Architecture
@@ -45,7 +43,7 @@ vp run storybook    # Start Storybook
 
 ## Requirements
 
-- Node.js 24.15.x (see `devEngines` in `package.json`)
+- Node.js 24.18.x (see `devEngines` in `package.json`)
 - pnpm 11.x package manager (see `packageManager` in `package.json`)
 
 ## Language Requirements

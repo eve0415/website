@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test, vi } from 'vite-plus/test';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 
 import { buildCspHeader, buildSecurityHeaders, generateNonce } from './security';
 
