@@ -284,6 +284,7 @@ const ContactForm: FC = () => {
 
       {/* Success message - role=status announces the insertion to screen readers */}
       {submitted && (
+        // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- live region, not form output
         <p role='status' data-testid='success-message' className='animate-fade-in-up text-neon text-center text-sm'>
           メッセージが送信されました。ありがとうございます!
         </p>

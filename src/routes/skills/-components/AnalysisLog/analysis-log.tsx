@@ -55,6 +55,7 @@ const AnalysisLog: FC<Props> = ({ state }) => {
       </div>
 
       {/* Current status */}
+      {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- live region, not form output */}
       <div className='h-16 overflow-hidden p-3' role='status'>
         <div className='flex flex-col gap-1'>
           {state.current_repo && isActive && (

@@ -314,6 +314,7 @@ const CodeRadar: FC<CodeRadarProps> = ({ contributionCalendar, onBootComplete })
       <div className='border-line bg-surface/50 relative aspect-square w-full rounded border'>
         <canvas
           ref={canvasRef}
+          // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- canvas is not an img
           role='img'
           aria-label={`Contribution radar: ${totalContributions.toLocaleString()} total contributions across 52 weeks`}
           className='h-full w-full'

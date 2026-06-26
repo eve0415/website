@@ -82,19 +82,22 @@ export type AISkillDraft = Pick<AISkill, 'name' | 'category' | 'level' | 'confid
 
 export const isAISkillDraft = (value: unknown): value is AISkillDraft =>
   isRecord(value) &&
-  typeof value.name === 'string' &&
-  (value.category === 'language' || value.category === 'infrastructure' || value.category === 'domain') &&
-  (value.level === 'expert' || value.level === 'proficient' || value.level === 'learning') &&
-  typeof value.confidence === 'number' &&
-  Array.isArray(value.evidence) &&
-  value.evidence.every(item => typeof item === 'string') &&
-  (value.trend === 'rising' || value.trend === 'stable' || value.trend === 'declining');
+  typeof value['name'] === 'string' &&
+  (value['category'] === 'language' || value['category'] === 'infrastructure' || value['category'] === 'domain') &&
+  (value['level'] === 'expert' || value['level'] === 'proficient' || value['level'] === 'learning') &&
+  typeof value['confidence'] === 'number' &&
+  Array.isArray(value['evidence']) &&
+  value['evidence'].every(item => typeof item === 'string') &&
+  (value['trend'] === 'rising' || value['trend'] === 'stable' || value['trend'] === 'declining');
 
 /** Shape the profile model must return */
 export type AIProfileDraft = Pick<AIProfileSummary, 'summary_ja' | 'activity_narrative_ja' | 'skill_comparison_ja'>;
 
 export const isAIProfileDraft = (value: unknown): value is AIProfileDraft =>
-  isRecord(value) && typeof value.summary_ja === 'string' && typeof value.activity_narrative_ja === 'string' && typeof value.skill_comparison_ja === 'string';
+  isRecord(value) &&
+  typeof value['summary_ja'] === 'string' &&
+  typeof value['activity_narrative_ja'] === 'string' &&
+  typeof value['skill_comparison_ja'] === 'string';
 
 /** GitHub repository from API */
 export interface GitHubRepo {

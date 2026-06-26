@@ -3,8 +3,8 @@ import type { FC } from 'react';
 
 import { useState } from 'react';
 import { describe, expect, test } from 'vitest';
-import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
+import { page } from 'vitest/browser';
 
 import { usePhaseController } from './usePhaseController';
 

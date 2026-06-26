@@ -2,8 +2,8 @@
 import type { Skill } from '../../-config/skills-config';
 
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
+import { page } from 'vitest/browser';
 
 import SkillCard from './skill-card';
 

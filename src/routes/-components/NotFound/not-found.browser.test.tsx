@@ -1,8 +1,8 @@
 import { createRouterHarness } from '@tanstack-router-testing/react-router-testing';
 import { createRootRoute } from '@tanstack/react-router';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
+import { page } from 'vitest/browser';
 
 import NotFound from './not-found';
 

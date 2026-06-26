@@ -47,6 +47,7 @@ const Logo: FC<Props> = ({ className = '', animate = true }) => {
   });
 
   return (
+    // oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- SVG is not an img
     <svg viewBox='0 0 1000 1000' className={`${className} duration-slow transition-transform hover:scale-105`} role='img' aria-label='eve0415 ロゴ'>
       {/* Main diagonal elements */}
       <g className={animate ? 'animate-fade-in-scale' : ''}>

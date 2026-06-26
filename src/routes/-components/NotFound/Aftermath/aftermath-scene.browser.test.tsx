@@ -2,8 +2,8 @@ import { createRouterHarness } from '@tanstack-router-testing/react-router-testi
 /* oxlint-disable typescript/no-non-null-assertion, no-await-in-loop -- Test assertions verify existence; sequential error type tests require await in loop */
 import { createRootRoute } from '@tanstack/react-router';
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
-import { page } from 'vitest/browser';
 import { render } from 'vitest-browser-react';
+import { page } from 'vitest/browser';
 
 import AftermathScene from './aftermath-scene';
 
