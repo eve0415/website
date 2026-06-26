@@ -170,7 +170,7 @@ const SkillsPage: FC = () => {
             <p className='text-muted-foreground mt-2 text-sm'>
               システムプログラミングとパフォーマンス最適化のため学習中。 メモリ安全性と並行処理の理解を深めている。
             </p>
-            {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- custom styled bar */}
+            {/* oxlint-disable jsx-a11y/prefer-tag-over-role -- custom styled bar */}
             <div
               role='progressbar'
               className='bg-muted mt-4 h-1 w-full rounded-full'
@@ -181,13 +181,14 @@ const SkillsPage: FC = () => {
             >
               <div className='bg-orange duration-slow h-full rounded-full transition-all' style={{ width: '35%' }} />
             </div>
+            {/* oxlint-enable jsx-a11y/prefer-tag-over-role */}
           </div>
           <div className='group border-line bg-surface duration-normal hover:border-orange/30 rounded-lg border p-6 transition-all'>
             <h3 className='text-orange text-lg font-bold'>Go</h3>
             <p className='text-muted-foreground mt-2 text-sm'>
               マイクロサービスとインフラツーリングのため学習中。 シンプルで効率的なバックエンドサービスの構築を目指す。
             </p>
-            {/* oxlint-disable-next-line jsx-a11y/prefer-tag-over-role -- custom styled bar */}
+            {/* oxlint-disable jsx-a11y/prefer-tag-over-role -- custom styled bar */}
             <div
               role='progressbar'
               className='bg-muted mt-4 h-1 w-full rounded-full'
@@ -198,6 +199,7 @@ const SkillsPage: FC = () => {
             >
               <div className='bg-orange duration-slow h-full rounded-full transition-all' style={{ width: '25%' }} />
             </div>
+            {/* oxlint-enable jsx-a11y/prefer-tag-over-role */}
           </div>
         </div>
       </section>

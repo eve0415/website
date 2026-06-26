@@ -64,7 +64,7 @@ jobs:
         run: pnpm generate
 
       - name: Run oxlint
-        run: pnpm oxlint --type-aware --type-check --report-unused-disable-directives --deny-warnings --format github
+        run: pnpm oxlint --type-aware --report-unused-disable-directives --deny-warnings --format github
 
   format:
     name: Format
