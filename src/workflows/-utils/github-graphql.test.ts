@@ -320,22 +320,22 @@ describe('github-graphql', () => {
 
   describe('isPRAuthoredByUser', () => {
     it('returns true for matching login (case-insensitive)', () => {
-      expect(isPRAuthoredByUser('eve0415')).toBeTruthy();
-      expect(isPRAuthoredByUser('EVE0415')).toBeTruthy();
-      expect(isPRAuthoredByUser('Eve0415')).toBeTruthy();
+      expect(isPRAuthoredByUser('eve0415')).toBe(true);
+      expect(isPRAuthoredByUser('EVE0415')).toBe(true);
+      expect(isPRAuthoredByUser('Eve0415')).toBe(true);
     });
 
     it('returns false for non-matching login', () => {
-      expect(isPRAuthoredByUser('other-user')).toBeFalsy();
+      expect(isPRAuthoredByUser('other-user')).toBe(false);
     });
 
     it('returns false when login is null', () => {
-      expect(isPRAuthoredByUser(null)).toBeFalsy();
+      expect(isPRAuthoredByUser(null)).toBe(false);
     });
 
     it('returns false when login is undefined', () => {
       const undefinedValue = undefined;
-      expect(isPRAuthoredByUser(undefinedValue)).toBeFalsy();
+      expect(isPRAuthoredByUser(undefinedValue)).toBe(false);
     });
   });
 
