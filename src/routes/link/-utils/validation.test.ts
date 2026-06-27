@@ -204,22 +204,22 @@ describe('validateContactForm', () => {
 
 describe('hasErrors', () => {
   test('returns false for empty object', () => {
-    expect(hasErrors({})).toBeFalsy();
+    expect(hasErrors({})).toBe(false);
   });
 
   test('returns true when name error exists', () => {
-    expect(hasErrors({ name: 'error' })).toBeTruthy();
+    expect(hasErrors({ name: 'error' })).toBe(true);
   });
 
   test('returns true when email error exists', () => {
-    expect(hasErrors({ email: 'error' })).toBeTruthy();
+    expect(hasErrors({ email: 'error' })).toBe(true);
   });
 
   test('returns true when message error exists', () => {
-    expect(hasErrors({ message: 'error' })).toBeTruthy();
+    expect(hasErrors({ message: 'error' })).toBe(true);
   });
 
   test('returns true when multiple errors exist', () => {
-    expect(hasErrors({ name: 'error', email: 'error', message: 'error' })).toBeTruthy();
+    expect(hasErrors({ name: 'error', email: 'error', message: 'error' })).toBe(true);
   });
 });

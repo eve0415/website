@@ -30,7 +30,7 @@ describe('checkAndIncrementRateLimit', () => {
   test('first request: allowed=true, remaining=2', async () => {
     const result = await checkAndIncrementRateLimit(testIp);
 
-    expect(result.allowed).toBeTruthy();
+    expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(2);
   });
 
@@ -38,7 +38,7 @@ describe('checkAndIncrementRateLimit', () => {
     await checkAndIncrementRateLimit(testIp);
     const result = await checkAndIncrementRateLimit(testIp);
 
-    expect(result.allowed).toBeTruthy();
+    expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(1);
   });
 
@@ -47,7 +47,7 @@ describe('checkAndIncrementRateLimit', () => {
     await checkAndIncrementRateLimit(testIp);
     const result = await checkAndIncrementRateLimit(testIp);
 
-    expect(result.allowed).toBeTruthy();
+    expect(result.allowed).toBe(true);
     expect(result.remaining).toBe(0);
   });
 
@@ -57,7 +57,7 @@ describe('checkAndIncrementRateLimit', () => {
     await checkAndIncrementRateLimit(testIp);
     const result = await checkAndIncrementRateLimit(testIp);
 
-    expect(result.allowed).toBeFalsy();
+    expect(result.allowed).toBe(false);
     expect(result.remaining).toBe(0);
   });
 
@@ -88,8 +88,8 @@ describe('checkAndIncrementRateLimit', () => {
 
       const ip2Result = await checkAndIncrementRateLimit(ip2);
 
-      expect(ip1Result.allowed).toBeFalsy();
-      expect(ip2Result.allowed).toBeTruthy();
+      expect(ip1Result.allowed).toBe(false);
+      expect(ip2Result.allowed).toBe(true);
       expect(ip2Result.remaining).toBe(2);
     } finally {
       await env.CONTACT_RATE_LIMIT.delete(`rate:${ip1}`);

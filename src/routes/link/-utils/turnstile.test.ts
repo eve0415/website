@@ -25,14 +25,14 @@ describe('verifyTurnstile', () => {
     test('returns error for empty token', async () => {
       const result = await verifyTurnstile('', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証トークンが無効です');
     });
 
     test('returns error for token over 2048 characters', async () => {
       const result = await verifyTurnstile('a'.repeat(2049), 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証トークンが無効です');
     });
 
@@ -41,7 +41,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('a'.repeat(2048), 'secret-key');
 
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
   });
 
@@ -59,7 +59,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
       expect(result.error).toBeUndefined();
     });
 
@@ -75,7 +75,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     test.skipIf(!import.meta.env.DEV)('accepts localhost only in development', async () => {
@@ -90,7 +90,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
 
     test.skipIf(import.meta.env.DEV)('rejects localhost in production', async () => {
@@ -107,7 +107,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証に失敗しました。もう一度お試しください。');
 
       consoleWarnSpy.mockRestore();
@@ -118,7 +118,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeTruthy();
+      expect(result.success).toBe(true);
     });
   });
 
@@ -137,7 +137,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証に失敗しました。もう一度お試しください。');
       // The allowed-host list in the message varies by environment (localhost is dev-only),
       // so assert the stable prefix and the rejected hostname rather than the exact enumeration.
@@ -160,7 +160,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証がタイムアウトしました。ページを再読み込みしてください。');
     });
 
@@ -176,7 +176,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証トークンが無効です。もう一度お試しください。');
     });
 
@@ -192,7 +192,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証に失敗しました。もう一度お試しください。');
     });
 
@@ -201,7 +201,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証に失敗しました。もう一度お試しください。');
     });
 
@@ -217,7 +217,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証に失敗しました。もう一度お試しください。');
     });
 
@@ -233,7 +233,7 @@ describe('verifyTurnstile', () => {
 
       const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      expect(result.success).toBeFalsy();
+      expect(result.success).toBe(false);
       expect(result.error).toBe('認証がタイムアウトしました。ページを再読み込みしてください。');
     });
   });
@@ -272,7 +272,7 @@ describe('verifyTurnstile', () => {
       expect(capturedFormData).toBeDefined();
       expect(capturedFormData!.get('secret')).toBe('secret-key');
       expect(capturedFormData!.get('response')).toBe('valid-token');
-      expect(capturedFormData!.has('remoteip')).toBeFalsy();
+      expect(capturedFormData!.has('remoteip')).toBe(false);
     });
   });
 
@@ -288,7 +288,7 @@ describe('verifyTurnstile', () => {
       try {
         const result = await verifyTurnstile('valid-token', 'secret-key');
 
-        expect(result.success).toBeFalsy();
+        expect(result.success).toBe(false);
         expect(result.error).toBe('認証サーバーへの接続に失敗しました。');
       } finally {
         fetchSpy.mockRestore();
