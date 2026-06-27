@@ -5,7 +5,6 @@ import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
 import { fakeTimers, forceReducedMotion } from '#test/utils/disposable';
-
 import { createMediaQueryListMock } from '#test/utils/media-query-mock';
 
 import { useTypedText } from './useTypedText';
