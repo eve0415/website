@@ -5,7 +5,7 @@ import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
 // Mock TanStack components that require router context
-vi.mock('@tanstack/react-router', async importOriginal => {
+vi.mock(import('@tanstack/react-router'), async importOriginal => {
   const actual = await importOriginal<object>();
   return {
     ...actual,
@@ -14,7 +14,7 @@ vi.mock('@tanstack/react-router', async importOriginal => {
   };
 });
 
-vi.mock('@tanstack/react-devtools', () => ({
+vi.mock(import('@tanstack/react-devtools'), () => ({
   TanStackDevtools: ({ plugins }: { plugins: { name: string; render: ReactNode }[] }) => (
     <div data-testid='tanstack-devtools'>
       {plugins.map(p => (
@@ -24,7 +24,7 @@ vi.mock('@tanstack/react-devtools', () => ({
   ),
 }));
 
-vi.mock('@tanstack/react-router-devtools', () => ({
+vi.mock(import('@tanstack/react-router-devtools'), () => ({
   TanStackRouterDevtoolsPanel: () => <div data-testid='router-devtools'>Router Devtools</div>,
 }));
 

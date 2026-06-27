@@ -9,9 +9,9 @@ describe('getMaterializeDrawParams', () => {
 
       expect(params.opacity).toBe(0);
       expect(params.scale).toBe(0);
-      expect(params.showCrosshair).toBeFalsy();
-      expect(params.showWireframe).toBeFalsy();
-      expect(params.showParticles).toBeFalsy();
+      expect(params.showCrosshair).toBe(false);
+      expect(params.showWireframe).toBe(false);
+      expect(params.showParticles).toBe(false);
       expect(params.flashIntensity).toBe(0);
     });
 
@@ -27,9 +27,9 @@ describe('getMaterializeDrawParams', () => {
     test('shows crosshair', () => {
       const params = getMaterializeDrawParams('crosshair', 0.5);
 
-      expect(params.showCrosshair).toBeTruthy();
-      expect(params.showWireframe).toBeFalsy();
-      expect(params.showParticles).toBeFalsy();
+      expect(params.showCrosshair).toBe(true);
+      expect(params.showWireframe).toBe(false);
+      expect(params.showParticles).toBe(false);
     });
 
     test('opacity increases with progress', () => {
@@ -52,9 +52,9 @@ describe('getMaterializeDrawParams', () => {
     test('shows crosshair and wireframe', () => {
       const params = getMaterializeDrawParams('wireframe', 0.5);
 
-      expect(params.showCrosshair).toBeTruthy();
-      expect(params.showWireframe).toBeTruthy();
-      expect(params.showParticles).toBeFalsy();
+      expect(params.showCrosshair).toBe(true);
+      expect(params.showWireframe).toBe(true);
+      expect(params.showParticles).toBe(false);
     });
 
     test('scale increases with progress up to 0.5', () => {
@@ -75,23 +75,23 @@ describe('getMaterializeDrawParams', () => {
     test('shows particles', () => {
       const params = getMaterializeDrawParams('particles', 0.5);
 
-      expect(params.showParticles).toBeTruthy();
+      expect(params.showParticles).toBe(true);
     });
 
     test('crosshair fades out at 50% progress', () => {
       const paramsEarly = getMaterializeDrawParams('particles', 0.3);
       const paramsLate = getMaterializeDrawParams('particles', 0.6);
 
-      expect(paramsEarly.showCrosshair).toBeTruthy();
-      expect(paramsLate.showCrosshair).toBeFalsy();
+      expect(paramsEarly.showCrosshair).toBe(true);
+      expect(paramsLate.showCrosshair).toBe(false);
     });
 
     test('wireframe fades out at 70% progress', () => {
       const paramsEarly = getMaterializeDrawParams('particles', 0.5);
       const paramsLate = getMaterializeDrawParams('particles', 0.8);
 
-      expect(paramsEarly.showWireframe).toBeTruthy();
-      expect(paramsLate.showWireframe).toBeFalsy();
+      expect(paramsEarly.showWireframe).toBe(true);
+      expect(paramsLate.showWireframe).toBe(false);
     });
 
     test('scale increases from 0.5 to 1.0', () => {
@@ -125,9 +125,9 @@ describe('getMaterializeDrawParams', () => {
     test('hides all construction elements', () => {
       const params = getMaterializeDrawParams('flash', 0.5);
 
-      expect(params.showCrosshair).toBeFalsy();
-      expect(params.showWireframe).toBeFalsy();
-      expect(params.showParticles).toBeFalsy();
+      expect(params.showCrosshair).toBe(false);
+      expect(params.showWireframe).toBe(false);
+      expect(params.showParticles).toBe(false);
     });
 
     test('full opacity and scale > 1 at start (bounce effect)', () => {
@@ -149,9 +149,9 @@ describe('getMaterializeDrawParams', () => {
 
       expect(params.opacity).toBe(1);
       expect(params.scale).toBe(1);
-      expect(params.showCrosshair).toBeFalsy();
-      expect(params.showWireframe).toBeFalsy();
-      expect(params.showParticles).toBeFalsy();
+      expect(params.showCrosshair).toBe(false);
+      expect(params.showWireframe).toBe(false);
+      expect(params.showParticles).toBe(false);
       expect(params.flashIntensity).toBe(0);
     });
 

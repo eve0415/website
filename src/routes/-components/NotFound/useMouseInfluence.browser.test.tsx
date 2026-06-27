@@ -68,13 +68,13 @@ describe('useMouseInfluence', () => {
       // Get normalized values - wait for state update
       await expect
         .poll(() => {
-          const normalizedX = Number.parseFloat(page.getByTestId('normalized-x').element().textContent);
+          const normalizedX = Number(page.getByTestId('normalized-x').element().textContent);
           return normalizedX;
         })
         .toBeGreaterThan(0);
 
-      const normalizedX = Number.parseFloat(page.getByTestId('normalized-x').element().textContent);
-      const normalizedY = Number.parseFloat(page.getByTestId('normalized-y').element().textContent);
+      const normalizedX = Number(page.getByTestId('normalized-x').element().textContent);
+      const normalizedY = Number(page.getByTestId('normalized-y').element().textContent);
 
       // Should be between 0 and 1
       expect(normalizedX).toBeGreaterThanOrEqual(0);

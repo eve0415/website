@@ -282,7 +282,7 @@ describe('useTypedText', () => {
       await vi.advanceTimersByTimeAsync(100);
       await screen.unmount();
 
-      expect(true).toBeTruthy();
+      expect(true).toBe(true);
     });
   });
 });

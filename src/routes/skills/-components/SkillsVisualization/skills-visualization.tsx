@@ -76,7 +76,9 @@ const AINodeMaterializeTracker: FC<{
   return null;
 };
 
-const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selectedSkillId, onNodeSelect }) => {
+const EMPTY_AI_SKILLS: AISkill[] = [];
+
+const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = EMPTY_AI_SKILLS, selectedSkillId, onNodeSelect }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const prefersReducedMotion = useReducedMotion();
   const shouldAnimate = animate && !prefersReducedMotion;
@@ -272,8 +274,8 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
       const { width, height } = dims;
       ctx.clearRect(0, 0, width, height);
 
-      const selectedSkillId = selectedRef.current;
-      const hoveredNode = hoveredRef.current;
+      const currentSelected = selectedRef.current;
+      const currentHovered = hoveredRef.current;
 
       if (shouldAnimate) time += 0.01;
 
@@ -322,8 +324,8 @@ const SkillsVisualization: FC<Props> = ({ animate = true, aiSkills = [], selecte
       for (const node of nodes) {
         const floatX = shouldAnimate ? Math.sin(time + node.x * 0.01) * 2 : 0;
         const floatY = shouldAnimate ? Math.cos(time + node.y * 0.01) * 2 : 0;
-        const isSelected = selectedSkillId === node.label;
-        const isHovered = hoveredNode === node.label;
+        const isSelected = currentSelected === node.label;
+        const isHovered = currentHovered === node.label;
 
         if (node.isAI) {
           // Draw AI node with materialize animation

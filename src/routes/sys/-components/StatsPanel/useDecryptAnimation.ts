@@ -45,13 +45,7 @@ export const useDecryptAnimation = (finalValue: string | number, options: UseDec
 
         let result = '';
         for (let i = 0; i < totalLength; i++) {
-          if (i < lockedChars) {
-            // This character is "decrypted"
-            result += finalStr[i];
-          } else {
-            // Still scrambling
-            result += CHARS[Math.floor(Math.random() * CHARS.length)];
-          }
+          result += i < lockedChars ? finalStr[i] : CHARS[Math.floor(Math.random() * CHARS.length)];
         }
 
         setDisplayValue(result);

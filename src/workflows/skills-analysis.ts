@@ -266,7 +266,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     const octokit = createGitHubClient(this.env.GITHUB_PAT);
     const repoList: Repo[] = [];
     let requestCount = 0;
-    let rateLimit: GraphQLRateLimit = { remaining: 5000, cost: 1, resetAt: 0 };
+    let rateLimit: GraphQLRateLimit;
     let cursor;
 
     do {

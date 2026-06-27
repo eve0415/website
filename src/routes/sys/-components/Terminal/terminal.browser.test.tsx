@@ -45,7 +45,7 @@ const dispatchCtrlC = () => {
 
 // Mock useNavigate
 const mockNavigate = vi.fn();
-vi.mock('@tanstack/react-router', () => ({
+vi.mock(import('@tanstack/react-router'), () => ({
   useNavigate: () => mockNavigate,
 }));
 

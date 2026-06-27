@@ -48,7 +48,7 @@ export const Route = createFileRoute('/api/csp-report')({
       POST: async ({ request }) => {
         // Check Content-Length header for size limit
         const contentLength = request.headers.get('Content-Length');
-        if (contentLength && Number.parseInt(contentLength, 10) > MAX_BODY_SIZE) return new Response('Request body too large', { status: 413 });
+        if (contentLength && Math.trunc(Number(contentLength)) > MAX_BODY_SIZE) return new Response('Request body too large', { status: 413 });
 
         try {
           const report: CspReport = await request.json();

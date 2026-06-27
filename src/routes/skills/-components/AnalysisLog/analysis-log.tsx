@@ -24,7 +24,7 @@ const phaseMessages: Record<WorkflowPhase, string> = {
 };
 
 const AnalysisLog: FC<Props> = ({ state }) => {
-  const [blinkVisible, setBlink] = useState(true);
+  const [blinkVisible, setBlinkVisible] = useState(true);
 
   const isActive = state.phase !== 'idle' && state.phase !== 'completed' && state.phase !== 'error';
 
@@ -33,7 +33,7 @@ const AnalysisLog: FC<Props> = ({ state }) => {
     if (!isActive) return;
 
     const interval = setInterval(() => {
-      setBlink(prev => !prev);
+      setBlinkVisible(prev => !prev);
     }, 1000);
 
     return () => {

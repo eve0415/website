@@ -7,6 +7,8 @@ import { page, userEvent } from 'vitest/browser';
 
 import { useKeyboardCapture } from './useKeyboardCapture';
 
+const noop = () => {};
+
 interface TestProps {
   enabled: boolean;
   commands: string[];
@@ -14,7 +16,7 @@ interface TestProps {
   onCtrlC?: () => void;
 }
 
-const TestComponent: FC<TestProps> = ({ enabled, commands, onSubmit = () => {}, onCtrlC = () => {} }) => {
+const TestComponent: FC<TestProps> = ({ enabled, commands, onSubmit = noop, onCtrlC = noop }) => {
   // Memoize commands to prevent unnecessary re-creations of handleTab callback
   const memoizedCommands = useMemo(() => commands, [commands]);
 

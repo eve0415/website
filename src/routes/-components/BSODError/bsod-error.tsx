@@ -18,10 +18,12 @@ const BSODError: FC<ErrorComponentProps> = ({ error, reset }) => {
   if (fallbackDestination === undefined) throw new Error('Expected QR destinations to be defined');
 
   // Random selections (stable per render)
+  // oxlint-disable-next-line react/hook-use-state -- read-only random seed, setter intentionally unused
   const [qrDestination] = useState(() => {
     const index = Math.floor(Math.random() * QR_DESTINATIONS.length);
     return QR_DESTINATIONS[index] ?? fallbackDestination;
   });
+  // oxlint-disable-next-line react/hook-use-state -- read-only random seed, setter intentionally unused
   const [message] = useState(() => getRandomMessage(isEasterEgg));
 
   // Progress animation - skip if reduced motion

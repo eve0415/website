@@ -102,7 +102,7 @@ describe('analysisLog', () => {
       // Should not have percentage display
       const percentageElements = container.querySelectorAll('.text-fuchsia.font-mono.text-xs');
       const hasPercentage = Array.from(percentageElements).some(el => el.textContent?.includes('%'));
-      expect(hasPercentage).toBeFalsy();
+      expect(hasPercentage).toBe(false);
     });
 
     test('does not show progress percentage when completed', async () => {

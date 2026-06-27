@@ -6,7 +6,7 @@ import { page } from 'vitest/browser';
 import ErrorCascade from './error-cascade';
 
 // Mock useReducedMotion
-vi.mock('#hooks/useReducedMotion', () => ({
+vi.mock(import('#hooks/useReducedMotion'), () => ({
   useReducedMotion: vi.fn(() => false),
 }));
 
@@ -143,6 +143,7 @@ describe('errorCascade', () => {
       for (const box of errorBoxes) {
         const style = (box as HTMLElement).style.animationDelay;
         if (style) {
+          // oxlint-disable-next-line unicorn/prefer-number-coercion -- parseInt intentional: extracts leading digits from CSS '200ms'
           const ms = Number.parseInt(style, 10);
           delays.push(ms);
         }

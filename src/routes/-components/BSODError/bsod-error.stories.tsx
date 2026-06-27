@@ -99,7 +99,7 @@ export const ProgressAnimation = meta.story({
     await waitFor(
       async () => {
         const progressText = canvas.getByTestId('bsod-progress').textContent ?? '';
-        const percentage = Number.parseInt(progressText.replace('% complete', ''), 10);
+        const percentage = Math.trunc(Number(progressText.replace('% complete', '')));
         await expect(percentage).toBeGreaterThan(0);
       },
       { timeout: 2000 },

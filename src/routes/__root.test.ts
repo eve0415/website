@@ -42,7 +42,7 @@ describe('__root Route', () => {
       const head = headFn({ match: mockMatch });
 
       expect(head.meta).toBeDefined();
-      expect(Array.isArray(head.meta)).toBeTruthy();
+      expect(Array.isArray(head.meta)).toBe(true);
     });
 
     test('includes charset meta tag', () => {
@@ -119,7 +119,7 @@ describe('__root Route', () => {
       const head = (Route.options.head as HeadFn)({ match: mockMatch });
 
       expect(head.links).toBeDefined();
-      expect(Array.isArray(head.links)).toBeTruthy();
+      expect(Array.isArray(head.links)).toBe(true);
 
       const faviconLink = head.links.find((l: LinkTag) => l.rel === 'icon');
       expect(faviconLink).toStrictEqual({ rel: 'icon', type: 'image/png', sizes: '96x96', href: '/favicon-96x96.png' });
