@@ -26,7 +26,6 @@ describe('notFound', () => {
 
   afterEach(() => {
     vi.useRealTimers();
-    vi.restoreAllMocks();
   });
 
   describe('accessibility', () => {

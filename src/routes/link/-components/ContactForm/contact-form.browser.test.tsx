@@ -52,7 +52,6 @@ describe('contactForm', () => {
 
   afterEach(() => {
     vi.useRealTimers();
-    vi.clearAllMocks();
   });
 
   describe('rendering', () => {

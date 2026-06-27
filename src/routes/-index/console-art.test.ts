@@ -16,7 +16,6 @@ describe('printConsoleArt', () => {
   });
 
   afterEach(() => {
-    vi.restoreAllMocks();
     // @ts-expect-error Cleanup globalThis.window
     delete globalThis.window;
   });

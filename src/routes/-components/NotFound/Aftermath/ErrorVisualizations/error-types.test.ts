@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { ERROR_TYPES, getRandomErrorType } from './error-types';
 
@@ -6,10 +6,6 @@ describe('error-types', () => {
   describe('getRandomErrorType', () => {
     beforeEach(() => {
       vi.spyOn(Date, 'now');
-    });
-
-    afterEach(() => {
-      vi.restoreAllMocks();
     });
 
     it.each([

@@ -36,7 +36,6 @@ describe('useCorruptionEffects', () => {
 
   afterEach(() => {
     vi.useRealTimers();
-    vi.restoreAllMocks();
   });
 
   describe('intensity calculation', () => {
