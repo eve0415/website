@@ -4,7 +4,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
-import { forceReducedMotion } from '../../../../../test/utils/disposable';
+import { forceReducedMotion } from '#test/utils/disposable';
 
 import SkillsVisualization from './skills-visualization';
 

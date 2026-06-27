@@ -2,7 +2,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
 
-import { forceReducedMotion } from '../../../../../test/utils/disposable';
+import { forceReducedMotion } from '#test/utils/disposable';
 
 import AISkillPanel from './ai-skill-panel';
 import { aiDiscoveredSkill, expertSkill, learningSkill, proficientSkill, skillWithNoEvidence } from './ai-skill-panel.fixtures';

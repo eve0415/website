@@ -6,7 +6,8 @@ import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
 
-import { fakeTimers } from '../../../../../test/utils/disposable';
+import { fakeTimers } from '#test/utils/disposable';
+
 import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
 
 import Terminal from './terminal';

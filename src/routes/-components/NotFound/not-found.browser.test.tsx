@@ -4,7 +4,7 @@ import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
-import { fakeTimers } from '../../../../test/utils/disposable';
+import { fakeTimers } from '#test/utils/disposable';
 
 import NotFound from './not-found';
 

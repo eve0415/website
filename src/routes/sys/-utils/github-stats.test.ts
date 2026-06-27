@@ -3,7 +3,7 @@ import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
 import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
 
-import { fakeTimers } from '../../../../test/utils/disposable';
+import { fakeTimers } from '#test/utils/disposable';
 
 import { refreshGitHubStats } from './github-stats';
 import { calculateStreaksJST, getLanguageColor, getRelativeTimeJapanese, levelFromContributionLevel } from './github-stats-utils';
