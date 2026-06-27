@@ -208,7 +208,7 @@ describe('skillsVisualization', () => {
       // Keyboard selection is provided by the skill grid buttons instead.
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;
       expect(canvas.getAttribute('role')).not.toBe('application');
-      expect(canvas.hasAttribute('tabindex')).toBeFalsy();
+      expect(canvas.hasAttribute('tabindex')).toBe(false);
     });
   });
 });
