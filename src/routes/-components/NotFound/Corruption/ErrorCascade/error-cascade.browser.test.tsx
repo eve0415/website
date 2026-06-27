@@ -143,7 +143,8 @@ describe('errorCascade', () => {
       for (const box of errorBoxes) {
         const style = (box as HTMLElement).style.animationDelay;
         if (style) {
-          const ms = Math.trunc(Number(style));
+          // oxlint-disable-next-line unicorn/prefer-number-coercion -- parseInt intentional: extracts leading digits from CSS '200ms'
+          const ms = Number.parseInt(style, 10);
           delays.push(ms);
         }
       }
