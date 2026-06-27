@@ -7,6 +7,8 @@ import preview from '#.storybook/preview';
 import { testAllViewports } from '#.storybook/viewports';
 import { useReducedMotion } from '#hooks/useReducedMotion';
 
+const noop = () => {};
+
 // Mock the Turnstile component for stories - simulates Cloudflare Turnstile widget
 const MockTurnstile: FC<{
   onVerify: (token: string) => void;
@@ -87,7 +89,7 @@ const TurnstileWidgetStory: FC<{
   onVerify?: (token: string) => void;
   onError?: () => void;
   onExpire?: () => void;
-}> = ({ onVerify = () => {}, onError = () => {}, onExpire = () => {} }) => <MockTurnstile onVerify={onVerify} onError={onError} onExpire={onExpire} />;
+}> = ({ onVerify = noop, onError = noop, onExpire = noop }) => <MockTurnstile onVerify={onVerify} onError={onError} onExpire={onExpire} />;
 
 const meta = preview.meta({
   component: TurnstileWidgetStory,

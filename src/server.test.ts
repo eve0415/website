@@ -5,13 +5,13 @@ import { afterEach, describe, expect, test, vi } from 'vitest';
 const mockHandlerFetch = vi.hoisted(() => vi.fn());
 const mockRefreshGitHubStats = vi.hoisted(() => vi.fn<() => Promise<void>>());
 
-vi.mock('@tanstack/react-start/server-entry', () => ({
+vi.mock(import('@tanstack/react-start/server-entry'), () => ({
   default: {
     fetch: mockHandlerFetch,
   },
 }));
 
-vi.mock('./routes/sys/-utils/github-stats', () => ({
+vi.mock(import('./routes/sys/-utils/github-stats'), () => ({
   refreshGitHubStats: mockRefreshGitHubStats,
 }));
 

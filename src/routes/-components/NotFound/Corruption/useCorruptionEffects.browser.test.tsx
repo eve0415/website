@@ -7,7 +7,7 @@ import { page } from 'vitest/browser';
 import { useCorruptionEffects } from './useCorruptionEffects';
 
 // Mock useReducedMotion
-vi.mock('#hooks/useReducedMotion', () => ({
+vi.mock(import('#hooks/useReducedMotion'), () => ({
   useReducedMotion: vi.fn(() => false),
 }));
 
@@ -48,7 +48,7 @@ describe('useCorruptionEffects', () => {
       await render(<TestComponent enabled progress={progress} />);
 
       const intensityText = page.getByTestId('intensity').element().textContent;
-      const intensity = Number.parseFloat(intensityText);
+      const intensity = Number(intensityText);
 
       expect(intensity).toBeCloseTo(expected, 2);
     });
@@ -70,14 +70,14 @@ describe('useCorruptionEffects', () => {
     test('increases with progress', async () => {
       await render(<TestComponent enabled progress={0.5} />);
 
-      const opacity = Number.parseFloat(page.getByTestId('static-opacity').element().textContent);
+      const opacity = Number(page.getByTestId('static-opacity').element().textContent);
       expect(opacity).toBeGreaterThan(0);
     });
 
     test('caps at 0.15', async () => {
       await render(<TestComponent enabled progress={1} />);
 
-      const opacity = Number.parseFloat(page.getByTestId('static-opacity').element().textContent);
+      const opacity = Number(page.getByTestId('static-opacity').element().textContent);
       expect(opacity).toBeLessThanOrEqual(0.15);
     });
 
@@ -101,7 +101,7 @@ describe('useCorruptionEffects', () => {
       // Wait for interval to generate lines
       await vi.advanceTimersByTimeAsync(300);
 
-      const count = Number.parseInt(page.getByTestId('glitch-lines-count').element().textContent, 10);
+      const count = Math.trunc(Number(page.getByTestId('glitch-lines-count').element().textContent));
       expect(count).toBeGreaterThan(0);
     });
   });
@@ -110,13 +110,13 @@ describe('useCorruptionEffects', () => {
     test('offset changes over time when enabled', async () => {
       await render(<TestComponent enabled progress={0.5} />);
 
-      const initialOffset = Number.parseInt(page.getByTestId('scanline-offset').element().textContent, 10);
+      const initialOffset = Math.trunc(Number(page.getByTestId('scanline-offset').element().textContent));
 
       await vi.advanceTimersByTimeAsync(200);
 
       await expect
         .poll(() => {
-          const currentOffset = Number.parseInt(page.getByTestId('scanline-offset').element().textContent, 10);
+          const currentOffset = Math.trunc(Number(page.getByTestId('scanline-offset').element().textContent));
           return currentOffset;
         })
         .not.toBe(initialOffset);

@@ -6,7 +6,7 @@ import { page } from 'vitest/browser';
 
 import NotFound from './not-found';
 
-vi.mock('#hooks/useReducedMotion', () => ({
+vi.mock(import('#hooks/useReducedMotion'), () => ({
   useReducedMotion: vi.fn(() => false),
 }));
 

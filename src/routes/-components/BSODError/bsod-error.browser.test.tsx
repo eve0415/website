@@ -58,7 +58,7 @@ describe('bSODError', () => {
           () => {
             const el = page.getByTestId('bsod-progress').element();
             const textContent = el?.textContent ?? '';
-            return Number.parseInt(textContent.replace('% complete', ''), 10);
+            return Math.trunc(Number(textContent.replace('% complete', '')));
           },
           { timeout: 2000 },
         )

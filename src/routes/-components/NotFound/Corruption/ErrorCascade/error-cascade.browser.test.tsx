@@ -6,7 +6,7 @@ import { page } from 'vitest/browser';
 import ErrorCascade from './error-cascade';
 
 // Mock useReducedMotion
-vi.mock('#hooks/useReducedMotion', () => ({
+vi.mock(import('#hooks/useReducedMotion'), () => ({
   useReducedMotion: vi.fn(() => false),
 }));
 
@@ -143,7 +143,7 @@ describe('errorCascade', () => {
       for (const box of errorBoxes) {
         const style = (box as HTMLElement).style.animationDelay;
         if (style) {
-          const ms = Number.parseInt(style, 10);
+          const ms = Math.trunc(Number(style));
           delays.push(ms);
         }
       }

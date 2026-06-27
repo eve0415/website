@@ -50,9 +50,11 @@ interface ContactFormForStoryProps {
   mockDelay?: number;
 }
 
+const DEFAULT_MOCK_RESULT: ContactFormResult = { success: true };
+
 // ContactForm reimplementation for stories (to avoid vi.mock issues in Storybook)
 // Uses props for mock response to avoid parallel test interference
-const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = { success: true }, mockDelay = 0 }) => {
+const ContactFormForStory: FC<ContactFormForStoryProps> = ({ mockResult = DEFAULT_MOCK_RESULT, mockDelay = 0 }) => {
   const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
   const [formData, setFormData] = useState<ContactFormData>({ name: '', email: '', message: '' });
   const [fieldErrors, setFieldErrors] = useState<ValidationErrors>({});

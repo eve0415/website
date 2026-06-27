@@ -1,4 +1,3 @@
-/* oxlint-disable promise/prefer-await-to-callbacks -- Mock callback setters for Turnstile widget testing */
 import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
@@ -17,6 +16,7 @@ const { submitMock, getTurnstileCallback, setTurnstileCallback } = vi.hoisted(()
   return {
     submitMock: vi.fn(),
     getTurnstileCallback: () => turnstileCallback,
+    // oxlint-disable-next-line promise/prefer-await-to-callbacks -- mock setter, not async flow
     setTurnstileCallback: (cb: ((token: string) => void) | null) => {
       turnstileCallback = cb;
     },
@@ -24,13 +24,12 @@ const { submitMock, getTurnstileCallback, setTurnstileCallback } = vi.hoisted(()
 });
 
 // Mock the server function module (uses cloudflare: imports not available in browser)
-// oxlint-disable-next-line typescript/require-await -- vi.mock factory can be async
-vi.mock('../../-utils/contact-form', async () => ({
+vi.mock(import('../../-utils/contact-form'), () => ({
   handleForm: Object.assign(submitMock, { url: '/api/contact' }),
 }));
 
 // Mock TurnstileWidget - provide token callback for tests
-vi.mock('../TurnstileWidget/turnstile-widget', () => ({
+vi.mock(import('../TurnstileWidget/turnstile-widget'), () => ({
   default: ({ onVerify }: { onVerify: (token: string) => void }) => {
     setTurnstileCallback(onVerify);
     return <div data-testid='turnstile-mock' />;

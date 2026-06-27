@@ -130,7 +130,7 @@ describe('usePhaseController', () => {
       // Progress should be > 0 (we can't test exact values without mocking time)
       const progressEl = page.getByTestId('progress');
       const text = progressEl.element().textContent;
-      const progress = Number.parseFloat(text || '0');
+      const progress = Number(text || '0');
 
       expect(progress).toBeGreaterThan(0);
       expect(progress).toBeLessThan(1); // Shouldn't be done yet (7000ms total)
@@ -142,7 +142,7 @@ describe('usePhaseController', () => {
       await waitForRAF(5);
 
       const elapsedEl = page.getByTestId('elapsed');
-      const elapsed = Number.parseFloat(elapsedEl.element().textContent || '0');
+      const elapsed = Number(elapsedEl.element().textContent || '0');
 
       expect(elapsed).toBeGreaterThan(0);
     });
@@ -205,14 +205,14 @@ describe('usePhaseController', () => {
 
       // Measure AFTER pause is confirmed to avoid race condition
       const elapsedEl = page.getByTestId('elapsed');
-      const elapsedBefore = Number.parseFloat(elapsedEl.element().textContent || '0');
+      const elapsedBefore = Number(elapsedEl.element().textContent || '0');
       expect(elapsedBefore).toBeGreaterThan(0);
 
       // Wait more RAF cycles while paused
       await waitForRAF(10);
 
       // Elapsed should be frozen (approximately same value, within tolerance)
-      const elapsedAfter = Number.parseFloat(elapsedEl.element().textContent || '0');
+      const elapsedAfter = Number(elapsedEl.element().textContent || '0');
       // Should be close to the frozen value (tolerance for RAF timing jitter)
       expect(Math.abs(elapsedAfter - elapsedBefore)).toBeLessThan(100);
     });
@@ -228,7 +228,7 @@ describe('usePhaseController', () => {
       await expect.element(page.getByTestId('debug-paused')).toHaveTextContent('true');
 
       const elapsedEl = page.getByTestId('elapsed');
-      const frozenValue = Number.parseFloat(elapsedEl.element().textContent || '0');
+      const frozenValue = Number(elapsedEl.element().textContent || '0');
 
       // Wait while paused (time should not count)
       await waitForRAF(15);
@@ -241,7 +241,7 @@ describe('usePhaseController', () => {
       await waitForRAF(5);
 
       // Elapsed should have increased from frozen value, not jumped by the paused duration
-      const elapsedAfterResume = Number.parseFloat(elapsedEl.element().textContent || '0');
+      const elapsedAfterResume = Number(elapsedEl.element().textContent || '0');
 
       // Should be greater than frozen (some time passed after resume)
       expect(elapsedAfterResume).toBeGreaterThan(frozenValue);
@@ -264,7 +264,7 @@ describe('usePhaseController', () => {
 
       // Measure AFTER pause is confirmed to avoid race condition
       const progressEl = page.getByTestId('progress');
-      const progressBefore = Number.parseFloat(progressEl.element().textContent || '0');
+      const progressBefore = Number(progressEl.element().textContent || '0');
       expect(progressBefore).toBeGreaterThan(0);
       expect(progressBefore).toBeLessThan(1);
 
@@ -272,7 +272,7 @@ describe('usePhaseController', () => {
       await waitForRAF(10);
 
       // Progress should be frozen
-      const progressAfter = Number.parseFloat(progressEl.element().textContent || '0');
+      const progressAfter = Number(progressEl.element().textContent || '0');
       expect(Math.abs(progressAfter - progressBefore)).toBeLessThan(0.01);
     });
   });
