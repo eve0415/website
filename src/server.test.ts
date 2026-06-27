@@ -49,7 +49,7 @@ describe('server', () => {
 
     test('weekly cron triggers the workflow but does not call refreshGitHubStats', async () => {
       mockRefreshGitHubStats.mockResolvedValue();
-      const createSpy = vi.spyOn(env.SKILLS_WORKFLOW, 'create').mockResolvedValue({} as unknown as WorkflowInstance);
+      using createSpy = vi.spyOn(env.SKILLS_WORKFLOW, 'create').mockResolvedValue({} as unknown as WorkflowInstance);
 
       const ctrl = createScheduledController({ cron: '30 18 * * 6', scheduledTime: Date.now() });
       const ctx = createExecutionContext();
@@ -59,8 +59,6 @@ describe('server', () => {
 
       expect(createSpy).toHaveBeenCalledOnce();
       expect(mockRefreshGitHubStats).not.toHaveBeenCalled();
-
-      createSpy.mockRestore();
     });
   });
 });
