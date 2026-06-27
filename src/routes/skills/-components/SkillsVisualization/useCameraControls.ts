@@ -1,4 +1,4 @@
-/* oxlint-disable react-compiler/memo-dependencies -- frame is recursive rAF callback defined inside useEffect, not an external dependency */
+/* oxlint-disable react/react-compiler -- frame is recursive rAF callback defined inside useEffect, not an external dependency */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 

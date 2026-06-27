@@ -63,7 +63,6 @@
     "babel-plugin-react-compiler": "1.0.0",
     "drizzle-kit": "0.31.10",
     "drizzle-orm": "0.45.2",
-    "eslint-plugin-react-hooks": "7.1.1",
     "eslint-plugin-storybook": "10.4.6",
     "mimetext": "3.0.28",
     "msw": "2.14.6",

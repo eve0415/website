@@ -2,14 +2,7 @@ import { defineConfig } from 'oxlint';
 
 export default defineConfig({
   plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'import', 'react', 'react-perf', 'jsx-a11y', 'vitest', 'node', 'promise'],
-  jsPlugins: [
-    {
-      name: 'react-compiler',
-      specifier: 'eslint-plugin-react-hooks',
-    },
-    '@tanstack/eslint-plugin-router',
-    'eslint-plugin-storybook',
-  ],
+  jsPlugins: ['@tanstack/eslint-plugin-router', 'eslint-plugin-storybook'],
   ignorePatterns: ['.wrangler', 'dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'src/generated/*'],
   settings: {
     vitest: {
@@ -351,6 +344,7 @@ export default defineConfig({
     'react/no-this-in-sfc': 'error',
     'react/no-unescaped-entities': 'error',
     'react/no-unknown-property': 'error',
+    'react/react-compiler': 'error',
     'react/rules-of-hooks': 'error',
     'react/self-closing-comp': 'error',
     'react/style-prop-object': 'error',
@@ -445,33 +439,6 @@ export default defineConfig({
     'jsdoc/require-returns-type': 'error',
     'jsdoc/require-yields': 'error',
     '@tanstack/router/create-route-property-order': 'error',
-    'react-compiler/config': 'error',
-    'react-compiler/error-boundaries': 'error',
-    'react-compiler/component-hook-factories': 'error',
-    'react-compiler/gating': 'error',
-    'react-compiler/globals': 'error',
-    'react-compiler/immutability': 'error',
-    'react-compiler/preserve-manual-memoization': 'error',
-    'react-compiler/purity': 'error',
-    'react-compiler/refs': 'error',
-    'react-compiler/set-state-in-effect': 'error',
-    'react-compiler/set-state-in-render': 'error',
-    'react-compiler/static-components': 'error',
-    'react-compiler/unsupported-syntax': 'error',
-    'react-compiler/use-memo': 'error',
-    'react-compiler/incompatible-library': 'error',
-    'react-compiler/exhaustive-effect-dependencies': 'error',
-    'react-compiler/capitalized-calls': 'error',
-    'react-compiler/fbt': 'error',
-    'react-compiler/memo-dependencies': 'error',
-    'react-compiler/invariant': 'error',
-    'react-compiler/hooks': 'error',
-    'react-compiler/memoized-effect-dependencies': 'error',
-    'react-compiler/no-deriving-state-in-effects': 'error',
-    'react-compiler/rule-suppression': 'error',
-    'react-compiler/syntax': 'error',
-    'react-compiler/todo': 'error',
-    'react-compiler/void-use-memo': 'error',
   },
   overrides: [
     {
@@ -496,7 +463,7 @@ export default defineConfig({
     {
       files: ['**/*.stories.tsx'],
       rules: {
-        'react-hooks/rules-of-hooks': 'off',
+        'react/rules-of-hooks': 'off',
         'import/no-anonymous-default-export': 'off',
         'storybook/csf-component': 'warn',
         'storybook/default-exports': 'error',
