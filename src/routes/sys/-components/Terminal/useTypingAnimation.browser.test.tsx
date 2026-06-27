@@ -170,7 +170,7 @@ describe('useTypingAnimation', () => {
 
       // Verify the component was unmounted without errors
       // The test passes if unmount completes without exceptions
-      expect(true).toBeTruthy();
+      expect(true).toBe(true);
     });
   });
 
