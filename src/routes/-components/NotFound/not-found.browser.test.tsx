@@ -1,8 +1,10 @@
 import { createRouterHarness } from '@tanstack-router-testing/react-router-testing';
 import { createRootRoute } from '@tanstack/react-router';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { fakeTimers } from '../../../../test/utils/disposable';
 
 import NotFound from './not-found';
 
@@ -20,16 +22,12 @@ describe('notFound', () => {
   let harness: ReturnType<typeof createHarness>;
 
   beforeEach(() => {
-    vi.useFakeTimers();
     harness = createHarness();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
   });
 
   describe('accessibility', () => {
     test('has aria-label on main element', async () => {
+      using _ = fakeTimers();
       await render(<harness.TestRouterProvider />);
 
       const main = document.querySelector('main');
@@ -37,6 +35,7 @@ describe('notFound', () => {
     });
 
     test('has screen reader content', async () => {
+      using _ = fakeTimers();
       await render(<harness.TestRouterProvider />);
 
       // Screen reader only content
@@ -47,6 +46,7 @@ describe('notFound', () => {
 
   describe('boot phase', () => {
     test('renders BootSequence in boot phase', async () => {
+      using _ = fakeTimers();
       await render(<harness.TestRouterProvider />);
 
       // Boot sequence should be visible initially
@@ -62,6 +62,7 @@ describe('notFound', () => {
 
   describe('reduced motion', () => {
     test('renders StaticAftermath immediately when reduced motion is on', async () => {
+      using _ = fakeTimers();
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
@@ -73,6 +74,7 @@ describe('notFound', () => {
     });
 
     test('shows error contained message with reduced motion', async () => {
+      using _ = fakeTimers();
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
@@ -82,6 +84,7 @@ describe('notFound', () => {
     });
 
     test('has link to home with reduced motion', async () => {
+      using _ = fakeTimers();
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
@@ -98,6 +101,7 @@ describe('notFound', () => {
     });
 
     test('exposes an sr-only home link immediately, independent of animation', async () => {
+      using _ = fakeTimers();
       // Default mock: reduced motion OFF, so the visible aftermath link is NOT
       // rendered yet - only the always-on sr-only link should be present
       await render(<harness.TestRouterProvider />);
@@ -108,6 +112,7 @@ describe('notFound', () => {
     });
 
     test('shows Japanese message with reduced motion', async () => {
+      using _ = fakeTimers();
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 
@@ -119,6 +124,7 @@ describe('notFound', () => {
 
   describe('staticAftermath component', () => {
     test('has visual indicator dot', async () => {
+      using _ = fakeTimers();
       const { useReducedMotion } = await import('#hooks/useReducedMotion');
       vi.mocked(useReducedMotion).mockReturnValue(true);
 

@@ -1,9 +1,10 @@
 import type { FC } from 'react';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
+import { fakeTimers, forceReducedMotion } from '../../../../../test/utils/disposable';
 import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
 
 import { useTypingAnimation } from './useTypingAnimation';
@@ -37,19 +38,10 @@ const TestComponent: FC<TestProps> = ({ text, minDelay, maxDelay, onComplete, en
 };
 
 describe('useTypingAnimation', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-    // Clear global reduced motion override set by vitest.setup.ts
-    // so tests can control behavior via matchMedia mocks
-    globalThis.__FORCE_REDUCED_MOTION__ = undefined;
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   describe('basic functionality', () => {
     test('starts with empty text when enabled', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       // Mock matchMedia to return no reduced motion
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
@@ -62,6 +54,8 @@ describe('useTypingAnimation', () => {
     });
 
     test('types characters sequentially', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hi' minDelay={10} maxDelay={20} />);
@@ -74,6 +68,8 @@ describe('useTypingAnimation', () => {
     });
 
     test('completes typing and calls onComplete', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const onComplete = vi.fn();
@@ -92,6 +88,8 @@ describe('useTypingAnimation', () => {
 
   describe('cursor visibility', () => {
     test('cursor is visible during typing', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hello World' minDelay={50} maxDelay={100} />);
@@ -104,6 +102,8 @@ describe('useTypingAnimation', () => {
     });
 
     test('cursor is initially visible', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Test' minDelay={10} maxDelay={20} />);
@@ -114,6 +114,8 @@ describe('useTypingAnimation', () => {
 
   describe('enabled option', () => {
     test('does not animate when enabled=false', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const onComplete = vi.fn();
@@ -133,6 +135,8 @@ describe('useTypingAnimation', () => {
 
   describe('reduced motion', () => {
     test('skips animation when prefers-reduced-motion is enabled', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
       const onComplete = vi.fn();
@@ -150,6 +154,8 @@ describe('useTypingAnimation', () => {
     });
 
     test('cursor is visible when reduced motion enabled', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
       await render(<TestComponent text='Test' />);
@@ -160,6 +166,8 @@ describe('useTypingAnimation', () => {
 
   describe('cleanup', () => {
     test('cleanup cancels pending timeouts on unmount', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const screen = await render(<TestComponent text='Long text that takes a while' minDelay={50} maxDelay={100} />);
@@ -176,6 +184,8 @@ describe('useTypingAnimation', () => {
 
   describe('target text change', () => {
     test('resets animation when target text changes', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const { rerender } = await render(<TestComponent text='First' minDelay={5} maxDelay={10} />);
@@ -197,6 +207,8 @@ describe('useTypingAnimation', () => {
 
   describe('default options', () => {
     test('uses default minDelay=50 and maxDelay=150 when not provided', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='AB' />);
@@ -211,6 +223,8 @@ describe('useTypingAnimation', () => {
 
   describe('initial delay', () => {
     test('waits 500ms before starting to type', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent text='Hello' minDelay={5} maxDelay={10} />);
@@ -230,6 +244,8 @@ describe('useTypingAnimation', () => {
 
   describe('empty text', () => {
     test('handles empty string', async () => {
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       const onComplete = vi.fn();

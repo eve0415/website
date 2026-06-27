@@ -1,8 +1,10 @@
 import type { FC } from 'react';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { fakeTimers } from '../../../../../test/utils/disposable';
 
 import { useCorruptionEffects } from './useCorruptionEffects';
 
@@ -30,20 +32,13 @@ const TestComponent: FC<TestComponentProps> = ({ enabled, progress }) => {
 };
 
 describe('useCorruptionEffects', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   describe('intensity calculation', () => {
     test.each([
       { progress: 0, expected: 0 },
       { progress: 0.5, expected: 0.3536 }, // Math.pow(0.5, 1.5) ≈ 0.3536
       { progress: 1, expected: 1 },
     ])('progress $progress produces intensity ~$expected', async ({ progress, expected }) => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled progress={progress} />);
 
       const intensityText = page.getByTestId('intensity').element().textContent;
@@ -53,6 +48,7 @@ describe('useCorruptionEffects', () => {
     });
 
     test('returns 0 intensity when disabled', async () => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled={false} progress={0.8} />);
 
       await expect.element(page.getByTestId('intensity')).toHaveTextContent('0.0000');
@@ -61,12 +57,14 @@ describe('useCorruptionEffects', () => {
 
   describe('staticOpacity', () => {
     test('starts at 0 with progress 0', async () => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled progress={0} />);
 
       await expect.element(page.getByTestId('static-opacity')).toHaveTextContent('0.0000');
     });
 
     test('increases with progress', async () => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled progress={0.5} />);
 
       const opacity = Number(page.getByTestId('static-opacity').element().textContent);
@@ -74,6 +72,7 @@ describe('useCorruptionEffects', () => {
     });
 
     test('caps at 0.15', async () => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled progress={1} />);
 
       const opacity = Number(page.getByTestId('static-opacity').element().textContent);
@@ -81,6 +80,7 @@ describe('useCorruptionEffects', () => {
     });
 
     test('returns 0 when disabled', async () => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled={false} progress={1} />);
 
       await expect.element(page.getByTestId('static-opacity')).toHaveTextContent('0.0000');
@@ -89,12 +89,14 @@ describe('useCorruptionEffects', () => {
 
   describe('glitch lines', () => {
     test('empty when disabled', async () => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled={false} progress={0.8} />);
 
       await expect.element(page.getByTestId('glitch-lines-count')).toHaveTextContent('0');
     });
 
     test('generated when enabled with progress > 0', async () => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled progress={0.5} />);
 
       // Wait for interval to generate lines
@@ -107,6 +109,7 @@ describe('useCorruptionEffects', () => {
 
   describe('scanline animation', () => {
     test('offset changes over time when enabled', async () => {
+      using _ = fakeTimers();
       await render(<TestComponent enabled progress={0.5} />);
 
       const initialOffset = Math.trunc(Number(page.getByTestId('scanline-offset').element().textContent));

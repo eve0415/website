@@ -2,10 +2,11 @@
 import type { ReactNode } from 'react';
 
 import { Component } from 'react';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page, userEvent } from 'vitest/browser';
 
+import { fakeTimers } from '../../../../../test/utils/disposable';
 import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
 
 import Terminal from './terminal';
@@ -58,16 +59,9 @@ const mockTouchDevice = (isTouch: boolean, reducedMotion = false) => {
 };
 
 describe('terminal', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   describe('boot sequence', () => {
     test('starts in typing state with animated text', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -84,6 +78,7 @@ describe('terminal', () => {
     });
 
     test('shows typing cursor that blinks', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -98,6 +93,7 @@ describe('terminal', () => {
     });
 
     test('completes boot and shows prompt after Ctrl+C during displaying', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -128,6 +124,7 @@ describe('terminal', () => {
     });
 
     test('footer shows help text after boot on desktop', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -166,6 +163,7 @@ describe('terminal', () => {
 
     // oxlint-disable-next-line vitest/no-disabled-tests
     test.skip('ctrl+C during typing skips content and shows prompt with ^C', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -198,6 +196,7 @@ describe('terminal', () => {
 
     // oxlint-disable-next-line vitest/no-disabled-tests
     test.skip('ctrl+C during typing transitions to prompt without content', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -225,6 +224,7 @@ describe('terminal', () => {
 
   describe('touch device behavior', () => {
     test('does not show prompt on touch device', async () => {
+      using _ = fakeTimers();
       // Enable reduced motion to skip typing animation
       mockTouchDevice(true, true);
       const onBootComplete = vi.fn();
@@ -244,6 +244,7 @@ describe('terminal', () => {
     });
 
     test('does not show footer on touch device', async () => {
+      using _ = fakeTimers();
       // Enable reduced motion to skip typing animation
       mockTouchDevice(true, true);
       const onBootComplete = vi.fn();
@@ -264,6 +265,7 @@ describe('terminal', () => {
 
   describe('desktop behavior', () => {
     test('keyboard input appears in prompt', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -291,6 +293,7 @@ describe('terminal', () => {
 
   describe('command execution', () => {
     test('help command shows output', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -318,6 +321,7 @@ describe('terminal', () => {
     });
 
     test('clear command removes output', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -346,6 +350,7 @@ describe('terminal', () => {
     });
 
     test('unknown command shows error', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -372,6 +377,7 @@ describe('terminal', () => {
 
   describe('exit confirmation flow', () => {
     test('exit command shows confirmation prompt', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
       mockNavigate.mockClear();
@@ -401,6 +407,7 @@ describe('terminal', () => {
     });
 
     test('confirming exit with y navigates home', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
       mockNavigate.mockClear();
@@ -430,6 +437,7 @@ describe('terminal', () => {
     });
 
     test('declining exit with n stays in terminal', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
       mockNavigate.mockClear();
@@ -462,6 +470,7 @@ describe('terminal', () => {
     });
 
     test('canceling exit with Ctrl+C clears confirmation', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
       mockNavigate.mockClear();
@@ -497,6 +506,7 @@ describe('terminal', () => {
 
   describe('tab autocomplete', () => {
     test('tab completes command', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -523,6 +533,7 @@ describe('terminal', () => {
     });
 
     test('double tab shows suggestions', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -555,6 +566,7 @@ describe('terminal', () => {
 
   describe('auto-scroll', () => {
     test('scrolls to bottom on new output', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -589,6 +601,7 @@ describe('terminal', () => {
     // in Storybook (Terminal/Crashing story - also excluded from automated tests).
     // The full crash → BSOD → reset flow is tested in BSODError integration tests.
     test('sudo rm -rf shows crash animation class', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -615,6 +628,7 @@ describe('terminal', () => {
     });
 
     test('sudo rm -rf propagates SudoRmRfError to error boundary after 1.5s', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -648,6 +662,7 @@ describe('terminal', () => {
 
   describe('stats display', () => {
     test('shows cached date when content is visible', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -673,6 +688,7 @@ describe('terminal', () => {
 
   describe('ctrl+C in prompt state', () => {
     test('clears current input', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -703,6 +719,7 @@ describe('terminal', () => {
 
   describe('cursor movement', () => {
     test('cursor renders at correct position with pipe character', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -727,6 +744,7 @@ describe('terminal', () => {
     });
 
     test('left arrow moves cursor visually', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -751,6 +769,7 @@ describe('terminal', () => {
     });
 
     test('character inserts at cursor position visually', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -778,6 +797,7 @@ describe('terminal', () => {
 
   describe('history navigation', () => {
     test('up arrow recalls previous command', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 
@@ -805,6 +825,7 @@ describe('terminal', () => {
     });
 
     test('down arrow returns to current input', async () => {
+      using _ = fakeTimers();
       mockTouchDevice(false);
       const onBootComplete = vi.fn();
 

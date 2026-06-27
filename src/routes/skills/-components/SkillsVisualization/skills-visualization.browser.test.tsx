@@ -1,8 +1,10 @@
 import type { AISkill } from '#workflows/-utils/ai-skills-types';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { forceReducedMotion } from '../../../../../test/utils/disposable';
 
 import SkillsVisualization from './skills-visualization';
 
@@ -34,16 +36,9 @@ const mockAISkills: AISkill[] = [
 ];
 
 describe('skillsVisualization', () => {
-  beforeEach(() => {
-    globalThis.__FORCE_REDUCED_MOTION__ = undefined;
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   describe('basic rendering', () => {
     test('renders canvas element', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization />);
 
       const canvas = container.querySelector('canvas');
@@ -51,6 +46,7 @@ describe('skillsVisualization', () => {
     });
 
     test('renders with animate=true (default)', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization />);
 
       const canvas = container.querySelector('canvas');
@@ -58,6 +54,7 @@ describe('skillsVisualization', () => {
     });
 
     test('renders with animate=false', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization animate={false} />);
 
       const canvas = container.querySelector('canvas');
@@ -65,6 +62,7 @@ describe('skillsVisualization', () => {
     });
 
     test('renders legend with skill levels', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization />);
 
       // Check for legend items
@@ -73,6 +71,7 @@ describe('skillsVisualization', () => {
     });
 
     test('draws nodes for skills', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization />);
 
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;
@@ -85,9 +84,9 @@ describe('skillsVisualization', () => {
 
   describe('reduced motion', () => {
     test('handles reduced motion preference', async () => {
+      using _rm = forceReducedMotion();
       // Mock reduced motion preference
-      const originalMatchMedia = globalThis.matchMedia;
-      vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
+      using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
         matches: query === '(prefers-reduced-motion: reduce)',
         media: query,
         onchange: null,
@@ -102,15 +101,13 @@ describe('skillsVisualization', () => {
 
       const canvas = container.querySelector('canvas');
       expect(canvas).not.toBeNull();
-
-      // Restore
-      globalThis.matchMedia = originalMatchMedia;
     });
   });
 
   describe('cleanup', () => {
     test('cleans up on unmount', async () => {
-      const cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
+      using _rm = forceReducedMotion();
+      using cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
       const screen = await render(<SkillsVisualization animate />);
 
@@ -119,13 +116,12 @@ describe('skillsVisualization', () => {
       // ResizeObserver disconnect is called internally, cancelAnimationFrame for animation cleanup
       // oxlint-disable-next-line vitest/prefer-called-with
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
-
-      cancelAnimationFrameSpy.mockRestore();
     });
   });
 
   describe('aI skills', () => {
     test('accepts aiSkills prop array', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization aiSkills={mockAISkills} />);
 
       const canvas = container.querySelector('canvas');
@@ -133,6 +129,7 @@ describe('skillsVisualization', () => {
     });
 
     test('renders AI discovered legend when aiSkills with is_ai_discovered=true are provided', async () => {
+      using _rm = forceReducedMotion();
       await render(<SkillsVisualization aiSkills={mockAISkills} />);
 
       // Should show "AI発見" legend item
@@ -140,6 +137,7 @@ describe('skillsVisualization', () => {
     });
 
     test('does not show AI legend when no AI-discovered skills', async () => {
+      using _rm = forceReducedMotion();
       const nonAISkills: AISkill[] = [
         {
           ...mockAISkill,
@@ -156,6 +154,7 @@ describe('skillsVisualization', () => {
 
   describe('node selection', () => {
     test('onNodeSelect callback fires when provided', async () => {
+      using _rm = forceReducedMotion();
       const onNodeSelect = vi.fn();
 
       const { container } = await render(<SkillsVisualization onNodeSelect={onNodeSelect} />);
@@ -171,6 +170,7 @@ describe('skillsVisualization', () => {
     });
 
     test('selectedSkillId prop is accepted', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization selectedSkillId='TypeScript' />);
 
       const canvas = container.querySelector('canvas');
@@ -178,6 +178,7 @@ describe('skillsVisualization', () => {
     });
 
     test('canvas still selects nodes on click', async () => {
+      using _rm = forceReducedMotion();
       const onNodeSelect = vi.fn();
 
       const { container } = await render(<SkillsVisualization selectedSkillId='TypeScript' onNodeSelect={onNodeSelect} />);
@@ -194,6 +195,7 @@ describe('skillsVisualization', () => {
 
   describe('accessibility', () => {
     test('canvas is exposed as an image with a Japanese label', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization />);
 
       const canvas = container.querySelector('canvas') as HTMLCanvasElement;
@@ -202,6 +204,7 @@ describe('skillsVisualization', () => {
     });
 
     test('canvas is not a keyboard focus trap (no tabindex / application role)', async () => {
+      using _rm = forceReducedMotion();
       const { container } = await render(<SkillsVisualization />);
 
       // role='application' + tabIndex trapped screen readers in an opaque canvas.

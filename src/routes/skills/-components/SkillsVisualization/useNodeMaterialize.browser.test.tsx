@@ -1,9 +1,10 @@
 import type { FC } from 'react';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
+import { fakeTimers, forceReducedMotion } from '../../../../../test/utils/disposable';
 import { createMediaQueryListMock } from '../../../../../test/utils/media-query-mock';
 
 import { useNodeMaterialize } from './useNodeMaterialize';
@@ -29,16 +30,9 @@ const TestComponent: FC<TestProps> = ({ shouldAnimate, delay }) => {
 };
 
 describe('useNodeMaterialize', () => {
-  beforeEach(() => {
-    globalThis.__FORCE_REDUCED_MOTION__ = undefined;
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   describe('no animation', () => {
     test('returns visible phase immediately when shouldAnimate=false', async () => {
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
       await render(<TestComponent shouldAnimate={false} />);
@@ -51,6 +45,7 @@ describe('useNodeMaterialize', () => {
 
   describe('reduced motion', () => {
     test('returns visible immediately when prefers-reduced-motion is enabled', async () => {
+      using _rm = forceReducedMotion();
       vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
       await render(<TestComponent shouldAnimate />);
@@ -63,7 +58,8 @@ describe('useNodeMaterialize', () => {
 
   describe('animation phases', () => {
     test('starts in hidden phase when shouldAnimate=true', async () => {
-      vi.useFakeTimers();
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
 
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
@@ -75,7 +71,8 @@ describe('useNodeMaterialize', () => {
     });
 
     test('eventually reaches visible phase with shouldAnimate=true', async () => {
-      vi.useFakeTimers();
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
 
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
@@ -92,7 +89,8 @@ describe('useNodeMaterialize', () => {
 
   describe('delay', () => {
     test('waits for delay before starting animation', async () => {
-      vi.useFakeTimers();
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
 
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
@@ -113,8 +111,9 @@ describe('useNodeMaterialize', () => {
 
   describe('cleanup', () => {
     test('cancels animation on unmount', async () => {
-      vi.useFakeTimers();
-      const cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
+      using _ = fakeTimers();
+      using _rm = forceReducedMotion();
+      using cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
       vi.spyOn(globalThis, 'matchMedia').mockReturnValue(createMediaQueryListMock());
 
@@ -128,8 +127,6 @@ describe('useNodeMaterialize', () => {
       // Should have called cleanup
       // oxlint-disable-next-line vitest/prefer-called-with
       expect(cancelAnimationFrameSpy).toHaveBeenCalled();
-
-      cancelAnimationFrameSpy.mockRestore();
     });
   });
 });
