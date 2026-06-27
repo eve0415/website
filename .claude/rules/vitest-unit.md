@@ -67,4 +67,14 @@ npm packages (mimetext, drizzle-orm, etc.) and `cloudflare:*` modules (cloudflar
 
 ## Fake Timers
 
-`vi.useFakeTimers()` works in workerd. Always restore: `vi.useRealTimers()` in afterEach.
+`vi.useFakeTimers()` works in workerd. Use the disposable helper for scoped cleanup:
+
+```ts
+import { fakeTimers } from '<relative-path>/test/utils/disposable';
+
+test('time-dependent behavior', () => {
+  using _ = fakeTimers();
+  vi.setSystemTime(new Date('2024-01-15T12:00:00Z'));
+  // timers auto-restore at block exit
+});
+```
