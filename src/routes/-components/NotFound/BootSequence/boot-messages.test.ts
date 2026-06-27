@@ -100,7 +100,7 @@ describe('boot-messages', () => {
       const result = flattenMessages(messages);
 
       expect(result).toHaveLength(2);
-      expect(result.every(m => m.depth === 0)).toBeTruthy();
+      expect(result.every(m => m.depth === 0)).toBe(true);
     });
 
     it('preserves all message properties', () => {
