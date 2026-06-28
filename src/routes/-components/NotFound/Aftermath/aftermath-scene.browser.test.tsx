@@ -1,7 +1,7 @@
 import { createRouterHarness } from '@tanstack-router-testing/react-router-testing';
 /* oxlint-disable typescript/no-non-null-assertion, no-await-in-loop -- Test assertions verify existence; sequential error type tests require await in loop */
 import { createRootRoute } from '@tanstack/react-router';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
@@ -38,10 +38,6 @@ describe('aftermathScene', () => {
 
   beforeEach(() => {
     vi.spyOn(Date, 'now');
-  });
-
-  afterEach(() => {
-    vi.restoreAllMocks();
   });
 
   describe('error selection', () => {

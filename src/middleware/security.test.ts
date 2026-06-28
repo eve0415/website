@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { buildCspHeader, buildSecurityHeaders, generateNonce } from './security';
 
@@ -49,10 +49,6 @@ describe('generateNonce', () => {
 });
 
 describe('buildCspHeader', () => {
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
-
   test('includes common security directives', () => {
     const csp = buildCspHeader('test');
 
@@ -112,10 +108,6 @@ describe('buildCspHeader', () => {
 });
 
 describe('buildSecurityHeaders', () => {
-  afterEach(() => {
-    vi.unstubAllEnvs();
-  });
-
   test('includes CSP header', () => {
     const headers = buildSecurityHeaders('test-csp-value');
 

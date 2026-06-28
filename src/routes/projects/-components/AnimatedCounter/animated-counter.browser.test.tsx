@@ -1,22 +1,20 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { fakeTimers } from '#test/utils/disposable';
 
 import AnimatedCounter from './animated-counter';
 
 describe('animatedCounter', () => {
   const originalIntersectionObserver = globalThis.IntersectionObserver;
 
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
   afterEach(() => {
-    vi.useRealTimers();
     globalThis.IntersectionObserver = originalIntersectionObserver;
   });
 
   test('renders with default parameters (line 11)', async () => {
+    using _ = fakeTimers();
     // This covers the default parameters: duration = 2000, suffix = ''
     await render(<AnimatedCounter end={100} />);
 
@@ -25,12 +23,14 @@ describe('animatedCounter', () => {
   });
 
   test('renders with custom duration', async () => {
+    using _ = fakeTimers();
     await render(<AnimatedCounter end={50} duration={500} />);
 
     await expect.element(page.getByText('0')).toBeInTheDocument();
   });
 
   test('renders with suffix', async () => {
+    using _ = fakeTimers();
     await render(<AnimatedCounter end={100} suffix='%' />);
 
     // Initial value with suffix
@@ -38,6 +38,7 @@ describe('animatedCounter', () => {
   });
 
   test('animates when isVisible prop is true', async () => {
+    using _ = fakeTimers();
     // Use isVisible prop for direct control (shared observer pattern)
     await render(<AnimatedCounter end={100} duration={500} isVisible />);
 
@@ -49,6 +50,7 @@ describe('animatedCounter', () => {
   });
 
   test('does not animate when isVisible prop is false', async () => {
+    using _ = fakeTimers();
     await render(<AnimatedCounter end={100} duration={500} isVisible={false} />);
 
     // Fast-forward past animation duration
@@ -59,6 +61,7 @@ describe('animatedCounter', () => {
   });
 
   test('applies correct styling', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<AnimatedCounter end={50} />);
 
     const counter = container.querySelector('.font-mono.text-3xl.text-neon');
@@ -66,6 +69,7 @@ describe('animatedCounter', () => {
   });
 
   test('creates internal observer when isVisible prop is not provided', async () => {
+    using _ = fakeTimers();
     // Mock IntersectionObserver to verify it's created
     const observeMock = vi.fn();
     const disconnectMock = vi.fn();
@@ -87,6 +91,7 @@ describe('animatedCounter', () => {
   });
 
   test('does not create internal observer when isVisible prop is provided', async () => {
+    using _ = fakeTimers();
     // Mock IntersectionObserver to verify it's NOT created
     const observeMock = vi.fn();
 
@@ -106,6 +111,7 @@ describe('animatedCounter', () => {
   });
 
   test('does not re-animate after first animation', async () => {
+    using _ = fakeTimers();
     // Use isVisible prop for direct control
     const { rerender } = await render(<AnimatedCounter end={100} duration={100} isVisible />);
 

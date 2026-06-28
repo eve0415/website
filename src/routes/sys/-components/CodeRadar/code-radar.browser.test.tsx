@@ -1,9 +1,11 @@
 /* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
 import type { ContributionDay } from '../../-utils/github-stats-utils';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { fakeTimers } from '#test/utils/disposable';
 
 import CodeRadar from './code-radar';
 
@@ -28,15 +30,8 @@ const generateMockContributions = (): ContributionDay[] => {
 const mockContributions = generateMockContributions();
 
 describe('codeRadar', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   test('renders canvas element', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<CodeRadar contributionCalendar={mockContributions} />);
 
     const canvas = container.querySelector('canvas');
@@ -44,15 +39,16 @@ describe('codeRadar', () => {
   });
 
   test('renders CODE_RADAR header', async () => {
+    using _ = fakeTimers();
     await render(<CodeRadar contributionCalendar={mockContributions} />);
 
     await expect.element(page.getByText('CODE_RADAR')).toBeInTheDocument();
   });
 
   test('shows SCANNING during boot animation', async () => {
+    using _ = fakeTimers();
     // Ensure reduced motion is off
-    const originalMatchMedia = globalThis.matchMedia;
-    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
+    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
       matches: false,
       media: query,
       onchange: null,
@@ -67,8 +63,6 @@ describe('codeRadar', () => {
 
     // During boot, SCANNING should be visible
     await expect.element(page.getByText('SCANNING...')).toBeInTheDocument();
-
-    globalThis.matchMedia = originalMatchMedia;
   });
 
   // SKIP: Fake timers don't properly mock requestAnimationFrame in browser test environment.
@@ -76,11 +70,11 @@ describe('codeRadar', () => {
   // The reduced motion test below verifies onBootComplete works correctly.
   // oxlint-disable-next-line vitest/no-disabled-tests
   test.skip('calls onBootComplete when animation finishes (lines 216-217)', async () => {
+    using _ = fakeTimers();
     const onBootComplete = vi.fn();
 
     // Ensure reduced motion is off
-    const originalMatchMedia = globalThis.matchMedia;
-    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
+    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
       matches: false,
       media: query,
       onchange: null,
@@ -97,16 +91,14 @@ describe('codeRadar', () => {
     await vi.advanceTimersByTimeAsync(2500);
 
     expect(onBootComplete).toHaveBeenCalledOnce();
-
-    globalThis.matchMedia = originalMatchMedia;
   });
 
   test('skips boot animation with reduced motion', async () => {
+    using _ = fakeTimers();
     const onBootComplete = vi.fn();
 
     // Mock reduced motion preference
-    const originalMatchMedia = globalThis.matchMedia;
-    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
+    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
       matches: query === '(prefers-reduced-motion: reduce)',
       media: query,
       onchange: null,
@@ -123,11 +115,10 @@ describe('codeRadar', () => {
     await vi.advanceTimersByTimeAsync(100);
 
     expect(onBootComplete).toHaveBeenCalledWith();
-
-    globalThis.matchMedia = originalMatchMedia;
   });
 
   test('handles empty contribution data', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<CodeRadar contributionCalendar={[]} />);
 
     const canvas = container.querySelector('canvas');
@@ -135,6 +126,7 @@ describe('codeRadar', () => {
   });
 
   test('renders contribution levels correctly', async () => {
+    using _ = fakeTimers();
     // Create data with all level types
     const dataWithAllLevels: ContributionDay[] = [
       { date: '2024-01-01', count: 0, level: 0 },
@@ -151,10 +143,10 @@ describe('codeRadar', () => {
   });
 
   test('cleans up animation on unmount', async () => {
-    const cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
+    using _ = fakeTimers();
+    using cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
-    const originalMatchMedia = globalThis.matchMedia;
-    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
+    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
       matches: false,
       media: query,
       onchange: null,
@@ -171,8 +163,5 @@ describe('codeRadar', () => {
 
     // oxlint-disable-next-line vitest/prefer-called-with
     expect(cancelAnimationFrameSpy).toHaveBeenCalled();
-
-    cancelAnimationFrameSpy.mockRestore();
-    globalThis.matchMedia = originalMatchMedia;
   });
 });

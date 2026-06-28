@@ -1,6 +1,6 @@
 import { createExecutionContext, createScheduledController, waitOnExecutionContext } from 'cloudflare:test';
 import { env } from 'cloudflare:workers';
-import { afterEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 
 const mockHandlerFetch = vi.hoisted(() => vi.fn());
 const mockRefreshGitHubStats = vi.hoisted(() => vi.fn<() => Promise<void>>());
@@ -18,10 +18,6 @@ vi.mock(import('./routes/sys/-utils/github-stats'), () => ({
 import server from './server';
 
 describe('server', () => {
-  afterEach(() => {
-    vi.clearAllMocks();
-  });
-
   describe('fetch handler', () => {
     test('delegates to TanStack handler and does not call refreshGitHubStats', async () => {
       mockHandlerFetch.mockReturnValue(new Response('OK'));
@@ -53,7 +49,7 @@ describe('server', () => {
 
     test('weekly cron triggers the workflow but does not call refreshGitHubStats', async () => {
       mockRefreshGitHubStats.mockResolvedValue();
-      const createSpy = vi.spyOn(env.SKILLS_WORKFLOW, 'create').mockResolvedValue({} as unknown as WorkflowInstance);
+      using createSpy = vi.spyOn(env.SKILLS_WORKFLOW, 'create').mockResolvedValue({} as unknown as WorkflowInstance);
 
       const ctrl = createScheduledController({ cron: '30 18 * * 6', scheduledTime: Date.now() });
       const ctx = createExecutionContext();
@@ -63,8 +59,6 @@ describe('server', () => {
 
       expect(createSpy).toHaveBeenCalledOnce();
       expect(mockRefreshGitHubStats).not.toHaveBeenCalled();
-
-      createSpy.mockRestore();
     });
   });
 });

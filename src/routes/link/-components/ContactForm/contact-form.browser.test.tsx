@@ -1,4 +1,4 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
@@ -46,13 +46,7 @@ const triggerBlur = async () => {
 
 describe('contactForm', () => {
   beforeEach(() => {
-    vi.useFakeTimers();
     setTurnstileCallback(null);
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-    vi.clearAllMocks();
   });
 
   describe('rendering', () => {
@@ -223,15 +217,6 @@ describe('contactForm', () => {
   });
 
   describe('submission Flow', () => {
-    // Submission tests need real timers for async form handling to work properly
-    beforeEach(() => {
-      vi.useRealTimers();
-    });
-
-    afterEach(() => {
-      vi.useFakeTimers();
-    });
-
     test('shows validation errors when submitting an empty form', async () => {
       await render(<ContactForm />);
 
@@ -373,15 +358,6 @@ describe('contactForm', () => {
   });
 
   describe('uI States', () => {
-    // Submission tests need real timers for async form handling to work properly
-    beforeEach(() => {
-      vi.useRealTimers();
-    });
-
-    afterEach(() => {
-      vi.useFakeTimers();
-    });
-
     test('shows alternative contact for email_failed errors', async () => {
       submitMock.mockResolvedValue({
         success: false,

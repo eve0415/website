@@ -6,6 +6,11 @@
       "./src/*.ts",
       "./src/*.tsx"
     ],
+    "#test/*": [
+      "./test/*",
+      "./test/*.ts",
+      "./test/*.tsx"
+    ],
     "#.storybook/*": [
       "./.storybook/*",
       "./.storybook/*.ts",

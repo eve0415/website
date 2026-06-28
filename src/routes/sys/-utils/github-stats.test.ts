@@ -1,7 +1,9 @@
 import { env } from 'cloudflare:workers';
 import { HttpResponse, http } from 'msw';
 import { setupServer } from 'msw/node';
-import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, test, vi } from 'vitest';
+import { afterAll, afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
+
+import { fakeTimers } from '#test/utils/disposable';
 
 import { refreshGitHubStats } from './github-stats';
 import { calculateStreaksJST, getLanguageColor, getRelativeTimeJapanese, levelFromContributionLevel } from './github-stats-utils';
@@ -126,20 +128,14 @@ describe('github-stats', () => {
   });
 
   describe('calculateStreaksJST', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
     test('returns zeros for empty array', () => {
+      using _ = fakeTimers();
       const result = calculateStreaksJST([]);
       expect(result).toStrictEqual({ currentStreak: 0, longestStreak: 0 });
     });
 
     test('returns zeros when all days have zero contributions', () => {
+      using _ = fakeTimers();
       // Set time to 2024-01-15 12:00:00 UTC (21:00 JST)
       vi.setSystemTime(new Date('2024-01-15T12:00:00Z'));
 
@@ -154,6 +150,7 @@ describe('github-stats', () => {
     });
 
     test('calculates current streak starting today', () => {
+      using _ = fakeTimers();
       // Set time to 2024-01-15 12:00:00 UTC (21:00 JST, still Jan 15)
       vi.setSystemTime(new Date('2024-01-15T12:00:00Z'));
 
@@ -170,6 +167,7 @@ describe('github-stats', () => {
     });
 
     test('calculates current streak starting yesterday when today has no contributions', () => {
+      using _ = fakeTimers();
       // Set time to 2024-01-15 12:00:00 UTC (21:00 JST)
       vi.setSystemTime(new Date('2024-01-15T12:00:00Z'));
 
@@ -186,6 +184,7 @@ describe('github-stats', () => {
     });
 
     test('returns zero current streak when yesterday has no contributions', () => {
+      using _ = fakeTimers();
       // Set time to 2024-01-15 12:00:00 UTC
       vi.setSystemTime(new Date('2024-01-15T12:00:00Z'));
 
@@ -202,6 +201,7 @@ describe('github-stats', () => {
     });
 
     test('handles gap breaking streak', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-15T12:00:00Z'));
 
       const days = [
@@ -219,6 +219,7 @@ describe('github-stats', () => {
     });
 
     test('calculates longest streak across multiple gaps', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-20T12:00:00Z'));
 
       const days = [
@@ -240,6 +241,7 @@ describe('github-stats', () => {
     });
 
     test('handles month boundary crossing', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-02-02T12:00:00Z'));
 
       const days = [
@@ -255,6 +257,7 @@ describe('github-stats', () => {
     });
 
     test('handles year boundary crossing', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-02T12:00:00Z'));
 
       const days = [
@@ -270,6 +273,7 @@ describe('github-stats', () => {
     });
 
     test('handles unsorted input', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-15T12:00:00Z'));
 
       // Days in random order
@@ -286,6 +290,7 @@ describe('github-stats', () => {
     });
 
     test('handles single day with contributions', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-15T12:00:00Z'));
 
       const days = [{ date: '2024-01-15', count: 5 }];
@@ -296,6 +301,7 @@ describe('github-stats', () => {
     });
 
     test('jST timezone calculation - just before midnight UTC is still same day in JST', () => {
+      using _ = fakeTimers();
       // 23:00 UTC on Jan 14 = 08:00 JST on Jan 15
       vi.setSystemTime(new Date('2024-01-14T23:00:00Z'));
 
@@ -311,6 +317,7 @@ describe('github-stats', () => {
     // Edge case tests for uncovered lines (312, 348, 365)
 
     test('handles multi-day gap in longest streak calculation (line 312)', () => {
+      using _ = fakeTimers();
       // Tests the case where diffDays > 1, triggering tempStreak = 1
       vi.setSystemTime(new Date('2024-01-20T12:00:00Z'));
 
@@ -331,6 +338,7 @@ describe('github-stats', () => {
     });
 
     test('breaks when only old data exists past yesterday (line 348)', () => {
+      using _ = fakeTimers();
       // Tests the case where day.date < yesterdayJST with no today/yesterday contributions
       vi.setSystemTime(new Date('2024-01-20T12:00:00Z'));
 
@@ -347,6 +355,7 @@ describe('github-stats', () => {
     });
 
     test('breaks current streak when expected date is skipped (line 365)', () => {
+      using _ = fakeTimers();
       // Tests the case where during backward traversal, we skip a day
       vi.setSystemTime(new Date('2024-01-20T12:00:00Z'));
 
@@ -364,6 +373,7 @@ describe('github-stats', () => {
     });
 
     test('handles JST midnight boundary edge case', () => {
+      using _ = fakeTimers();
       // 14:59 UTC on Jan 15 = 23:59 JST on Jan 15
       // 15:01 UTC on Jan 15 = 00:01 JST on Jan 16
       vi.setSystemTime(new Date('2024-01-15T15:01:00Z'));
@@ -380,24 +390,19 @@ describe('github-stats', () => {
   });
 
   describe('getRelativeTimeJapanese', () => {
-    beforeEach(() => {
-      vi.useFakeTimers();
-    });
-
-    afterEach(() => {
-      vi.useRealTimers();
-    });
-
     test('returns special string for 未取得', () => {
+      using _ = fakeTimers();
       expect(getRelativeTimeJapanese('未取得')).toBe('未取得');
     });
 
     test('returns たった今 for less than 1 minute', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-15T12:00:30Z'));
       expect(getRelativeTimeJapanese('2024-01-15T12:00:00Z')).toBe('たった今');
     });
 
     test('returns minutes for less than 60 minutes', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-15T12:30:00Z'));
       expect(getRelativeTimeJapanese('2024-01-15T12:00:00Z')).toBe('30分前');
 
@@ -409,6 +414,7 @@ describe('github-stats', () => {
     });
 
     test('returns hours for less than 24 hours', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-15T14:00:00Z'));
       expect(getRelativeTimeJapanese('2024-01-15T12:00:00Z')).toBe('2時間前');
 
@@ -417,6 +423,7 @@ describe('github-stats', () => {
     });
 
     test('returns days for less than 7 days', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-16T12:00:00Z'));
       expect(getRelativeTimeJapanese('2024-01-15T12:00:00Z')).toBe('1日前');
 
@@ -425,6 +432,7 @@ describe('github-stats', () => {
     });
 
     test('returns formatted date for 7 days or more', () => {
+      using _ = fakeTimers();
       vi.setSystemTime(new Date('2024-01-22T12:00:00Z'));
       const result = getRelativeTimeJapanese('2024-01-15T12:00:00Z');
       // Should be formatted as Japanese date locale

@@ -1,9 +1,11 @@
 import type { FC } from 'react';
 
 import { useState } from 'react';
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { fakeTimers } from '#test/utils/disposable';
 
 import Logo from './logo';
 
@@ -30,14 +32,6 @@ const LogoTestWrapper: FC<{ animate?: boolean }> = ({ animate = true }) => {
 };
 
 describe('logo', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   test('renders without crashing', async () => {
     await render(<Logo />);
 
@@ -67,6 +61,7 @@ describe('logo', () => {
   });
 
   test('animation completes after delay', async () => {
+    using _ = fakeTimers();
     // This test covers line 28: setIsAnimating(false) after timer
     await render(<Logo animate />);
 
@@ -81,7 +76,8 @@ describe('logo', () => {
   });
 
   test('cleans up timer on unmount', async () => {
-    const clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
+    using _ = fakeTimers();
+    using clearTimeoutSpy = vi.spyOn(globalThis, 'clearTimeout');
 
     await render(<LogoTestWrapper animate />);
 
@@ -94,7 +90,5 @@ describe('logo', () => {
     // clearTimeout should have been called during cleanup
     // oxlint-disable-next-line vitest/prefer-called-with
     expect(clearTimeoutSpy).toHaveBeenCalled();
-
-    clearTimeoutSpy.mockRestore();
   });
 });

@@ -35,8 +35,8 @@ describe('background', () => {
   });
 
   test('cleans up on unmount', async () => {
-    const removeEventListenerSpy = vi.spyOn(globalThis, 'removeEventListener');
-    const cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
+    using removeEventListenerSpy = vi.spyOn(globalThis, 'removeEventListener');
+    using cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
     const screen = await render(<Background />);
 
@@ -47,15 +47,11 @@ describe('background', () => {
     // And cancel animation frame
     // oxlint-disable-next-line vitest/prefer-called-with
     expect(cancelAnimationFrameSpy).toHaveBeenCalled();
-
-    removeEventListenerSpy.mockRestore();
-    cancelAnimationFrameSpy.mockRestore();
   });
 
   test('handles reduced motion preference', async () => {
     // Mock reduced motion preference
-    const originalMatchMedia = globalThis.matchMedia;
-    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
+    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
       matches: query === '(prefers-reduced-motion: reduce)',
       media: query,
       onchange: null,
@@ -70,9 +66,6 @@ describe('background', () => {
 
     const canvas = container.querySelector('canvas');
     expect(canvas).not.toBeNull();
-
-    // Restore
-    globalThis.matchMedia = originalMatchMedia;
   });
 
   test('handles mouse movement', async () => {

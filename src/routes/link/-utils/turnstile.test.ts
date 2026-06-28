@@ -94,7 +94,7 @@ describe('verifyTurnstile', () => {
     });
 
     test.skipIf(import.meta.env.DEV)('rejects localhost in production', async () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      using _consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       server.use(
         http.post(TURNSTILE_URL, () =>
@@ -109,8 +109,6 @@ describe('verifyTurnstile', () => {
 
       expect(result.success).toBe(false);
       expect(result.error).toBe('認証に失敗しました。もう一度お試しください。');
-
-      consoleWarnSpy.mockRestore();
     });
 
     test('returns success when no hostname is provided in response', async () => {
@@ -124,7 +122,7 @@ describe('verifyTurnstile', () => {
 
   describe('hostname validation', () => {
     test('returns error for mismatched hostname', async () => {
-      const consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
+      using consoleWarnSpy = vi.spyOn(console, 'warn').mockImplementation(() => {});
 
       server.use(
         http.post(TURNSTILE_URL, () =>
@@ -142,8 +140,6 @@ describe('verifyTurnstile', () => {
       // The allowed-host list in the message varies by environment (localhost is dev-only),
       // so assert the stable prefix and the rejected hostname rather than the exact enumeration.
       expect(consoleWarnSpy).toHaveBeenCalledWith(expect.stringMatching(/^Turnstile hostname mismatch: expected one of .+, got malicious-site\.com$/));
-
-      consoleWarnSpy.mockRestore();
     });
   });
 
@@ -276,24 +272,14 @@ describe('verifyTurnstile', () => {
     });
   });
 
-  // Network failure test MUST be last - it closes/reopens MSW server which can affect subsequent tests
   describe('network failure', () => {
     test('returns connection error when fetch throws', async () => {
-      // Stop MSW server before mocking fetch
-      server.close();
+      server.use(http.post(TURNSTILE_URL, () => HttpResponse.error()));
 
-      // Mock fetch to reject with an error
-      const fetchSpy = vi.spyOn(globalThis, 'fetch').mockRejectedValue(new Error('Network error'));
+      const result = await verifyTurnstile('valid-token', 'secret-key');
 
-      try {
-        const result = await verifyTurnstile('valid-token', 'secret-key');
-
-        expect(result.success).toBe(false);
-        expect(result.error).toBe('認証サーバーへの接続に失敗しました。');
-      } finally {
-        fetchSpy.mockRestore();
-        // Don't restart server - afterAll will close it anyway
-      }
+      expect(result.success).toBe(false);
+      expect(result.error).toBe('認証サーバーへの接続に失敗しました。');
     });
   });
 });

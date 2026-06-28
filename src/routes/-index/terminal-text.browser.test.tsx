@@ -1,19 +1,14 @@
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { fakeTimers } from '#test/utils/disposable';
 
 import TerminalText from './terminal-text';
 
 describe('terminalText', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   test('renders with required text prop only (default parameters)', async () => {
+    using _ = fakeTimers();
     // This covers line 13 default parameter branch
     await render(<TerminalText text='Hello' />);
 
@@ -25,6 +20,7 @@ describe('terminalText', () => {
   });
 
   test('renders with all props provided', async () => {
+    using _ = fakeTimers();
     const onComplete = vi.fn();
 
     await render(<TerminalText text='Test' delay={0} speed={10} className='custom' onComplete={onComplete} />);
@@ -37,6 +33,7 @@ describe('terminalText', () => {
   });
 
   test('applies custom className', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<TerminalText text='Hi' className='test-class' />);
 
     // Fast-forward for render
@@ -47,6 +44,7 @@ describe('terminalText', () => {
   });
 
   test('shows cursor during typing', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<TerminalText text='LongText' speed={100} />);
 
     // Fast-forward slightly into typing
@@ -58,6 +56,7 @@ describe('terminalText', () => {
   });
 
   test('respects delay before starting', async () => {
+    using _ = fakeTimers();
     await render(<TerminalText text='Delayed' delay={200} speed={10} />);
 
     // Immediately after render, text should be empty
@@ -71,6 +70,7 @@ describe('terminalText', () => {
   });
 
   test('calls onComplete when typing finishes', async () => {
+    using _ = fakeTimers();
     const onComplete = vi.fn();
 
     await render(<TerminalText text='Done' delay={0} speed={10} onComplete={onComplete} />);

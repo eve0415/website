@@ -1,9 +1,11 @@
 /* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
 import type { Skill } from '../../-config/skills-config';
 
-import { afterEach, beforeEach, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { fakeTimers } from '#test/utils/disposable';
 
 import SkillCard from './skill-card';
 
@@ -15,15 +17,8 @@ const mockSkill: Skill = {
 };
 
 describe('skillCard', () => {
-  beforeEach(() => {
-    vi.useFakeTimers();
-  });
-
-  afterEach(() => {
-    vi.useRealTimers();
-  });
-
   test('renders skill name and level', async () => {
+    using _ = fakeTimers();
     await render(<SkillCard skill={mockSkill} index={0} />);
 
     await expect.element(page.getByText('TypeScript')).toBeInTheDocument();
@@ -31,12 +26,14 @@ describe('skillCard', () => {
   });
 
   test('renders description when provided', async () => {
+    using _ = fakeTimers();
     await render(<SkillCard skill={mockSkill} index={0} />);
 
     await expect.element(page.getByText('A strongly typed programming language')).toBeInTheDocument();
   });
 
   test('renders without description when not provided', async () => {
+    using _ = fakeTimers();
     const skillWithoutDesc: Skill = {
       name: 'JavaScript',
       level: 'proficient',
@@ -49,6 +46,7 @@ describe('skillCard', () => {
   });
 
   test('handles different skill levels', async () => {
+    using _ = fakeTimers();
     const proficientSkill: Skill = {
       name: 'Python',
       level: 'proficient',
@@ -61,6 +59,7 @@ describe('skillCard', () => {
   });
 
   test('handles learning level', async () => {
+    using _ = fakeTimers();
     const learningSkill: Skill = {
       name: 'Rust',
       level: 'learning',
@@ -73,6 +72,7 @@ describe('skillCard', () => {
   });
 
   test('animates in based on index', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<SkillCard skill={mockSkill} index={2} />);
 
     // Fast-forward past animation delay (index * 50ms = 100ms + buffer)
@@ -87,6 +87,7 @@ describe('skillCard', () => {
   });
 
   test('handles mouse enter (hover state)', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<SkillCard skill={mockSkill} index={0} />);
 
     // Fast-forward past initial animation
@@ -103,6 +104,7 @@ describe('skillCard', () => {
   });
 
   test('handles mouse leave (resets hover state - line 55)', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<SkillCard skill={mockSkill} index={0} />);
 
     // Fast-forward past initial animation
@@ -120,6 +122,7 @@ describe('skillCard', () => {
   });
 
   test('shows progress bar on hover', async () => {
+    using _ = fakeTimers();
     const { container } = await render(<SkillCard skill={mockSkill} index={0} />);
 
     // Fast-forward past initial animation

@@ -73,18 +73,13 @@ await expect.element(page.getByTestId('result')).toHaveTextContent('done');
 
 ## Fake Timers
 
-**DO**: Use `vi.useFakeTimers()` when testing time-dependent behavior
+**DO**: Use the disposable helper for scoped fake timer cleanup
 
 ```ts
-beforeEach(() => {
-  vi.useFakeTimers();
-});
-
-afterEach(() => {
-  vi.useRealTimers();
-});
+import { fakeTimers } from '<relative-path>/test/utils/disposable';
 
 test('debounce waits 300ms', async () => {
+  using _ = fakeTimers();
   // Trigger debounced action
   await userEvent.type(input, 'test');
 
