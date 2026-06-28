@@ -10,7 +10,7 @@ export default {
   fetch: async (request, env, _ctx) =>
     handler.fetch(request, {
       context: {
-        db: drizzle(env.SKILLS_DB, { schema, casing: 'snake_case' }),
+        db: drizzle(env.SKILLS_DB, { schema }),
       },
     }),
   scheduled(event, env, ctx) {

@@ -1,5 +1,7 @@
 /* oxlint-disable typescript/no-non-null-assertion -- Test assertions verify existence */
 
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
+
 import { env } from 'cloudflare:workers';
 import { count, desc, eq, sql, sum } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
@@ -154,10 +156,10 @@ describe('skills-analysis', () => {
   });
 
   describe('database operations', () => {
-    let db: ReturnType<typeof drizzle<typeof schema>>;
+    let db: DrizzleD1Database;
 
     beforeEach(async () => {
-      db = drizzle(env.SKILLS_DB, { schema, casing: 'snake_case' });
+      db = drizzle(env.SKILLS_DB, { schema });
 
       // Clean up before each test
       await db.delete(repos);
@@ -375,10 +377,10 @@ describe('skills-analysis', () => {
   });
 
   describe('squashHistory query patterns', () => {
-    let db: ReturnType<typeof drizzle<typeof schema>>;
+    let db: DrizzleD1Database;
 
     beforeEach(async () => {
-      db = drizzle(env.SKILLS_DB, { schema, casing: 'snake_case' });
+      db = drizzle(env.SKILLS_DB, { schema });
       await db.delete(commits);
       await db.delete(repos);
     });

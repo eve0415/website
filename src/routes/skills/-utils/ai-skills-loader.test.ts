@@ -1,6 +1,5 @@
-import type * as schema from '#db/schema';
 import type { AIProfileSummary, AISkillsContent, WorkflowState } from '#workflows/-utils/ai-skills-types';
-import type { drizzle } from 'drizzle-orm/d1';
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
 import { env } from 'cloudflare:workers';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
@@ -8,8 +7,6 @@ import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 import { workflowState } from '#db/schema';
 
 import { createDB, loadAISkillsStateHandler } from './ai-skills-loader';
-
-type DB = ReturnType<typeof drizzle<typeof schema>>;
 
 // SQL migration for workflow_state table
 const WORKFLOW_STATE_MIGRATION = `CREATE TABLE IF NOT EXISTS workflow_state (
@@ -54,7 +51,7 @@ const mockProfile: AIProfileSummary = {
 };
 
 describe('ai-skills-loader', () => {
-  let db: DB;
+  let db: DrizzleD1Database;
 
   beforeAll(async () => {
     // Apply migration

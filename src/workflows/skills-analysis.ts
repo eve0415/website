@@ -34,9 +34,6 @@ import { WORKFLOW_STATE_KV_KEY, WORKFLOW_STATE_KV_TTL_SECONDS, mapWorkflowStateR
 const WORKFLOW_LOCK_KEY = 'skills_workflow_lock';
 const RATE_LIMIT_METRICS_KEY = 'skills_rate_limit_metrics';
 
-// Type alias for drizzle database
-type DB = DrizzleD1Database<typeof schema>;
-
 interface WorkflowEnv {
   GITHUB_PAT: string;
   SKILLS_DB: D1Database;
@@ -70,8 +67,8 @@ interface RepoSyncResult {
 
 export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void> {
   // Per-step rule: a fresh connectionless client created inside each step.do
-  private getDb(): DB {
-    return drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+  private getDb(): DrizzleD1Database {
+    return drizzle(this.env.SKILLS_DB, { schema });
   }
 
   override async run(event: WorkflowEvent<void>, step: WorkflowStep) {
@@ -262,7 +259,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     if (existingLock?.instanceId === instanceId) await this.env.CACHE.delete(WORKFLOW_LOCK_KEY);
   }
 
-  private async syncRepos(db: DB): Promise<RepoSyncResult> {
+  private async syncRepos(db: DrizzleD1Database): Promise<RepoSyncResult> {
     const octokit = createGitHubClient(this.env.GITHUB_PAT);
     const repoList: Repo[] = [];
     let requestCount = 0;
@@ -301,7 +298,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
   }
 
   private async upsertRepo(
-    db: DB,
+    db: DrizzleD1Database,
     repo: {
       id: number;
       full_name: string;
@@ -362,7 +359,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     return record;
   }
 
-  private async syncCommits(db: DB, repo: Repo): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
+  private async syncCommits(db: DrizzleD1Database, repo: Repo): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
     const octokit = createGitHubClient(this.env.GITHUB_PAT);
 
     // Incremental cursor lives on the repo row itself (preserved across upserts)
@@ -420,7 +417,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     return { rateLimit: lastRateLimit, requestCount };
   }
 
-  private async syncPRsAndReviews(db: DB, repo: Repo): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
+  private async syncPRsAndReviews(db: DrizzleD1Database, repo: Repo): Promise<{ rateLimit: GraphQLRateLimit; requestCount: number }> {
     const octokit = createGitHubClient(this.env.GITHUB_PAT);
 
     // Incremental cursor lives on the repo row itself
@@ -505,7 +502,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
   }
 
   private async upsertPR(
-    db: DB,
+    db: DrizzleD1Database,
     repoId: number,
     pr: {
       githubId: number;
@@ -556,7 +553,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
   }
 
   private async upsertReview(
-    db: DB,
+    db: DrizzleD1Database,
     repoId: number,
     prNumber: number,
     prTitle: string,
@@ -583,7 +580,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
       .onConflictDoNothing();
   }
 
-  private async finalizeSyncState(db: DB, repoList: Repo[]): Promise<void> {
+  private async finalizeSyncState(db: DrizzleD1Database, repoList: Repo[]): Promise<void> {
     // Clear cursors after successful sync - single UPDATE over all synced repos
     const ids = repoList.map(repo => repo.id);
     if (ids.length === 0) return;
@@ -615,7 +612,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     }
   }
 
-  private async updateState(db: DB, phase: WorkflowPhase, progress: number, currentRepo?: string, total?: number, processed?: number) {
+  private async updateState(db: DrizzleD1Database, phase: WorkflowPhase, progress: number, currentRepo?: string, total?: number, processed?: number) {
     const updates: Partial<{
       phase: string;
       progressPct: number;
@@ -642,7 +639,7 @@ export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void
     await db.update(workflowState).set(updates).where(eq(workflowState.id, 1));
   }
 
-  private async squashHistory(db: DB): Promise<string> {
+  private async squashHistory(db: DrizzleD1Database): Promise<string> {
     // Get aggregate stats
     const [commitCount, prCount, reviewCount, reposWithCommits] = await Promise.all([
       db.select({ count: count() }).from(commits).get(),
@@ -816,7 +813,7 @@ Output as JSON array of skills. Nothing else.`;
     return skills;
   }
 
-  private async generateJapaneseDescriptions(db: DB, skills: AISkill[], summary: string): Promise<AISkillsContent> {
+  private async generateJapaneseDescriptions(db: DrizzleD1Database, skills: AISkill[], summary: string): Promise<AISkillsContent> {
     // Generate descriptions for each skill
     for (const skill of skills) {
       const prompt = `あなたはプロフェッショナルなテクニカルライターです。以下のスキル情報を元に、日本語でスキルの説明文を書いてください。
@@ -910,7 +907,7 @@ JSONのみ出力してください。`;
     return content;
   }
 
-  private async createFallbackContent(db: DB, skills: AISkill[]): Promise<AISkillsContent> {
+  private async createFallbackContent(db: DrizzleD1Database, skills: AISkill[]): Promise<AISkillsContent> {
     const [commitCount, prCount, reviewCount] = await Promise.all([
       db.select({ count: count() }).from(commits).get(),
       db.select({ count: count() }).from(pullRequests).get(),
@@ -927,7 +924,7 @@ JSONのみ出力してください。`;
     };
   }
 
-  private async storeResults(db: DB, content: AISkillsContent) {
+  private async storeResults(db: DrizzleD1Database, content: AISkillsContent) {
     await this.env.CACHE.put('ai_skills_content_ja', JSON.stringify(content), {
       expirationTtl: 60 * 60 * 24 * 30,
     });
