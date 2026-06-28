@@ -1,5 +1,4 @@
-import type * as schema from '#db/schema';
-import type { drizzle } from 'drizzle-orm/d1';
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
 import { createMiddleware, createStart } from '@tanstack/react-start';
 import { setResponseHeader } from '@tanstack/react-start/server';
@@ -32,7 +31,7 @@ declare module '@tanstack/react-start' {
   interface Register {
     server: {
       requestContext: {
-        db: ReturnType<typeof drizzle<typeof schema, D1Database>>;
+        db: DrizzleD1Database;
       };
     };
   }

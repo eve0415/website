@@ -1,6 +1,7 @@
 // Server function to load AI skills data from KV
 
 import type { AIProfileSummary, AISkillsContent, AISkillsState, WorkflowState } from '#workflows/-utils/ai-skills-types';
+import type { DrizzleD1Database } from 'drizzle-orm/d1';
 
 import { createServerFn } from '@tanstack/react-start';
 import { env } from 'cloudflare:workers';
@@ -11,7 +12,7 @@ import * as schema from '#db/schema';
 import { workflowState } from '#db/schema';
 import { DEFAULT_WORKFLOW_STATE, WORKFLOW_STATE_KV_KEY, WORKFLOW_STATE_KV_TTL_SECONDS, mapWorkflowStateRow } from '#workflows/-utils/workflow-state';
 
-type DB = ReturnType<typeof drizzle<typeof schema>>;
+type DB = DrizzleD1Database;
 
 // Helper to safely parse JSON from KV, handling corrupted data
 const safeKVGetJSON = async <T>(kv: KVNamespace, key: string): Promise<T | null> => {
@@ -49,7 +50,7 @@ export const loadAISkillsStateHandler = async (kv: KVNamespace, db: DB): Promise
 };
 
 // Helper to create DB instance from D1 binding
-export const createDB = (d1: D1Database): DB => drizzle(d1, { schema, casing: 'snake_case' });
+export const createDB = (d1: D1Database): DB => drizzle(d1, { schema });
 
 /**
  * Load complete AI skills state (content + profile + workflow)

@@ -34,8 +34,7 @@ import { WORKFLOW_STATE_KV_KEY, WORKFLOW_STATE_KV_TTL_SECONDS, mapWorkflowStateR
 const WORKFLOW_LOCK_KEY = 'skills_workflow_lock';
 const RATE_LIMIT_METRICS_KEY = 'skills_rate_limit_metrics';
 
-// Type alias for drizzle database
-type DB = DrizzleD1Database<typeof schema>;
+type DB = DrizzleD1Database;
 
 interface WorkflowEnv {
   GITHUB_PAT: string;
@@ -71,7 +70,7 @@ interface RepoSyncResult {
 export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void> {
   // Per-step rule: a fresh connectionless client created inside each step.do
   private getDb(): DB {
-    return drizzle(this.env.SKILLS_DB, { schema, casing: 'snake_case' });
+    return drizzle(this.env.SKILLS_DB, { schema });
   }
 
   override async run(event: WorkflowEvent<void>, step: WorkflowStep) {
