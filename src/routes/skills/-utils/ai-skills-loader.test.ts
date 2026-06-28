@@ -8,8 +8,6 @@ import { workflowState } from '#db/schema';
 
 import { createDB, loadAISkillsStateHandler } from './ai-skills-loader';
 
-type DB = DrizzleD1Database;
-
 // SQL migration for workflow_state table
 const WORKFLOW_STATE_MIGRATION = `CREATE TABLE IF NOT EXISTS workflow_state (
   id INTEGER PRIMARY KEY DEFAULT 1 NOT NULL,
@@ -53,7 +51,7 @@ const mockProfile: AIProfileSummary = {
 };
 
 describe('ai-skills-loader', () => {
-  let db: DB;
+  let db: DrizzleD1Database;
 
   beforeAll(async () => {
     // Apply migration

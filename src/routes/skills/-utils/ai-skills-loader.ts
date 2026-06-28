@@ -12,8 +12,6 @@ import * as schema from '#db/schema';
 import { workflowState } from '#db/schema';
 import { DEFAULT_WORKFLOW_STATE, WORKFLOW_STATE_KV_KEY, WORKFLOW_STATE_KV_TTL_SECONDS, mapWorkflowStateRow } from '#workflows/-utils/workflow-state';
 
-type DB = DrizzleD1Database;
-
 // Helper to safely parse JSON from KV, handling corrupted data
 const safeKVGetJSON = async <T>(kv: KVNamespace, key: string): Promise<T | null> => {
   try {
@@ -28,7 +26,7 @@ const safeKVGetJSON = async <T>(kv: KVNamespace, key: string): Promise<T | null>
  * Handler: Load complete AI skills state (content + profile + workflow)
  * @internal Exported for testing
  */
-export const loadAISkillsStateHandler = async (kv: KVNamespace, db: DB): Promise<AISkillsState> => {
+export const loadAISkillsStateHandler = async (kv: KVNamespace, db: DrizzleD1Database): Promise<AISkillsState> => {
   const [content, profile, cachedWorkflow] = await Promise.all([
     safeKVGetJSON<AISkillsContent>(kv, 'ai_skills_content_ja'),
     safeKVGetJSON<AIProfileSummary>(kv, 'ai_profile_summary_ja'),
@@ -50,7 +48,7 @@ export const loadAISkillsStateHandler = async (kv: KVNamespace, db: DB): Promise
 };
 
 // Helper to create DB instance from D1 binding
-export const createDB = (d1: D1Database): DB => drizzle(d1, { schema });
+export const createDB = (d1: D1Database): DrizzleD1Database => drizzle(d1, { schema });
 
 /**
  * Load complete AI skills state (content + profile + workflow)
