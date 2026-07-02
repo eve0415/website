@@ -1,14 +1,4 @@
 {
-  "env": {
-    "CLAUDE_CODE_MAX_OUTPUT_TOKENS": "64000",
-    "MAX_THINKING_TOKENS": "31999",
-    "BASH_DEFAULT_TIMEOUT_MS": "300000",
-    "BASH_MAX_TIMEOUT_MS": "1200000",
-    "CLAUDE_BASH_MAINTAIN_PROJECT_WORKING_DIR": "1",
-    "ENABLE_TOOL_SEARCH": "true",
-    "ENABLE_EXPERIMENTAL_MCP_CLI": "false",
-    "CLAUDE_CODE_HIDE_ACCOUNT_INFO": "true"
-  },
   "permissions": {
     "deny": [
       "Read(.env)",
@@ -67,17 +57,11 @@
       "Bash(source .dev.vars:*)",
       "Bash(. .env:*)",
       "Bash(. .dev.vars:*)"
-    ],
-    "defaultMode": "plan"
+    ]
   },
   "enableAllProjectMcpServers": true,
   "enabledPlugins": {
     "frontend-design@claude-plugins-official": true,
-    "security-guidance@claude-plugins-official": true,
-    "feature-dev@claude-plugins-official": true,
-    "typescript-lsp@claude-plugins-official": true,
-    "code-simplifier@claude-plugins-official": true,
-    "code-review@claude-code-plugins": true,
-    "pr-review-toolkit@claude-code-plugins": true
+    "typescript-lsp@claude-plugins-official": true
   }
 }
