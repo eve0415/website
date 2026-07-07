@@ -94,7 +94,7 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [tanstackStartTesting(), tailwindcss(), storybookTest()],
+        plugins: [tailwindcss(), storybookTest()],
         resolve: {
           dedupe: ['react', 'react-dom'],
           alias: {
@@ -124,7 +124,7 @@ export default defineConfig({
               },
             },
           },
-          setupFiles: ['@tanstack-router-testing/react-start-testing/cleanup', '.storybook/vitest.setup.ts'],
+          setupFiles: ['.storybook/vitest.setup.ts'],
         },
         optimizeDeps: {
           include: ['@tanstack/react-form-start > @tanstack/react-store'],

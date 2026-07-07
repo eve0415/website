@@ -1,6 +1,6 @@
 import addonA11y from '@storybook/addon-a11y';
 import addonDocs from '@storybook/addon-docs';
-import { definePreview } from '@storybook/react-vite';
+import { definePreview } from '@storybook/tanstack-react';
 import { INITIAL_VIEWPORTS } from 'storybook/viewport';
 
 // oxlint-disable-next-line import/no-unassigned-import -- CSS side-effect import
