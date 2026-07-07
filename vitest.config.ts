@@ -95,13 +95,6 @@ export default defineConfig({
       {
         extends: true,
         plugins: [tailwindcss(), storybookTest()],
-        resolve: {
-          dedupe: ['react', 'react-dom'],
-          alias: {
-            'react-dom/server': path.resolve('test/stubs/react-dom-server.ts'),
-            '@tanstack/react-form-start': path.resolve('test/stubs/tanstack-react-form-start.tsx'),
-          },
-        },
         test: {
           name: 'storybook',
           testTimeout: 60000,
@@ -125,10 +118,6 @@ export default defineConfig({
             },
           },
           setupFiles: ['.storybook/vitest.setup.ts'],
-        },
-        optimizeDeps: {
-          include: ['@tanstack/react-form-start > @tanstack/react-store'],
-          exclude: ['@tanstack/react-start', '@tanstack/start-client-core', '@tanstack/start-server-core', '@tanstack/start-static-server-functions'],
         },
       },
     ],
