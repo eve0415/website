@@ -1,94 +1,30 @@
-import type { FC } from 'react';
-
-import { expect, within } from 'storybook/test';
+import { expect, userEvent, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
 import { testAllViewports } from '#.storybook/viewports';
 
-import Background from './-index/Background/background';
-import Logo from './-index/logo';
+import { Route } from './index';
 
-// Simplified IndexPage for Storybook (shows all content immediately, no animations)
-const IndexPageForStory: FC<{ showKonami?: boolean }> = ({ showKonami = false }) => (
-  <main className={`relative flex min-h-dvh flex-col items-center justify-center overflow-hidden px-6 ${showKonami ? 'animate-glitch' : ''}`}>
-    <Background />
-
-    {/* Konami code secret overlay */}
-    {showKonami && (
-      <div className='bg-background/80 pointer-events-none fixed inset-0 z-50 flex items-center justify-center'>
-        <div className='text-center'>
-          <span className='text-neon block font-mono text-xl'>SECRET_UNLOCKED</span>
-          {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
-          <span className='text-subtle-foreground mt-2 block text-sm'>// 何かを見つけた...</span>
-        </div>
-      </div>
-    )}
-
-    {/* Central content */}
-    <div className='flex flex-col items-center gap-8'>
-      {/* Logo */}
-      <div className='text-foreground w-48 md:w-64 lg:w-80'>
-        <Logo animate={false} />
-      </div>
-
-      {/* Name */}
-      <h1 className='text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl'>eve0415</h1>
-
-      {/* Tagline */}
-      <p className='text-muted-foreground text-center'>エンジニア</p>
-
-      {/* Navigation prompt */}
-      <nav className='text-subtle-foreground mt-12 flex flex-col items-center gap-6 text-sm'>
-        {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
-        <span className='font-mono text-xs tracking-wider'>// 探索を始める</span>
-        <div className='flex gap-6'>
-          <a href='/projects' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
-            <span className='font-mono'>[Projects]</span>
-            <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
-          </a>
-          <a href='/skills' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
-            <span className='font-mono'>[Skills]</span>
-            <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
-          </a>
-          <a href='/link' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
-            <span className='font-mono'>[Link]</span>
-            <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
-          </a>
-          <a href='/sys' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
-            <span className='font-mono'>[Sys]</span>
-            <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
-          </a>
-        </div>
-        <div className='text-subtle-foreground mt-4 flex items-center gap-2 text-xs'>
-          <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>1</kbd>
-          <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>2</kbd>
-          <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>3</kbd>
-          <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
-          <span className='ml-1'>でジャンプ</span>
-        </div>
-      </nav>
-    </div>
-
-    {/* Footer coordinates */}
-    <div className='text-subtle-foreground absolute bottom-6 left-6 text-xs'>
-      <span>位置: </span>
-      <span>35.6762°N, 139.6503°E</span>
-    </div>
-
-    {/* Version indicator */}
-    <div className='text-subtle-foreground absolute right-6 bottom-6 text-xs'>
-      <span>v</span>
-      <span>4.0.0</span>
-    </div>
-  </main>
-);
+/**
+ * Waits for the logo reveal to finish. Logo's stroke-draw animation hides the
+ * paths (transparent fill) until an internal 2s timer fires, independent of
+ * reduced motion, so screenshots must wait for the settled state.
+ */
+const waitForLogoSettled = async (canvasElement: HTMLElement): Promise<void> => {
+  await waitFor(
+    () => {
+      const path = canvasElement.querySelector('path');
+      void expect(path?.style.fill.toLowerCase()).toBe('currentcolor');
+    },
+    { timeout: 5000 },
+  );
+};
 
 const meta = preview.meta({
-  component: IndexPageForStory,
   tags: ['autodocs'],
-  parameters: { layout: 'fullscreen' },
-  argTypes: {
-    showKonami: { control: 'boolean' },
+  parameters: {
+    layout: 'fullscreen',
+    tanstack: { router: { route: Route } },
   },
   decorators: [
     Story => (
@@ -100,21 +36,20 @@ const meta = preview.meta({
 });
 
 /**
- * Default homepage with all content visible (no animation delays)
+ * The real homepage route. Reduced motion (forced in the test environment)
+ * reveals the tagline and nav immediately; in interactive Storybook the
+ * staggered animations play, so assertions wait for the reveal.
  */
 export const Default = meta.story({
-  args: {
-    showKonami: false,
-  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
 
     // Verify main content
-    await expect(canvas.getByText('eve0415')).toBeInTheDocument();
-    await expect(canvas.getByText('エンジニア')).toBeInTheDocument();
+    await expect(await canvas.findByText('eve0415')).toBeInTheDocument();
+    await expect(await canvas.findByText('エンジニア', undefined, { timeout: 5000 })).toBeInTheDocument();
 
-    // Verify navigation
-    await expect(canvas.getByText('[Projects]')).toBeInTheDocument();
+    // Verify navigation (revealed after the tagline)
+    await expect(await canvas.findByText('[Projects]', undefined, { timeout: 5000 })).toBeInTheDocument();
     await expect(canvas.getByText('[Skills]')).toBeInTheDocument();
     await expect(canvas.getByText('[Link]')).toBeInTheDocument();
     await expect(canvas.getByText('[Sys]')).toBeInTheDocument();
@@ -129,31 +64,29 @@ export const Default = meta.story({
 });
 
 /**
- * Static version for visual regression testing
+ * Visual regression across viewports, taken after the logo reveal settles
  */
 export const Static = meta.story({
-  args: {
-    showKonami: false,
-  },
   play: async context => {
-    await testAllViewports(context);
-
     const canvas = within(context.canvasElement);
-    await expect(canvas.getByText('eve0415')).toBeInTheDocument();
+    await expect(await canvas.findByText('eve0415')).toBeInTheDocument();
+
+    await waitForLogoSettled(context.canvasElement);
+    await testAllViewports(context);
   },
 });
 
 /**
- * Konami code Easter egg activated state
+ * Konami code Easter egg, triggered through the real keyboard listener
  */
 export const KonamiActivated = meta.story({
-  args: {
-    showKonami: true,
-  },
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
+    await expect(await canvas.findByText('eve0415')).toBeInTheDocument();
 
-    // Verify secret overlay
+    await userEvent.keyboard('{ArrowUp}{ArrowUp}{ArrowDown}{ArrowDown}{ArrowLeft}{ArrowRight}{ArrowLeft}{ArrowRight}[KeyB][KeyA]');
+
+    // Overlay stays up for 3s after activation - assert right away
     await expect(canvas.getByText('SECRET_UNLOCKED')).toBeInTheDocument();
     await expect(canvas.getByText('// 何かを見つけた...')).toBeInTheDocument();
   },
@@ -163,9 +96,6 @@ export const KonamiActivated = meta.story({
  * Mobile layout showing responsive design
  */
 export const MobileLayout = meta.story({
-  args: {
-    showKonami: false,
-  },
   play: async context => {
     const { setViewport } = await import('#.storybook/viewports');
     await setViewport('mobile');
@@ -173,7 +103,7 @@ export const MobileLayout = meta.story({
     const canvas = within(context.canvasElement);
 
     // Content should still be visible on mobile
-    await expect(canvas.getByText('eve0415')).toBeInTheDocument();
-    await expect(canvas.getByText('[Projects]')).toBeInTheDocument();
+    await expect(await canvas.findByText('eve0415')).toBeInTheDocument();
+    await expect(await canvas.findByText('[Projects]', undefined, { timeout: 5000 })).toBeInTheDocument();
   },
 });
