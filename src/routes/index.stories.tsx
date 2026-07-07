@@ -1,6 +1,5 @@
 import type { FC } from 'react';
 
-import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } from '@tanstack/react-router';
 import { expect, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
@@ -92,16 +91,6 @@ const meta = preview.meta({
     showKonami: { control: 'boolean' },
   },
   decorators: [
-    Story => {
-      const rootRoute = createRootRoute({
-        component: Story,
-      });
-      const router = createRouter({
-        routeTree: rootRoute,
-        history: createMemoryHistory({ initialEntries: ['/'] }),
-      });
-      return <RouterProvider router={router} />;
-    },
     Story => (
       <div className='bg-background min-h-dvh'>
         <Story />
