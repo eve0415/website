@@ -2,7 +2,6 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "outDir": ".tsbuild/test",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "types": ["./worker-configuration.d.ts", "vite/client", "vitest/config", "@cloudflare/vitest-pool-workers/types"]
   },
