@@ -10,18 +10,16 @@ vi.mock(import('@tanstack/react-router'), async importOriginal => {
   const actual = await importOriginal();
   return {
     ...actual,
-    HeadContent: () => <></>,
-    Scripts: () => <></>,
+    HeadContent: () => <meta data-testid='head-content' />,
+    Scripts: () => <script data-testid='scripts' />,
   };
 });
 
 vi.mock(import('@tanstack/react-devtools'), () => ({
   TanStackDevtools: ({ plugins }: TanStackDevtoolsReactInit) => (
     <div data-testid='tanstack-devtools'>
-      {plugins?.map((p, index) => (
-        // A plugin name may be an element or a render function; only strings are assertable.
-        <div key={index}>{typeof p.name === 'string' ? p.name : null}</div>
-      ))}
+      {/* A plugin name may be an element or a render function; only strings are assertable. */}
+      {plugins?.map(p => typeof p.name === 'string' && <div key={p.name}>{p.name}</div>)}
     </div>
   ),
 }));

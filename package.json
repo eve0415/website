@@ -20,7 +20,7 @@
   "scripts": {
     "dev": "vite dev --host",
     "build": "vite build",
-    "lint": "oxlint --type-aware --fix --fix-suggestions --report-unused-disable-directives && oxfmt",
+    "lint": "oxlint --type-aware --fix --report-unused-disable-directives && oxfmt",
     "test": "vitest run --typecheck",
     "test:update": "vitest run --typecheck --update",
     "generate": "wrangler types && graphql-codegen && drizzle-kit generate",

@@ -12,9 +12,9 @@ import { Route } from './index';
  */
 const waitForLogoSettled = async (canvasElement: HTMLElement): Promise<void> => {
   await waitFor(
-    () => {
+    async () => {
       const path = canvasElement.querySelector('path');
-      void expect(path?.style.fill.toLowerCase()).toBe('currentcolor');
+      await expect(path?.style.fill.toLowerCase()).toBe('currentcolor');
     },
     { timeout: 5000 },
   );

@@ -5,6 +5,7 @@ import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
 import { forceReducedMotion } from '#test/utils/disposable';
+import { createMediaQueryListMock } from '#test/utils/media-query-mock';
 
 import SkillsVisualization from './skills-visualization';
 
@@ -86,16 +87,9 @@ describe('skillsVisualization', () => {
     test('handles reduced motion preference', async () => {
       using _rm = forceReducedMotion();
       // Mock reduced motion preference
-      using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
-        matches: query === '(prefers-reduced-motion: reduce)',
-        media: query,
-        onchange: null,
-        addListener: vi.fn(),
-        removeListener: vi.fn(),
-        addEventListener: vi.fn(),
-        removeEventListener: vi.fn(),
-        dispatchEvent: vi.fn(),
-      }));
+      using _matchMedia = vi
+        .spyOn(globalThis, 'matchMedia')
+        .mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
       const { container } = await render(<SkillsVisualization animate />);
 
