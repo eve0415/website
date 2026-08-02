@@ -10,6 +10,9 @@ worker-configuration.d.ts
 # tanstacl
 dist/
 
+# tsc --build output (nothing consumes it; the app is bundled by vite)
+.tsbuild/
+
 # AI
 .claude/settings.local.json
 

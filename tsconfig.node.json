@@ -2,7 +2,11 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "composite": true,
-    "lib": ["ESNext"]
+    "lib": ["ESNext"],
+    // worker-configuration.d.ts imports ./src/server, which would drag the whole
+    // app graph into this two-file project. Build configs only need Node globals.
+    "types": ["node"],
+    "outDir": ".tsbuild/node"
   },
   "files": ["vite.config.ts", "vitest.config.ts"]
 }
