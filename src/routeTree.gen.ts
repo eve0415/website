@@ -10,30 +10,20 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as SysIndexRouteImport } from './routes/sys/index'
-import { Route as SkillsIndexRouteImport } from './routes/skills/index'
-import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
-import { Route as LinkIndexRouteImport } from './routes/link/index'
 import { Route as ApiCspReportRouteImport } from './routes/api/csp-report'
+import { Route as LinkIndexRouteImport } from './routes/link/index'
+import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
+import { Route as SkillsIndexRouteImport } from './routes/skills/index'
+import { Route as SysIndexRouteImport } from './routes/sys/index'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SysIndexRoute = SysIndexRouteImport.update({
-  id: '/sys/',
-  path: '/sys/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SkillsIndexRoute = SkillsIndexRouteImport.update({
-  id: '/skills/',
-  path: '/skills/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
+const ApiCspReportRoute = ApiCspReportRouteImport.update({
+  id: '/api/csp-report',
+  path: '/api/csp-report',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LinkIndexRoute = LinkIndexRouteImport.update({
@@ -41,9 +31,19 @@ const LinkIndexRoute = LinkIndexRouteImport.update({
   path: '/link/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiCspReportRoute = ApiCspReportRouteImport.update({
-  id: '/api/csp-report',
-  path: '/api/csp-report',
+const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
+  id: '/projects/',
+  path: '/projects/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SkillsIndexRoute = SkillsIndexRouteImport.update({
+  id: '/skills/',
+  path: '/skills/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SysIndexRoute = SysIndexRouteImport.update({
+  id: '/sys/',
+  path: '/sys/',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -75,12 +75,7 @@ export interface FileRoutesById {
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    | '/'
-    | '/api/csp-report'
-    | '/link/'
-    | '/projects/'
-    | '/skills/'
-    | '/sys/'
+    '/' | '/api/csp-report' | '/link/' | '/projects/' | '/skills/' | '/sys/'
   fileRoutesByTo: FileRoutesByTo
   to: '/' | '/api/csp-report' | '/link' | '/projects' | '/skills' | '/sys'
   id:
@@ -111,25 +106,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sys/': {
-      id: '/sys/'
-      path: '/sys'
-      fullPath: '/sys/'
-      preLoaderRoute: typeof SysIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/skills/': {
-      id: '/skills/'
-      path: '/skills'
-      fullPath: '/skills/'
-      preLoaderRoute: typeof SkillsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/projects/': {
-      id: '/projects/'
-      path: '/projects'
-      fullPath: '/projects/'
-      preLoaderRoute: typeof ProjectsIndexRouteImport
+    '/api/csp-report': {
+      id: '/api/csp-report'
+      path: '/api/csp-report'
+      fullPath: '/api/csp-report'
+      preLoaderRoute: typeof ApiCspReportRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/link/': {
@@ -139,11 +120,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LinkIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/csp-report': {
-      id: '/api/csp-report'
-      path: '/api/csp-report'
-      fullPath: '/api/csp-report'
-      preLoaderRoute: typeof ApiCspReportRouteImport
+    '/projects/': {
+      id: '/projects/'
+      path: '/projects'
+      fullPath: '/projects/'
+      preLoaderRoute: typeof ProjectsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/skills/': {
+      id: '/skills/'
+      path: '/skills'
+      fullPath: '/skills/'
+      preLoaderRoute: typeof SkillsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/sys/': {
+      id: '/sys/'
+      path: '/sys'
+      fullPath: '/sys/'
+      preLoaderRoute: typeof SysIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
@@ -160,13 +155,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

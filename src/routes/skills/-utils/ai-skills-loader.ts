@@ -8,7 +8,6 @@ import { env } from 'cloudflare:workers';
 import { eq } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 
-import * as schema from '#db/schema';
 import { workflowState } from '#db/schema';
 import { DEFAULT_WORKFLOW_STATE, WORKFLOW_STATE_KV_KEY, WORKFLOW_STATE_KV_TTL_SECONDS, mapWorkflowStateRow } from '#workflows/-utils/workflow-state';
 
@@ -48,7 +47,7 @@ export const loadAISkillsStateHandler = async (kv: KVNamespace, db: DrizzleD1Dat
 };
 
 // Helper to create DB instance from D1 binding
-export const createDB = (d1: D1Database): DrizzleD1Database => drizzle(d1, { schema });
+export const createDB = (d1: D1Database): DrizzleD1Database => drizzle(d1);
 
 /**
  * Load complete AI skills state (content + profile + workflow)

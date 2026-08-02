@@ -1,20 +1,15 @@
+import type { ContactFormResult } from '../../-utils/contact-form';
+
+import { TSS_SERVER_FUNCTION } from '@tanstack/react-start';
 import { beforeEach, describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
-
-// Types for mock
-type ContactFormResult =
-  | { success: true }
-  | { success: false; error: 'validation'; errors: { name?: string; email?: string; message?: string } }
-  | { success: false; error: 'turnstile'; message: string }
-  | { success: false; error: 'rate_limit'; message: string }
-  | { success: false; error: 'email_failed'; message: string };
 
 // Hoist mock to make it available in vi.mock factory
 const { submitMock, getTurnstileCallback, setTurnstileCallback } = vi.hoisted(() => {
   let turnstileCallback: ((token: string) => void) | null;
   return {
-    submitMock: vi.fn(),
+    submitMock: vi.fn<() => Promise<ContactFormResult>>(),
     getTurnstileCallback: () => turnstileCallback,
     // oxlint-disable-next-line promise/prefer-await-to-callbacks -- mock setter, not async flow
     setTurnstileCallback: (cb: ((token: string) => void) | null) => {
@@ -23,9 +18,15 @@ const { submitMock, getTurnstileCallback, setTurnstileCallback } = vi.hoisted(()
   };
 });
 
-// Mock the server function module (uses cloudflare: imports not available in browser)
+// Mock the server function module (uses cloudflare: imports not available in browser).
+// handleForm is a server fn, so the stub has to carry the fetcher's branding too.
 vi.mock(import('../../-utils/contact-form'), () => ({
-  handleForm: Object.assign(submitMock, { url: '/api/contact' }),
+  handleForm: Object.assign(submitMock, {
+    [TSS_SERVER_FUNCTION]: true as const,
+    url: '/api/contact',
+    method: 'POST' as const,
+    __executeServer: submitMock,
+  }),
 }));
 
 // Mock TurnstileWidget - provide token callback for tests
@@ -242,7 +243,7 @@ describe('contactForm', () => {
     });
 
     test('handles successful submission', async () => {
-      submitMock.mockResolvedValue({ success: true } as ContactFormResult);
+      submitMock.mockResolvedValue({ success: true });
 
       await render(<ContactForm />);
 
@@ -273,7 +274,7 @@ describe('contactForm', () => {
         success: false,
         error: 'rate_limit',
         message: '送信制限に達しました。しばらくしてからお試しください。',
-      } as ContactFormResult);
+      });
 
       await render(<ContactForm />);
 
@@ -296,7 +297,7 @@ describe('contactForm', () => {
         success: false,
         error: 'turnstile',
         message: 'セキュリティ認証に失敗しました',
-      } as ContactFormResult);
+      });
 
       await render(<ContactForm />);
 
@@ -319,7 +320,7 @@ describe('contactForm', () => {
         success: false,
         error: 'email_failed',
         message: 'メール送信に失敗しました。Discord経由でご連絡ください。',
-      } as ContactFormResult);
+      });
 
       await render(<ContactForm />);
 
@@ -363,7 +364,7 @@ describe('contactForm', () => {
         success: false,
         error: 'email_failed',
         message: 'メール送信に失敗しました。Discord経由でご連絡ください。',
-      } as ContactFormResult);
+      });
 
       await render(<ContactForm />);
 
@@ -387,7 +388,7 @@ describe('contactForm', () => {
         success: false,
         error: 'rate_limit',
         message: '送信制限に達しました',
-      } as ContactFormResult);
+      });
 
       await render(<ContactForm />);
 
@@ -407,7 +408,7 @@ describe('contactForm', () => {
     });
 
     test('success message persists until the user edits a field', async () => {
-      submitMock.mockResolvedValue({ success: true } as ContactFormResult);
+      submitMock.mockResolvedValue({ success: true });
 
       await render(<ContactForm />);
 
@@ -434,7 +435,7 @@ describe('contactForm', () => {
     });
 
     test('announces errors via role=alert and success via role=status', async () => {
-      submitMock.mockResolvedValue({ success: true } as ContactFormResult);
+      submitMock.mockResolvedValue({ success: true });
 
       await render(<ContactForm />);
 
