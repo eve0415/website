@@ -1,7 +1,7 @@
 import preview from '#.storybook/preview';
 import { enableReducedMotion } from '#.storybook/viewports';
 
-import { errorVisualizationParameters, withRouter } from '../story-factory';
+import { errorVisualizationParameters } from '../story-factory';
 
 import UndefinedBehavior from './undefined-behavior';
 
@@ -10,7 +10,6 @@ const meta = preview.meta({
   title: 'ErrorVisualizations/UndefinedBehavior',
   tags: ['autodocs'],
   parameters: errorVisualizationParameters,
-  decorators: [withRouter],
 });
 
 export default meta;

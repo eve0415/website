@@ -13,7 +13,6 @@ import { WorkflowEntrypoint } from 'cloudflare:workers';
 import { count, desc, eq, inArray, sql, sum } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 
-import * as schema from '#db/schema';
 import { commits, historySummaries, prReviews, pullRequests, repos, workflowState } from '#db/schema';
 
 import { isAIProfileDraft, isAISkillDraft } from './-utils/ai-skills-types';
@@ -68,7 +67,7 @@ interface RepoSyncResult {
 export class SkillsAnalysisWorkflow extends WorkflowEntrypoint<WorkflowEnv, void> {
   // Per-step rule: a fresh connectionless client created inside each step.do
   private getDb(): DrizzleD1Database {
-    return drizzle(this.env.SKILLS_DB, { schema });
+    return drizzle(this.env.SKILLS_DB);
   }
 
   override async run(event: WorkflowEvent<void>, step: WorkflowStep) {

@@ -2,7 +2,7 @@ import type { Phase } from './usePhaseController';
 
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 
-interface Vec2 {
+export interface Vec2 {
   x: number;
   y: number;
 }

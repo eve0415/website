@@ -32,6 +32,10 @@ declare module '@tanstack/react-start' {
     server: {
       requestContext: {
         db: DrizzleD1Database;
+        // securityMiddleware puts this on the context, but getGlobalStartContext()
+        // resolves its type with no middlewares, so it has to be declared here.
+        // Optional: the fetch handler builds the context before middleware runs.
+        cspNonce?: string;
       };
     };
   }

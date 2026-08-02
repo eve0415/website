@@ -1,7 +1,6 @@
 import handler from '@tanstack/react-start/server-entry';
 import { drizzle } from 'drizzle-orm/d1';
 
-import * as schema from './db/schema';
 import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
 
 export { SkillsAnalysisWorkflow } from './workflows/skills-analysis';
@@ -10,7 +9,7 @@ export default {
   fetch: async (request, env, _ctx) =>
     handler.fetch(request, {
       context: {
-        db: drizzle(env.SKILLS_DB, { schema }),
+        db: drizzle(env.SKILLS_DB),
       },
     }),
   scheduled(event, env, ctx) {

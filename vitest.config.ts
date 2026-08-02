@@ -7,6 +7,28 @@ import { tanstackStartTesting } from '@tanstack-router-testing/react-start-testi
 import { playwright } from '@vitest/browser-playwright';
 import { defineConfig } from 'vitest/config';
 
+// Test-time codegen rewrites src/routeTree.gen.ts, and without this footer it
+// drops the Register block that `vite build` writes - which silently turns every
+// Route.useLoaderData() into `any`. Keep it byte-identical to the build output.
+const startTesting = () =>
+  tanstackStartTesting({
+    router: {
+      routeTreeFileFooter: () => [
+        [
+          "import type { getRouter } from './router.tsx'",
+          "import type { startInstance } from './start.ts'",
+          "declare module '@tanstack/react-start' {",
+          '  interface Register {',
+          '    ssr: true',
+          '    router: Awaited<ReturnType<typeof getRouter>>',
+          '    config: Awaited<ReturnType<typeof startInstance.getOptions>>',
+          '  }',
+          '}',
+        ].join('\n'),
+      ],
+    },
+  });
+
 export default defineConfig({
   test: {
     clearMocks: true,
@@ -44,7 +66,7 @@ export default defineConfig({
               },
             },
           }),
-          tanstackStartTesting(),
+          startTesting(),
           tailwindcss(),
         ],
         test: {
@@ -54,7 +76,7 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [tanstackStartTesting()],
+        plugins: [startTesting()],
         resolve: {
           dedupe: ['react', 'react-dom'],
           alias: {
@@ -94,14 +116,7 @@ export default defineConfig({
       },
       {
         extends: true,
-        plugins: [tanstackStartTesting(), tailwindcss(), storybookTest()],
-        resolve: {
-          dedupe: ['react', 'react-dom'],
-          alias: {
-            'react-dom/server': path.resolve('test/stubs/react-dom-server.ts'),
-            '@tanstack/react-form-start': path.resolve('test/stubs/tanstack-react-form-start.tsx'),
-          },
-        },
+        plugins: [tailwindcss(), storybookTest()],
         test: {
           name: 'storybook',
           testTimeout: 60000,
@@ -124,11 +139,7 @@ export default defineConfig({
               },
             },
           },
-          setupFiles: ['@tanstack-router-testing/react-start-testing/cleanup', '.storybook/vitest.setup.ts'],
-        },
-        optimizeDeps: {
-          include: ['@tanstack/react-form-start > @tanstack/react-store'],
-          exclude: ['@tanstack/react-start', '@tanstack/start-client-core', '@tanstack/start-server-core', '@tanstack/start-static-server-functions'],
+          setupFiles: ['.storybook/vitest.setup.ts'],
         },
       },
     ],

@@ -7,7 +7,6 @@ import { count, desc, eq, sql, sum } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from 'vitest';
 
-import * as schema from '#db/schema';
 import { commits, repos, workflowState } from '#db/schema';
 
 import { classifyRepo, sanitizeForAI } from './-utils/privacy-filter';
@@ -159,7 +158,7 @@ describe('skills-analysis', () => {
     let db: DrizzleD1Database;
 
     beforeEach(async () => {
-      db = drizzle(env.SKILLS_DB, { schema });
+      db = drizzle(env.SKILLS_DB);
 
       // Clean up before each test
       await db.delete(repos);
@@ -380,7 +379,7 @@ describe('skills-analysis', () => {
     let db: DrizzleD1Database;
 
     beforeEach(async () => {
-      db = drizzle(env.SKILLS_DB, { schema });
+      db = drizzle(env.SKILLS_DB);
       await db.delete(commits);
       await db.delete(repos);
     });

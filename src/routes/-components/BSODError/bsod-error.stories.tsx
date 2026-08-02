@@ -1,4 +1,3 @@
-import { RouterProvider, createMemoryHistory, createRootRoute, createRouter } from '@tanstack/react-router';
 import { expect, fn, waitFor, within } from 'storybook/test';
 
 import preview from '#.storybook/preview';
@@ -17,18 +16,6 @@ const meta = preview.meta({
     reset: { action: 'reset' },
     info: { control: false },
   },
-  decorators: [
-    Story => {
-      const rootRoute = createRootRoute({
-        component: Story,
-      });
-      const router = createRouter({
-        routeTree: rootRoute,
-        history: createMemoryHistory({ initialEntries: ['/error'] }),
-      });
-      return <RouterProvider router={router} />;
-    },
-  ],
 });
 
 /**

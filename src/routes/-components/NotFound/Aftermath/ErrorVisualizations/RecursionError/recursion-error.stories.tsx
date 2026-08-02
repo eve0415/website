@@ -1,7 +1,7 @@
 import preview from '#.storybook/preview';
 import { enableReducedMotion } from '#.storybook/viewports';
 
-import { errorVisualizationParameters, withRouter } from '../story-factory';
+import { errorVisualizationParameters } from '../story-factory';
 
 import RecursionError from './recursion-error';
 
@@ -10,7 +10,6 @@ const meta = preview.meta({
   title: 'ErrorVisualizations/RecursionError',
   tags: ['autodocs'],
   parameters: errorVisualizationParameters,
-  decorators: [withRouter],
 });
 
 export default meta;

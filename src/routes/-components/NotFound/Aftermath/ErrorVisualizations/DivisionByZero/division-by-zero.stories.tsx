@@ -1,7 +1,7 @@
 import preview from '#.storybook/preview';
 import { enableReducedMotion } from '#.storybook/viewports';
 
-import { errorVisualizationParameters, withRouter } from '../story-factory';
+import { errorVisualizationParameters } from '../story-factory';
 
 import DivisionByZero from './division-by-zero';
 
@@ -10,7 +10,6 @@ const meta = preview.meta({
   title: 'ErrorVisualizations/DivisionByZero',
   tags: ['autodocs'],
   parameters: errorVisualizationParameters,
-  decorators: [withRouter],
 });
 
 export default meta;

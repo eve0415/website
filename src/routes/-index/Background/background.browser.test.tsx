@@ -1,6 +1,8 @@
 import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 
+import { createMediaQueryListMock } from '#test/utils/media-query-mock';
+
 import Background from './background';
 
 describe('background', () => {
@@ -51,16 +53,9 @@ describe('background', () => {
 
   test('handles reduced motion preference', async () => {
     // Mock reduced motion preference
-    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
-      matches: query === '(prefers-reduced-motion: reduce)',
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    using _matchMedia = vi
+      .spyOn(globalThis, 'matchMedia')
+      .mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
     const { container } = await render(<Background />);
 

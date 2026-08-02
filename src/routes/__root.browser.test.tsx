@@ -1,4 +1,5 @@
-import type { FC, PropsWithChildren, ReactNode } from 'react';
+import type { TanStackDevtoolsReactInit } from '@tanstack/react-devtools';
+import type { FC, PropsWithChildren } from 'react';
 
 import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
@@ -6,20 +7,19 @@ import { page } from 'vitest/browser';
 
 // Mock TanStack components that require router context
 vi.mock(import('@tanstack/react-router'), async importOriginal => {
-  const actual = await importOriginal<object>();
+  const actual = await importOriginal();
   return {
     ...actual,
-    HeadContent: () => {},
-    Scripts: () => {},
+    HeadContent: () => <meta data-testid='head-content' />,
+    Scripts: () => <script data-testid='scripts' />,
   };
 });
 
 vi.mock(import('@tanstack/react-devtools'), () => ({
-  TanStackDevtools: ({ plugins }: { plugins: { name: string; render: ReactNode }[] }) => (
+  TanStackDevtools: ({ plugins }: TanStackDevtoolsReactInit) => (
     <div data-testid='tanstack-devtools'>
-      {plugins.map(p => (
-        <div key={p.name}>{p.name}</div>
-      ))}
+      {/* A plugin name may be an element or a render function; only strings are assertable. */}
+      {plugins?.map(p => typeof p.name === 'string' && <div key={p.name}>{p.name}</div>)}
     </div>
   ),
 }));

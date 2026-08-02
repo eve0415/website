@@ -6,6 +6,7 @@ import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
 
 import { fakeTimers } from '#test/utils/disposable';
+import { createMediaQueryListMock } from '#test/utils/media-query-mock';
 
 import CodeRadar from './code-radar';
 
@@ -48,16 +49,7 @@ describe('codeRadar', () => {
   test('shows SCANNING during boot animation', async () => {
     using _ = fakeTimers();
     // Ensure reduced motion is off
-    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(false, query));
 
     await render(<CodeRadar contributionCalendar={mockContributions} />);
 
@@ -74,16 +66,7 @@ describe('codeRadar', () => {
     const onBootComplete = vi.fn();
 
     // Ensure reduced motion is off
-    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(false, query));
 
     await render(<CodeRadar contributionCalendar={mockContributions} onBootComplete={onBootComplete} />);
 
@@ -98,16 +81,9 @@ describe('codeRadar', () => {
     const onBootComplete = vi.fn();
 
     // Mock reduced motion preference
-    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
-      matches: query === '(prefers-reduced-motion: reduce)',
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    using _matchMedia = vi
+      .spyOn(globalThis, 'matchMedia')
+      .mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
     await render(<CodeRadar contributionCalendar={mockContributions} onBootComplete={onBootComplete} />);
 
@@ -146,16 +122,7 @@ describe('codeRadar', () => {
     using _ = fakeTimers();
     using cancelAnimationFrameSpy = vi.spyOn(globalThis, 'cancelAnimationFrame');
 
-    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    using _matchMedia = vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(false, query));
 
     const screen = await render(<CodeRadar contributionCalendar={mockContributions} />);
 

@@ -1,9 +1,11 @@
-/* oxlint-disable typescript/no-non-null-assertion, vitest/no-conditional-in-test -- Test assertions verify existence; conditional in mock addEventListener captures listener */
+/* oxlint-disable vitest/no-conditional-in-test -- conditional in mock addEventListener captures the change listener */
 import type { FC } from 'react';
 
 import { describe, expect, test, vi } from 'vitest';
 import { render } from 'vitest-browser-react';
 import { page } from 'vitest/browser';
+
+import { createMediaQueryListMock } from '#test/utils/media-query-mock';
 
 import { useReducedMotion } from './useReducedMotion';
 
@@ -14,16 +16,7 @@ const TestComponent: FC = () => {
 
 describe('useReducedMotion', () => {
   test('returns false when prefers-reduced-motion is not enabled', async () => {
-    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
-      matches: false,
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(false, query));
 
     await render(<TestComponent />);
 
@@ -31,16 +24,7 @@ describe('useReducedMotion', () => {
   });
 
   test('returns true when prefers-reduced-motion is enabled', async () => {
-    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => ({
-      matches: query === '(prefers-reduced-motion: reduce)',
-      media: query,
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    }));
+    vi.spyOn(globalThis, 'matchMedia').mockImplementation(query => createMediaQueryListMock(query === '(prefers-reduced-motion: reduce)', query));
 
     await render(<TestComponent />);
 
@@ -48,53 +32,37 @@ describe('useReducedMotion', () => {
   });
 
   test('responds to media query changes', async () => {
-    type ChangeListener = (this: MediaQueryList, ev: MediaQueryListEvent) => void;
-    let changeListener: ChangeListener | undefined;
+    let changeListener: EventListener | undefined;
 
-    const mockMediaQuery = {
-      matches: false,
-      media: '(prefers-reduced-motion: reduce)',
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn((event: string, listener: ChangeListener) => {
-        if (event === 'change') changeListener = listener;
-      }),
-      removeEventListener: vi.fn(),
-      dispatchEvent: vi.fn(),
-    };
+    const mockMediaQuery = createMediaQueryListMock(false, '(prefers-reduced-motion: reduce)');
+    vi.mocked(mockMediaQuery.addEventListener).mockImplementation((event, listener) => {
+      if (event === 'change' && typeof listener === 'function') changeListener = listener;
+    });
 
-    vi.spyOn(globalThis, 'matchMedia').mockReturnValue(mockMediaQuery as MediaQueryList);
+    vi.spyOn(globalThis, 'matchMedia').mockReturnValue(mockMediaQuery);
 
     await render(<TestComponent />);
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('false');
 
+    if (!changeListener) throw new Error('the hook never registered a change listener');
+
     // Simulate media query change
     mockMediaQuery.matches = true;
-    changeListener!.call(mockMediaQuery as MediaQueryList, new Event('change') as MediaQueryListEvent);
+    changeListener.call(mockMediaQuery, new Event('change'));
 
     await expect.element(page.getByTestId('result')).toHaveTextContent('true');
   });
 
   test('cleans up event listener on unmount', async () => {
-    const removeEventListener = vi.fn();
+    const mockMediaQuery = createMediaQueryListMock(false, '(prefers-reduced-motion: reduce)');
 
-    vi.spyOn(globalThis, 'matchMedia').mockReturnValue({
-      matches: false,
-      media: '(prefers-reduced-motion: reduce)',
-      onchange: null,
-      addListener: vi.fn(),
-      removeListener: vi.fn(),
-      addEventListener: vi.fn(),
-      removeEventListener,
-      dispatchEvent: vi.fn(),
-    } as MediaQueryList);
+    vi.spyOn(globalThis, 'matchMedia').mockReturnValue(mockMediaQuery);
 
     const screen = await render(<TestComponent />);
 
     await screen.unmount();
 
-    expect(removeEventListener).toHaveBeenCalledWith('change', expect.any(Function));
+    expect(mockMediaQuery.removeEventListener).toHaveBeenCalledWith('change', expect.any(Function));
   });
 });

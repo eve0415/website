@@ -20,7 +20,10 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    // Nothing consumes tsc output - vite bundles the app. Composite projects
+    // may disable emit as of TS 7, so a type-check run leaves only .tsbuildinfo.
+    "noEmit": true
   },
   "files": []
 }

@@ -10,6 +10,9 @@ worker-configuration.d.ts
 # tanstacl
 dist/
 
+# tsc --build incremental state
+*.tsbuildinfo
+
 # AI
 .claude/settings.local.json
 
