@@ -5,7 +5,10 @@ const config: CodegenConfig = {
   documents: ['src/**/*.graphql'],
   generates: {
     'src/generated/github-graphql.ts': {
-      plugins: ['typescript', 'typescript-operations'],
+      // typescript-operations alone emits every type we import, plus the enums
+      // our operations reference. Adding the `typescript` plugin re-declared
+      // those enums (TS2300) and dumped 7.7k lines of unused schema types.
+      plugins: ['typescript-operations'],
       config: {
         strictScalars: true,
         scalars: {
@@ -24,7 +27,6 @@ const config: CodegenConfig = {
           X509Certificate: 'string',
         },
         enumsAsTypes: true,
-        onlyOperationTypes: true,
       },
     },
   },
