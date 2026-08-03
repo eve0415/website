@@ -113,50 +113,52 @@ const IndexPage: FC = () => {
           <Logo animate />
         </div>
 
-        {/* Name */}
+        {/* Name - the typed animation starts empty, so the real text ships in the SSR
+            HTML for screen readers and crawlers and the animation is decorative. */}
         <h1 className='text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl'>
-          <TerminalText text='eve0415' speed={100} />
+          <span className='sr-only'>eve0415</span>
+          <span aria-hidden='true'>
+            <TerminalText text='eve0415' speed={100} />
+          </span>
         </h1>
 
-        {/* Tagline */}
-        {taglineVisible && (
-          <p className='animate-fade-in-up text-muted-foreground text-center'>
-            <TerminalText text='エンジニア' delay={0} speed={60} />
-          </p>
-        )}
+        {/* Tagline - always in the layout so the staggered reveal cannot shift the
+            column; `invisible` keeps it out of the a11y tree until it is revealed. */}
+        <p className={`text-muted-foreground text-center ${taglineVisible ? 'animate-fade-in-up' : 'invisible'}`}>
+          {taglineVisible ? <TerminalText text='エンジニア' delay={0} speed={60} /> : <span className='inline-block'>エンジニア</span>}
+        </p>
 
-        {/* Navigation prompt */}
-        {navVisible && (
-          <nav className='animate-fade-in-up text-subtle-foreground mt-12 flex flex-col items-center gap-6 text-sm'>
-            {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
-            <span className='font-mono text-xs tracking-wider'>// 探索を始める</span>
-            <div className='flex gap-6'>
-              <Link to='/projects' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
-                <span className='font-mono'>[Projects]</span>
-                <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
-              </Link>
-              <Link to='/skills' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
-                <span className='font-mono'>[Skills]</span>
-                <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
-              </Link>
-              <Link to='/link' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
-                <span className='font-mono'>[Link]</span>
-                <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
-              </Link>
-              <Link to='/sys' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
-                <span className='font-mono'>[Sys]</span>
-                <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
-              </Link>
-            </div>
-            <div className='text-subtle-foreground mt-4 flex items-center gap-2 text-xs'>
-              <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>1</kbd>
-              <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>2</kbd>
-              <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>3</kbd>
-              <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
-              <span className='ml-1'>でジャンプ</span>
-            </div>
-          </nav>
-        )}
+        {/* Navigation prompt - reserved the same way as the tagline. `invisible` also
+            keeps the links out of the tab order until the reveal. */}
+        <nav className={`text-subtle-foreground mt-12 flex flex-col items-center gap-6 text-sm ${navVisible ? 'animate-fade-in-up' : 'invisible'}`}>
+          {/* oxlint-disable-next-line react/jsx-no-comment-textnodes -- Decorative code comment style */}
+          <span className='font-mono text-xs tracking-wider'>// 探索を始める</span>
+          <div className='flex gap-6'>
+            <Link to='/projects' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
+              <span className='font-mono'>[Projects]</span>
+              <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
+            </Link>
+            <Link to='/skills' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
+              <span className='font-mono'>[Skills]</span>
+              <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
+            </Link>
+            <Link to='/link' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
+              <span className='font-mono'>[Link]</span>
+              <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
+            </Link>
+            <Link to='/sys' className='group text-muted-foreground hover:text-neon relative px-2 py-1 transition-colors'>
+              <span className='font-mono'>[Sys]</span>
+              <span className='bg-neon duration-normal absolute -bottom-1 left-0 h-px w-0 transition-all group-hover:w-full' />
+            </Link>
+          </div>
+          <div className='text-subtle-foreground mt-4 flex items-center gap-2 text-xs'>
+            <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>1</kbd>
+            <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>2</kbd>
+            <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>3</kbd>
+            <kbd className='border-line rounded border px-1.5 py-0.5 font-mono text-[10px]'>4</kbd>
+            <span className='ml-1'>でジャンプ</span>
+          </div>
+        </nav>
       </div>
 
       {/* Footer coordinates - playful terminal element */}

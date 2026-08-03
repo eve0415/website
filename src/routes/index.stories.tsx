@@ -45,7 +45,7 @@ export const Default = meta.story({
     const canvas = within(canvasElement);
 
     // Verify main content
-    await expect(await canvas.findByText('eve0415')).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { level: 1, name: 'eve0415' })).toBeInTheDocument();
     await expect(await canvas.findByText('エンジニア', undefined, { timeout: 5000 })).toBeInTheDocument();
 
     // Verify navigation (revealed after the tagline)
@@ -69,7 +69,7 @@ export const Default = meta.story({
 export const Static = meta.story({
   play: async context => {
     const canvas = within(context.canvasElement);
-    await expect(await canvas.findByText('eve0415')).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { level: 1, name: 'eve0415' })).toBeInTheDocument();
 
     await waitForLogoSettled(context.canvasElement);
     await testAllViewports(context);
@@ -82,7 +82,7 @@ export const Static = meta.story({
 export const KonamiActivated = meta.story({
   play: async ({ canvasElement }) => {
     const canvas = within(canvasElement);
-    await expect(await canvas.findByText('eve0415')).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { level: 1, name: 'eve0415' })).toBeInTheDocument();
 
     await userEvent.keyboard('{ArrowUp}{ArrowUp}{ArrowDown}{ArrowDown}{ArrowLeft}{ArrowRight}{ArrowLeft}{ArrowRight}[KeyB][KeyA]');
 
@@ -103,7 +103,7 @@ export const MobileLayout = meta.story({
     const canvas = within(context.canvasElement);
 
     // Content should still be visible on mobile
-    await expect(await canvas.findByText('eve0415')).toBeInTheDocument();
+    await expect(await canvas.findByRole('heading', { level: 1, name: 'eve0415' })).toBeInTheDocument();
     await expect(await canvas.findByText('[Projects]', undefined, { timeout: 5000 })).toBeInTheDocument();
   },
 });
