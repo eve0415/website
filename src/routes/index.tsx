@@ -113,9 +113,13 @@ const IndexPage: FC = () => {
           <Logo animate />
         </div>
 
-        {/* Name */}
+        {/* Name - the typed animation starts empty, so the real text ships in the SSR
+            HTML for screen readers and crawlers and the animation is decorative. */}
         <h1 className='text-3xl font-bold tracking-tight md:text-4xl lg:text-5xl'>
-          <TerminalText text='eve0415' speed={100} />
+          <span className='sr-only'>eve0415</span>
+          <span aria-hidden='true'>
+            <TerminalText text='eve0415' speed={100} />
+          </span>
         </h1>
 
         {/* Tagline */}
