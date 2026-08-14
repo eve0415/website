@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "1.51.3",
+    "@oxlint/plugins": "1.78.0",
     "@tailwindcss/vite": "4.3.3",
     "@tanstack/eslint-plugin-router": "1.162.0",
     "@tanstack/react-router": "1.170.27",

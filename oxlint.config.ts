@@ -2,8 +2,8 @@ import { defineConfig } from 'oxlint';
 
 export default defineConfig({
   plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'import', 'react', 'react-perf', 'jsx-a11y', 'node', 'promise'],
-  jsPlugins: ['@tanstack/eslint-plugin-router'],
-  ignorePatterns: ['.wrangler', 'dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts'],
+  jsPlugins: ['@tanstack/eslint-plugin-router', { name: 'anti-slop', specifier: './tools/oxlint/anti-slop/src/index.ts' }],
+  ignorePatterns: ['.wrangler', 'dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'tools/oxlint/anti-slop'],
   options: {
     typeAware: true,
     typeCheck: true,
@@ -440,5 +440,20 @@ export default defineConfig({
     'jsx-a11y/tabindex-no-positive': 'error',
     '@tanstack/router/create-route-property-order': 'error',
     '@tanstack/router/route-param-names': 'error',
+    'anti-slop/no-chained-type-assertions': 'error',
+    'anti-slop/no-conditional-empty-object-spread': 'error',
+    'anti-slop/no-known-value-widening': 'error',
+    'anti-slop/no-module-mocking': 'error',
+    'anti-slop/no-object-parameters': 'error',
+    'anti-slop/no-reflect-apply': 'error',
+    'anti-slop/no-reflect-get': 'error',
+    'anti-slop/no-runtime-typeof': 'error',
+    'anti-slop/no-shape-in-symbol-names': 'error',
+    'anti-slop/no-unknown-parameters': 'error',
+    'anti-slop/no-unknown-returns': 'error',
+    'anti-slop/no-unknown-type-aliases': 'error',
+    'anti-slop/no-unsafe-dictionary-type': 'error',
+    'anti-slop/no-widen-then-assert': 'error',
+    'anti-slop/require-safety-comment-for-type-assertion': 'error',
   },
 });
