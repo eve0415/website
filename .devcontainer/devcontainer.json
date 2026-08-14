@@ -1,7 +1,8 @@
 {
   "name": "eve0415 website devcontainer",
   "image": "mcr.microsoft.com/devcontainers/typescript-node:5.0.3-24-trixie",
-  "postStartCommand": "pnpm install --frozen-lockfile && pnpm generate && pnpm playwright install --with-deps",
+  "onCreateCommand": "npm install -g pnpm@11.21.0",
+  "postStartCommand": "git submodule update --init --recursive && pnpm install --frozen-lockfile && pnpm generate",
   "containerEnv": {
     "TZ": "Asia/Tokyo"
   },
@@ -10,6 +11,6 @@
       "extensions": "github/gh-stack",
       "installDirectlyFromGitHubRelease": true,
       "version": "latest"
-    },
+    }
   }
 }
