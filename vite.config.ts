@@ -23,6 +23,14 @@ export default defineConfig({
     tailwindcss(),
     devtoolsJson(),
   ],
+  environments: {
+    ssr: {
+      build: {
+        minify: 'oxc',
+        sourcemap: true,
+      },
+    },
+  },
   server: {
     host: true,
   },
