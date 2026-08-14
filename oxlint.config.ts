@@ -400,6 +400,7 @@ export default defineConfig({
     'react/no-unstable-nested-components': 'error',
     'react/no-unknown-property': 'error',
     'react/prefer-function-component': 'error',
+    'react/react-compiler': 'error',
     'react/rules-of-hooks': 'error',
     'react/self-closing-comp': 'error',
     'react/style-prop-object': 'error',
