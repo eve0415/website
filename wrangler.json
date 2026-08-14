@@ -8,6 +8,12 @@
   "preview_urls": true,
   "upload_source_maps": true,
   "placement": { "mode": "smart" },
+  "routes": [
+    {
+      "pattern": "eve0415.net",
+      "custom_domain": true
+    }
+  ],
   "observability": {
     "enabled": true,
     "traces": { "enabled": true }
