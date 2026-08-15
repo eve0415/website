@@ -7,6 +7,14 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
+const SITE_URL = 'https://eve0415.net';
+
+const LOCALE_ALTERNATES = [
+  { hreflang: 'ja', href: SITE_URL },
+  { hreflang: 'en', href: `${SITE_URL}/en` },
+  { hreflang: 'x-default', href: SITE_URL },
+];
+
 export default defineConfig({
   plugins: [
     cloudflare({
@@ -25,9 +33,12 @@ export default defineConfig({
       },
       sitemap: {
         enabled: true,
-        host: 'https://eve0415.net',
+        host: SITE_URL,
       },
-      pages: [{ path: '/' }],
+      pages: [
+        { path: '/', sitemap: { alternateRefs: LOCALE_ALTERNATES } },
+        { path: '/en', sitemap: { alternateRefs: LOCALE_ALTERNATES } },
+      ],
     }),
     devtools({
       eventBusConfig: { enabled: true },
