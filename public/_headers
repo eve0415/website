@@ -7,6 +7,9 @@
 /:file.png
   Cache-Control: public, max-age=86400
 
+/:file.jpg
+  Cache-Control: public, max-age=86400
+
 /:file.svg
   Cache-Control: public, max-age=86400
 
