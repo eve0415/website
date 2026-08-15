@@ -24,3 +24,9 @@ dist/
 
 # Agent worktrees
 .claude/worktrees/
+
+# Claude Design mirror (source of truth is the design project, not the repo)
+.design/
+
+# macOS
+.DS_Store
