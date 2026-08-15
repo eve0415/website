@@ -1,8 +1,10 @@
 import type { FC, PropsWithChildren } from 'react';
 
 import { TanStackDevtools } from '@tanstack/react-devtools';
-import { HeadContent, Outlet, Scripts, createRootRoute } from '@tanstack/react-router';
+import { HeadContent, Outlet, Scripts, createRootRoute, useParams } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
+
+import { DEFAULT_LOCALE, parseLocaleParam } from '#i18n/locale';
 
 import rootCss from './__root.css?url';
 
@@ -10,29 +12,36 @@ const SITE_URL = 'https://eve0415.net';
 const SITE_NAME = 'eve0415';
 const SITE_DESCRIPTION = 'eve0415 - エンジニア';
 
-const RootDocument: FC<PropsWithChildren> = ({ children }) => (
-  <html lang='ja'>
-    <head>
-      <HeadContent />
-    </head>
-    <body>
-      {children}
+const RootDocument: FC<PropsWithChildren> = ({ children }) => {
+  // The locale lives on a child route, but <html> renders here, so it is read
+  // from router state rather than passed down. HeadContent only writes into
+  // <head>, so lang cannot come from a route's head().
+  const { locale } = useParams({ strict: false });
 
-      {import.meta.env.DEV && (
-        <TanStackDevtools
-          plugins={[
-            {
-              name: 'TanStack Router',
-              render: <TanStackRouterDevtoolsPanel />,
-            },
-          ]}
-        />
-      )}
+  return (
+    <html lang={parseLocaleParam(locale) ?? DEFAULT_LOCALE}>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        {children}
 
-      <Scripts />
-    </body>
-  </html>
-);
+        {import.meta.env.DEV && (
+          <TanStackDevtools
+            plugins={[
+              {
+                name: 'TanStack Router',
+                render: <TanStackRouterDevtoolsPanel />,
+              },
+            ]}
+          />
+        )}
+
+        <Scripts />
+      </body>
+    </html>
+  );
+};
 
 export const Route = createRootRoute({
   head: () => ({
