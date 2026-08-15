@@ -50,7 +50,7 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
     <>
       <span className='grid flex-[1_1_320px] gap-[8px]'>
         <span className={TITLE_ROW}>
-          <span className='text-[22px] font-bold text-[var(--ink-title)]'>{name}</span>
+          <span className='text-[22px] font-bold text-(--ink-title)'>{name}</span>
           {tag ? <Tag hue={hue}>{tag}</Tag> : null}
         </span>
         <span className={DESCRIPTION}>{description}</span>
@@ -58,14 +58,14 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
       {stat ? (
         <span className='grid gap-[2px] text-right'>
           <span className={cn('text-[clamp(28px,4vw,40px)] leading-[1.1] font-bold', statColor)}>{stat}</span>
-          {statLabel ? <span className='text-[13px] text-[var(--ink-ice)]'>{statLabel}</span> : null}
+          {statLabel ? <span className='text-[13px] text-(--ink-ice)'>{statLabel}</span> : null}
         </span>
       ) : null}
     </>
   ) : (
     <>
       <span className={TITLE_ROW}>
-        <span className='text-[length:var(--text-card-title)] font-bold text-[var(--ink-title)]'>{name}</span>
+        <span className='text-(length:--text-card-title) font-bold text-(--ink-title)'>{name}</span>
         {tag ? <Tag hue={hue}>{tag}</Tag> : null}
       </span>
       <p className={DESCRIPTION}>{description}</p>

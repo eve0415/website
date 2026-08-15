@@ -29,23 +29,23 @@ export const CometLink: FC<CometLinkProps> = props => {
       <span className='relative inline-block pb-[5px]'>
         {children}
         <span
-          className='absolute inset-x-0 bottom-0 h-[2px] origin-right transform-[scaleX(0)] rounded-[1px] bg-[image:var(--grad-comet)] transition-[transform] duration-500 ease-[var(--ease-comet)] group-hover:origin-left group-hover:transform-[scaleX(1)]'
+          className='absolute inset-x-0 bottom-0 h-[2px] origin-right transform-[scaleX(0)] rounded-[1px] bg-(image:--grad-comet) transition-[transform] duration-500 ease-(--ease-comet) group-hover:origin-left group-hover:transform-[scaleX(1)]'
           aria-hidden='true'
         />
         <span
-          className='absolute bottom-[-1.5px] left-0 h-[5px] w-full transform-[translateX(calc(-100%_+_10px))] opacity-0 group-hover:[animation:evCometRun_0.6s_var(--ease-comet)_0.08s_both]'
+          className='absolute bottom-[-1.5px] left-0 h-[5px] w-full transform-[translateX(calc(-100%+10px))] opacity-0 group-hover:[animation:evCometRun_0.6s_var(--ease-comet)_0.08s_both]'
           aria-hidden='true'
         >
-          <span className='absolute top-[1px] right-0 h-[3px] w-[26px] rounded-[3px] bg-[linear-gradient(90deg,transparent,rgba(252,247,253,.95))] shadow-[0_0_8px_1px_rgba(4,254,255,.8)]' />
-          <span className='absolute top-0 right-[-2px] h-[5px] w-[5px] rounded-[50%] bg-[var(--star-white)] shadow-[0_0_10px_3px_rgba(4,254,255,.9)]' />
+          <span className='absolute top-px right-0 h-[3px] w-[26px] rounded-[3px] bg-[linear-gradient(90deg,transparent,rgba(252,247,253,.95))] shadow-[0_0_8px_1px_rgba(4,254,255,.8)]' />
+          <span className='absolute top-0 right-[-2px] size-[5px] rounded-[50%] bg-(--star-white) shadow-[0_0_10px_3px_rgba(4,254,255,.9)]' />
         </span>
         <span
-          className='absolute right-[-7px] bottom-[-1px] h-[13px] w-[13px] transform-[scale(0)] bg-[var(--star-white)] drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)] group-hover:[animation:evKiraPop_0.5s_ease-in-out_0.45s_both]'
+          className='absolute right-[-7px] -bottom-px size-[13px] transform-[scale(0)] bg-(--star-white) drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)] group-hover:[animation:evKiraPop_0.5s_ease-in-out_0.45s_both]'
           aria-hidden='true'
         />
       </span>
       <span
-        className='inline-block transition-[transform] delay-[0.05s] duration-[0.4s] ease-[var(--ease-comet)] group-hover:transform-[translateX(5px)]'
+        className='inline-block transition-[transform] delay-[0.05s] duration-[0.4s] ease-(--ease-comet) group-hover:transform-[translateX(5px)]'
         aria-hidden='true'
       >
         →

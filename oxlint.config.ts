@@ -2,8 +2,13 @@ import { defineConfig } from 'oxlint';
 
 export default defineConfig({
   plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'import', 'react', 'react-perf', 'jsx-a11y', 'node', 'promise'],
-  jsPlugins: ['@tanstack/eslint-plugin-router', { name: 'anti-slop', specifier: './tools/oxlint/anti-slop/src/index.ts' }],
+  jsPlugins: ['@tanstack/eslint-plugin-router', 'oxlint-tailwindcss', { name: 'anti-slop', specifier: './tools/oxlint/anti-slop/src/index.ts' }],
   ignorePatterns: ['.wrangler', 'dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'tools/oxlint/anti-slop'],
+  settings: {
+    tailwindcss: {
+      entryPoint: 'src/routes/__root.css',
+    },
+  },
   options: {
     typeAware: true,
     typeCheck: true,
@@ -110,6 +115,28 @@ export default defineConfig({
     'promise/avoid-new': 'off',
     'unicorn/no-nested-ternary': 'off',
     'unicorn/max-nested-calls': 'off',
+
+    // ev-* are hooks the @supports/@container rules in the colocated stylesheets
+    // select on; they are deliberately not utilities.
+    'tailwindcss/no-unknown-classes': ['error', { ignorePrefixes: ['ev-'] }],
+    'tailwindcss/no-duplicate-classes': 'error',
+    'tailwindcss/no-conflicting-classes': 'error',
+    'tailwindcss/no-deprecated-classes': 'error',
+    'tailwindcss/no-unnecessary-whitespace': 'error',
+    'tailwindcss/no-dark-without-light': 'error',
+    'tailwindcss/no-contradicting-variants': 'error',
+    'tailwindcss/enforce-canonical': 'error',
+    'tailwindcss/enforce-shorthand': 'error',
+    'tailwindcss/enforce-consistent-important-position': 'error',
+    'tailwindcss/enforce-negative-arbitrary-values': 'error',
+    'tailwindcss/enforce-consistent-variable-syntax': 'error',
+    'tailwindcss/consistent-variant-order': 'error',
+    'tailwindcss/no-unnecessary-arbitrary-value': 'error',
+
+    // oxfmt owns class order and wrapping via sortTailwindcss; two sorters would
+    // fix each other's output on every run.
+    'tailwindcss/enforce-sort-order': 'off',
+    'tailwindcss/enforce-consistent-line-wrapping': 'off',
 
     '@tanstack/router/create-route-property-order': 'error',
     '@tanstack/router/route-param-names': 'error',

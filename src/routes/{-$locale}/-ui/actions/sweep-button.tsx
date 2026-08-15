@@ -30,12 +30,12 @@ export const SweepButton: FC<SweepButtonProps> = props => {
   const inner = (
     <>
       <span className={cn(SWEEP, 'bg-[rgba(159,232,255,0.95)]')} aria-hidden='true' />
-      <span className={cn(SWEEP, 'bg-[image:var(--grad-comet)] delay-[0.08s]')} aria-hidden='true' />
-      <span className='relative z-[1] inline-flex items-center gap-[10px] transition-[color] delay-[0.12s] duration-[0.25s] ease-[ease] group-hover:text-[var(--ink-on-accent)]'>
+      <span className={cn(SWEEP, 'bg-(image:--grad-comet) delay-[0.08s]')} aria-hidden='true' />
+      <span className='relative z-1 inline-flex items-center gap-[10px] transition-[color] delay-[0.12s] duration-[0.25s] ease-[ease] group-hover:text-(--ink-on-accent)'>
         {children}
         {arrow ? (
           <span
-            className='inline-block transition-[transform] delay-[0.1s] duration-[0.3s] ease-[var(--ease-comet)] group-hover:transform-[translate(3px,-3px)]'
+            className='inline-block transition-[transform] delay-[0.1s] duration-[0.3s] ease-(--ease-comet) group-hover:transform-[translate(3px,-3px)]'
             aria-hidden='true'
           >
             {arrow}

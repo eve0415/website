@@ -6,7 +6,10 @@ export default defineConfig({
   singleQuote: true,
   jsxSingleQuote: true,
   printWidth: 160,
-  sortTailwindcss: true,
+  sortTailwindcss: {
+    stylesheet: 'src/routes/__root.css',
+    functions: ['cn'],
+  },
   sortImports: {
     order: 'asc',
     groups: [['type'], ['builtin'], ['external'], ['subpath', 'internal'], ['parent'], ['sibling'], ['index']],

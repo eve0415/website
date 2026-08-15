@@ -11,8 +11,8 @@ interface PageHeaderProps {
 
 export const PageHeader: FC<PageHeaderProps> = ({ kicker, title, lede, className }) => (
   <div className={cn('grid gap-[8px] font-sans', className)}>
-    {kicker ? <p className='text-[length:var(--text-caption)] tracking-[var(--tracking-kicker)] text-[var(--ink-ice)]'>{kicker}</p> : null}
-    <h1 className='text-[length:var(--text-h1)] leading-[1.2] font-bold text-[var(--ink-title)]'>{title}</h1>
-    {lede ? <p className='text-[length:var(--text-body)] leading-[1.8] text-[var(--ink-muted)]'>{lede}</p> : null}
+    {kicker ? <p className='text-(length:--text-caption) tracking-(--tracking-kicker) text-(--ink-ice)'>{kicker}</p> : null}
+    <h1 className='text-(length:--text-h1) leading-[1.2] font-bold text-(--ink-title)'>{title}</h1>
+    {lede ? <p className='text-(length:--text-body) leading-[1.8] text-(--ink-muted)'>{lede}</p> : null}
   </div>
 );

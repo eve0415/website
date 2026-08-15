@@ -59,9 +59,7 @@ export const SiteHeader: FC<SiteHeaderProps> = ({
         href={brandHref}
         onClick={onSelect === undefined ? undefined : handleBrandClick}
       >
-        {avatarSrc ? (
-          <img src={avatarSrc} alt='' width='32' height='32' className='h-[32px] w-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' />
-        ) : null}
+        {avatarSrc ? <img src={avatarSrc} alt='' width='32' height='32' className='size-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' /> : null}
         {brand}
       </a>
       <nav aria-label='メニュー' className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
@@ -86,12 +84,12 @@ export const SiteHeader: FC<SiteHeaderProps> = ({
         )}
       </nav>
       <span
-        className='ev-hdr-line pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] opacity-0 transition-[opacity] duration-[0.4s] ease-[var(--ease-comet)]'
+        className='ev-hdr-line pointer-events-none absolute inset-x-0 -bottom-px h-[2px] opacity-0 transition-opacity duration-[0.4s] ease-(--ease-comet)'
         aria-hidden='true'
       >
         <span />
       </span>
-      <span className='ev-prg pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] opacity-0' aria-hidden='true'>
+      <span className='ev-prg pointer-events-none absolute inset-x-0 -bottom-px h-[2px] opacity-0' aria-hidden='true'>
         <span className='ev-prg-b' />
         <span className='ev-prg-h' />
       </span>
