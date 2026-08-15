@@ -19,5 +19,16 @@
     "enabled": true,
     "traces": { "enabled": true }
   },
+  "kv_namespaces": [
+    {
+      "binding": "CONTACT_RATE_LIMIT",
+      "id": "fa789c815279403293672ad135db0a3f"
+    }
+  ],
+  "send_email": [
+    {
+      "name": "CONTACT_EMAIL"
+    }
+  ],
   "version_metadata": { "binding": "CF_VERSION_METADATA" }
 }
