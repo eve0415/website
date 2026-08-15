@@ -1,5 +1,165 @@
 @import 'tailwindcss' source('../');
 
+/* ---------------------------------------------------------------------------
+   Design tokens — ported from the 「雲の上」 design system's tokens/*.css.
+   Canonical state is 深夜 0時; these are the night values. tokens/fonts.css is
+   deliberately not ported — it pulls Noto Sans JP from Google Fonts and this
+   site self-hosts it (see the @font-face rules below).
+   --------------------------------------------------------------------------- */
+
+:root {
+  /* 空 — page background gradient stops (0% / 55% / 100%) */
+  --sky-deep: #05021c;
+  --sky-mid: #0a0530;
+  --sky-high: #100a3f;
+  --grad-sky: linear-gradient(180deg, #05021c 0%, #0a0530 55%, #100a3f 100%);
+
+  /* ヒーロー空 — stops 0/32/60/78/90/100% (bottom = 雲海の光) */
+  --hero-1: #01010e;
+  --hero-2: #0a0533;
+  --hero-3: #1c1060;
+  --hero-4: #3a1d7a;
+  --hero-5: #6a2f95;
+  --hero-6: #8e46d9;
+  --grad-hero: linear-gradient(180deg, #01010e 0%, #0a0533 32%, #1c1060 60%, #3a1d7a 78%, #6a2f95 90%, #8e46d9 100%);
+
+  /* 雲 */
+  --cloud-light: #eee0ff;
+  --cloud-shade: #8a46c8;
+  --cloud-deep: #2a1670;
+  --nebula-a: #8e46d9;
+  --nebula-b: #27198d;
+
+  /* 面 */
+  --surface-panel: rgba(13, 8, 54, 0.62);
+  --surface-panel-soft: rgba(13, 8, 54, 0.45);
+  --surface-row: rgba(13, 8, 54, 0.5);
+  --surface-toast: #0d0836;
+  --surface-glass: rgba(5, 2, 28, 0.32);
+  --surface-header: rgba(5, 2, 28, 0.55);
+
+  /* 線 */
+  --line-panel: rgba(160, 150, 255, 0.22);
+  --line-row: rgba(160, 150, 255, 0.25);
+  --line-chip: rgba(210, 205, 255, 0.35);
+  --line-white: rgba(252, 247, 253, 0.4);
+  --line-header: rgba(160, 150, 255, 0.18);
+  --line-accent: rgba(4, 254, 255, 0.5);
+  --line-accent-dashed: rgba(4, 254, 255, 0.35);
+
+  /* 文字 */
+  --ink-title: #fcf7fd;
+  --ink-body: #e9e4ff;
+  --ink-muted: #cfc9f2;
+  --ink-ice: #9fe8ff;
+  --ink-faint: #a49dd8;
+  --ink-on-accent: #00031d;
+
+  /* アクセント (彗星) */
+  --accent-cyan: #04feff;
+  --accent-mint: #00dda8;
+  --grad-comet: linear-gradient(90deg, #04feff, #00dda8);
+  --link: #9fe8ff;
+  --link-hover: #04feff;
+
+  /* 星 */
+  --star-white: #fcf7fd;
+  --star-ice: #9fe8ff;
+  --star-lilac: #c9a6ff;
+  --star-pink: #ffd9ec;
+
+  /* プロジェクト色相 — タグ文字 / タグ枠 / カード hover グロー */
+  --hue-cyan: #8fe9ff;
+  --hue-cyan-line: rgba(4, 254, 255, 0.5);
+  --hue-cyan-glow: rgba(4, 176, 236, 0.25);
+  --hue-mint: #6ff2cc;
+  --hue-mint-line: rgba(0, 221, 168, 0.5);
+  --hue-mint-glow: rgba(0, 221, 168, 0.2);
+  --hue-sky: #7dd2ff;
+  --hue-sky-line: rgba(4, 176, 236, 0.55);
+  --hue-sky-glow: rgba(4, 176, 236, 0.22);
+  --hue-violet: #e2a9ff;
+  --hue-violet-line: rgba(196, 73, 208, 0.6);
+  --hue-violet-glow: rgba(142, 70, 217, 0.25);
+  --hue-rose: #ffb3cd;
+  --hue-rose-line: rgba(247, 105, 151, 0.55);
+  --hue-rose-glow: rgba(247, 105, 151, 0.2);
+
+  /* semantic aliases */
+  --text-heading: var(--ink-title);
+  --text-body-color: var(--ink-muted);
+  --surface-card: var(--surface-panel);
+
+  /* 字 — Noto Sans JP only, weights 400/700. No serif, no italic. */
+  --font-sans: 'Noto Sans JP', sans-serif;
+  --text-hero: clamp(42px, 8vw, 74px);
+  --text-h1: clamp(30px, 5vw, 42px);
+  --text-h2: clamp(24px, 3vw, 28px);
+  --text-card-title: 20px;
+  --text-panel-title: 17px;
+  --text-body: 15.5px;
+  --text-ui: 15px;
+  --text-nav: 14.5px;
+  --text-small: 14px;
+  --text-caption: 13px;
+  --text-tag: 12px;
+  --leading-display: 1.05;
+  --leading-heading: 1.1;
+  --leading-body: 1.75;
+  --leading-lede: 1.8;
+  --leading-loose: 1.9;
+  --tracking-kicker: 0.26em;
+  --tracking-hero-kicker: 0.22em;
+  --tracking-cta: 0.06em;
+  --weight-body: 400;
+  --weight-bold: 700;
+
+  /* 間 — layout, spacing & radius */
+  --page-max: 1060px;
+  --page-max-narrow: 720px;
+  --page-pad-x: 24px;
+  --page-pad-top: 48px;
+  --page-pad-bottom: 96px;
+  --header-pad: 8px clamp(20px, 4vw, 40px);
+  --gap-section: 28px;
+  --gap-grid: 18px;
+  --gap-stack: 12px;
+  --gap-inline: 10px;
+  --gap-chips: 8px;
+  --card-min: 280px;
+  --card-min-skills: 270px;
+  --pad-card: 22px;
+  --pad-card-lg: 26px;
+  --pad-row: 17px 20px;
+  --pad-btn: 13px 26px;
+  --pad-btn-sm: 8px 18px;
+  --radius-row: 14px;
+  --radius-card: 16px;
+  --radius-card-lg: 18px;
+  --radius-pill: 999px;
+  --hit-target: 44px;
+
+  /* 動 — motion, glow & shadow */
+  --ease-comet: cubic-bezier(0.7, 0.01, 0.23, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+  --dur-micro: 0.15s;
+  --dur-reveal: 0.5s;
+  --dur-fade-up: 0.6s;
+  --dur-wipe: 0.45s;
+  --glow-cta: 0 4px 24px rgba(4, 254, 255, 0.35);
+  --glow-cta-hover: 0 8px 32px rgba(4, 254, 255, 0.5);
+  --glow-card-hover: 0 10px 36px rgba(4, 176, 236, 0.25);
+  --glow-toast: 0 8px 32px rgba(4, 254, 255, 0.25);
+  --glow-star: 0 0 12px 3px rgba(4, 254, 255, 0.85);
+  --glow-comet-head: 0 0 10px 3px rgba(4, 254, 255, 0.8);
+  --shadow-art: drop-shadow(0 20px 34px rgba(3, 1, 20, 0.55));
+  --lift-hover: translateY(-3px);
+  --press: scale(0.97);
+  --corner-smooth: squircle;
+  --blur-header: blur(10px);
+  --blur-glass: blur(4px);
+}
+
 /* Noto Sans JP 400/700, self-hosted from @fontsource/noto-sans-jp.
    Fontsource's own stylesheets are not imported: they carry no local() sources
    and pair every .woff2 with a .woff no supported browser will request.
@@ -55,4 +215,148 @@
   unicode-range:
     U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
     U+FEFF, U+FFFD;
+}
+
+/* ---------------------------------------------------------------------------
+   Base layer — ported from tokens/base.css. Follows the Tailwind import so
+   these declarations win over preflight at equal specificity.
+   --------------------------------------------------------------------------- */
+
+html {
+  scrollbar-color: rgba(126, 116, 220, 0.55) transparent;
+}
+
+body {
+  background: var(--grad-sky);
+  font-family: var(--font-sans);
+  color: var(--ink-muted);
+  font-size: var(--text-body);
+  line-height: var(--leading-body);
+}
+
+a {
+  color: var(--link);
+}
+
+a:hover {
+  color: var(--link-hover);
+}
+
+::selection {
+  background: rgba(4, 254, 255, 0.35);
+  color: #fcf7fd;
+}
+
+/* ambient */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.15;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes floaty {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-7px);
+  }
+}
+
+@keyframes glowPulse {
+  from {
+    opacity: 0.65;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes driftX {
+  from {
+    transform: translateX(-14px);
+  }
+  to {
+    transform: translateX(14px);
+  }
+}
+
+/* entrances */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* transitions (page wipe / opening curtain) */
+@keyframes wipeIn {
+  from {
+    transform: translateX(118%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes wipeOut {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-118%);
+  }
+}
+
+@keyframes curtainUp {
+  to {
+    transform: translateY(-101%);
+  }
+}
+
+@keyframes curtainDown {
+  to {
+    transform: translateY(101%);
+  }
+}
+
+/* ---- platform experiments (2026 layer) — all @supports-guarded; absent = graceful ---- */
+@supports at-rule(@function) {
+  @function --comet-glow(--c) {
+    result: 0 0 18px 4px var(--c);
+  }
+}
+
+/* JS-less stagger: put .ev-stg on a flex/grid row of tags or chips */
+@supports (animation-delay: calc(sibling-index() * 1s)) {
+  .ev-stg > * {
+    animation: fadeUp 0.5s var(--ease-comet) both;
+    animation-delay: calc(sibling-index() * 0.05s);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.01ms !important;
+    animation-delay: 0ms !important;
+    transition-duration: 0.01ms !important;
+  }
 }
