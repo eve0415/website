@@ -1,0 +1,34 @@
+/* The design anchors the confirmation to the button that was pressed rather
+   than to the viewport. No utility reaches `anchor-name`, `position-anchor`,
+   `position-area` or `position-try-fallbacks`, and all four have to move
+   together — so the whole treatment is one @supports block.
+
+   Without anchor positioning the popover keeps the UA's own `position: fixed;
+   inset: 0`, and this margin drops it centred near the bottom of the viewport:
+   the same confirmation, just not tied to the button that caused it. */
+
+/* The UA hides a closed popover with `display: none`, but that is a UA rule and
+   Toast's own `display` utility is an author one, so the toast would sit on the
+   page permanently. This restores the hiding from the author side. */
+.ev-cp-toast:not(:popover-open) {
+  display: none;
+}
+
+.ev-cp-toast {
+  margin: auto auto 40px;
+}
+
+@supports (anchor-name: --x) {
+  .ev-cp-discord {
+    anchor-name: --ev-cp-discord;
+  }
+
+  .ev-cp-toast {
+    /* Releases the UA's `inset: 0` so `position-area` alone places this. */
+    inset: auto;
+    position-anchor: --ev-cp-discord;
+    position-area: top;
+    position-try-fallbacks: flip-block;
+    margin: 0 0 12px;
+  }
+}

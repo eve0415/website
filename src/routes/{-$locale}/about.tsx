@@ -2,11 +2,9 @@ import { Link, createFileRoute, rootRouteId, useRouteContext } from '@tanstack/r
 
 import { ABOUT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
-import { localePath } from '#i18n/locale';
 
 import { LabCard } from './-about/lab-card';
-import { localeParams } from './-site/links';
-import { CometLink } from './-ui/actions/comet-link';
+import { CometNavLink, localeParams } from './-site/links';
 import { PageHeader } from './-ui/content/page-header';
 import { Card } from './-ui/surfaces/card';
 
@@ -29,11 +27,9 @@ const About = () => {
         <div className='grid flex-[1_1_320px] gap-[14px]'>
           <p className='text-[16px] leading-[1.9] text-(--ink-body)'>{copy.p1}</p>
           <p className='text-[16px] leading-[1.9] text-(--ink-body)'>{copy.p2}</p>
-          {/* つながる is a later slice, so this is a plain per-locale href rather
-              than a typed Link — it becomes one the moment that route lands. */}
-          <CometLink href={localePath(locale, '/links')} className='justify-self-start'>
+          <CometNavLink to='/{-$locale}/links' params={localeParams(locale)} className='justify-self-start'>
             {copy.seeContact}
-          </CometLink>
+          </CometNavLink>
         </div>
       </div>
 

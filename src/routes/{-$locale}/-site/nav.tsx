@@ -11,10 +11,9 @@ import { NAV_LINK_CLASS } from '../-ui/site/site-header';
 import { localeParams } from './links';
 
 /**
- * Everything but つながる is a registered route, so it navigates client-side.
- * That one is not a route yet — `<Link to>` is typed against the route tree and
- * would not compile — so it is a plain href at its canonical per-locale path
- * and becomes a link the moment the page lands.
+ * Every item is a registered route, so the whole nav navigates client-side.
+ * `href` stays alongside `element` as the design library's own fallback for a
+ * caller that supplies no element.
  */
 export const navItems = (locale: Locale): readonly SiteHeaderNavItem[] => [
   {
@@ -50,7 +49,16 @@ export const navItems = (locale: Locale): readonly SiteHeaderNavItem[] => [
       </Link>
     ),
   },
-  { key: 'links', label: SITE_COPY[locale].navLinks, href: localePath(locale, '/links') },
+  {
+    key: 'links',
+    label: SITE_COPY[locale].navLinks,
+    href: localePath(locale, '/links'),
+    element: (
+      <Link to='/{-$locale}/links' params={localeParams(locale)} className={NAV_LINK_CLASS}>
+        {SITE_COPY[locale].navLinks}
+      </Link>
+    ),
+  },
   {
     key: 'about',
     label: SITE_COPY[locale].navAbout,

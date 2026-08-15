@@ -10,6 +10,7 @@ export type RoutePath =
   | '/projects/dotclaude'
   | '/projects/website'
   | '/skills'
+  | '/links'
   | '/about';
 
 interface PageCopy {
@@ -451,6 +452,108 @@ export const SKILLS_COPY = {
   },
 } satisfies Record<Locale, SkillsCopy>;
 
+interface ContactCopy {
+  title: string;
+  intro: string;
+  xLabel: string;
+  discordCopy: string;
+  discordCopied: string;
+  toastCopied: string;
+  formHead: string;
+  formIntro: string;
+  fName: string;
+  fEmail: string;
+  fMessage: string;
+  phName: string;
+  phEmail: string;
+  phMsg: string;
+  submit: string;
+  submitting: string;
+  errName: string;
+  errEmail: string;
+  errMsg: string;
+  /**
+   * The design has no backend, so it authors only the three field errors. The
+   * rest are the outcomes a real send can have, written in the same voice.
+   */
+  errTooLong: string;
+  errChallenge: string;
+  errRate: string;
+  errSend: string;
+  errPending: string;
+  sentHead: string;
+  sentBody: string;
+  sendAnother: string;
+  workHead: string;
+  workBody: string;
+}
+
+/** The つながる page: the three rows, the contact form, and the 仕事 card. */
+export const CONTACT_COPY = {
+  ja: {
+    title: 'つながる',
+    intro: 'どこからでもどうぞ。だいたい夜に生息しています。',
+    xLabel: 'X(旧Twitter)',
+    discordCopy: 'IDをコピー',
+    discordCopied: 'コピーしました',
+    toastCopied: 'クリップボードにコピーしました',
+    formHead: 'メッセージを送る',
+    formIntro: 'このフォームから直接届きます。返信はメールアドレス宛にお送りします。',
+    fName: '名前',
+    fEmail: 'メールアドレス',
+    fMessage: '本文',
+    phName: 'お名前(ハンドルネームでも)',
+    phEmail: 'you@example.com',
+    phMsg: 'お仕事の相談、感想、雑談などなんでもどうぞ',
+    submit: '送信する',
+    submitting: '送信中…',
+    errName: '名前を入力してください。',
+    errEmail: 'メールアドレスの形式を確認してください。',
+    errMsg: '本文を入力してください。',
+    errTooLong: '入力が長すぎます。短くしてからもう一度お試しください。',
+    errChallenge: '確認に失敗しました。ページを再読み込みしてもう一度お試しください。',
+    errRate: '短い時間に送りすぎです。しばらく置いてからお試しください。',
+    errSend: '送信できませんでした。時間をおいてもう一度お試しください。',
+    errPending: '確認がまだ終わっていません。少しだけ待ってからもう一度どうぞ。',
+    sentHead: '送信しました。ありがとうございます。',
+    sentBody: 'だいたい夜に返信します。少しだけお待ちください。',
+    sendAnother: 'もう一件送る',
+    workHead: 'お仕事について',
+    workBody: 'お仕事の依頼お待ちしてます。上のフォーム、または X の DM からどうぞ。Discord にフレンド申請してからでも大丈夫です。',
+  },
+  en: {
+    title: 'Say hi',
+    intro: "Any of these work. Fair warning: I'm basically nocturnal.",
+    xLabel: 'X (Twitter)',
+    discordCopy: 'Copy ID',
+    discordCopied: 'Copied',
+    toastCopied: 'Copied to clipboard',
+    formHead: 'Send a message',
+    formIntro: "Lands straight in my inbox. I'll reply to the email you leave here.",
+    fName: 'Name',
+    fEmail: 'Email',
+    fMessage: 'Message',
+    phName: 'Your name (handles welcome)',
+    phEmail: 'you@example.com',
+    phMsg: 'Work stuff, feedback, or just saying hi — all welcome',
+    submit: 'Send it',
+    submitting: 'Sending…',
+    errName: 'Name, please — a handle works.',
+    errEmail: 'That email looks a little off.',
+    errMsg: "Don't forget the message itself.",
+    errTooLong: "That's longer than I can take. Trim it down and try again.",
+    errChallenge: 'The check did not go through. Reload the page and give it another go.',
+    errRate: "That's a lot of messages in a short while. Give it a bit and try again.",
+    errSend: "Couldn't get that sent. Try again in a little while.",
+    errPending: "Still checking you're human. Give it a second, then try again.",
+    sentHead: 'Sent. Appreciate it.',
+    sentBody: 'Replies usually happen after dark. Hang tight.',
+    sendAnother: 'Send another',
+    workHead: 'Got a project?',
+    workBody: "I'm taking on work. The form above, a DM on X, or a Discord friend request first — whatever's easiest.",
+  },
+} satisfies Record<Locale, ContactCopy>;
+
 interface AboutCopy {
   title: string;
   p1: string;
@@ -601,6 +704,7 @@ export const PAGE_COPY = {
     '/projects/dotclaude': { title: 'dotclaude | eve0415.net', description: DOTCLAUDE_COPY.ja.lede },
     '/projects/website': { title: 'eve0415.net の歴史 | eve0415.net', description: HISTORY_COPY.ja.intro },
     '/skills': { title: 'できること | eve0415.net', description: SKILLS_COPY.ja.intro },
+    '/links': { title: 'つながる | eve0415.net', description: CONTACT_COPY.ja.intro },
     '/about': { title: 'About | eve0415.net', description: ABOUT_COPY.ja.p1 },
   },
   en: {
@@ -615,6 +719,7 @@ export const PAGE_COPY = {
     '/projects/dotclaude': { title: 'dotclaude | eve0415.net', description: DOTCLAUDE_COPY.en.lede },
     '/projects/website': { title: 'The lore | eve0415.net', description: HISTORY_COPY.en.intro },
     '/skills': { title: 'Skills | eve0415.net', description: SKILLS_COPY.en.intro },
+    '/links': { title: 'Say hi | eve0415.net', description: CONTACT_COPY.en.intro },
     '/about': { title: 'About | eve0415.net', description: ABOUT_COPY.en.p1 },
   },
 } satisfies Record<Locale, Record<RoutePath, PageCopy>>;

@@ -1,4 +1,4 @@
-import type { CSSProperties, ComponentPropsWithoutRef, FC, ReactNode } from 'react';
+import type { CSSProperties, ComponentPropsWithoutRef, FC, ReactNode, Ref } from 'react';
 
 import { cn } from '../cn';
 
@@ -8,10 +8,12 @@ const BASE =
 interface ToastProps extends Omit<ComponentPropsWithoutRef<'div'>, 'style' | 'children'> {
   style?: CSSProperties;
   children?: ReactNode;
+  /** Needed by a caller that shows this as a popover, which is imperative. */
+  ref?: Ref<HTMLDivElement>;
 }
 
-export const Toast: FC<ToastProps> = ({ className, children, style, ...rest }) => (
-  <div className={cn(BASE, className)} style={style} {...rest}>
+export const Toast: FC<ToastProps> = ({ className, children, style, ref, ...rest }) => (
+  <div ref={ref} className={cn(BASE, className)} style={style} {...rest}>
     {children}
   </div>
 );

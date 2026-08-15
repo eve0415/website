@@ -2,14 +2,12 @@ import type { Locale } from '#i18n/locale';
 import type { FC } from 'react';
 
 import { HOME_COPY } from '#i18n/copy';
-import { localePath } from '#i18n/locale';
 
 import { CatArt } from '../-site/cat-art';
 import { CloudLayer } from '../-site/cloud-layer';
 import { ButtonLink, localeParams } from '../-site/links';
 import { puffs } from '../-site/puffs';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, GLOW_A, GLOW_B, GLOW_W, glow } from '../-site/sky-scene';
-import { Button } from '../-ui/actions/button';
 import { ShootingStar } from '../-ui/ambient/shooting-star';
 import { skyCss } from '../-ui/ambient/sky-background';
 import { StarField } from '../-ui/ambient/star-field';
@@ -147,9 +145,9 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
           <ButtonLink to='/{-$locale}/projects' params={localeParams(locale)}>
             {copy.ctaProjects}
           </ButtonLink>
-          <Button variant='glass' href={localePath(locale, '/links')}>
+          <ButtonLink variant='glass' to='/{-$locale}/links' params={localeParams(locale)}>
             {copy.ctaHire}
-          </Button>
+          </ButtonLink>
         </div>
       </div>
     </section>

@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
 import { Route as Char123LocaleChar125AboutRouteImport } from './routes/{-$locale}/about'
+import { Route as Char123LocaleChar125LinksRouteImport } from './routes/{-$locale}/links'
 import { Route as Char123LocaleChar125SkillsRouteImport } from './routes/{-$locale}/skills'
 import { Route as Char123LocaleChar125ProjectsIndexRouteImport } from './routes/{-$locale}/projects/index'
 import { Route as Char123LocaleChar125ProjectsCellaRouteImport } from './routes/{-$locale}/projects/cella'
@@ -36,6 +37,12 @@ const Char123LocaleChar125AboutRoute =
   Char123LocaleChar125AboutRouteImport.update({
     id: '/about',
     path: '/about',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125LinksRoute =
+  Char123LocaleChar125LinksRouteImport.update({
+    id: '/links',
+    path: '/links',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125SkillsRoute =
@@ -84,6 +91,7 @@ const Char123LocaleChar125ProjectsWebsiteRoute =
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
+  '/{-$locale}/links': typeof Char123LocaleChar125LinksRoute
   '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
@@ -95,6 +103,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
+  '/{-$locale}/links': typeof Char123LocaleChar125LinksRoute
   '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
@@ -108,6 +117,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
   '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
+  '/{-$locale}/links': typeof Char123LocaleChar125LinksRoute
   '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
@@ -122,6 +132,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/{-$locale}'
     | '/{-$locale}/about'
+    | '/{-$locale}/links'
     | '/{-$locale}/skills'
     | '/{-$locale}/'
     | '/{-$locale}/projects/cella'
@@ -133,6 +144,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/{-$locale}/about'
+    | '/{-$locale}/links'
     | '/{-$locale}/skills'
     | '/{-$locale}'
     | '/{-$locale}/projects/cella'
@@ -145,6 +157,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/{-$locale}'
     | '/{-$locale}/about'
+    | '/{-$locale}/links'
     | '/{-$locale}/skills'
     | '/{-$locale}/'
     | '/{-$locale}/projects/cella'
@@ -180,6 +193,13 @@ declare module '@tanstack/react-router' {
       path: '/about'
       fullPath: '/{-$locale}/about'
       preLoaderRoute: typeof Char123LocaleChar125AboutRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/links': {
+      id: '/{-$locale}/links'
+      path: '/links'
+      fullPath: '/{-$locale}/links'
+      preLoaderRoute: typeof Char123LocaleChar125LinksRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/skills': {
@@ -236,6 +256,7 @@ declare module '@tanstack/react-router' {
 
 interface Char123LocaleChar125RouteRouteChildren {
   Char123LocaleChar125AboutRoute: typeof Char123LocaleChar125AboutRoute
+  Char123LocaleChar125LinksRoute: typeof Char123LocaleChar125LinksRoute
   Char123LocaleChar125SkillsRoute: typeof Char123LocaleChar125SkillsRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
   Char123LocaleChar125ProjectsCellaRoute: typeof Char123LocaleChar125ProjectsCellaRoute
@@ -249,6 +270,7 @@ interface Char123LocaleChar125RouteRouteChildren {
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
   {
     Char123LocaleChar125AboutRoute: Char123LocaleChar125AboutRoute,
+    Char123LocaleChar125LinksRoute: Char123LocaleChar125LinksRoute,
     Char123LocaleChar125SkillsRoute: Char123LocaleChar125SkillsRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
     Char123LocaleChar125ProjectsCellaRoute:
