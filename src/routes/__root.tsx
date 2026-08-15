@@ -10,7 +10,6 @@ import rootCss from './__root.css?url';
 
 const SITE_URL = 'https://eve0415.net';
 const SITE_NAME = 'eve0415';
-const SITE_DESCRIPTION = 'eve0415 - エンジニア';
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   // Computed in beforeLoad, so this is resolved on the server during SSR rather
@@ -49,13 +48,9 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: SITE_NAME },
-      { name: 'description', content: SITE_DESCRIPTION },
       { name: 'theme-color', content: '#0a0a0a' },
       { name: 'apple-mobile-web-app-title', content: SITE_NAME },
       { property: 'og:site_name', content: SITE_NAME },
-      { property: 'og:title', content: SITE_NAME },
-      { property: 'og:description', content: SITE_DESCRIPTION },
       { property: 'og:type', content: 'website' },
       { property: 'og:image', content: `${SITE_URL}/og-image-1200x630.png` },
       { property: 'og:image:type', content: 'image/png' },
@@ -64,8 +59,6 @@ export const Route = createRootRoute({
       { property: 'og:image:alt', content: SITE_NAME },
       { name: 'twitter:card', content: 'summary_large_image' },
       { name: 'twitter:site', content: '@eveevekun' },
-      { name: 'twitter:title', content: SITE_NAME },
-      { name: 'twitter:description', content: SITE_DESCRIPTION },
       { name: 'twitter:image', content: `${SITE_URL}/twitter-card-1200x600.png` },
       { name: 'twitter:image:alt', content: SITE_NAME },
     ],
