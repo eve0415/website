@@ -6,6 +6,7 @@ import { localePath } from '#i18n/locale';
 
 import { CatArt } from '../-site/cat-art';
 import { CloudLayer } from '../-site/cloud-layer';
+import { ButtonLink, localeParams } from '../-site/links';
 import { puffs } from '../-site/puffs';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, GLOW_A, GLOW_B, GLOW_W, glow } from '../-site/sky-scene';
 import { Button } from '../-ui/actions/button';
@@ -143,7 +144,9 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
           {copy.heroSub2}
         </p>
         <div className='mt-[6px] flex animate-[fadeUp_0.7s_ease_0.65s_backwards] flex-wrap gap-[14px]'>
-          <Button href={localePath(locale, '/projects')}>{copy.ctaProjects}</Button>
+          <ButtonLink to='/{-$locale}/projects' params={localeParams(locale)}>
+            {copy.ctaProjects}
+          </ButtonLink>
           <Button variant='glass' href={localePath(locale, '/links')}>
             {copy.ctaHire}
           </Button>

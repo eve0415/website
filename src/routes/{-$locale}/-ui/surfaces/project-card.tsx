@@ -21,6 +21,8 @@ const LAYOUT = {
 
 const TITLE_ROW = 'flex flex-wrap items-center gap-[10px]';
 const DESCRIPTION = 'text-[length:var(--text-body)] leading-[1.75] text-[var(--ink-muted)]';
+/** Reads as a link cue, so it keeps the ice hue whatever the card's hue is. */
+const CTA = 'text-[14px] font-bold text-[var(--hue-cyan)]';
 
 interface ProjectCardBaseProps {
   name?: string;
@@ -29,6 +31,8 @@ interface ProjectCardBaseProps {
   description?: string;
   stat?: string;
   statLabel?: string;
+  /** Trailing "read more" line; the arrow belongs to the string. */
+  cta?: string;
   featured?: boolean;
 }
 
@@ -43,7 +47,7 @@ interface ProjectCardDivProps extends ProjectCardBaseProps, Omit<ComponentPropsW
 type ProjectCardProps = ProjectCardAnchorProps | ProjectCardDivProps;
 
 export const ProjectCard: FC<ProjectCardProps> = props => {
-  const { name, tag, hue = 'cyan', description, stat, statLabel, featured = false, className, ...rest } = props;
+  const { name, tag, hue = 'cyan', description, stat, statLabel, cta, featured = false, className, ...rest } = props;
   const statColor = STAT[hue];
 
   const body = featured ? (
@@ -54,6 +58,7 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
           {tag ? <Tag hue={hue}>{tag}</Tag> : null}
         </span>
         <span className={DESCRIPTION}>{description}</span>
+        {cta ? <span className={CTA}>{cta}</span> : null}
       </span>
       {stat ? (
         <span className='grid gap-[2px] text-right'>
@@ -70,6 +75,7 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
       </span>
       <p className={DESCRIPTION}>{description}</p>
       {stat ? <p className={cn('text-[16px] font-bold', statColor)}>{stat}</p> : null}
+      {cta ? <span className={CTA}>{cta}</span> : null}
     </>
   );
 

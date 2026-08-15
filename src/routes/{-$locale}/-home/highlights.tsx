@@ -2,12 +2,10 @@ import type { Locale } from '#i18n/locale';
 import type { FC } from 'react';
 
 import { HOME_COPY } from '#i18n/copy';
-import { localePath } from '#i18n/locale';
 
+import { CometNavLink, ProjectCardLink, localeParams } from '../-site/links';
 import { GLOW_MID_A, GLOW_MID_B, GLOW_MID_C, glow } from '../-site/sky-scene';
-import { CometLink } from '../-ui/actions/comet-link';
 import { SectionHeading } from '../-ui/content/section-heading';
-import { ProjectCard } from '../-ui/surfaces/project-card';
 
 import './highlights.css';
 
@@ -50,12 +48,26 @@ export const Highlights: FC<HighlightsProps> = ({ locale }) => {
       <section className='ev-hl relative mx-auto grid max-w-[1060px] gap-[26px] px-[24px] pt-[72px] pb-[88px]'>
         <SectionHeading>{copy.homeHighlights}</SectionHeading>
         <div className='grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[18px]'>
-          <ProjectCard href={localePath(locale, '/projects/ifpatcher')} name='IFPatcher' hue='cyan' description={copy.hlIfDesc} stat={copy.hlIfStat} />
-          <ProjectCard href={localePath(locale, '/projects/cella')} name='cella' hue='mint' description={copy.hlCellaDesc} stat={copy.alphaNow} />
+          <ProjectCardLink
+            to='/{-$locale}/projects/ifpatcher'
+            params={localeParams(locale)}
+            name='IFPatcher'
+            hue='cyan'
+            description={copy.hlIfDesc}
+            stat={copy.hlIfStat}
+          />
+          <ProjectCardLink
+            to='/{-$locale}/projects/cella'
+            params={localeParams(locale)}
+            name='cella'
+            hue='mint'
+            description={copy.hlCellaDesc}
+            stat={copy.alphaNow}
+          />
         </div>
-        <CometLink href={localePath(locale, '/projects')} className='justify-self-start'>
+        <CometNavLink to='/{-$locale}/projects' params={localeParams(locale)} className='justify-self-start'>
           {copy.seeAll}
-        </CometLink>
+        </CometNavLink>
       </section>
     </>
   );

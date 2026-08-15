@@ -9,6 +9,7 @@ import { localePath } from '#i18n/locale';
 import { CatArt } from '../-site/cat-art';
 import { CloudLayer } from '../-site/cloud-layer';
 import { LanguageSwitch } from '../-site/language-switch';
+import { ButtonLink, localeParams } from '../-site/links';
 import { navItems } from '../-site/nav';
 import { puffs } from '../-site/puffs';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, glow } from '../-site/sky-scene';
@@ -266,9 +267,9 @@ export const NotFound = () => {
 
           <div className='relative mt-[8px] flex animate-[fadeUp_0.7s_ease_1.05s_backwards] flex-wrap justify-center gap-[14px]'>
             <Button href={localePath(locale, '/')}>{copy.btnHome}</Button>
-            <Button variant='glass' href={localePath(locale, '/projects')}>
+            <ButtonLink variant='glass' to='/{-$locale}/projects' params={localeParams(locale)}>
               {copy.btnProjects}
-            </Button>
+            </ButtonLink>
             <Button
               variant='ghost'
               disabled={searching || done}

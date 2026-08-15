@@ -9,11 +9,26 @@ import devtoolsJson from 'vite-plugin-devtools-json';
 
 const SITE_URL = 'https://eve0415.net';
 
-const LOCALE_ALTERNATES = [
-  { hreflang: 'ja', href: SITE_URL },
-  { hreflang: 'en', href: `${SITE_URL}/en` },
-  { hreflang: 'x-default', href: SITE_URL },
+/**
+ * Every route, as its Japanese path with the leading `/` and no trailing one.
+ * `autoStaticPathsDiscovery` and `crawlLinks` are both off, so a route missing
+ * from here silently never prerenders — `failOnError` does not catch it.
+ */
+const ROUTES = ['', '/projects', '/projects/ifpatcher', '/projects/cella', '/projects/oasts', '/projects/dotclaude', '/projects/website'];
+
+const localeAlternates = (route: string) => [
+  { hreflang: 'ja', href: `${SITE_URL}${route}` },
+  { hreflang: 'en', href: `${SITE_URL}/en${route}` },
+  { hreflang: 'x-default', href: `${SITE_URL}${route}` },
 ];
+
+const PAGES = ROUTES.flatMap(route => {
+  const alternateRefs = localeAlternates(route);
+  return [
+    { path: route === '' ? '/' : route, sitemap: { alternateRefs } },
+    { path: `/en${route}`, sitemap: { alternateRefs } },
+  ];
+});
 
 export default defineConfig({
   plugins: [
@@ -35,10 +50,7 @@ export default defineConfig({
         enabled: true,
         host: SITE_URL,
       },
-      pages: [
-        { path: '/', sitemap: { alternateRefs: LOCALE_ALTERNATES } },
-        { path: '/en', sitemap: { alternateRefs: LOCALE_ALTERNATES } },
-      ],
+      pages: PAGES,
     }),
     devtools({
       eventBusConfig: { enabled: true },
