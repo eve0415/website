@@ -52,11 +52,15 @@ const siteverify = async (token: string, remoteIp: string, idempotencyKey: strin
   form.append('remoteip', remoteIp);
   form.append('idempotency_key', idempotencyKey);
 
-  const response = await fetch(SITEVERIFY_ENDPOINT, { method: 'POST', body: form }).catch(() => {});
-  if (response === undefined || !response.ok) return undefined;
+  try {
+    const response = await fetch(SITEVERIFY_ENDPOINT, { method: 'POST', body: form });
+    if (!response.ok) return undefined;
 
-  const payload: unknown = await response.json().catch(() => {});
-  return readOutcome(payload);
+    const payload: unknown = await response.json();
+    return readOutcome(payload);
+  } catch {
+    return undefined;
+  }
 };
 
 /** Only a transport failure or an explicit `internal-error` is worth a second call. */
