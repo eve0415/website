@@ -15,5 +15,15 @@ export const DEFAULT_LOCALE: Locale = 'ja';
  */
 export const parseLocaleParam = (param: string | undefined): Locale | undefined => (param === undefined ? DEFAULT_LOCALE : param === 'en' ? 'en' : undefined);
 
+/**
+ * Resolves the locale from a pathname.
+ *
+ * The root route sits above the `{-$locale}` segment, so its `beforeLoad` has
+ * no `locale` param to read — but it does get the location, and running this
+ * there computes the locale once, on the server during SSR, for everything
+ * below it. Validation of the segment stays on the `{-$locale}` route.
+ */
+export const localeFromPathname = (pathname: string): Locale => (pathname === '/en' || pathname.startsWith('/en/') ? 'en' : DEFAULT_LOCALE);
+
 /** Builds a path for a locale: Japanese unprefixed, English under `/en`. */
 export const localePath = (locale: Locale, path: string): string => (locale === DEFAULT_LOCALE ? path : `/en${path === '/' ? '' : path}`);

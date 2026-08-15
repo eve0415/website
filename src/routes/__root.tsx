@@ -1,10 +1,10 @@
 import type { FC, PropsWithChildren } from 'react';
 
 import { TanStackDevtools } from '@tanstack/react-devtools';
-import { HeadContent, Outlet, Scripts, createRootRoute, useParams } from '@tanstack/react-router';
+import { HeadContent, Outlet, Scripts, createRootRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
-import { DEFAULT_LOCALE, parseLocaleParam } from '#i18n/locale';
+import { localeFromPathname } from '#i18n/locale';
 
 import rootCss from './__root.css?url';
 
@@ -13,13 +13,13 @@ const SITE_NAME = 'eve0415';
 const SITE_DESCRIPTION = 'eve0415 - エンジニア';
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
-  // The locale lives on a child route, but <html> renders here, so it is read
-  // from router state rather than passed down. HeadContent only writes into
-  // <head>, so lang cannot come from a route's head().
-  const { locale } = useParams({ strict: false });
+  // Computed in beforeLoad, so this is resolved on the server during SSR rather
+  // than derived in the browser. HeadContent only writes into <head>, so lang
+  // cannot come from a route's head() and has to be read here.
+  const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
 
   return (
-    <html lang={parseLocaleParam(locale) ?? DEFAULT_LOCALE}>
+    <html lang={locale}>
       <head>
         <HeadContent />
       </head>
@@ -44,6 +44,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
 };
 
 export const Route = createRootRoute({
+  beforeLoad: ({ location }) => ({ locale: localeFromPathname(location.pathname) }),
   head: () => ({
     meta: [
       { charSet: 'utf8' },
