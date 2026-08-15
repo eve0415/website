@@ -1,12 +1,13 @@
-import { Outlet, createFileRoute, notFound } from '@tanstack/react-router';
+import { Outlet, createFileRoute } from '@tanstack/react-router';
 
 import { parseLocaleParam } from '#i18n/locale';
 
 export const Route = createFileRoute('/{-$locale}')({
-  // The resolved locale comes from the root's context; this only rejects a
-  // segment that is not a locale, which `{-$locale}` would otherwise swallow.
-  beforeLoad: ({ params }) => {
-    if (parseLocaleParam(params.locale) === undefined) throw notFound();
+  // Returning false means "this route does not match", so an unknown first
+  // segment falls through to a 404 instead of being swallowed by `{-$locale}`
+  // and rendering the home page. The resolved locale comes from root context.
+  params: {
+    parse: params => (parseLocaleParam(params.locale) === undefined ? false : params),
   },
   component: () => <Outlet />,
 });

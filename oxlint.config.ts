@@ -27,7 +27,6 @@ export default defineConfig({
     'unicorn/filename-case': ['error', { cases: { camelCase: true, kebabCase: true } }],
     'unicorn/numeric-separators-style': ['error', { onlyIfContainsSeparator: true }],
     'typescript/return-await': ['error', 'error-handling-correctness-only'],
-    'typescript/only-throw-error': ['error', { allow: [{ from: 'package', name: ['NotFoundError', 'Redirect'], package: '@tanstack/router-core' }] }],
     'typescript/strict-boolean-expressions': ['error', { allowNullableString: true }],
     'react/checked-requires-onchange-or-readonly': ['error', { ignoreMissingProperties: true }],
     'react/jsx-curly-brace-presence': ['error', { propElementValues: 'always' }],
