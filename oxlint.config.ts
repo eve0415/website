@@ -47,6 +47,9 @@ export default defineConfig({
     'oxc/no-optional-chaining': 'off',
     'oxc/no-rest-spread-properties': 'off',
     'node/no-top-level-await': 'off',
+    // Targets Node's blocking fs calls, which this Workers/browser codebase has
+    // none of; it matches any *Sync identifier, so it fires on React's flushSync.
+    'node/no-sync': 'off',
     'promise/catch-or-return': 'off',
     'typescript/non-nullable-type-assertion-style': 'off',
     'no-duplicate-imports': 'off',
