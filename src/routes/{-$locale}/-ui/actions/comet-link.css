@@ -1,0 +1,105 @@
+.ev-cml {
+  position: relative;
+  font-family: var(--font-sans, 'Noto Sans JP', sans-serif);
+  font-size: 15px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--link, #9fe8ff);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+}
+
+.ev-cml:hover {
+  color: var(--link-hover, #04feff);
+}
+
+.ev-cml .ev-cml-u {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 1px;
+  background: var(--grad-comet, linear-gradient(90deg, #04feff, #00dda8));
+  transform: scaleX(0);
+  transform-origin: right;
+  transition: transform 0.5s var(--ease-comet, cubic-bezier(0.7, 0.01, 0.23, 1));
+}
+
+.ev-cml:hover .ev-cml-u {
+  transform: scaleX(1);
+  transform-origin: left;
+}
+
+.ev-cml .ev-cml-d {
+  position: absolute;
+  bottom: -1.5px;
+  left: 0;
+  width: 100%;
+  height: 5px;
+  opacity: 0;
+  transform: translateX(calc(-100% + 10px));
+}
+
+.ev-cml:hover .ev-cml-d {
+  animation: evCometRun 0.6s var(--ease-comet, cubic-bezier(0.7, 0.01, 0.23, 1)) 0.08s both;
+}
+
+.ev-cml .ev-cml-k {
+  position: absolute;
+  right: -7px;
+  bottom: -1px;
+  width: 13px;
+  height: 13px;
+  background: var(--star-white, #fcf7fd);
+  clip-path: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
+  filter: drop-shadow(0 0 5px rgba(4, 254, 255, 0.9));
+  transform: scale(0);
+}
+
+.ev-cml:hover .ev-cml-k {
+  animation: evKiraPop 0.5s ease-in-out 0.45s both;
+}
+
+.ev-cml .ev-cml-a {
+  display: inline-block;
+  transition: transform 0.4s var(--ease-comet, cubic-bezier(0.7, 0.01, 0.23, 1)) 0.05s;
+}
+
+.ev-cml:hover .ev-cml-a {
+  transform: translateX(5px);
+}
+
+@keyframes evCometRun {
+  0% {
+    opacity: 0;
+    transform: translateX(calc(-100% + 10px));
+  }
+  12% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(8%);
+  }
+}
+
+@keyframes evKiraPop {
+  from,
+  to {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1) rotate(95deg);
+  }
+}

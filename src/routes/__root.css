@@ -1,8 +1,8 @@
 @import 'tailwindcss' source('../');
 
 /* ---------------------------------------------------------------------------
-   Design tokens — ported from the 「雲の上」 design system's tokens/*.css.
-   Canonical state is 深夜 0時; these are the night values. tokens/fonts.css is
+   Design tokens — ported from the design system's tokens/*.css.
+   Canonical state is midnight on the 24h sky clock. tokens/fonts.css is
    deliberately not ported — it pulls Noto Sans JP from Google Fonts and this
    site self-hosts it (see the @font-face rules below).
    --------------------------------------------------------------------------- */

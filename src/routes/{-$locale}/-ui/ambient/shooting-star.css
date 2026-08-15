@@ -1,0 +1,41 @@
+@keyframes evShootL {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(-12deg);
+  }
+  3% {
+    opacity: 1;
+  }
+  8% {
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+    transform: translate(-58vw, 12.33vw) rotate(-12deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-58vw, 12.33vw) rotate(-12deg);
+  }
+}
+
+@keyframes evShootR {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) rotate(11deg);
+  }
+  3% {
+    opacity: 1;
+  }
+  8% {
+    opacity: 1;
+  }
+  12% {
+    opacity: 0;
+    transform: translate(60vw, 11.66vw) rotate(11deg);
+  }
+  100% {
+    opacity: 0;
+    transform: translate(60vw, 11.66vw) rotate(11deg);
+  }
+}
