@@ -24,6 +24,7 @@ export default defineConfig({
     'func-style': ['error', 'expression', { allowArrowFunctions: true }],
     'no-bitwise': ['error', { allow: ['~'], int32Hint: true }],
     'sort-imports': ['error', { allowSeparatedGroups: true, ignoreDeclarationSort: true }],
+    'import/no-unassigned-import': ['error', { allow: ['**/*.css'] }],
     'unicorn/filename-case': ['error', { cases: { camelCase: true, kebabCase: true } }],
     'unicorn/numeric-separators-style': ['error', { onlyIfContainsSeparator: true }],
     'typescript/return-await': ['error', 'error-handling-correctness-only'],
