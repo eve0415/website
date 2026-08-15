@@ -12,7 +12,23 @@ export default defineConfig({
     cloudflare({
       viteEnvironment: { name: 'ssr' },
     }),
-    tanstackStart(),
+    tanstackStart({
+      prerender: {
+        enabled: true,
+        // false: the default writes `/x` as `x/index.html`, which the Cloudflare
+        // asset worker then 307s to `/x/`, so every slash-free canonical would
+        // point at a redirect.
+        autoSubfolderIndex: false,
+        autoStaticPathsDiscovery: false,
+        crawlLinks: false,
+        failOnError: true,
+      },
+      sitemap: {
+        enabled: true,
+        host: 'https://eve0415.net',
+      },
+      pages: [{ path: '/' }],
+    }),
     devtools({
       eventBusConfig: { enabled: true },
     }),
