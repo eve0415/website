@@ -1,16 +1,26 @@
 import type { Hue } from './card';
-import type { CSSProperties, ComponentPropsWithoutRef, FC } from 'react';
+import type { ComponentPropsWithoutRef, FC } from 'react';
+
+import { cn } from '../cn';
 
 import { Card } from './card';
 import { Tag } from './tag';
 
 const STAT = {
-  cyan: 'var(--accent-cyan, #04feff)',
-  mint: 'var(--accent-mint, #00dda8)',
-  sky: 'var(--hue-sky, #7dd2ff)',
-  violet: 'var(--hue-violet, #e2a9ff)',
-  rose: 'var(--hue-rose, #ffb3cd)',
+  cyan: 'text-[var(--accent-cyan)]',
+  mint: 'text-[var(--accent-mint)]',
+  sky: 'text-[var(--hue-sky)]',
+  violet: 'text-[var(--hue-violet)]',
+  rose: 'text-[var(--hue-rose)]',
 };
+
+const LAYOUT = {
+  featured: 'flex flex-wrap items-center justify-between gap-[24px] rounded-[var(--radius-card-lg)] border-[var(--line-accent-dashed)] p-[var(--pad-card-lg)]',
+  plain: 'grid content-start gap-[10px]',
+};
+
+const TITLE_ROW = 'flex flex-wrap items-center gap-[10px]';
+const DESCRIPTION = 'text-[length:var(--text-body)] leading-[1.75] text-[var(--ink-muted)]';
 
 interface ProjectCardBaseProps {
   name?: string;
@@ -33,61 +43,50 @@ interface ProjectCardDivProps extends ProjectCardBaseProps, Omit<ComponentPropsW
 type ProjectCardProps = ProjectCardAnchorProps | ProjectCardDivProps;
 
 export const ProjectCard: FC<ProjectCardProps> = props => {
-  const { name, tag, hue = 'cyan', description, stat, statLabel, featured = false, ...rest } = props;
+  const { name, tag, hue = 'cyan', description, stat, statLabel, featured = false, className, ...rest } = props;
   const statColor = STAT[hue];
 
   const body = featured ? (
     <>
-      <span style={{ display: 'grid', gap: 8, flex: '1 1 320px' }}>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-          <span style={{ fontSize: 22, fontWeight: 700, color: 'var(--ink-title, #fcf7fd)' }}>{name}</span>
+      <span className='grid flex-[1_1_320px] gap-[8px]'>
+        <span className={TITLE_ROW}>
+          <span className='text-[22px] font-bold text-[var(--ink-title)]'>{name}</span>
           {tag ? <Tag hue={hue}>{tag}</Tag> : null}
         </span>
-        <span style={{ fontSize: 'var(--text-body, 15.5px)', lineHeight: 1.75, color: 'var(--ink-muted, #cfc9f2)' }}>{description}</span>
+        <span className={DESCRIPTION}>{description}</span>
       </span>
       {stat ? (
-        <span style={{ display: 'grid', gap: 2, textAlign: 'right' }}>
-          <span style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 700, color: statColor, lineHeight: 1.1 }}>{stat}</span>
-          {statLabel ? <span style={{ fontSize: 13, color: 'var(--ink-ice, #9fe8ff)' }}>{statLabel}</span> : null}
+        <span className='grid gap-[2px] text-right'>
+          <span className={cn('text-[clamp(28px,4vw,40px)] leading-[1.1] font-bold', statColor)}>{stat}</span>
+          {statLabel ? <span className='text-[13px] text-[var(--ink-ice)]'>{statLabel}</span> : null}
         </span>
       ) : null}
     </>
   ) : (
     <>
-      <span style={{ display: 'flex', alignItems: 'center', gap: 10, flexWrap: 'wrap' }}>
-        <span style={{ fontSize: 'var(--text-card-title, 20px)', fontWeight: 700, color: 'var(--ink-title, #fcf7fd)' }}>{name}</span>
+      <span className={TITLE_ROW}>
+        <span className='text-[length:var(--text-card-title)] font-bold text-[var(--ink-title)]'>{name}</span>
         {tag ? <Tag hue={hue}>{tag}</Tag> : null}
       </span>
-      <p style={{ margin: 0, fontSize: 'var(--text-body, 15.5px)', lineHeight: 1.75, color: 'var(--ink-muted, #cfc9f2)' }}>{description}</p>
-      {stat ? <p style={{ margin: 0, fontSize: 16, fontWeight: 700, color: statColor }}>{stat}</p> : null}
+      <p className={DESCRIPTION}>{description}</p>
+      {stat ? <p className={cn('text-[16px] font-bold', statColor)}>{stat}</p> : null}
     </>
   );
 
-  const style: CSSProperties = featured
-    ? {
-        borderColor: 'var(--line-accent-dashed, rgba(4,254,255,.35))',
-        borderRadius: 'var(--radius-card-lg, 18px)',
-        padding: 'var(--pad-card-lg, 26px)',
-        display: 'flex',
-        gap: 24,
-        flexWrap: 'wrap',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-      }
-    : { display: 'grid', gap: 10, alignContent: 'start' };
+  const cls = cn(featured ? LAYOUT.featured : LAYOUT.plain, className);
 
   // `href` stays inside `rest` so that narrowing on it also resolves the spread
   // to Card's matching anchor/div member; the two branches are not interchangeable.
   if (rest.href === undefined) {
     return (
-      <Card hue={hue} style={style} {...rest}>
+      <Card hue={hue} className={cls} {...rest}>
         {body}
       </Card>
     );
   }
 
   return (
-    <Card hue={hue} style={style} {...rest}>
+    <Card hue={hue} className={cls} {...rest}>
       {body}
     </Card>
   );

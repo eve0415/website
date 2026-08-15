@@ -1,25 +1,30 @@
 import type { CSSProperties, ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
-import './card.css';
+import { cn } from '../cn';
 
 /** Project accent hue, shared by Card, Tag and ProjectCard. */
 export type Hue = 'cyan' | 'mint' | 'sky' | 'violet' | 'rose';
 
 type CardVariant = 'solid' | 'soft' | 'dashed';
 
-const HUES = {
-  cyan: { line: 'rgba(4,254,255,.6)', glow: 'var(--hue-cyan-glow, rgba(4,176,236,.25))' },
-  mint: { line: 'rgba(0,221,168,.6)', glow: 'var(--hue-mint-glow, rgba(0,221,168,.2))' },
-  sky: { line: 'rgba(4,176,236,.65)', glow: 'var(--hue-sky-glow, rgba(4,176,236,.22))' },
-  violet: { line: 'rgba(196,73,208,.65)', glow: 'var(--hue-violet-glow, rgba(142,70,217,.25))' },
-  rose: { line: 'rgba(247,105,151,.6)', glow: 'var(--hue-rose-glow, rgba(247,105,151,.2))' },
+const BASE =
+  'block rounded-[var(--radius-card)] border border-[var(--line-panel)] bg-[var(--surface-panel)] p-[var(--pad-card)] font-sans text-inherit no-underline';
+
+const VARIANT = {
+  solid: '',
+  soft: 'bg-[var(--surface-panel-soft)]',
+  dashed: 'border-dashed border-[var(--line-accent-dashed)] bg-[var(--surface-panel-soft)]',
 };
 
-/** `.ev-card--hover` reads these two custom properties for its hover state. */
-interface CardHoverVars extends CSSProperties {
-  '--ev-card-line-h': string;
-  '--ev-card-glow-h': string;
-}
+const HOVER = 'transition-[transform,border-color,box-shadow] duration-150 ease-[ease] hover:transform-[var(--lift-hover)]';
+
+const HUE_HOVER = {
+  cyan: 'hover:border-[rgba(4,254,255,.6)] hover:shadow-[0_10px_36px_var(--hue-cyan-glow)]',
+  mint: 'hover:border-[rgba(0,221,168,.6)] hover:shadow-[0_10px_36px_var(--hue-mint-glow)]',
+  sky: 'hover:border-[rgba(4,176,236,.65)] hover:shadow-[0_10px_36px_var(--hue-sky-glow)]',
+  violet: 'hover:border-[rgba(196,73,208,.65)] hover:shadow-[0_10px_36px_var(--hue-violet-glow)]',
+  rose: 'hover:border-[rgba(247,105,151,.6)] hover:shadow-[0_10px_36px_var(--hue-rose-glow)]',
+};
 
 interface CardBaseProps {
   hue?: Hue;
@@ -39,23 +44,20 @@ interface CardDivProps extends CardBaseProps, Omit<ComponentPropsWithoutRef<'div
 export type CardProps = CardAnchorProps | CardDivProps;
 
 export const Card: FC<CardProps> = props => {
-  const { hue = 'cyan', variant = 'solid', style, children, ...rest } = props;
+  const { hue = 'cyan', variant = 'solid', className, style, children, ...rest } = props;
   const interactive = props.href !== undefined || props.onClick !== undefined;
-  const tone = HUES[hue];
-  const cls = `ev-card${variant === 'solid' ? '' : ` ev-card--${variant}`}${interactive ? ' ev-card--hover' : ''}`;
-  const hoverStyle: CardHoverVars = { '--ev-card-line-h': tone.line, '--ev-card-glow-h': tone.glow, ...style };
-  const resolvedStyle = interactive ? hoverStyle : style;
+  const cls = cn(BASE, VARIANT[variant], interactive && HOVER, interactive && HUE_HOVER[hue], className);
 
   if (rest.href === undefined) {
     return (
-      <div className={cls} style={resolvedStyle} {...rest}>
+      <div className={cls} style={style} {...rest}>
         {children}
       </div>
     );
   }
 
   return (
-    <a className={cls} style={resolvedStyle} {...rest}>
+    <a className={cls} style={style} {...rest}>
       {children}
     </a>
   );

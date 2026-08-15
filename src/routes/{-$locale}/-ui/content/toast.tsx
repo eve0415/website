@@ -1,26 +1,17 @@
 import type { CSSProperties, ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
+import { cn } from '../cn';
+
+const BASE =
+  'inline-block rounded-[999px] border border-[var(--line-accent)] bg-[var(--surface-toast)] px-[22px] py-[12px] font-sans text-[length:var(--text-nav)] text-[#d8f9ff] shadow-[var(--glow-toast)]';
+
 interface ToastProps extends Omit<ComponentPropsWithoutRef<'div'>, 'style' | 'children'> {
   style?: CSSProperties;
   children?: ReactNode;
 }
 
-export const Toast: FC<ToastProps> = ({ children, style, ...rest }) => (
-  <div
-    style={{
-      display: 'inline-block',
-      border: '1px solid var(--line-accent, rgba(4,254,255,.5))',
-      background: 'var(--surface-toast, #0d0836)',
-      color: '#d8f9ff',
-      padding: '12px 22px',
-      borderRadius: 999,
-      fontSize: 'var(--text-nav, 14.5px)',
-      fontFamily: "var(--font-sans, 'Noto Sans JP', sans-serif)",
-      boxShadow: 'var(--glow-toast, 0 8px 32px rgba(4,254,255,.25))',
-      ...style,
-    }}
-    {...rest}
-  >
+export const Toast: FC<ToastProps> = ({ className, children, style, ...rest }) => (
+  <div className={cn(BASE, className)} style={style} {...rest}>
     {children}
   </div>
 );

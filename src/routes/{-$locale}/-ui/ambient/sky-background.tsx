@@ -1,5 +1,7 @@
 import type { CSSProperties, FC, ReactNode } from 'react';
 
+import { cn } from '../cn';
+
 import { StarField } from './star-field';
 
 type Rgb = readonly [number, number, number];
@@ -341,26 +343,18 @@ interface SkyBackgroundProps {
   timeOfDay?: number;
   stars?: number;
   minHeight?: number | string;
+  className?: string;
   style?: CSSProperties;
   children?: ReactNode;
 }
 
-export const SkyBackground: FC<SkyBackgroundProps> = ({ timeOfDay = 0, stars = 60, minHeight = 200, style, children }) => {
+export const SkyBackground: FC<SkyBackgroundProps> = ({ timeOfDay = 0, stars = 60, minHeight = 200, className, style, children }) => {
   const sky = skyCss(timeOfDay);
   return (
-    <div
-      style={{
-        position: 'relative',
-        overflow: 'hidden',
-        background: sky.rootBg,
-        minHeight,
-        fontFamily: "var(--font-sans, 'Noto Sans JP', sans-serif)",
-        ...style,
-      }}
-    >
-      <div aria-hidden='true' style={{ position: 'absolute', inset: 0, pointerEvents: 'none', background: sky.nebulaBg }} />
+    <div className={cn('relative overflow-hidden font-sans', className)} style={{ background: sky.rootBg, minHeight, ...style }}>
+      <div aria-hidden='true' className='pointer-events-none absolute inset-0' style={{ background: sky.nebulaBg }} />
       {stars > 0 ? <StarField count={stars} style={{ opacity: sky.starAlpha }} /> : null}
-      <div style={{ position: 'relative' }}>{children}</div>
+      <div className='relative'>{children}</div>
     </div>
   );
 };

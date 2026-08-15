@@ -1,6 +1,14 @@
 import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
-import './link-row.css';
+import { cn } from '../cn';
+
+const BASE =
+  'flex items-center justify-between gap-[12px] rounded-[var(--radius-row)] border border-[var(--line-row)] bg-[var(--surface-row)] px-[20px] py-[17px] font-sans text-[var(--ink-title)] no-underline';
+
+const ANCHOR =
+  'transition-[border-color,background,transform] duration-150 ease-[ease] hover:transform-[translateY(-2px)] hover:border-[var(--accent-cyan)] hover:bg-[rgba(4,254,255,0.08)]';
+
+const VALUE = 'text-[15px] text-[var(--ink-ice)]';
 
 interface LinkRowBaseProps {
   label?: string;
@@ -21,14 +29,14 @@ interface LinkRowDivProps extends LinkRowBaseProps, Omit<ComponentPropsWithoutRe
 type LinkRowProps = LinkRowAnchorProps | LinkRowDivProps;
 
 export const LinkRow: FC<LinkRowProps> = props => {
-  const { label, value, action, ...rest } = props;
+  const { label, value, action, className, ...rest } = props;
 
   if (rest.href === undefined) {
     return (
-      <div className='ev-lrow ev-lrow--action' {...rest}>
+      <div className={cn(BASE, 'flex-wrap px-[20px] py-[12px]', className)} {...rest}>
         <strong>{label}</strong>
-        <span style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-          {value ? <span className='ev-lrow-v'>{value}</span> : null}
+        <span className='flex items-center gap-[12px]'>
+          {value ? <span className={VALUE}>{value}</span> : null}
           {action}
         </span>
       </div>
@@ -36,9 +44,9 @@ export const LinkRow: FC<LinkRowProps> = props => {
   }
 
   return (
-    <a className='ev-lrow' {...rest}>
+    <a className={cn(BASE, ANCHOR, className)} {...rest}>
       <strong>{label}</strong>
-      {value ? <span className='ev-lrow-v'>{value}</span> : null}
+      {value ? <span className={VALUE}>{value}</span> : null}
     </a>
   );
 };

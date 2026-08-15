@@ -1,22 +1,13 @@
 import type { FC, ReactNode } from 'react';
 
+import { cn } from '../cn';
+
+const BASE =
+  'inline-flex items-center rounded-[999px] border border-[var(--line-chip)] px-[15px] py-[7px] font-sans text-[length:var(--text-small)] text-[#e4dfff]';
+
 interface ChipProps {
+  className?: string;
   children?: ReactNode;
 }
 
-export const Chip: FC<ChipProps> = ({ children }) => (
-  <span
-    style={{
-      fontSize: 'var(--text-small, 14px)',
-      border: '1px solid var(--line-chip, rgba(210,205,255,.35))',
-      color: '#e4dfff',
-      borderRadius: 999,
-      padding: '7px 15px',
-      display: 'inline-flex',
-      alignItems: 'center',
-      fontFamily: "var(--font-sans, 'Noto Sans JP', sans-serif)",
-    }}
-  >
-    {children}
-  </span>
-);
+export const Chip: FC<ChipProps> = ({ className, children }) => <span className={cn(BASE, className)}>{children}</span>;

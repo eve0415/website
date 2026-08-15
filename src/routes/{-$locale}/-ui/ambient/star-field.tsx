@@ -2,6 +2,8 @@ import type { CSSProperties, FC } from 'react';
 
 import { useMemo } from 'react';
 
+import { cn } from '../cn';
+
 import './star-field.css';
 
 const COLORS: readonly [string, ...string[]] = ['#fcf7fd', '#fcf7fd', '#fcf7fd', '#9fe8ff', '#9fe8ff', '#c9a6ff', '#ffd9ec'];
@@ -42,10 +44,11 @@ interface StarFieldProps {
   count?: number;
   topMax?: number;
   seed?: number;
+  className?: string;
   style?: CSSProperties;
 }
 
-export const StarField: FC<StarFieldProps> = ({ count = 40, topMax = 100, seed = DEFAULT_SEED, style }) => {
+export const StarField: FC<StarFieldProps> = ({ count = 40, topMax = 100, seed = DEFAULT_SEED, className, style }) => {
   const stars = useMemo(() => {
     const random = seededRandom(seed);
     const generated: Star[] = [];
@@ -64,17 +67,16 @@ export const StarField: FC<StarFieldProps> = ({ count = 40, topMax = 100, seed =
   }, [count, topMax, seed]);
 
   return (
-    <div aria-hidden='true' style={{ position: 'absolute', inset: 0, pointerEvents: 'none', ...style }}>
+    <div aria-hidden='true' className={cn('pointer-events-none absolute inset-0', className)} style={style}>
       {stars.map(star => (
         <span
           key={star.key}
+          className='absolute rounded-[50%]'
           style={{
-            position: 'absolute',
             top: star.top,
             left: star.left,
             width: star.size,
             height: star.size,
-            borderRadius: '50%',
             background: star.color,
             animation: `evTwinkle ${star.duration} ease-in-out ${star.delay} infinite`,
           }}

@@ -1,6 +1,14 @@
 import type { FC, MouseEvent } from 'react';
 
+import { cn } from '../cn';
+
 import './site-header.css';
+
+const ROOT =
+  'ev-hdr sticky top-0 z-10 flex items-center justify-between gap-[12px] border-b border-b-[var(--line-header)] bg-[var(--surface-header)] p-[8px_clamp(20px,4vw,40px)] font-sans backdrop-blur-[10px]';
+
+const LINK =
+  'inline-flex min-h-[44px] cursor-pointer items-center border-b-2 border-b-transparent font-[inherit] text-[length:var(--text-nav)] text-[#eae6ff] no-underline hover:text-[var(--accent-cyan)] aria-[current=page]:border-b-[var(--accent-cyan)] aria-[current=page]:text-[var(--accent-cyan)]';
 
 export interface SiteHeaderNavItem {
   key: string;
@@ -14,6 +22,7 @@ interface SiteHeaderProps {
   avatarSrc?: string;
   items?: readonly SiteHeaderNavItem[];
   active?: string;
+  className?: string;
   /**
    * When supplied the nav renders as buttons and the brand link is intercepted,
    * so routing stays entirely at the call site.
@@ -29,31 +38,43 @@ const DEFAULT_ITEMS: readonly SiteHeaderNavItem[] = [
   { key: 'about', label: 'About', href: '#/about' },
 ];
 
-export const SiteHeader: FC<SiteHeaderProps> = ({ brand = 'eve0415.net', brandHref = '#/', avatarSrc, items = DEFAULT_ITEMS, active = 'home', onSelect }) => {
+export const SiteHeader: FC<SiteHeaderProps> = ({
+  brand = 'eve0415.net',
+  brandHref = '#/',
+  avatarSrc,
+  items = DEFAULT_ITEMS,
+  active = 'home',
+  className,
+  onSelect,
+}) => {
   const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
     event.preventDefault();
     onSelect?.('home');
   };
 
   return (
-    <header className='ev-hdr'>
-      <a className='ev-hdr-brand' href={brandHref} onClick={onSelect === undefined ? undefined : handleBrandClick}>
+    <header className={cn(ROOT, className)}>
+      <a
+        className='flex min-h-[44px] items-center gap-[10px] text-[16px] font-bold text-[#eae6ff] no-underline'
+        href={brandHref}
+        onClick={onSelect === undefined ? undefined : handleBrandClick}
+      >
         {avatarSrc ? (
-          <img src={avatarSrc} alt='' width='32' height='32' style={{ width: 32, height: 32, borderRadius: '50%', border: '1px solid rgba(252,247,253,.4)' }} />
+          <img src={avatarSrc} alt='' width='32' height='32' className='h-[32px] w-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' />
         ) : null}
         {brand}
       </a>
-      <nav aria-label='メニュー' className='ev-hdr-nav'>
+      <nav aria-label='メニュー' className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
         {items.map(item =>
           onSelect === undefined ? (
-            <a key={item.key} className='ev-hdr-link' href={item.href} aria-current={active === item.key ? 'page' : undefined}>
+            <a key={item.key} className={LINK} href={item.href} aria-current={active === item.key ? 'page' : undefined}>
               {item.label}
             </a>
           ) : (
             <button
               key={item.key}
               type='button'
-              className='ev-hdr-link'
+              className={LINK}
               aria-current={active === item.key ? 'page' : undefined}
               onClick={() => {
                 onSelect(item.key);
@@ -64,10 +85,13 @@ export const SiteHeader: FC<SiteHeaderProps> = ({ brand = 'eve0415.net', brandHr
           ),
         )}
       </nav>
-      <span className='ev-hdr-line' aria-hidden='true'>
+      <span
+        className='ev-hdr-line pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] opacity-0 transition-[opacity] duration-[0.4s] ease-[var(--ease-comet)]'
+        aria-hidden='true'
+      >
         <span />
       </span>
-      <span className='ev-prg' aria-hidden='true'>
+      <span className='ev-prg pointer-events-none absolute inset-x-0 bottom-[-1px] h-[2px] opacity-0' aria-hidden='true'>
         <span className='ev-prg-b' />
         <span className='ev-prg-h' />
       </span>

@@ -1,72 +1,7 @@
-.ev-hdr {
-  box-sizing: border-box;
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 12px;
-  padding: 8px clamp(20px, 4vw, 40px);
-  background: var(--surface-header, rgba(5, 2, 28, 0.55));
-  backdrop-filter: blur(10px);
-  border-bottom: 1px solid var(--line-header, rgba(160, 150, 255, 0.18));
-  font-family: var(--font-sans, 'Noto Sans JP', sans-serif);
-}
-
-.ev-hdr-brand {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  font-weight: 700;
-  font-size: 16px;
-  color: #eae6ff;
-  text-decoration: none;
-  min-height: 44px;
-}
-
-.ev-hdr-nav {
-  display: flex;
-  gap: clamp(10px, 2vw, 22px);
-  align-items: center;
-  flex-wrap: wrap;
-  justify-content: flex-end;
-}
-
-.ev-hdr-link {
-  text-decoration: none;
-  font-size: var(--text-nav, 14.5px);
-  color: #eae6ff;
-  min-height: 44px;
-  display: inline-flex;
-  align-items: center;
-  border: none;
-  border-bottom: 2px solid transparent;
-  background: none;
-  cursor: pointer;
-  font-family: inherit;
-  padding: 0;
-}
-
-.ev-hdr-link:hover {
-  color: var(--accent-cyan, #04feff);
-}
-
-.ev-hdr-link[aria-current='page'] {
-  color: var(--accent-cyan, #04feff);
-  border-bottom-color: var(--accent-cyan, #04feff);
-}
-
-.ev-hdr-line {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 2px;
-  opacity: 0;
-  pointer-events: none;
-  transition: opacity 0.4s var(--ease-comet, cubic-bezier(0.7, 0.01, 0.23, 1));
-}
+/* What stays in plain CSS: a `>` combinator, a custom @function, a scroll-state
+   container query and scroll-driven animations. `.ev-hdr`, `.ev-hdr-line` and
+   `.ev-prg` survive only as the hooks these at-rules need — every other
+   declaration on those elements is a utility class on the element itself. */
 
 .ev-hdr-line > span {
   position: absolute;
@@ -95,16 +30,6 @@
       opacity: 1;
     }
   }
-}
-
-.ev-prg {
-  position: absolute;
-  left: 0;
-  right: 0;
-  bottom: -1px;
-  height: 2px;
-  opacity: 0;
-  pointer-events: none;
 }
 
 @keyframes evPrgFill {

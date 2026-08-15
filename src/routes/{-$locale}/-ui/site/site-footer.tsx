@@ -1,29 +1,21 @@
 import type { FC, ReactNode } from 'react';
 
+import { cn } from '../cn';
+
+const ROOT =
+  'relative flex flex-wrap items-center gap-[18px] border-t border-t-[var(--line-header)] bg-[radial-gradient(120%_220%_at_50%_135%,var(--ev-footer-glow,rgba(142,70,217,.16)),transparent_60%)] p-[20px_clamp(20px,4vw,40px)_26px] font-sans text-[length:var(--text-small)] text-[var(--ink-faint)]';
+
 interface SiteFooterProps {
   /** Trailing note, right-aligned; pass an empty string to drop it. */
   note?: string;
+  className?: string;
   children?: ReactNode;
 }
 
-export const SiteFooter: FC<SiteFooterProps> = ({ note = 'View Transitions / Scroll-driven Animations / Popover API 使用', children }) => (
-  <footer
-    style={{
-      position: 'relative',
-      background: 'radial-gradient(120% 220% at 50% 135%, var(--ev-footer-glow, rgba(142,70,217,.16)), transparent 60%)',
-      borderTop: '1px solid var(--line-header, rgba(160,150,255,.18))',
-      padding: '20px clamp(20px, 4vw, 40px) 26px',
-      display: 'flex',
-      gap: 18,
-      flexWrap: 'wrap',
-      alignItems: 'center',
-      fontSize: 'var(--text-small, 14px)',
-      color: 'var(--ink-faint, #a49dd8)',
-      fontFamily: "var(--font-sans, 'Noto Sans JP', sans-serif)",
-    }}
-  >
+export const SiteFooter: FC<SiteFooterProps> = ({ note = 'View Transitions / Scroll-driven Animations / Popover API 使用', className, children }) => (
+  <footer className={cn(ROOT, className)}>
     <span>© eve0415</span>
     {children}
-    {note ? <span style={{ marginLeft: 'auto', fontSize: 13 }}>{note}</span> : null}
+    {note ? <span className='ml-auto text-[13px]'>{note}</span> : null}
   </footer>
 );
