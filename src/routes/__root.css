@@ -358,6 +358,15 @@ a:hover {
   }
 }
 
+/* Scroll-driven entrance shared by every panel on every page: no utility
+   carries `animation-timeline`. Browsers without view() timelines ignore the
+   timeline and run the animation once, which is the design's own fallback. */
+.ev-reveal {
+  animation: fadeUp 0.6s linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 24%;
+}
+
 @media (prefers-reduced-motion: reduce) {
   html {
     scroll-behavior: auto;

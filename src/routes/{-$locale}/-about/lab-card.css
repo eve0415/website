@@ -1,0 +1,36 @@
+/* The disclosure animates its own open/close — one of the experiments it lists.
+   `interpolate-size` is what lets `height: auto` be a transition endpoint, and
+   `::details-content` is the only handle on the part that grows. No Tailwind
+   utility reaches either, nor the default marker. */
+.ev-labdt {
+  interpolate-size: allow-keywords;
+}
+
+.ev-labdt > summary {
+  cursor: pointer;
+  list-style: none;
+}
+
+.ev-labdt > summary::-webkit-details-marker {
+  display: none;
+}
+
+.ev-labdt .ev-labarr {
+  transition: rotate 0.4s var(--ease-comet);
+}
+
+.ev-labdt[open] .ev-labarr {
+  rotate: 90deg;
+}
+
+.ev-labdt::details-content {
+  height: 0;
+  overflow: clip;
+  transition:
+    height 0.5s var(--ease-comet),
+    content-visibility 0.5s allow-discrete;
+}
+
+.ev-labdt[open]::details-content {
+  height: auto;
+}

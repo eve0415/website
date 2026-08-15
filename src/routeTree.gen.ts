@@ -11,6 +11,8 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
+import { Route as Char123LocaleChar125AboutRouteImport } from './routes/{-$locale}/about'
+import { Route as Char123LocaleChar125SkillsRouteImport } from './routes/{-$locale}/skills'
 import { Route as Char123LocaleChar125ProjectsIndexRouteImport } from './routes/{-$locale}/projects/index'
 import { Route as Char123LocaleChar125ProjectsCellaRouteImport } from './routes/{-$locale}/projects/cella'
 import { Route as Char123LocaleChar125ProjectsDotclaudeRouteImport } from './routes/{-$locale}/projects/dotclaude'
@@ -28,6 +30,18 @@ const Char123LocaleChar125IndexRoute =
   Char123LocaleChar125IndexRouteImport.update({
     id: '/',
     path: '/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125AboutRoute =
+  Char123LocaleChar125AboutRouteImport.update({
+    id: '/about',
+    path: '/about',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125SkillsRoute =
+  Char123LocaleChar125SkillsRouteImport.update({
+    id: '/skills',
+    path: '/skills',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125ProjectsIndexRoute =
@@ -69,6 +83,8 @@ const Char123LocaleChar125ProjectsWebsiteRoute =
 
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
+  '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
   '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
@@ -78,6 +94,8 @@ export interface FileRoutesByFullPath {
   '/{-$locale}/projects/': typeof Char123LocaleChar125ProjectsIndexRoute
 }
 export interface FileRoutesByTo {
+  '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
+  '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
   '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
@@ -89,6 +107,8 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
+  '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
   '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
@@ -101,6 +121,8 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/{-$locale}'
+    | '/{-$locale}/about'
+    | '/{-$locale}/skills'
     | '/{-$locale}/'
     | '/{-$locale}/projects/cella'
     | '/{-$locale}/projects/dotclaude'
@@ -110,6 +132,8 @@ export interface FileRouteTypes {
     | '/{-$locale}/projects/'
   fileRoutesByTo: FileRoutesByTo
   to:
+    | '/{-$locale}/about'
+    | '/{-$locale}/skills'
     | '/{-$locale}'
     | '/{-$locale}/projects/cella'
     | '/{-$locale}/projects/dotclaude'
@@ -120,6 +144,8 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/{-$locale}'
+    | '/{-$locale}/about'
+    | '/{-$locale}/skills'
     | '/{-$locale}/'
     | '/{-$locale}/projects/cella'
     | '/{-$locale}/projects/dotclaude'
@@ -147,6 +173,20 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/{-$locale}/'
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/about': {
+      id: '/{-$locale}/about'
+      path: '/about'
+      fullPath: '/{-$locale}/about'
+      preLoaderRoute: typeof Char123LocaleChar125AboutRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/skills': {
+      id: '/{-$locale}/skills'
+      path: '/skills'
+      fullPath: '/{-$locale}/skills'
+      preLoaderRoute: typeof Char123LocaleChar125SkillsRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/projects/': {
@@ -195,6 +235,8 @@ declare module '@tanstack/react-router' {
 }
 
 interface Char123LocaleChar125RouteRouteChildren {
+  Char123LocaleChar125AboutRoute: typeof Char123LocaleChar125AboutRoute
+  Char123LocaleChar125SkillsRoute: typeof Char123LocaleChar125SkillsRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
   Char123LocaleChar125ProjectsCellaRoute: typeof Char123LocaleChar125ProjectsCellaRoute
   Char123LocaleChar125ProjectsDotclaudeRoute: typeof Char123LocaleChar125ProjectsDotclaudeRoute
@@ -206,6 +248,8 @@ interface Char123LocaleChar125RouteRouteChildren {
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
   {
+    Char123LocaleChar125AboutRoute: Char123LocaleChar125AboutRoute,
+    Char123LocaleChar125SkillsRoute: Char123LocaleChar125SkillsRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
     Char123LocaleChar125ProjectsCellaRoute:
       Char123LocaleChar125ProjectsCellaRoute,

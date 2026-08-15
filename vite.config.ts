@@ -14,7 +14,7 @@ const SITE_URL = 'https://eve0415.net';
  * `autoStaticPathsDiscovery` and `crawlLinks` are both off, so a route missing
  * from here silently never prerenders — `failOnError` does not catch it.
  */
-const ROUTES = ['', '/projects', '/projects/ifpatcher', '/projects/cella', '/projects/oasts', '/projects/dotclaude', '/projects/website'];
+const ROUTES = ['', '/projects', '/projects/ifpatcher', '/projects/cella', '/projects/oasts', '/projects/dotclaude', '/projects/website', '/skills', '/about'];
 
 const localeAlternates = (route: string) => [
   { hreflang: 'ja', href: `${SITE_URL}${route}` },

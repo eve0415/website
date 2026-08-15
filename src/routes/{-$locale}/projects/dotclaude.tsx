@@ -8,7 +8,6 @@ import { localeHead } from '#i18n/head';
 import { BackLink } from '../-projects/back-link';
 import { LinksSection } from '../-projects/links-section';
 import { NotePanel } from '../-projects/panel';
-import '../-projects/reveal.css';
 import { PageHeader } from '../-ui/content/page-header';
 import { Tag } from '../-ui/surfaces/tag';
 

@@ -23,8 +23,19 @@ interface LanguageSwitchProps {
 }
 
 /**
- * Locale lives in the URL, so each pill is a link to the same page in the other
- * locale rather than a button that mutates client state. Nothing here needs JS.
+ * Locale lives in the URL, so each pill is a link to *this same page* in the
+ * other locale rather than a button that mutates client state. Nothing here
+ * needs JS.
+ *
+ * `to='.'` is the router's own name for the current route: with no `from` it
+ * resolves against the matched leaf's `fullPath` *template* — `/{-$locale}/
+ * projects/cella`, not the interpolated pathname — and then re-interpolates it
+ * with the params below. That is what keeps the switch on the page you are on;
+ * a literal `to='/{-$locale}'` sent every visitor home instead.
+ *
+ * `locale: undefined` has to be written out: `params` is merged onto the
+ * current params, so `{}` would leave `en` in place and the Japanese pill would
+ * point at the English page.
  *
  * The design marks the active pill with `aria-pressed`, which axe reports as a
  * critical `aria-allowed-attr` violation once these are links rather than
@@ -33,10 +44,10 @@ interface LanguageSwitchProps {
  */
 export const LanguageSwitch: FC<LanguageSwitchProps> = ({ locale, className }) => (
   <nav aria-label={SITE_COPY[locale].langAria} className={cn(GROUP, className)}>
-    <Link to='/{-$locale}' params={{ locale: undefined }} hrefLang='ja' className={cn(PILL, locale === 'ja' ? STATE.on : STATE.off)}>
+    <Link to='.' params={{ locale: undefined }} hrefLang='ja' className={cn(PILL, locale === 'ja' ? STATE.on : STATE.off)}>
       JA
     </Link>
-    <Link to='/{-$locale}' params={{ locale: 'en' }} hrefLang='en' className={cn(PILL, locale === 'en' ? STATE.on : STATE.off)}>
+    <Link to='.' params={{ locale: 'en' }} hrefLang='en' className={cn(PILL, locale === 'en' ? STATE.on : STATE.off)}>
       EN
     </Link>
   </nav>

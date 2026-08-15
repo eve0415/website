@@ -1,7 +1,16 @@
 import type { Locale } from '#i18n/locale';
 
 /** Routes with their own copy. Grows as pages land. */
-export type RoutePath = '/' | '/projects' | '/projects/ifpatcher' | '/projects/cella' | '/projects/oasts' | '/projects/dotclaude' | '/projects/website';
+export type RoutePath =
+  | '/'
+  | '/projects'
+  | '/projects/ifpatcher'
+  | '/projects/cella'
+  | '/projects/oasts'
+  | '/projects/dotclaude'
+  | '/projects/website'
+  | '/skills'
+  | '/about';
 
 interface PageCopy {
   title: string;
@@ -392,6 +401,186 @@ export const HISTORY_COPY = {
   },
 } satisfies Record<Locale, HistoryCopy>;
 
+interface SkillsCopy {
+  title: string;
+  intro: string;
+  groupLang: string;
+  groupFe: string;
+  groupInfra: string;
+  groupTest: string;
+  groupOften: string;
+  chipWeb: string;
+  chipCli: string;
+  chipMc: string;
+  chipBot: string;
+  chipMac: string;
+  note: string;
+}
+
+/** The できること page. Only the last group's items are copy; the rest are product names. */
+export const SKILLS_COPY = {
+  ja: {
+    title: 'できること',
+    intro: '広く浅く。深さについてはご相談ください。',
+    groupLang: '言語',
+    groupFe: 'フロントエンド',
+    groupInfra: 'インフラ',
+    groupTest: 'テスト・ツールチェイン',
+    groupOften: 'よく作るもの',
+    chipWeb: 'Web アプリ',
+    chipCli: 'CLI ツール',
+    chipMc: 'Minecraft Mod・プラグイン',
+    chipBot: 'Discord Bot',
+    chipMac: 'macOS アプリ',
+    note: '最新技術を追いかけるのが大好きです。気になったものはとりあえず試して、良かったものは本番にも持ち込みます。学びたいものはまだ尽きません。',
+  },
+  en: {
+    title: 'Skills',
+    intro: 'A mile wide, an inch deep. Depth negotiable.',
+    groupLang: 'Languages',
+    groupFe: 'Frontend',
+    groupInfra: 'Infra',
+    groupTest: 'Testing & toolchain',
+    groupOften: 'What I usually build',
+    chipWeb: 'Web apps',
+    chipCli: 'CLI tools',
+    chipMc: 'Minecraft mods & plugins',
+    chipBot: 'Discord bots',
+    chipMac: 'macOS apps',
+    note: 'Chasing new tech is basically my hobby. Anything interesting gets a test drive, and the keepers make it to production. The to-learn list only gets longer.',
+  },
+} satisfies Record<Locale, SkillsCopy>;
+
+interface AboutCopy {
+  title: string;
+  p1: string;
+  p2: string;
+  seeContact: string;
+  siteHead: string;
+  /** The sentence wraps an inline link to the history page, so it is three pieces. */
+  siteBefore: string;
+  siteLink: string;
+  siteAfter: string;
+  altAvatar: string;
+}
+
+export const ABOUT_COPY = {
+  ja: {
+    title: 'eve0415 について',
+    p1: '広く浅く技術を嗜むプロダクトエンジニア。新しい技術はとりあえず試す派です。最近は Rust 製の devcontainer CLI「cella」と、OpenAPI コンパイラ「oasts」を作っています。',
+    p2: 'お仕事の依頼お待ちしてます。',
+    seeContact: '連絡先を見る',
+    siteHead: 'このサイトについて',
+    siteBefore: 'アイコンとヘッダーアートは AI 生成です。サイト本体は手作りです。2022年からの変遷は',
+    siteLink: '歴史のページ',
+    siteAfter: 'にまとめています。',
+    altAvatar: 'eve0415 のアイコン。オッドアイの黒猫のイラスト(AI生成)',
+  },
+  en: {
+    title: 'About eve0415',
+    p1: 'Product engineer, curious about pretty much everything. New tech gets tried the week it ships. Currently building cella, a devcontainer CLI in Rust, and oasts, an OpenAPI compiler.',
+    p2: "And yes — I'm open for work.",
+    seeContact: 'Get in touch',
+    siteHead: 'About this site',
+    // The trailing space is the gap before the inline link and belongs to the
+    // string — JSX would collapse it if it were written as markup.
+    siteBefore: 'The avatar and header art are AI-generated. The site itself is handmade. The full story since 2022 is on the ',
+    siteLink: 'lore page',
+    siteAfter: '.',
+    altAvatar: "eve0415's avatar — an odd-eyed black cat illustration (AI-generated)",
+  },
+} satisfies Record<Locale, AboutCopy>;
+
+/** One row of the LAB card. The order these are declared in is the render order. */
+export type LabKey =
+  | 'navigationApi'
+  | 'viewTransitions'
+  | 'scrollState'
+  | 'scrollDriven'
+  | 'siblingIndex'
+  | 'squircleCorners'
+  | 'textBoxTrim'
+  | 'fieldSizing'
+  | 'cssFunction'
+  | 'gapDecorations'
+  | 'urlPattern'
+  | 'anchorPositioning'
+  | 'detailsContent'
+  | 'scrollend'
+  | 'durationFormat'
+  | 'promiseTry';
+
+interface LabCopy {
+  title: string;
+  intro: string;
+  /** `undefined` before the browser has been probed, when there is no count to show. */
+  toggle: (supported: number | undefined, total: number) => string;
+  stateSupported: string;
+  stateUnsupported: string;
+  /**
+   * Not in the design, which runs the probes client-only and so never has a
+   * third state. The prerendered HTML does, and claiming either answer there
+   * would be a lie half the time.
+   */
+  stateUnknown: string;
+  notes: Record<LabKey, string>;
+}
+
+export const LAB_COPY = {
+  ja: {
+    title: 'このサイトで試している新しい機能',
+    intro: '実験場なので、出たばかりの Web の機能をなるべく早く入れています。お使いのブラウザでの対応状況も並べておきます。',
+    toggle: (supported, total) => (supported === undefined ? '実験の一覧を見る' : `実験の一覧を見る（${supported}/${total} 対応）`),
+    stateSupported: '対応',
+    stateUnsupported: '未対応',
+    stateUnknown: '確認中',
+    notes: {
+      navigationApi: 'ページ移動を横取りしています。戻るときは遷移が逆再生になります。',
+      viewTransitions: '送信完了への切り替えをフォームの中だけで行います。背景の空は止まりません。',
+      scrollState: 'ヘッダーが貼り付いている間だけ、下の線が光ります。',
+      scrollDriven: '読み進めた分だけ要素が現れ、ヘッダーの彗星が進みます。',
+      siblingIndex: 'タグの登場を1つずつずらしています。JS は使っていません。',
+      squircleCorners: 'カードの角をスーパー楕円にしています。',
+      textBoxTrim: '見出しの上下の余白を字面に合わせて詰めています。',
+      fieldSizing: 'お問い合わせの入力欄が中身に合わせて伸びます。',
+      cssFunction: '光り方の処方を CSS の関数にまとめています。',
+      gapDecorations: 'できること のグリッドの隙間に区切り線を引いています。',
+      urlPattern: 'ページの振り分けを URLPattern で解析しています。',
+      anchorPositioning: 'コピー完了のトーストが、押したボタンの真上に出ます。',
+      detailsContent: 'この一覧の開閉そのものをアニメーションさせています。',
+      scrollend: 'スクロールが止まったとき、たまに流れ星がひとつ流れます。',
+      durationFormat: 'フッターの滞在時間の表記に使っています。',
+      promiseTry: 'クリップボード書き込みの失敗を同期例外ごとまとめて処理します。',
+    },
+  },
+  en: {
+    title: 'New platform features running here',
+    intro: 'This site is a testbed, so new platform features go in early. The badges show what your browser supports right now.',
+    toggle: (supported, total) => (supported === undefined ? 'See the experiments' : `See the experiments (${supported}/${total} live)`),
+    stateSupported: 'live',
+    stateUnsupported: 'not yet',
+    stateUnknown: 'checking',
+    notes: {
+      navigationApi: 'Navigations are intercepted, so going back plays the transition in reverse.',
+      viewTransitions: 'The sent state swaps inside the form alone, so the sky keeps moving.',
+      scrollState: 'The hairline under the header lights up only while it is stuck.',
+      scrollDriven: 'Sections reveal as you scroll, and the comet on the header tracks progress.',
+      siblingIndex: 'Tags stagger in by their index, with no JavaScript.',
+      squircleCorners: 'Card corners are superellipses instead of plain radii.',
+      textBoxTrim: 'Headings are trimmed to their cap height and baseline.',
+      fieldSizing: 'The contact textarea grows with its content.',
+      cssFunction: 'The glow recipe is a native CSS function.',
+      gapDecorations: 'Rules are drawn into the grid gaps on the skills page.',
+      urlPattern: 'Route parsing runs on URLPattern.',
+      anchorPositioning: 'The copied toast appears right above the button you pressed.',
+      detailsContent: 'This very list animates open and closed with it.',
+      scrollend: 'When your scrolling settles, sometimes a single star falls.',
+      durationFormat: 'Formats the dwell time in the footer.',
+      promiseTry: 'Wraps clipboard writes, sync throws included.',
+    },
+  },
+} satisfies Record<Locale, LabCopy>;
+
 /**
  * Verbatim from the design; both locales are authored, not translated at
  * runtime. Keyed by locale then path so a missing page is a compile error.
@@ -411,6 +600,8 @@ export const PAGE_COPY = {
     '/projects/oasts': { title: 'oasts | eve0415.net', description: OASTS_COPY.ja.lede },
     '/projects/dotclaude': { title: 'dotclaude | eve0415.net', description: DOTCLAUDE_COPY.ja.lede },
     '/projects/website': { title: 'eve0415.net の歴史 | eve0415.net', description: HISTORY_COPY.ja.intro },
+    '/skills': { title: 'できること | eve0415.net', description: SKILLS_COPY.ja.intro },
+    '/about': { title: 'About | eve0415.net', description: ABOUT_COPY.ja.p1 },
   },
   en: {
     '/': {
@@ -423,5 +614,7 @@ export const PAGE_COPY = {
     '/projects/oasts': { title: 'oasts | eve0415.net', description: OASTS_COPY.en.lede },
     '/projects/dotclaude': { title: 'dotclaude | eve0415.net', description: DOTCLAUDE_COPY.en.lede },
     '/projects/website': { title: 'The lore | eve0415.net', description: HISTORY_COPY.en.intro },
+    '/skills': { title: 'Skills | eve0415.net', description: SKILLS_COPY.en.intro },
+    '/about': { title: 'About | eve0415.net', description: ABOUT_COPY.en.p1 },
   },
 } satisfies Record<Locale, Record<RoutePath, PageCopy>>;

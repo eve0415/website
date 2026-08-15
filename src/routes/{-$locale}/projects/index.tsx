@@ -3,7 +3,6 @@ import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-r
 import { HOME_COPY, WORKS_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import '../-projects/reveal.css';
 import { ProjectCardLink } from '../-site/links';
 import { SweepButton } from '../-ui/actions/sweep-button';
 import { PageHeader } from '../-ui/content/page-header';

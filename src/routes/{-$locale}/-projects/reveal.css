@@ -1,9 +1,0 @@
-/* Scroll-driven entrance shared by every panel on the works pages: no utility
-   carries `animation-timeline`. `fadeUp` lives in __root.css. Browsers without
-   view() timelines ignore the timeline and run the animation once, which is
-   the design's own fallback. */
-.ev-reveal {
-  animation: fadeUp 0.6s linear both;
-  animation-timeline: view();
-  animation-range: entry 0% cover 24%;
-}

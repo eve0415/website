@@ -9,7 +9,6 @@ import { localeHead } from '#i18n/head';
 
 import { BackLink } from '../-projects/back-link';
 import { LinksSection } from '../-projects/links-section';
-import '../-projects/reveal.css';
 import { cn } from '../-ui/cn';
 import { PageHeader } from '../-ui/content/page-header';
 import { Card } from '../-ui/surfaces/card';

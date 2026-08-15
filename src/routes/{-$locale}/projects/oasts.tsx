@@ -11,7 +11,6 @@ import { BackLink } from '../-projects/back-link';
 import { CommandBox } from '../-projects/command-box';
 import { LinksSection } from '../-projects/links-section';
 import { StatCard } from '../-projects/stat-card';
-import '../-projects/reveal.css';
 import { cn } from '../-ui/cn';
 import { PageHeader } from '../-ui/content/page-header';
 import { Tag } from '../-ui/surfaces/tag';

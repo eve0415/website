@@ -11,10 +11,10 @@ import { NAV_LINK_CLASS } from '../-ui/site/site-header';
 import { localeParams } from './links';
 
 /**
- * Home and 作ったもの are registered routes, so they navigate client-side. The
- * other three are not routes yet — `<Link to>` is typed against the route tree
- * and would not compile — so they are plain hrefs at their canonical per-locale
- * paths and become links the moment those pages land.
+ * Everything but つながる is a registered route, so it navigates client-side.
+ * That one is not a route yet — `<Link to>` is typed against the route tree and
+ * would not compile — so it is a plain href at its canonical per-locale path
+ * and becomes a link the moment the page lands.
  */
 export const navItems = (locale: Locale): readonly SiteHeaderNavItem[] => [
   {
@@ -40,9 +40,27 @@ export const navItems = (locale: Locale): readonly SiteHeaderNavItem[] => [
       </Link>
     ),
   },
-  { key: 'skills', label: SITE_COPY[locale].navSkills, href: localePath(locale, '/skills') },
+  {
+    key: 'skills',
+    label: SITE_COPY[locale].navSkills,
+    href: localePath(locale, '/skills'),
+    element: (
+      <Link to='/{-$locale}/skills' params={localeParams(locale)} className={NAV_LINK_CLASS}>
+        {SITE_COPY[locale].navSkills}
+      </Link>
+    ),
+  },
   { key: 'links', label: SITE_COPY[locale].navLinks, href: localePath(locale, '/links') },
-  { key: 'about', label: SITE_COPY[locale].navAbout, href: localePath(locale, '/about') },
+  {
+    key: 'about',
+    label: SITE_COPY[locale].navAbout,
+    href: localePath(locale, '/about'),
+    element: (
+      <Link to='/{-$locale}/about' params={localeParams(locale)} className={NAV_LINK_CLASS}>
+        {SITE_COPY[locale].navAbout}
+      </Link>
+    ),
+  },
 ];
 
 /**
