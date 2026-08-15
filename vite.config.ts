@@ -23,6 +23,12 @@ export default defineConfig({
     tailwindcss(),
     devtoolsJson(),
   ],
+  build: {
+    // Below these versions Lightning CSS downlevels light-dark() into two
+    // undefined var() calls with no separator, emitting no warning and no
+    // prefers-color-scheme fallback.
+    cssTarget: ['chrome125', 'firefox125', 'safari18'],
+  },
   environments: {
     ssr: {
       build: {
