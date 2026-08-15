@@ -1,0 +1,10 @@
+/* The mid cloud layer drifts on both axes; `driftX` in __root.css covers the
+   other two layers. */
+@keyframes evDriftXY {
+  from {
+    transform: translate(-12px, 5px);
+  }
+  to {
+    transform: translate(12px, -5px);
+  }
+}

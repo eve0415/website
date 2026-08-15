@@ -1,4 +1,6 @@
-import type { FC, MouseEvent } from 'react';
+import type { FC, MouseEvent, ReactNode } from 'react';
+
+import { Fragment } from 'react';
 
 import { cn } from '../cn';
 
@@ -7,13 +9,20 @@ import './site-header.css';
 const ROOT =
   'ev-hdr sticky top-0 z-10 flex items-center justify-between gap-[12px] border-b border-b-[var(--line-header)] bg-[var(--surface-header)] p-[8px_clamp(20px,4vw,40px)] font-sans backdrop-blur-[10px]';
 
-const LINK =
+/** Exported so a caller supplying its own `element` can style it identically. */
+export const NAV_LINK_CLASS =
   'inline-flex min-h-[44px] cursor-pointer items-center border-b-2 border-b-transparent font-[inherit] text-[length:var(--text-nav)] text-[#eae6ff] no-underline hover:text-[var(--accent-cyan)] aria-[current=page]:border-b-[var(--accent-cyan)] aria-[current=page]:text-[var(--accent-cyan)]';
 
 export interface SiteHeaderNavItem {
   key: string;
   label: string;
   href: string;
+  /**
+   * Rendered instead of the plain anchor — how a router link gets in without
+   * this component learning about routing. Style it with `NAV_LINK_CLASS` and
+   * own its own `aria-current`.
+   */
+  element?: ReactNode;
 }
 
 interface SiteHeaderProps {
@@ -23,6 +32,8 @@ interface SiteHeaderProps {
   items?: readonly SiteHeaderNavItem[];
   active?: string;
   className?: string;
+  /** Trailing slot inside the nav — where the design puts the language switch. */
+  children?: ReactNode;
   /**
    * When supplied the nav renders as buttons and the brand link is intercepted,
    * so routing stays entirely at the call site.
@@ -45,6 +56,7 @@ export const SiteHeader: FC<SiteHeaderProps> = ({
   items = DEFAULT_ITEMS,
   active = 'home',
   className,
+  children,
   onSelect,
 }) => {
   const handleBrandClick = (event: MouseEvent<HTMLAnchorElement>) => {
@@ -64,24 +76,29 @@ export const SiteHeader: FC<SiteHeaderProps> = ({
       </a>
       <nav aria-label='メニュー' className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
         {items.map(item =>
-          onSelect === undefined ? (
-            <a key={item.key} className={LINK} href={item.href} aria-current={active === item.key ? 'page' : undefined}>
-              {item.label}
-            </a>
+          item.element === undefined ? (
+            onSelect === undefined ? (
+              <a key={item.key} className={NAV_LINK_CLASS} href={item.href} aria-current={active === item.key ? 'page' : undefined}>
+                {item.label}
+              </a>
+            ) : (
+              <button
+                key={item.key}
+                type='button'
+                className={NAV_LINK_CLASS}
+                aria-current={active === item.key ? 'page' : undefined}
+                onClick={() => {
+                  onSelect(item.key);
+                }}
+              >
+                {item.label}
+              </button>
+            )
           ) : (
-            <button
-              key={item.key}
-              type='button'
-              className={LINK}
-              aria-current={active === item.key ? 'page' : undefined}
-              onClick={() => {
-                onSelect(item.key);
-              }}
-            >
-              {item.label}
-            </button>
+            <Fragment key={item.key}>{item.element}</Fragment>
           ),
         )}
+        {children}
       </nav>
       <span
         className='ev-hdr-line pointer-events-none absolute inset-x-0 -bottom-px h-[2px] opacity-0 transition-opacity duration-[0.4s] ease-(--ease-comet)'

@@ -6,8 +6,41 @@ import './shooting-star.css';
 
 type ShootingStarDirection = 'left' | 'right';
 
-interface ShootingStarProps {
-  direction?: ShootingStarDirection;
+/**
+ * The arcs the design authors. `sweep` is the bright one that crosses the whole
+ * viewport either way; `steep` falls harder and dimmer; `long` is the faint ice
+ * one that travels furthest. Only `sweep` is drawn in both directions.
+ */
+type ShootingStarArc = 'sweep' | 'steep' | 'long';
+
+const VARIANT = {
+  sweepLeft: {
+    animation: 'evShootL',
+    head: 'size-[7px] shadow-[var(--glow-star)]',
+    tail: 'h-[2px] -ml-[3px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.6),transparent)]',
+    headFirst: true,
+  },
+  sweepRight: {
+    animation: 'evShootR',
+    head: 'size-[7px] shadow-[var(--glow-star)]',
+    tail: 'h-[2px] -mr-[3px] bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.55),#04feff)]',
+    headFirst: false,
+  },
+  steep: {
+    animation: 'evShootB',
+    head: 'size-[6px] shadow-[var(--glow-comet-head)]',
+    tail: 'h-[2px] -ml-[3px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.55),transparent)]',
+    headFirst: true,
+  },
+  long: {
+    animation: 'evShootD',
+    head: 'size-[6px] shadow-[0_0_9px_2px_rgba(159,232,255,.7)]',
+    tail: 'h-[1.5px] -ml-[3px] bg-[linear-gradient(90deg,#9fe8ff,rgba(0,221,168,.4),transparent)]',
+    headFirst: true,
+  },
+};
+
+interface ShootingStarBaseProps {
   tail?: number;
   duration?: number;
   delay?: number;
@@ -15,28 +48,37 @@ interface ShootingStarProps {
   style?: CSSProperties;
 }
 
-const HEAD_CLASS = 'h-[7px] w-[7px] flex-none rounded-[50%] bg-[var(--star-white)] shadow-[var(--glow-star)]';
+interface ShootingStarSweepProps extends ShootingStarBaseProps {
+  arc?: 'sweep';
+  direction?: ShootingStarDirection;
+}
 
-const TAIL_CLASS = {
-  left: 'h-[2px] -ml-[3px] rounded-[2px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.6),transparent)]',
-  right: 'h-[2px] -mr-[3px] rounded-[2px] bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.55),#04feff)]',
-};
+interface ShootingStarFallProps extends ShootingStarBaseProps {
+  arc: Exclude<ShootingStarArc, 'sweep'>;
+  /** The falling arcs are authored travelling left only, so there is nothing to flip. */
+  direction?: undefined;
+}
 
-export const ShootingStar: FC<ShootingStarProps> = ({ direction = 'left', tail = 160, duration = 12, delay = 4, className, style }) => {
-  const head = <span className={HEAD_CLASS} />;
-  const trail = <span className={TAIL_CLASS[direction]} style={{ width: tail }} />;
+type ShootingStarProps = ShootingStarSweepProps | ShootingStarFallProps;
+
+export const ShootingStar: FC<ShootingStarProps> = props => {
+  const { tail = 160, duration = 12, delay = 4, className, style } = props;
+  const variant = props.arc === 'steep' || props.arc === 'long' ? VARIANT[props.arc] : props.direction === 'right' ? VARIANT.sweepRight : VARIANT.sweepLeft;
+
+  const head = <span className={cn('flex-none rounded-[50%] bg-(--star-white)', variant.head)} />;
+  const trail = <span className={cn('rounded-[2px]', variant.tail)} style={{ width: tail }} />;
 
   return (
     <div
       aria-hidden='true'
       className={cn('absolute', className)}
       style={{
-        animation: `${direction === 'left' ? 'evShootL' : 'evShootR'} ${duration}s linear ${delay}s infinite backwards`,
+        animation: `${variant.animation} ${duration}s linear ${delay}s infinite backwards`,
         ...style,
       }}
     >
       <span className='flex items-center'>
-        {direction === 'left' ? (
+        {variant.headFirst ? (
           <>
             {head}
             {trail}

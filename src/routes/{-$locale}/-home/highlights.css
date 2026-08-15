@@ -1,0 +1,8 @@
+/* Scroll-driven entrance: no utility carries `animation-timeline`. `fadeUp`
+   lives in __root.css. Browsers without view() timelines ignore the timeline
+   and run the animation once, which is the design's own fallback. */
+.ev-hl {
+  animation: fadeUp 0.8s linear both;
+  animation-timeline: view();
+  animation-range: entry 0% entry 35%;
+}

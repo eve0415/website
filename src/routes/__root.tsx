@@ -7,6 +7,7 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { localeFromPathname } from '#i18n/locale';
 
 import rootCss from './__root.css?url';
+import { NotFound } from './{-$locale}/-not-found/not-found';
 
 const SITE_URL = 'https://eve0415.net';
 const SITE_NAME = 'eve0415';
@@ -78,4 +79,8 @@ export const Route = createRootRoute({
       <Outlet />
     </RootDocument>
   ),
+  // Has to live here rather than on `{-$locale}`: an unknown first segment
+  // makes that route's `params.parse` return false, so it never matches and a
+  // notFoundComponent on it would never render.
+  notFoundComponent: NotFound,
 });

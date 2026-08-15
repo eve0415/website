@@ -1,0 +1,142 @@
+/* Everything here is a rule no utility can carry: page-scoped custom properties
+   whose value is @supports-gated, an offset-path, @starting-style entrances and
+   the keyframes this page introduces. */
+
+.ev-404 {
+  --moon: clamp(90px, min(19vw, 17svh), 190px);
+  --ev-spring: cubic-bezier(0.3, 1.35, 0.42, 1);
+}
+
+@supports (animation-timing-function: linear(0, 1)) {
+  .ev-404 {
+    --ev-spring: linear(
+      0,
+      0.008 1.1%,
+      0.032 2.3%,
+      0.078 3.6%,
+      0.148 5.1%,
+      0.25 6.9%,
+      0.395 9.1%,
+      0.62 12.2%,
+      0.882 15.7%,
+      1.036 18.2%,
+      1.114 20.3%,
+      1.16 22.4%,
+      1.175 24.7%,
+      1.162 27.2%,
+      1.118 30.6%,
+      1.028 37.6%,
+      0.976 43.7%,
+      0.958 49.5%,
+      0.964 56.5%,
+      0.992 68.4%,
+      1.003 81.5%,
+      1 100%
+    );
+  }
+}
+
+/* The search sweep rides an arc across the sky; without offset-path there is no
+   arc to ride, so it stays out of the layout entirely. */
+.ev-404-sstar {
+  display: none;
+}
+
+@supports (offset-path: path('M0 0H1')) {
+  .ev-404-sstar {
+    display: block;
+    offset-path: path('M -140 190 Q 480 -60 980 130 T 2200 40');
+    offset-rotate: auto;
+  }
+}
+
+.ev-404-chip {
+  transition:
+    opacity 0.5s cubic-bezier(0.7, 0.01, 0.23, 1),
+    translate 0.5s cubic-bezier(0.7, 0.01, 0.23, 1),
+    scale 0.5s cubic-bezier(0.7, 0.01, 0.23, 1);
+}
+
+.ev-404-resline {
+  transition:
+    opacity 0.45s cubic-bezier(0.7, 0.01, 0.23, 1),
+    translate 0.45s cubic-bezier(0.7, 0.01, 0.23, 1);
+}
+
+.ev-404-bubble {
+  transition:
+    opacity 0.35s cubic-bezier(0.7, 0.01, 0.23, 1),
+    translate 0.35s cubic-bezier(0.7, 0.01, 0.23, 1);
+}
+
+@starting-style {
+  .ev-404-chip {
+    opacity: 0;
+    translate: 0 8px;
+    scale: 0.75;
+  }
+
+  .ev-404-resline {
+    opacity: 0;
+    translate: 0 10px;
+  }
+
+  .ev-404-bubble {
+    opacity: 0;
+    translate: 0 6px;
+  }
+}
+
+@keyframes evDigitIn {
+  from {
+    opacity: 0;
+    transform: translateY(-44vh);
+  }
+  30% {
+    opacity: 1;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes evMoonIn {
+  from {
+    opacity: 0;
+    transform: scale(0.15);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes evOrbitSpin {
+  from {
+    transform: rotate(0turn);
+  }
+  to {
+    transform: rotate(1turn);
+  }
+}
+
+@keyframes evOrbitDepth {
+  0%,
+  100% {
+    opacity: 0.5;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+@keyframes evKiraPop {
+  from,
+  to {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1) rotate(95deg);
+  }
+}

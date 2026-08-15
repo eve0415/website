@@ -21,7 +21,7 @@ const MODULUS = 2_147_483_647;
  * 16807` peaks around 3.6e13, well inside the exactly-representable integer
  * range, so server and client agree bit for bit.
  */
-const seededRandom = (seed: number) => {
+export const seededRandom = (seed: number) => {
   let state = Math.trunc(seed) % MODULUS;
   if (state <= 0) state += MODULUS - 1;
   return () => {

@@ -223,6 +223,11 @@
    --------------------------------------------------------------------------- */
 
 html {
+  scroll-behavior: smooth;
+  /* The cloud layers overhang the viewport on purpose; without this they add a
+     horizontal scrollbar. `clip` rather than `hidden` so `position: sticky`
+     keeps working on the header. */
+  overflow-x: clip;
   scrollbar-color: rgba(126, 116, 220, 0.55) transparent;
 }
 
@@ -354,6 +359,10 @@ a:hover {
 }
 
 @media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
   * {
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
