@@ -1,4 +1,4 @@
-import { skyPalette } from '../ui/ambient/sky-background';
+import { skyPalette } from '../ui/ambient/sky-background/palette';
 
 /** Both pages render the canonical sky, so every value here is a constant. */
 const P = skyPalette(0);

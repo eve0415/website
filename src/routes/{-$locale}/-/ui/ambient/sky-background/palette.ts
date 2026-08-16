@@ -1,9 +1,3 @@
-import type { CSSProperties, FC, ReactNode } from 'react';
-
-import { cn } from '../../cn';
-
-import { StarField } from './star-field';
-
 type Rgb = readonly [number, number, number];
 type HeroHex = readonly [string, string, string, string, string, string];
 type RootHex = readonly [string, string, string];
@@ -337,24 +331,4 @@ export const skyCss = (clock: number): SkyCss => {
     inkSub: rgb(mix(p.inkS, [18, 48, 80], day)),
     footerGlow: `radial-gradient(120% 220% at 50% 135%, ${rgba(p.na, 0.16)}, transparent 60%)`,
   };
-};
-
-interface SkyBackgroundProps {
-  timeOfDay?: number;
-  stars?: number;
-  minHeight?: number | string;
-  className?: string;
-  style?: CSSProperties;
-  children?: ReactNode;
-}
-
-export const SkyBackground: FC<SkyBackgroundProps> = ({ timeOfDay = 0, stars = 60, minHeight = 200, className, style, children }) => {
-  const sky = skyCss(timeOfDay);
-  return (
-    <div className={cn('relative overflow-hidden font-sans', className)} style={{ background: sky.rootBg, minHeight, ...style }}>
-      <div aria-hidden='true' className='pointer-events-none absolute inset-0' style={{ background: sky.nebulaBg }} />
-      {stars > 0 ? <StarField count={stars} style={{ opacity: sky.starAlpha }} /> : null}
-      <div className='relative'>{children}</div>
-    </div>
-  );
 };

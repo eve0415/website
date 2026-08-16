@@ -11,45 +11,28 @@ import { CloudLayer } from '../site/cloud-layer';
 import { LanguageSwitch } from '../site/language-switch';
 import { ButtonLink, localeParams } from '../site/links';
 import { navItems } from '../site/nav';
-import { puffs } from '../site/puffs';
 import { SiteHeader } from '../site/site-header';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, glow } from '../site/sky-scene';
 import { Button } from '../ui/actions/button';
 import { ShootingStar } from '../ui/ambient/shooting-star';
-import { skyCss } from '../ui/ambient/sky-background';
 import { StarField } from '../ui/ambient/star-field';
 
 import { Moon } from './moon';
 import './not-found.css';
-
-const SKY = skyCss(0);
-
-const NOT_FOUND_STAR_SEED = 4_040_404;
-
-const CLOUDS_BACK = puffs(5_050_404, 10, 26, 110, 200, 340);
-const CLOUDS_MID = puffs(6_060_404, 12, -10, 70, 170, 300);
-const CLOUDS_FRONT = puffs(7_070_404, 12, -60, 22, 150, 280);
-
-const SPARKLE = '[clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]';
-
-const DIGIT =
-  'text-[calc(var(--moon)*1.42)] leading-none font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_4px_34px_rgba(3,1,20,.6),0_0_72px_rgba(142,70,217,.5)]';
-
-/* Geometry only. The two bands fade in at different depths, so each supplies
-   its own mask rather than overriding one on the shared constant. */
-const CLOUD_BAND = 'absolute top-0 right-[-80px] bottom-[-20px] left-[-80px]';
-
-const MASK_BAND_BACK = '[mask:linear-gradient(180deg,transparent_0%,rgba(0,0,0,.5)_30%,#000_55%)_50%_50%/100%_100%_no-repeat]';
-const MASK_BAND_FRONT = '[mask:linear-gradient(180deg,transparent_0%,rgba(0,0,0,.5)_26%,#000_50%)_50%_50%/100%_100%_no-repeat]';
-
-const CAT_SIZES = 'clamp(96px, min(15vw, 20svh), 180px)';
-
-/** The three puffs breaking over the cat's feet. */
-const CAT_CLOUDS = [
-  { key: 'a', left: '-20%', right: '46%', bottom: '-5%', height: '28%', blur: 9 },
-  { key: 'b', left: '-8%', right: '-12%', bottom: '-10%', height: '32%', blur: 10 },
-  { key: 'c', left: '44%', right: '-26%', bottom: '-4%', height: '25%', blur: 9 },
-];
+import {
+  CAT_CLOUDS,
+  CAT_SIZES,
+  CLOUDS_BACK,
+  CLOUDS_FRONT,
+  CLOUDS_MID,
+  CLOUD_BAND,
+  DIGIT,
+  MASK_BAND_BACK,
+  MASK_BAND_FRONT,
+  NOT_FOUND_STAR_SEED,
+  SKY,
+  SPARKLE,
+} from './scene';
 
 const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

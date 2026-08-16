@@ -1,5 +1,6 @@
 import type { Locale } from '#i18n/locale';
-import type { ContactFailure, ContactInput } from './validation';
+import type { FormError, FormFailure } from './form-state';
+import type { ContactInput } from './validation';
 import type { TurnstileInstance } from '@marsidev/react-turnstile';
 import type { FC } from 'react';
 
@@ -9,11 +10,14 @@ import { CONTACT_COPY } from '#i18n/copy';
 import { TurnstileWidget } from '#turnstile/turnstile-widget';
 
 import { cn } from '../../../-/cn';
-import { Button } from '../../../-/ui/actions/button';
 
 import './contact-form.css';
+import { Button } from '../../../-/ui/actions/button';
+
+import { fieldOf, readField } from './form-state';
 import { swapInPlace } from './scoped-view-transition';
 import { sendContact } from './send-contact';
+import { isNarrowSlot, notNarrowWhenPrerendered, sizeDecidedOnce } from './turnstile-size';
 import { MESSAGE_MAX, checkContact } from './validation';
 
 const LABEL = 'grid gap-[7px] text-[13.5px] text-(--ink-ice)';
@@ -28,61 +32,6 @@ const LABEL = 'grid gap-[7px] text-[13.5px] text-(--ink-ice)';
  */
 const FIELD =
   'w-full min-h-[44px] rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-[15.5px] leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-none';
-
-/**
- * Where Turnstile's `flexible` size stops fitting.
- *
- * The slot is the viewport less 98px — 24px of page padding either side, 24px of
- * card padding either side, and the card's hairline — so it crosses `flexible`'s
- * own 300px floor at a 398px viewport. Rounded up to 420 for margin: a scrollbar
- * gutter is not always counted the same way by layout and by a media query, and
- * `compact` in the twenty pixels either side of the crossing costs nothing.
- */
-const NARROW_SLOT = '(max-width: 420px)';
-
-/**
- * Deliberately subscribes to nothing. The size is settled once, when the
- * prerendered markup hydrates and before the challenge has been started, and it
- * stays settled: re-deciding it on a resize would rebuild a widget that may
- * already be holding this visitor's token, which costs them a submission to fix
- * a layout nobody is looking at mid-send.
- */
-const sizeDecidedOnce = () => () => {
-  // Nothing was subscribed to, so there is nothing to unsubscribe from.
-};
-
-const isNarrowSlot = () => globalThis.matchMedia(NARROW_SLOT).matches;
-
-/** Prerendering has no viewport to measure, so the HTML commits to the wide one. */
-const notNarrowWhenPrerendered = () => false;
-
-/** Everything the visitor can be told, including what only the server sees. */
-type FormError = ContactFailure | 'pending';
-
-/** The three controls a failure can be pinned to; the rest are about the submission. */
-type FieldName = 'name' | 'email' | 'message';
-
-/**
- * The failure, plus which attempt produced it. A live region announces a
- * *change*, so the same mistake made twice in a row used to be announced once —
- * the sequence number is what makes the second one a new node with new content.
- */
-interface FormFailure {
-  code: FormError;
-  seq: number;
-}
-
-/** Which control the visitor has to go back to, where the failure names one. */
-const fieldOf = (code: FormError): FieldName | undefined => {
-  if (code === 'name' || code === 'email' || code === 'message') return code;
-  if (code === 'too-long') return 'message';
-  return undefined;
-};
-
-const readField = (formData: FormData, key: string): string => {
-  const value = formData.get(key);
-  return typeof value === 'string' ? value : '';
-};
 
 interface ContactFormProps {
   locale: Locale;

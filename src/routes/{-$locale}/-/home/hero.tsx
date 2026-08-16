@@ -9,7 +9,7 @@ import { ButtonLink, localeParams } from '../site/links';
 import { puffs } from '../site/puffs';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, GLOW_A, GLOW_B, GLOW_W, glow } from '../site/sky-scene';
 import { ShootingStar } from '../ui/ambient/shooting-star';
-import { skyCss } from '../ui/ambient/sky-background';
+import { skyCss } from '../ui/ambient/sky-background/palette';
 import { StarField } from '../ui/ambient/star-field';
 
 import './hero.css';

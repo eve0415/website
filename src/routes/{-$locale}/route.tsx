@@ -10,7 +10,7 @@ import { activeNavKey, navItems } from './-/site/nav';
 import { SiteFooter } from './-/site/site-footer';
 import { SiteHeader } from './-/site/site-header';
 import { ShootingStar } from './-/ui/ambient/shooting-star';
-import { skyCss } from './-/ui/ambient/sky-background';
+import { skyCss } from './-/ui/ambient/sky-background/palette';
 import { StarField } from './-/ui/ambient/star-field';
 
 /**
