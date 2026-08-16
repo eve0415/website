@@ -4,6 +4,7 @@ import { SITE_COPY } from '#i18n/copy';
 import { parseLocaleParam } from '#i18n/locale';
 
 import { BrandLink } from './-site/brand-link';
+import { DwellTime } from './-site/dwell-time';
 import { LanguageSwitch } from './-site/language-switch';
 import { activeNavKey, navItems } from './-site/nav';
 import { ShootingStar } from './-ui/ambient/shooting-star';
@@ -49,7 +50,9 @@ const LocaleLayout = () => {
         <Outlet />
       </main>
 
-      <SiteFooter note='' />
+      <SiteFooter>
+        <DwellTime locale={locale} />
+      </SiteFooter>
     </div>
   );
 };

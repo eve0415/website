@@ -1,0 +1,101 @@
+/* Every keyframe the page transition and the opening curtain play, ported from
+   the design comp's <style> block. They live here rather than in `__root.css`
+   so the whole effect is one directory: nothing else in the site plays them. */
+
+/* ---- diagonal comet wipe, between top-level pages ---- */
+@keyframes wipeIn {
+  from {
+    transform: translateX(118%);
+  }
+  to {
+    transform: translateX(0%);
+  }
+}
+
+@keyframes wipeOut {
+  from {
+    transform: translateX(0%);
+  }
+  to {
+    transform: translateX(-118%);
+  }
+}
+
+/* ---- slat curtain, into and out of a project detail page ---- */
+@keyframes slatUpIn {
+  from {
+    transform: translateY(103%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slatUpOut {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-103%);
+  }
+}
+
+@keyframes slatDownIn {
+  from {
+    transform: translateY(-103%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slatDownOut {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(103%);
+  }
+}
+
+/* ---- opening curtain, once per document load ---- */
+@keyframes curtainUp {
+  to {
+    transform: translateY(-101%);
+  }
+}
+
+@keyframes curtainDown {
+  to {
+    transform: translateY(101%);
+  }
+}
+
+@keyframes cometFly {
+  from {
+    transform: translate(-22vw, 46vh);
+  }
+  to {
+    transform: translate(120vw, -10vh);
+  }
+}
+
+@keyframes lineGrow {
+  0% {
+    width: 0%;
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  100% {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes lineFade {
+  to {
+    opacity: 0;
+  }
+}

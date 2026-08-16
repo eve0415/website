@@ -4,8 +4,11 @@ import { TanStackDevtools } from '@tanstack/react-devtools';
 import { HeadContent, Outlet, Scripts, createRootRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
+import { SITE_COPY } from '#i18n/copy';
 import { localeFromPathname } from '#i18n/locale';
 
+import { OpeningCurtain } from './-transition/opening-curtain';
+import { PageTransition } from './-transition/page-transition';
 import rootCss from './__root.css?url';
 import { NotFound } from './{-$locale}/-not-found/not-found';
 
@@ -25,6 +28,9 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
       </head>
       <body>
         {children}
+
+        <PageTransition />
+        <OpeningCurtain skipLabel={SITE_COPY[locale].skip} />
 
         {import.meta.env.DEV && (
           <TanStackDevtools

@@ -26,6 +26,17 @@ interface SiteCopy {
   navSkills: string;
   navLinks: string;
   navAbout: string;
+  /** Dismisses the opening curtain. */
+  skip: string;
+  /** Footer dwell line, read as `${dwellPrefix} ${duration}`. */
+  dwellPrefix: string;
+  /**
+   * Units for the dwell duration where `Intl.DurationFormat` is missing. Both
+   * halves read as `${count} ${unit}`, and the hours half is dropped under an
+   * hour.
+   */
+  dwellHours: string;
+  dwellMinutes: string;
 }
 
 /** Chrome shared by every page: the header nav and the language switch. */
@@ -38,6 +49,10 @@ export const SITE_COPY = {
     navSkills: 'できること',
     navLinks: 'つながる',
     navAbout: 'About',
+    skip: 'スキップ',
+    dwellPrefix: 'この空の下に来てから',
+    dwellHours: '時間',
+    dwellMinutes: '分',
   },
   en: {
     navAria: 'Menu',
@@ -47,6 +62,10 @@ export const SITE_COPY = {
     navSkills: 'Skills',
     navLinks: 'Contact',
     navAbout: 'About',
+    skip: 'Skip',
+    dwellPrefix: 'Under this sky for',
+    dwellHours: 'hr',
+    dwellMinutes: 'min',
   },
 } satisfies Record<Locale, SiteCopy>;
 

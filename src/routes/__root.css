@@ -320,35 +320,18 @@ a:hover {
   }
 }
 
-/* transitions (page wipe / opening curtain) */
-@keyframes wipeIn {
-  from {
-    transform: translateX(118%);
-  }
-  to {
-    transform: translateX(0%);
-  }
+/* Document-scope view transition timing, so every `document.startViewTransition`
+   on the site runs on the comet easing instead of the UA's own curve. The
+   contact form's box-scoped rules carry a class and outrank these, which is how
+   it keeps its shorter 0.32s. */
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+  animation-timing-function: var(--ease-comet);
 }
 
-@keyframes wipeOut {
-  from {
-    transform: translateX(0%);
-  }
-  to {
-    transform: translateX(-118%);
-  }
-}
-
-@keyframes curtainUp {
-  to {
-    transform: translateY(-101%);
-  }
-}
-
-@keyframes curtainDown {
-  to {
-    transform: translateY(101%);
-  }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
 }
 
 /* ---- platform experiments (2026 layer) — all @supports-guarded; absent = graceful ---- */
@@ -384,5 +367,13 @@ a:hover {
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+  }
+
+  /* `::view-transition-*` is outside the document tree, so the `*` above never
+     reaches it — without these the rules further up would still animate. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

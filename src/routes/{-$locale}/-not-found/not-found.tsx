@@ -1,7 +1,6 @@
 import { rootRouteId, useRouteContext } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
-// Aliased: this is React's render flush, not a Node blocking-IO call.
-import { flushSync as flushRender } from 'react-dom';
+import { flushSync } from 'react-dom';
 
 import { NOT_FOUND_COPY, SITE_COPY } from '#i18n/copy';
 
@@ -172,7 +171,7 @@ export const NotFound = () => {
       // already captured the old frame, and the chips pop in instead of growing.
       if ('startViewTransition' in document && !prefersReducedMotion()) {
         document.startViewTransition(() => {
-          flushRender(apply);
+          flushSync(apply);
         });
       } else {
         apply();
