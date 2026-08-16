@@ -3,7 +3,7 @@ import type { ContactFailure, ContactInput } from './validation';
 import type { TurnstileInstance } from '@marsidev/react-turnstile';
 import type { FC } from 'react';
 
-import { useActionState, useEffect, useId, useRef, useState } from 'react';
+import { useActionState, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
 import { CONTACT_COPY } from '#i18n/copy';
 import { TurnstileWidget } from '#turnstile/turnstile-widget';
@@ -28,6 +28,33 @@ const LABEL = 'grid gap-[7px] text-[13.5px] text-(--ink-ice)';
  */
 const FIELD =
   'w-full min-h-[44px] rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-[15.5px] leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-none';
+
+/**
+ * Where Turnstile's `flexible` size stops fitting.
+ *
+ * The slot is the viewport less 98px — 24px of page padding either side, 24px of
+ * card padding either side, and the card's hairline — so it crosses `flexible`'s
+ * own 300px floor at a 398px viewport. Rounded up to 420 for margin: a scrollbar
+ * gutter is not always counted the same way by layout and by a media query, and
+ * `compact` in the twenty pixels either side of the crossing costs nothing.
+ */
+const NARROW_SLOT = '(max-width: 420px)';
+
+/**
+ * Deliberately subscribes to nothing. The size is settled once, when the
+ * prerendered markup hydrates and before the challenge has been started, and it
+ * stays settled: re-deciding it on a resize would rebuild a widget that may
+ * already be holding this visitor's token, which costs them a submission to fix
+ * a layout nobody is looking at mid-send.
+ */
+const sizeDecidedOnce = () => () => {
+  // Nothing was subscribed to, so there is nothing to unsubscribe from.
+};
+
+const isNarrowSlot = () => globalThis.matchMedia(NARROW_SLOT).matches;
+
+/** Prerendering has no viewport to measure, so the HTML commits to the wide one. */
+const notNarrowWhenPrerendered = () => false;
 
 /** Everything the visitor can be told, including what only the server sees. */
 type FormError = ContactFailure | 'pending';
@@ -81,6 +108,13 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
   const [token, setToken] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [lockHeight, setLockHeight] = useState<number | undefined>();
+  /**
+   * Not a render-time media query read: every page here is prerendered, so one
+   * would resolve against the build machine and then mismatch on hydration.
+   * `useSyncExternalStore` is what lets the prerendered markup and the browser
+   * disagree honestly — the server snapshot renders, then the real one replaces it.
+   */
+  const narrow = useSyncExternalStore(sizeDecidedOnce, isNarrowSlot, notNarrowWhenPrerendered);
 
   const errorId = useId();
 
@@ -296,10 +330,18 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
             />
           </label>
 
-          {/* `size: 'flexible'` fills the slot down to a 300px floor, so this is
-              a minimum rather than the design's fixed 300px box. */}
-          <div className='max-w-full min-w-[300px]'>
-            <TurnstileWidget ref={widgetRef} onWidgetLoad={handleWidgetLoad} onSuccess={setToken} onExpire={rearm} onError={rearm} />
+          {/* No minimum on the slot: the widget's own floor is the thing that has
+              to fit, and forcing 300px here is what pushed the card past a 320px
+              viewport that only has 222px to give it. */}
+          <div className='max-w-full'>
+            <TurnstileWidget
+              ref={widgetRef}
+              size={narrow ? 'compact' : 'flexible'}
+              onWidgetLoad={handleWidgetLoad}
+              onSuccess={setToken}
+              onExpire={rearm}
+              onError={rearm}
+            />
           </div>
 
           <div className='flex flex-wrap items-center gap-[16px]'>

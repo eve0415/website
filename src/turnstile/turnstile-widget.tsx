@@ -9,6 +9,12 @@ interface TurnstileWidgetProps {
   /** Needed to drive `execute()` and to reset the widget between submissions. */
   ref: Ref<TurnstileInstance | undefined>;
   /**
+   * Only the two sizes that can fill this site's slot. `flexible` has a 300px
+   * floor of its own, so anything narrower than that has to ask for `compact`
+   * (150px) instead — the caller decides, because only it knows the slot.
+   */
+  size: 'flexible' | 'compact';
+  /**
    * Fires once the widget has rendered, which is the only honest "you may call
    * `execute()` now" signal — before it there is nothing to execute and the call
    * is silently dropped. Per the package's own declaration it does not fire
@@ -26,10 +32,11 @@ interface TurnstileWidgetProps {
  * focus rather than on submit, which lets the challenge resolve while the form
  * is still being filled in.
  *
- * `size: 'flexible'` fills the container, minimum 300px, so the slot around it
- * wants `min-width` rather than a fixed width.
+ * `size` is the caller's: `flexible` fills the container but never goes below
+ * 300px, which is wider than the slot has at a 320px viewport, so the narrow case
+ * asks for `compact` instead.
  */
-export const TurnstileWidget: FC<TurnstileWidgetProps> = ({ ref, onWidgetLoad, onSuccess, onExpire, onError }) => (
+export const TurnstileWidget: FC<TurnstileWidgetProps> = ({ ref, size, onWidgetLoad, onSuccess, onExpire, onError }) => (
   <Turnstile
     ref={ref}
     onWidgetLoad={onWidgetLoad}
@@ -39,7 +46,7 @@ export const TurnstileWidget: FC<TurnstileWidgetProps> = ({ ref, onWidgetLoad, o
       appearance: 'interaction-only',
       execution: 'execute',
       theme: 'dark',
-      size: 'flexible',
+      size,
     }}
     onSuccess={onSuccess}
     onExpire={onExpire}
