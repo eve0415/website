@@ -1,4 +1,5 @@
 import type { TurnstileRejection } from '#turnstile/verify';
+import type { ContactRateLimiter } from './contact-rate-limiter';
 import type { ContactFailure, ContactResult } from './validation';
 
 import { createServerFn } from '@tanstack/react-start';
@@ -9,11 +10,6 @@ import { verifyTurnstileToken } from '#turnstile/verify';
 
 import { rateLimitKey } from './rate-limit-key';
 import { EMAIL_MAX, NAME_MAX, checkContact, parseContactInput } from './validation';
-
-/** Three sends an hour per address is generous for a personal contact form. */
-const MAX_PER_WINDOW = 3;
-
-const WINDOW_SECONDS = 3600;
 
 /**
  * `CF-Connecting-IP` is added by the edge, so it is absent under `vite preview`
@@ -31,43 +27,25 @@ const HEADER_UNSAFE = /\p{Cc}+/gu;
 
 const headerSafe = (value: string, max: number): string => value.replaceAll(HEADER_UNSAFE, ' ').trim().slice(0, max);
 
-type RateVerdict = 'allowed' | 'blocked';
+/** `held` is the only one of the three that owes the budget a `release`. */
+type Reservation = 'held' | 'blocked' | 'unavailable';
 
 /**
- * A per-sender counter in KV that expires on its own rather than carrying a
- * stored timestamp — so the window is "an hour since the last accepted send"
- * rather than a fixed hour, which is stricter and never looser.
+ * Takes a slot from the sender's hourly budget before the mail is attempted, so
+ * that submissions arriving together cannot each be allowed on the same count —
+ * the object serializes them, which is the whole reason it is not a KV counter.
  *
- * `bucket` is the output of `rateLimitKey`, never a raw address: an IPv6 host
- * owns a whole /64 and would otherwise get a fresh counter per request.
- *
- * A KV failure returns `allowed`: an outage on the abuse counter must not eat
- * legitimate mail. Abuse itself still fails closed, because a sender already
- * over budget is refused before anything is written.
+ * `unavailable` is the limiter itself failing, and it reads as "send it anyway":
+ * an outage on the abuse counter must not silently eat legitimate mail. Abuse
+ * still fails closed, because a sender already over budget is refused by the
+ * object rather than by anything that can be unavailable.
  */
-const rateLimit = async (bucket: string): Promise<RateVerdict> => {
-  const key = `contact:${bucket}`;
-
-  let count = 0;
+const reserveSlot = async (limiter: DurableObjectStub<ContactRateLimiter>): Promise<Reservation> => {
   try {
-    const stored = await env.CONTACT_RATE_LIMIT.get(key);
-    if (stored !== null) {
-      const parsed = Number(stored);
-      if (Number.isInteger(parsed) && parsed > 0) count = parsed;
-    }
+    return (await limiter.reserve()) ? 'held' : 'blocked';
   } catch {
-    return 'allowed';
+    return 'unavailable';
   }
-
-  if (count >= MAX_PER_WINDOW) return 'blocked';
-
-  try {
-    await env.CONTACT_RATE_LIMIT.put(key, String(count + 1), { expirationTtl: WINDOW_SECONDS });
-  } catch {
-    // The budget missed one tick. Losing the mail would be the worse failure.
-  }
-
-  return 'allowed';
 };
 
 /**
@@ -124,8 +102,27 @@ export const sendContact = createServerFn({ method: 'POST' })
     if (!verdict.ok) return { ok: false, reason: failureFor(verdict.reason) };
 
     // After the challenge, so an unverified flood cannot burn a real visitor's
-    // budget by guessing their address.
-    if ((await rateLimit(rateLimitKey(remoteIp))) === 'blocked') return { ok: false, reason: 'rate-limited' };
+    // budget by guessing their address. `rateLimitKey` and not the raw address:
+    // an IPv6 host owns a whole /64 and would otherwise get a counter per request.
+    const limiter = env.CONTACT_RATE_LIMIT.getByName(rateLimitKey(remoteIp));
 
-    return await deliver(data);
+    const reservation = await reserveSlot(limiter);
+    if (reservation === 'blocked') return { ok: false, reason: 'rate-limited' };
+
+    const result = await deliver(data);
+
+    // A send that never happened must not cost the sender anything, or three
+    // retries during a mail outage leave them locked out of a form that has
+    // delivered nothing. Only a slot this request actually took is ours to
+    // return, and the object caps how often it will take one back.
+    if (!result.ok && reservation === 'held') {
+      try {
+        await limiter.release();
+      } catch {
+        // The budget keeps a slot it did not need. The mail is already lost;
+        // failing the request a second time over the counter helps nobody.
+      }
+    }
+
+    return result;
   });

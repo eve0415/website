@@ -3,7 +3,7 @@
   "name": "website",
   "compatibility_date": "2026-08-11",
   "compatibility_flags": ["nodejs_compat"],
-  "main": "@tanstack/react-start/server-entry",
+  "main": "./src/server.ts",
   "workers_dev": false,
   "preview_urls": true,
   "upload_source_maps": true,
@@ -19,10 +19,18 @@
     "enabled": true,
     "traces": { "enabled": true }
   },
-  "kv_namespaces": [
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CONTACT_RATE_LIMIT",
+        "class_name": "ContactRateLimiter"
+      }
+    ]
+  },
+  "migrations": [
     {
-      "binding": "CONTACT_RATE_LIMIT",
-      "id": "fa789c815279403293672ad135db0a3f"
+      "tag": "v1",
+      "new_sqlite_classes": ["ContactRateLimiter"]
     }
   ],
   "send_email": [
