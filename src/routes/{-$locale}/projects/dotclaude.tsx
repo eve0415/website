@@ -5,8 +5,8 @@ import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-r
 import { DOTCLAUDE_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { PageHeader } from '../-ui/content/page-header';
-import { Tag } from '../-ui/surfaces/tag';
+import { PageHeader } from '../-/ui/content/page-header';
+import { Tag } from '../-/ui/surfaces/tag';
 
 import { BackLink } from './-/back-link';
 import { LinksSection } from './-/links-section';

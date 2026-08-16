@@ -7,9 +7,9 @@ import { useEffect, useState } from 'react';
 import { OASTS_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { cn } from '../-ui/cn';
-import { PageHeader } from '../-ui/content/page-header';
-import { Tag } from '../-ui/surfaces/tag';
+import { cn } from '../-/cn';
+import { PageHeader } from '../-/ui/content/page-header';
+import { Tag } from '../-/ui/surfaces/tag';
 
 import { BackLink } from './-/back-link';
 import { CommandBox } from './-/command-box';

@@ -7,10 +7,10 @@ import { Fragment } from 'react';
 import { HISTORY_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { cn } from '../-ui/cn';
-import { PageHeader } from '../-ui/content/page-header';
-import { Card } from '../-ui/surfaces/card';
-import { Chip } from '../-ui/surfaces/chip';
+import { cn } from '../-/cn';
+import { PageHeader } from '../-/ui/content/page-header';
+import { Card } from '../-/ui/surfaces/card';
+import { Chip } from '../-/ui/surfaces/chip';
 
 import { BackLink } from './-/back-link';
 import { LinksSection } from './-/links-section';

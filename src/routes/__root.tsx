@@ -7,10 +7,10 @@ import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 import { SITE_COPY } from '#i18n/copy';
 import { localeFromPathname } from '#i18n/locale';
 
-import { OpeningCurtain } from './-transition/opening-curtain';
-import { PageTransition } from './-transition/page-transition';
+import { OpeningCurtain } from './-/transition/opening-curtain';
+import { PageTransition } from './-/transition/page-transition';
 import rootCss from './__root.css?url';
-import { NotFound } from './{-$locale}/-not-found/not-found';
+import { NotFound } from './{-$locale}/-/not-found/not-found';
 
 const SITE_URL = 'https://eve0415.net';
 const SITE_NAME = 'eve0415';

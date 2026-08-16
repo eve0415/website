@@ -5,10 +5,10 @@ import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-r
 import { SKILLS_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { PageHeader } from '../-ui/content/page-header';
+import { PageHeader } from '../-/ui/content/page-header';
 
 import './-/skill-grid.css';
-import { Card } from '../-ui/surfaces/card';
+import { Card } from '../-/ui/surfaces/card';
 
 import { SkillGroup } from './-/skill-group';
 

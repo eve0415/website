@@ -3,9 +3,9 @@ import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-r
 import { CONTACT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { PageHeader } from '../-ui/content/page-header';
-import { Card } from '../-ui/surfaces/card';
-import { LinkRow } from '../-ui/surfaces/link-row';
+import { PageHeader } from '../-/ui/content/page-header';
+import { Card } from '../-/ui/surfaces/card';
+import { LinkRow } from '../-/ui/surfaces/link-row';
 
 import { ContactForm } from './-/contact-form';
 import { DiscordCopy } from './-/discord-copy';

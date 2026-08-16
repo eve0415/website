@@ -1,7 +1,7 @@
 import type { PanelInk } from './panel';
 import type { FC } from 'react';
 
-import { LinkRow } from '../../-ui/surfaces/link-row';
+import { LinkRow } from '../../-/ui/surfaces/link-row';
 
 import { PanelHeading } from './panel';
 

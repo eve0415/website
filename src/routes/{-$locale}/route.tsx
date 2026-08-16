@@ -3,15 +3,15 @@ import { Outlet, createFileRoute, rootRouteId, useRouteContext, useRouterState }
 import { SITE_COPY } from '#i18n/copy';
 import { parseLocaleParam } from '#i18n/locale';
 
-import { BrandLink } from './-site/brand-link';
-import { DwellTime } from './-site/dwell-time';
-import { LanguageSwitch } from './-site/language-switch';
-import { activeNavKey, navItems } from './-site/nav';
-import { ShootingStar } from './-ui/ambient/shooting-star';
-import { skyCss } from './-ui/ambient/sky-background';
-import { StarField } from './-ui/ambient/star-field';
-import { SiteFooter } from './-ui/site/site-footer';
-import { SiteHeader } from './-ui/site/site-header';
+import { BrandLink } from './-/site/brand-link';
+import { DwellTime } from './-/site/dwell-time';
+import { LanguageSwitch } from './-/site/language-switch';
+import { activeNavKey, navItems } from './-/site/nav';
+import { SiteFooter } from './-/site/site-footer';
+import { SiteHeader } from './-/site/site-header';
+import { ShootingStar } from './-/ui/ambient/shooting-star';
+import { skyCss } from './-/ui/ambient/sky-background';
+import { StarField } from './-/ui/ambient/star-field';
 
 /**
  * Midnight — the design's canonical sky and the one `__root.css` ships tokens

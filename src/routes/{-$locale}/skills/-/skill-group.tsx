@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 
-import { cn } from '../../-ui/cn';
-import { Card } from '../../-ui/surfaces/card';
-import { Chip } from '../../-ui/surfaces/chip';
+import { cn } from '../../-/cn';
+import { Card } from '../../-/ui/surfaces/card';
+import { Chip } from '../../-/ui/surfaces/chip';
 
 /**
  * Each group heading gets its own colour in the design. The first is ice rather

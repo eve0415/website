@@ -3,9 +3,9 @@ import { Link, createFileRoute, rootRouteId, useRouteContext } from '@tanstack/r
 import { ABOUT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { CometNavLink, localeParams } from '../-site/links';
-import { PageHeader } from '../-ui/content/page-header';
-import { Card } from '../-ui/surfaces/card';
+import { CometNavLink, localeParams } from '../-/site/links';
+import { PageHeader } from '../-/ui/content/page-header';
+import { Card } from '../-/ui/surfaces/card';
 
 import { LabCard } from './-/lab-card';
 
