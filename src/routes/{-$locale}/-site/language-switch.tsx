@@ -41,13 +41,21 @@ interface LanguageSwitchProps {
  * critical `aria-allowed-attr` violation once these are links rather than
  * buttons. `Link` already puts `aria-current="page"` on whichever pill points
  * at the current URL, which is the state the design was reaching for.
+ *
+ * `exact` matching is what makes that state honest. On a 404 the matched leaf
+ * is the `{-$locale}` layout, so `to='.'` collapses to `/` or `/en` — and under
+ * the default prefix matching the `/en` pill would claim `aria-current="page"`
+ * on `/en/nope`, announcing a link to the home page as the page you are on. The
+ * twenty real pages are unaffected: each pill's href already is the current URL.
+ * The pills still colour by locale, which is the language you are reading, not
+ * the page you are on.
  */
 export const LanguageSwitch: FC<LanguageSwitchProps> = ({ locale, className }) => (
   <nav aria-label={SITE_COPY[locale].langAria} className={cn(GROUP, className)}>
-    <Link to='.' params={{ locale: undefined }} hrefLang='ja' className={cn(PILL, locale === 'ja' ? STATE.on : STATE.off)}>
+    <Link to='.' params={{ locale: undefined }} activeOptions={{ exact: true }} hrefLang='ja' className={cn(PILL, locale === 'ja' ? STATE.on : STATE.off)}>
       JA
     </Link>
-    <Link to='.' params={{ locale: 'en' }} hrefLang='en' className={cn(PILL, locale === 'en' ? STATE.on : STATE.off)}>
+    <Link to='.' params={{ locale: 'en' }} activeOptions={{ exact: true }} hrefLang='en' className={cn(PILL, locale === 'en' ? STATE.on : STATE.off)}>
       EN
     </Link>
   </nav>
