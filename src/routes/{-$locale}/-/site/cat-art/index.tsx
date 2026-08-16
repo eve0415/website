@@ -1,6 +1,6 @@
 import type { FC } from 'react';
 
-import { cn } from '../cn';
+import { cn } from '../../cn';
 
 import avif480 from './cat-glow-cutout-480x480.avif';
 import webp480 from './cat-glow-cutout-480x480.webp';

@@ -1,5 +1,5 @@
 import type { TurnstileRejection } from '#turnstile/verify';
-import type { ContactRateLimiter } from './contact-rate-limiter';
+import type { ContactRateLimiter } from './rate-limiter';
 import type { ContactFailure, ContactResult } from './validation';
 
 import { createServerFn } from '@tanstack/react-start';
