@@ -33,7 +33,7 @@ If a rule fires wrongly, fix it in `oxlint.config.ts` by configuring the rule �
 
 ## Styling
 
-Tailwind v4, with a `cn` helper (clsx + tailwind-merge) at `src/routes/{-$locale}/-ui/cn.ts` for anything conditional. Design tokens are CSS custom properties defined in `src/routes/__root.css`.
+Tailwind v4, with a `cn` helper (clsx + tailwind-merge) at `src/routes/{-$locale}/-/cn.ts` for anything conditional. Design tokens are CSS custom properties defined in `src/routes/__root.css`.
 
 Write the canonical form the linter wants: `text-(--ink-title)` not `text-[var(--ink-title)]`, `size-[6px]` not `w-[6px] h-[6px]`, `transition-opacity` not `transition-[opacity]`. Reach through `var()` for tokens rather than repeating literal values.
 
@@ -43,10 +43,15 @@ Class order is oxfmt's job. Don't hand-sort.
 
 ## Layout
 
-- Things that change together stay together. A single-consumer module sits beside its consumer; something used across a subtree goes at the nearest common ancestor, not in a top-level catch-all. Styles colocate with their component.
-- No `index.ts` barrel files — import from the source module.
+**Every directory under `src/routes/` has at most one `-/` child, and everything in that directory that is not a route lives in it.** The router's codegen skips any entry whose name starts with `-`, so `-/` is what keeps non-route files from becoming routes; naming it after its parent (`-about/`, `-links/`) only restates the folder it already sits in.
+
+A route that owns private parts is a folder: `index.tsx` is the route, `-/` is its parts. A route with no private parts stays a single file. `about/index.tsx` and `about/-/lab-card.tsx`, but `projects/cella.tsx` alone.
+
+Inside `-/`, nest by what the thing is, as deep as it needs. A component with children of its own becomes `contact-form/index.tsx` plus siblings; a family of related components becomes `ui/surfaces/`. **`index.tsx` is always the component itself, never a re-export barrel** — import from the module that defines the thing.
+
+- Things that change together stay together. A single-consumer module sits beside its consumer; something used across a subtree goes in the `-/` of the nearest common ancestor, not in a top-level catch-all. Styles colocate with their component.
 - No top-level `utils/` / `types/` / `hooks/` classification directories.
-- **Non-route files under `src/routes/` must live in a `-`-prefixed directory** (`-ui/`, `-site/`, `-home/`, …) or the router's codegen turns them into routes.
+- **Turning `x.tsx` into `x/index.tsx` changes the route id**, because an index route carries a trailing slash: `createFileRoute('/{-$locale}/about')` becomes `createFileRoute('/{-$locale}/about/')`. The URL does not change — `projects/index.tsx` already serves `/projects` with no trailing slash. Get the string wrong and the build still prerenders a page, at the wrong path.
 
 ## Things that bite
 
