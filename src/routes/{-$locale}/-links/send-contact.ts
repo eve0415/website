@@ -7,6 +7,7 @@ import { env } from 'cloudflare:workers';
 
 import { verifyTurnstileToken } from '#turnstile/verify';
 
+import { rateLimitKey } from './rate-limit-key';
 import { EMAIL_MAX, NAME_MAX, checkContact, parseContactInput } from './validation';
 
 /** Three sends an hour per address is generous for a personal contact form. */
@@ -33,16 +34,19 @@ const headerSafe = (value: string, max: number): string => value.replaceAll(HEAD
 type RateVerdict = 'allowed' | 'blocked';
 
 /**
- * A per-address counter in KV that expires on its own rather than carrying a
+ * A per-sender counter in KV that expires on its own rather than carrying a
  * stored timestamp — so the window is "an hour since the last accepted send"
  * rather than a fixed hour, which is stricter and never looser.
  *
+ * `bucket` is the output of `rateLimitKey`, never a raw address: an IPv6 host
+ * owns a whole /64 and would otherwise get a fresh counter per request.
+ *
  * A KV failure returns `allowed`: an outage on the abuse counter must not eat
- * legitimate mail. Abuse itself still fails closed, because an address already
+ * legitimate mail. Abuse itself still fails closed, because a sender already
  * over budget is refused before anything is written.
  */
-const rateLimit = async (ip: string): Promise<RateVerdict> => {
-  const key = `contact:${ip}`;
+const rateLimit = async (bucket: string): Promise<RateVerdict> => {
+  const key = `contact:${bucket}`;
 
   let count = 0;
   try {
@@ -121,7 +125,7 @@ export const sendContact = createServerFn({ method: 'POST' })
 
     // After the challenge, so an unverified flood cannot burn a real visitor's
     // budget by guessing their address.
-    if ((await rateLimit(remoteIp)) === 'blocked') return { ok: false, reason: 'rate-limited' };
+    if ((await rateLimit(rateLimitKey(remoteIp))) === 'blocked') return { ok: false, reason: 'rate-limited' };
 
     return await deliver(data);
   });
