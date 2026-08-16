@@ -34,3 +34,13 @@
 .ev-labdt[open]::details-content {
   height: auto;
 }
+
+/* The global reduced-motion rule is written against `*`, which matches elements
+   only — it cannot reach a pseudo-element, so this transition is the one thing
+   on the page that kept running at 0.5s. Same near-zero duration it uses, so the
+   disclosure snaps open and closed instead of growing. */
+@media (prefers-reduced-motion: reduce) {
+  .ev-labdt::details-content {
+    transition-duration: 0.01ms;
+  }
+}

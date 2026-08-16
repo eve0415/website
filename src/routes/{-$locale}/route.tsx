@@ -1,7 +1,9 @@
 import { Outlet, createFileRoute, rootRouteId, useRouteContext, useRouterState } from '@tanstack/react-router';
 
-import { localePath, parseLocaleParam } from '#i18n/locale';
+import { SITE_COPY } from '#i18n/copy';
+import { parseLocaleParam } from '#i18n/locale';
 
+import { BrandLink } from './-site/brand-link';
 import { LanguageSwitch } from './-site/language-switch';
 import { activeNavKey, navItems } from './-site/nav';
 import { ShootingStar } from './-ui/ambient/shooting-star';
@@ -34,7 +36,12 @@ const LocaleLayout = () => {
         </div>
       </div>
 
-      <SiteHeader brandHref={localePath(locale, '/')} avatarSrc='/web-app-icon-192x192.png' items={navItems(locale)} active={activeNavKey(locale, pathname)}>
+      <SiteHeader
+        navLabel={SITE_COPY[locale].navAria}
+        brandElement={<BrandLink locale={locale} />}
+        items={navItems(locale)}
+        active={activeNavKey(locale, pathname)}
+      >
         <LanguageSwitch locale={locale} />
       </SiteHeader>
 

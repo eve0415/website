@@ -44,21 +44,32 @@ interface CommandBoxProps {
   /** What lands on the clipboard — the full command, however much is typed. */
   command: string;
   copiedText: string;
+  /** The button's own label, before and after the copy. */
+  copyLabel: string;
+  copiedLabel: string;
   caretClassName: string;
 }
 
-export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command, copiedText, caretClassName }) => {
-  const [copied, setCopied] = useState(false);
+export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command, copiedText, copyLabel, copiedLabel, caretClassName }) => {
+  /**
+   * A count rather than a flag, and `0` is "not copied". A second copy inside
+   * the two-second window is a new number, so the timer below restarts instead
+   * of inheriting the first one's remainder — and the status region is keyed on
+   * it, so it is a new node each time and the confirmation is announced again.
+   * A boolean stayed `true` through both, and the repeat said nothing.
+   */
+  const [copies, setCopies] = useState(0);
+  const copied = copies > 0;
 
   useEffect(() => {
-    if (!copied) return;
+    if (copies === 0) return;
     const id = setTimeout(() => {
-      setCopied(false);
+      setCopies(0);
     }, 2000);
     return () => {
       clearTimeout(id);
     };
-  }, [copied]);
+  }, [copies]);
 
   const dots = (
     <span aria-hidden='true' className={cn('flex gap-[6px]', tabs === undefined ? undefined : 'self-center pb-[7px]')}>
@@ -97,17 +108,21 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
               </span>
             </span>
           </div>
-          <div className={cn('h-[19px] truncate font-mono text-[13px] leading-[19px] text-(--hue-mint)', copied && 'animate-[fadeIn_0.25s_ease_both]')}>
+          {/* `<output>` is `role="status"` without saying so, which is what was
+              missing: the confirmation was painted and never announced. */}
+          <output
+            key={copies}
+            className={cn('block h-[19px] truncate font-mono text-[13px] leading-[19px] text-(--hue-mint)', copied && 'animate-[fadeIn_0.25s_ease_both]')}
+          >
             {copied ? copiedText : ''}
-          </div>
+          </output>
         </div>
 
         <button
           type='button'
-          aria-label={copied ? 'copied' : 'copy'}
           className={cn(BUTTON, copied ? 'text-(--hue-mint)' : 'text-(--hue-cyan)')}
           onClick={() => {
-            setCopied(true);
+            setCopies(count => count + 1);
             // A React 19 action: the transition consumes the promise, and the
             // write still runs in the click's own task, so the clipboard keeps
             // the user activation Safari insists on.
@@ -116,10 +131,14 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
             });
           }}
         >
+          {/* The visible word is the button's accessible name — no `aria-label`,
+              or the name would still say "copy" while the button reads
+              "copied". The ghost holds the wider of the two so the swap does
+              not resize the button. */}
           <span className='grid justify-items-center'>
-            <span className='col-start-1 row-start-1'>{copied ? 'copied' : 'copy'}</span>
+            <span className='col-start-1 row-start-1'>{copied ? copiedLabel : copyLabel}</span>
             <span aria-hidden='true' className='invisible col-start-1 row-start-1'>
-              copied
+              {copiedLabel}
             </span>
           </span>
         </button>

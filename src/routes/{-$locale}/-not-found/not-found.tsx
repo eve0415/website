@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 // Aliased: this is React's render flush, not a Node blocking-IO call.
 import { flushSync as flushRender } from 'react-dom';
 
-import { NOT_FOUND_COPY } from '#i18n/copy';
-import { localePath } from '#i18n/locale';
+import { NOT_FOUND_COPY, SITE_COPY } from '#i18n/copy';
 
+import { BrandLink } from '../-site/brand-link';
 import { CatArt } from '../-site/cat-art';
 import { CloudLayer } from '../-site/cloud-layer';
 import { LanguageSwitch } from '../-site/language-switch';
@@ -217,7 +217,7 @@ export const NotFound = () => {
         </span>
       </div>
 
-      <SiteHeader brandHref={localePath(locale, '/')} avatarSrc='/web-app-icon-192x192.png' items={navItems(locale).slice(1)} active='404'>
+      <SiteHeader navLabel={SITE_COPY[locale].navAria} brandElement={<BrandLink locale={locale} />} items={navItems(locale).slice(1)} active='404'>
         <LanguageSwitch locale={locale} />
       </SiteHeader>
 
@@ -266,7 +266,9 @@ export const NotFound = () => {
           </p>
 
           <div className='relative mt-[8px] flex animate-[fadeUp_0.7s_ease_1.05s_backwards] flex-wrap justify-center gap-[14px]'>
-            <Button href={localePath(locale, '/')}>{copy.btnHome}</Button>
+            <ButtonLink to='/{-$locale}' params={localeParams(locale)}>
+              {copy.btnHome}
+            </ButtonLink>
             <ButtonLink variant='glass' to='/{-$locale}/projects' params={localeParams(locale)}>
               {copy.btnProjects}
             </ButtonLink>

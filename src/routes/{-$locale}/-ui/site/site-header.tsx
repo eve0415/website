@@ -7,7 +7,10 @@ import { cn } from '../cn';
 import './site-header.css';
 
 const ROOT =
-  'ev-hdr sticky top-0 z-10 flex items-center justify-between gap-[12px] border-b border-b-[var(--line-header)] bg-[var(--surface-header)] p-[8px_clamp(20px,4vw,40px)] font-sans backdrop-blur-[10px]';
+  'ev-hdr sticky top-0 z-10 flex items-center justify-between gap-[12px] border-b border-b-[var(--line-header)] bg-[var(--surface-header)] p-(--header-pad) font-sans backdrop-blur-[10px]';
+
+/** Exported so a caller supplying its own `brandElement` can style it identically. */
+export const BRAND_CLASS = 'flex min-h-[44px] items-center gap-[10px] text-[16px] font-bold text-[#eae6ff] no-underline';
 
 /** Exported so a caller supplying its own `element` can style it identically. */
 export const NAV_LINK_CLASS =
@@ -26,9 +29,21 @@ export interface SiteHeaderNavItem {
 }
 
 interface SiteHeaderProps {
+  /**
+   * The nav landmark's accessible name. Required rather than defaulted: it is
+   * the one prop here that has to be in the reader's language, and a default
+   * would ship silently in the wrong one — which is exactly what it used to do.
+   */
+  navLabel: string;
   brand?: string;
   brandHref?: string;
   avatarSrc?: string;
+  /**
+   * Rendered instead of the plain brand anchor — the same escape hatch
+   * `SiteHeaderNavItem.element` is, and how a router link gets in without this
+   * component learning about routing. Style it with `BRAND_CLASS`.
+   */
+  brandElement?: ReactNode;
   items?: readonly SiteHeaderNavItem[];
   active?: string;
   className?: string;
@@ -50,9 +65,11 @@ const DEFAULT_ITEMS: readonly SiteHeaderNavItem[] = [
 ];
 
 export const SiteHeader: FC<SiteHeaderProps> = ({
+  navLabel,
   brand = 'eve0415.net',
   brandHref = '#/',
   avatarSrc,
+  brandElement,
   items = DEFAULT_ITEMS,
   active = 'home',
   className,
@@ -66,15 +83,15 @@ export const SiteHeader: FC<SiteHeaderProps> = ({
 
   return (
     <header className={cn(ROOT, className)}>
-      <a
-        className='flex min-h-[44px] items-center gap-[10px] text-[16px] font-bold text-[#eae6ff] no-underline'
-        href={brandHref}
-        onClick={onSelect === undefined ? undefined : handleBrandClick}
-      >
-        {avatarSrc ? <img src={avatarSrc} alt='' width='32' height='32' className='size-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' /> : null}
-        {brand}
-      </a>
-      <nav aria-label='メニュー' className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
+      {brandElement === undefined ? (
+        <a className={BRAND_CLASS} href={brandHref} onClick={onSelect === undefined ? undefined : handleBrandClick}>
+          {avatarSrc ? <img src={avatarSrc} alt='' width='32' height='32' className='size-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' /> : null}
+          {brand}
+        </a>
+      ) : (
+        brandElement
+      )}
+      <nav aria-label={navLabel} className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
         {items.map(item =>
           item.element === undefined ? (
             onSelect === undefined ? (

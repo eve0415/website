@@ -210,6 +210,9 @@ interface ProjectChromeCopy {
   linksHead: string;
   /** Shown in the terminal panel once the command is on the clipboard. */
   copied: string;
+  /** The terminal panel's own button, before and after the copy. */
+  btnCopy: string;
+  btnCopied: string;
 }
 
 /** Shared by every project detail page. */
@@ -218,11 +221,15 @@ export const PROJECT_COPY = {
     backWorks: '← 作ったもの',
     linksHead: 'リンク',
     copied: 'クリップボードにコピーしました',
+    btnCopy: 'コピー',
+    btnCopied: 'コピー済み',
   },
   en: {
     backWorks: '← Back to Works',
     linksHead: 'Links',
     copied: 'Copied to clipboard',
+    btnCopy: 'copy',
+    btnCopied: 'copied',
   },
 } satisfies Record<Locale, ProjectChromeCopy>;
 
@@ -263,6 +270,8 @@ interface CellaCopy {
   brewTitle: string;
   canHead: string;
   canBody: string;
+  /** The GitHub Releases row: its label, then what is behind it. */
+  releases: string;
   relBins: string;
 }
 
@@ -275,6 +284,7 @@ export const CELLA_COPY = {
     canHead: 'できること(一部)',
     canBody:
       'ポート転送とブラウザ連携(OAuth コールバック)。SSH エージェントと gh 認証情報の転送。git worktree 連携 — ブランチごとに使い捨てコンテナ。Claude Code / Codex / Gemini CLI の設定転送。実際の認証情報をコンテナに置かないファントムトークン。対応ランタイムは Docker・OrbStack・Apple Container。',
+    releases: 'リリース',
     relBins: 'macOS / Linux バイナリ ↗',
   },
   en: {
@@ -285,6 +295,7 @@ export const CELLA_COPY = {
     canHead: 'What it does (the highlights)',
     canBody:
       'Port forwarding with browser hooks (OAuth callbacks just work). SSH agent and gh credential forwarding. git worktree mode — a burner container per branch. Config forwarding for Claude Code / Codex / Gemini CLI. Phantom tokens, so real credentials never touch the container. Runs on Docker, OrbStack, and Apple Container.',
+    releases: 'Releases',
     relBins: 'macOS / Linux binaries ↗',
   },
 } satisfies Record<Locale, CellaCopy>;
@@ -626,60 +637,68 @@ interface LabCopy {
    * would be a lie half the time.
    */
   stateUnknown: string;
+  /**
+   * What the row means. Ten of the sixteen describe something this site really
+   * does; the other six are features it watches rather than uses, and their
+   * notes say so outright — the badge is a fact about the visitor's browser, so
+   * a note that claimed the site used the feature would badge a lie as live.
+   */
   notes: Record<LabKey, string>;
 }
 
 export const LAB_COPY = {
   ja: {
-    title: 'このサイトで試している新しい機能',
-    intro: '実験場なので、出たばかりの Web の機能をなるべく早く入れています。お使いのブラウザでの対応状況も並べておきます。',
-    toggle: (supported, total) => (supported === undefined ? '実験の一覧を見る' : `実験の一覧を見る（${supported}/${total} 対応）`),
+    title: '新しい Web の機能と、このサイトでの使い方',
+    intro:
+      '実験場なので、出たばかりの Web の機能をなるべく早く入れています。ここで実際に使っているものと、まだ様子見のものを、お使いのブラウザの対応状況と並べておきます。',
+    toggle: (supported, total) => (supported === undefined ? '実験の一覧を見る' : `実験の一覧を見る（お使いのブラウザは ${supported}/${total} 対応）`),
     stateSupported: '対応',
     stateUnsupported: '未対応',
     stateUnknown: '確認中',
     notes: {
-      navigationApi: 'ページ移動を横取りしています。戻るときは遷移が逆再生になります。',
+      navigationApi: 'まだ使っていません。ページ移動はルーター側で処理しています。',
       viewTransitions: '送信完了への切り替えをフォームの中だけで行います。背景の空は止まりません。',
       scrollState: 'ヘッダーが貼り付いている間だけ、下の線が光ります。',
       scrollDriven: '読み進めた分だけ要素が現れ、ヘッダーの彗星が進みます。',
       siblingIndex: 'タグの登場を1つずつずらしています。JS は使っていません。',
-      squircleCorners: 'カードの角をスーパー楕円にしています。',
+      squircleCorners: 'まだ入れていません。カードの角は今のところ普通の丸角です。',
       textBoxTrim: '見出しの上下の余白を字面に合わせて詰めています。',
       fieldSizing: 'お問い合わせの入力欄が中身に合わせて伸びます。',
       cssFunction: '光り方の処方を CSS の関数にまとめています。',
       gapDecorations: 'できること のグリッドの隙間に区切り線を引いています。',
-      urlPattern: 'ページの振り分けを URLPattern で解析しています。',
+      urlPattern: 'ここでは使っていません。経路の判定はルーターがやっています。',
       anchorPositioning: 'コピー完了のトーストが、押したボタンの真上に出ます。',
       detailsContent: 'この一覧の開閉そのものをアニメーションさせています。',
-      scrollend: 'スクロールが止まったとき、たまに流れ星がひとつ流れます。',
-      durationFormat: 'フッターの滞在時間の表記に使っています。',
-      promiseTry: 'クリップボード書き込みの失敗を同期例外ごとまとめて処理します。',
+      scrollend: 'まだ繋いでいません。流れ星はスクロールではなく時間で流れています。',
+      durationFormat: 'ここでは使っていません。整形したい時間の値がまだページにありません。',
+      promiseTry: 'ここでは使っていません。クリップボード書き込みは素の try/catch です。',
     },
   },
   en: {
-    title: 'New platform features running here',
-    intro: 'This site is a testbed, so new platform features go in early. The badges show what your browser supports right now.',
-    toggle: (supported, total) => (supported === undefined ? 'See the experiments' : `See the experiments (${supported}/${total} live)`),
-    stateSupported: 'live',
+    title: 'New platform features, and what this site does with them',
+    intro:
+      'This site is a testbed, so new platform features go in early. Some are running here, some I am still watching — the badges show what your browser supports either way.',
+    toggle: (supported, total) => (supported === undefined ? 'See the experiments' : `See the experiments (your browser supports ${supported}/${total})`),
+    stateSupported: 'supported',
     stateUnsupported: 'not yet',
     stateUnknown: 'checking',
     notes: {
-      navigationApi: 'Navigations are intercepted, so going back plays the transition in reverse.',
+      navigationApi: 'Not used here — page moves still go through the router.',
       viewTransitions: 'The sent state swaps inside the form alone, so the sky keeps moving.',
       scrollState: 'The hairline under the header lights up only while it is stuck.',
       scrollDriven: 'Sections reveal as you scroll, and the comet on the header tracks progress.',
       siblingIndex: 'Tags stagger in by their index, with no JavaScript.',
-      squircleCorners: 'Card corners are superellipses instead of plain radii.',
+      squircleCorners: 'Not in yet — card corners are still plain radii.',
       textBoxTrim: 'Headings are trimmed to their cap height and baseline.',
       fieldSizing: 'The contact textarea grows with its content.',
       cssFunction: 'The glow recipe is a native CSS function.',
       gapDecorations: 'Rules are drawn into the grid gaps on the skills page.',
-      urlPattern: 'Route parsing runs on URLPattern.',
+      urlPattern: 'Not used here — the router does its own route matching.',
       anchorPositioning: 'The copied toast appears right above the button you pressed.',
       detailsContent: 'This very list animates open and closed with it.',
-      scrollend: 'When your scrolling settles, sometimes a single star falls.',
-      durationFormat: 'Formats the dwell time in the footer.',
-      promiseTry: 'Wraps clipboard writes, sync throws included.',
+      scrollend: 'Not wired up — the shooting stars run on a timer, not on scroll.',
+      durationFormat: 'Not used here — no duration on the page to format yet.',
+      promiseTry: 'Not used here — the clipboard writes are a plain try/catch.',
     },
   },
 } satisfies Record<Locale, LabCopy>;

@@ -136,7 +136,15 @@ const Oasts = () => {
         <StatCard hue='sky' value='0' label={copy.stat3Label} />
       </div>
 
-      <CommandBox tabs={tabs} segments={cut(segments, typed)} command={command} copiedText={chrome.copied} caretClassName='text-(--accent-cyan)' />
+      <CommandBox
+        tabs={tabs}
+        segments={cut(segments, typed)}
+        command={command}
+        copiedText={chrome.copied}
+        copyLabel={chrome.btnCopy}
+        copiedLabel={chrome.btnCopied}
+        caretClassName='text-(--accent-cyan)'
+      />
 
       <LinksSection ink='sky' heading={chrome.linksHead} links={LINKS} />
     </div>

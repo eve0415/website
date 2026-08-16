@@ -7,7 +7,12 @@ import { SITE_COPY } from '#i18n/copy';
 
 import { cn } from '../-ui/cn';
 
-const GROUP = 'inline-flex items-center rounded-[999px] border border-(--line-header) p-[2px]';
+/**
+ * `min-h` is the header row's own token: this group is the tallest thing on the
+ * row, so `--header-h` — and the `scroll-padding-top` derived from it — is only
+ * right for as long as the two agree.
+ */
+const GROUP = 'inline-flex min-h-(--header-row) items-center rounded-[999px] border border-(--line-header) p-[2px]';
 
 const PILL =
   'inline-flex min-h-[40px] min-w-[46px] items-center justify-center rounded-[999px] px-[13px] py-[6px] font-sans text-[12.5px] font-bold tracking-[0.08em] no-underline transition-[color,background] duration-150 ease-[ease] active:transform-[scale(0.94)]';

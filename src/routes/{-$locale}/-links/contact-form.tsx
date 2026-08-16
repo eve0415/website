@@ -3,7 +3,7 @@ import type { ContactFailure, ContactInput } from './validation';
 import type { TurnstileInstance } from '@marsidev/react-turnstile';
 import type { FC } from 'react';
 
-import { useActionState, useRef, useState } from 'react';
+import { useActionState, useEffect, useId, useRef, useState } from 'react';
 
 import { CONTACT_COPY } from '#i18n/copy';
 import { TurnstileWidget } from '#turnstile/turnstile-widget';
@@ -31,6 +31,26 @@ const FIELD =
 
 /** Everything the visitor can be told, including what only the server sees. */
 type FormError = ContactFailure | 'pending';
+
+/** The three controls a failure can be pinned to; the rest are about the submission. */
+type FieldName = 'name' | 'email' | 'message';
+
+/**
+ * The failure, plus which attempt produced it. A live region announces a
+ * *change*, so the same mistake made twice in a row used to be announced once —
+ * the sequence number is what makes the second one a new node with new content.
+ */
+interface FormFailure {
+  code: FormError;
+  seq: number;
+}
+
+/** Which control the visitor has to go back to, where the failure names one. */
+const fieldOf = (code: FormError): FieldName | undefined => {
+  if (code === 'name' || code === 'email' || code === 'message') return code;
+  if (code === 'too-long') return 'message';
+  return undefined;
+};
 
 const readField = (formData: FormData, key: string): string => {
   const value = formData.get(key);
@@ -62,27 +82,66 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
   const [sent, setSent] = useState(false);
   const [lockHeight, setLockHeight] = useState<number | undefined>();
 
+  const errorId = useId();
+
   const boxRef = useRef<HTMLDivElement>(null);
-  const widgetRef = useRef<TurnstileInstance | null>(null);
-  /** The challenge is deferred, so it has to be asked for exactly once. */
+  const sentRef = useRef<HTMLDivElement>(null);
+  // Both empties are in the type and neither is written as the initial value:
+  // React nulls an object ref on unmount, the package's own ref type is
+  // `TurnstileInstance | undefined`, and `no-useless-undefined` rewrites an
+  // explicit `undefined` here into a zero-argument `useRef` that does not typecheck.
+  const widgetRef = useRef<TurnstileInstance | null | undefined>(null);
+
+  /**
+   * `onWidgetLoad` fires once the widget has actually rendered, and the docs are
+   * explicit that a `reset()` does not fire it again — so this stays true for
+   * the rest of the page's life once it is set. Before it, `execute()` has
+   * nothing to execute.
+   */
+  const widgetReady = useRef(false);
+  /** The challenge is deferred, so it has to be asked for exactly once — once it *can* be asked for. */
   const challengeStarted = useRef(false);
+  /**
+   * Someone reached the form before the widget was ready. Latching
+   * `challengeStarted` on that used to deadlock the form: the challenge had not
+   * begun, every later focus returned early, and submitting only ever said
+   * "still checking" until the page was reloaded.
+   */
+  const challengeWanted = useRef(false);
 
   const startChallenge = () => {
     if (challengeStarted.current) return;
+
+    const widget = widgetRef.current;
+    if (!widgetReady.current || widget === null || widget === undefined) {
+      challengeWanted.current = true;
+      return;
+    }
+
+    challengeWanted.current = false;
     challengeStarted.current = true;
-    widgetRef.current?.execute();
+    widget.execute();
+  };
+
+  /** The re-arm: whatever was asked for early happens now, on the widget's own signal. */
+  const handleWidgetLoad = () => {
+    widgetReady.current = true;
+    if (challengeWanted.current) startChallenge();
   };
 
   const rearm = () => {
     setToken(null);
     challengeStarted.current = false;
+    challengeWanted.current = false;
     widgetRef.current?.reset();
   };
 
   // `null` rather than `undefined` for "nothing wrong": `useActionState` takes
   // its initial state as a required argument, and an explicit `undefined` there
   // is exactly what `no-useless-undefined` strips back out.
-  const [error, submit, sending] = useActionState(async (_previous: FormError | null, formData: FormData): Promise<FormError | null> => {
+  const [failure, submit, sending] = useActionState(async (previous: FormFailure | null, formData: FormData): Promise<FormFailure | null> => {
+    const seq = (previous === null ? 0 : previous.seq) + 1;
+
     const input: ContactInput = {
       name: readField(formData, 'name'),
       email: readField(formData, 'email'),
@@ -92,14 +151,14 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
 
     // The same check the server runs, so a typo costs no round trip. It is not
     // what makes the submission safe — the handler repeats all of it.
-    const failure = checkContact(input);
-    if (failure !== undefined) return failure;
+    const invalid = checkContact(input);
+    if (invalid !== undefined) return { code: invalid, seq };
 
     // Nothing leaves without a token: the server would refuse it anyway, and
     // asking again is more useful to the visitor than a rejection.
     if (token === null) {
       startChallenge();
-      return 'pending';
+      return { code: 'pending', seq };
     }
 
     const box = boxRef.current;
@@ -109,7 +168,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     if (!result.ok) {
       // The token is single-use whether or not it was accepted.
       rearm();
-      return result.reason;
+      return { code: result.reason, seq };
     }
 
     rearm();
@@ -129,10 +188,36 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     });
   };
 
+  /**
+   * The form subtree is gone by now, so focus was sitting on `<body>` and a
+   * keyboard visitor had no way back to the "send another" button but to walk
+   * the page from the top. Moving it onto the confirmation is also what makes
+   * the confirmation reliably read: the live region below is inserted with its
+   * content already in place, which is the one case a live region need not
+   * announce.
+   */
+  useEffect(() => {
+    if (!sent) return;
+    sentRef.current?.focus();
+  }, [sent]);
+
+  const invalidField = failure === null ? undefined : fieldOf(failure.code);
+
   return (
     <div ref={boxRef} className='ev-cf-box grid content-start' style={lockHeight === undefined ? undefined : { minHeight: lockHeight }}>
+      {/* Outside the swap on purpose: a live region has to be in the document
+          *before* its content changes for the change to be announced, and
+          everything below this line is replaced wholesale on success. It
+          carries the headline only — focus lands on the panel itself, which
+          reads the rest. */}
+      <output className='absolute size-px overflow-hidden [clip-path:inset(50%)]'>{sent ? copy.sentHead : ''}</output>
+
       {sent ? (
-        <div className='grid justify-items-start gap-[12px] p-[6px_0_2px]'>
+        <div
+          ref={sentRef}
+          tabIndex={-1}
+          className='grid justify-items-start gap-[12px] p-[6px_0_2px] focus-visible:outline-2 focus-visible:outline-offset-[6px] focus-visible:outline-(--accent-cyan)'
+        >
           <div className='flex items-center gap-[10px]'>
             <span
               aria-hidden='true'
@@ -146,17 +231,24 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
           </Button>
         </div>
       ) : (
-        <form action={submit} className='grid gap-[16px]'>
+        // `noValidate` because the design answers with one `role="alert"` line
+        // rather than per-field bubbles, and `checkContact` is stricter than the
+        // native checks anyway. `required` still belongs on the controls: it is
+        // what announces them as required, and it is not what validates them.
+        <form action={submit} noValidate className='grid gap-[16px]'>
           <div className='grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[14px]'>
             <label className={LABEL}>
               {copy.fName}
               <input
                 type='text'
                 name='name'
+                required
                 autoComplete='name'
                 maxLength={80}
                 value={name}
                 placeholder={copy.phName}
+                aria-invalid={invalidField === 'name' ? true : undefined}
+                aria-describedby={invalidField === 'name' ? errorId : undefined}
                 className={FIELD}
                 onFocus={startChallenge}
                 onChange={event => {
@@ -169,10 +261,13 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
               <input
                 type='email'
                 name='email'
+                required
                 autoComplete='email'
                 maxLength={254}
                 value={email}
                 placeholder={copy.phEmail}
+                aria-invalid={invalidField === 'email' ? true : undefined}
+                aria-describedby={invalidField === 'email' ? errorId : undefined}
                 className={FIELD}
                 onFocus={startChallenge}
                 onChange={event => {
@@ -186,10 +281,13 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
             {copy.fMessage}
             <textarea
               name='message'
+              required
               rows={5}
               maxLength={MESSAGE_MAX}
               value={message}
               placeholder={copy.phMsg}
+              aria-invalid={invalidField === 'message' ? true : undefined}
+              aria-describedby={invalidField === 'message' ? errorId : undefined}
               className={cn(FIELD, 'field-sizing-content min-h-[130px] resize-y leading-[1.7]')}
               onFocus={startChallenge}
               onChange={event => {
@@ -201,15 +299,18 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
           {/* `size: 'flexible'` fills the slot down to a 300px floor, so this is
               a minimum rather than the design's fixed 300px box. */}
           <div className='max-w-full min-w-[300px]'>
-            <TurnstileWidget ref={widgetRef} onSuccess={setToken} onExpire={rearm} onError={rearm} />
+            <TurnstileWidget ref={widgetRef} onWidgetLoad={handleWidgetLoad} onSuccess={setToken} onExpire={rearm} onError={rearm} />
           </div>
 
           <div className='flex flex-wrap items-center gap-[16px]'>
             <Button type='submit' disabled={sending} className='px-[30px] py-[12px] text-[15.5px]'>
               {sending ? copy.submitting : copy.submit}
             </Button>
-            <span role='alert' className='text-[14px] text-(--hue-rose)'>
-              {error === null ? '' : errorCopy[error]}
+            {/* Keyed on the attempt so an identical failure twice in a row is a
+                new node: `role="alert"` announces on insertion, and re-rendering
+                the same text into the same node is not a change to announce. */}
+            <span key={failure === null ? 0 : failure.seq} id={errorId} role='alert' className='text-[14px] text-(--hue-rose)'>
+              {failure === null ? '' : errorCopy[failure.code]}
             </span>
           </div>
         </form>

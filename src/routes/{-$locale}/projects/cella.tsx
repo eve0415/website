@@ -31,7 +31,7 @@ const Cella = () => {
 
   const links: readonly ProjectLink[] = [
     { label: 'GitHub', value: 'github.com/eve0415/cella ↗', href: 'https://github.com/eve0415/cella' },
-    { label: 'Releases', value: copy.relBins, href: 'https://github.com/eve0415/cella/releases' },
+    { label: copy.releases, value: copy.relBins, href: 'https://github.com/eve0415/cella/releases' },
   ];
 
   return (
@@ -55,7 +55,15 @@ const Cella = () => {
         <StatCard hue='mint' value='25' label={copy.crates} />
       </div>
 
-      <CommandBox title={copy.brewTitle} segments={BREW_SEGMENTS} command={BREW} copiedText={chrome.copied} caretClassName='text-(--accent-mint)' />
+      <CommandBox
+        title={copy.brewTitle}
+        segments={BREW_SEGMENTS}
+        command={BREW}
+        copiedText={chrome.copied}
+        copyLabel={chrome.btnCopy}
+        copiedLabel={chrome.btnCopied}
+        caretClassName='text-(--accent-mint)'
+      />
 
       <NotePanel ink='mint' head={copy.canHead} body={copy.canBody} />
 

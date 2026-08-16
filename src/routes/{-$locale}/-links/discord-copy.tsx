@@ -34,22 +34,36 @@ interface DiscordCopyProps {
 }
 
 export const DiscordCopy: FC<DiscordCopyProps> = ({ handle, copyLabel, copiedLabel, toastLabel }) => {
-  const [copied, setCopied] = useState(false);
+  /**
+   * A count rather than a flag, and `0` is "not copied". A second copy inside
+   * the two-second window is a new number, so the timer restarts instead of
+   * inheriting the first one's remainder — and the live region is keyed on it,
+   * so it is a new node each time and the confirmation is announced again. A
+   * boolean stayed `true` through both, and the repeat said nothing.
+   */
+  const [copies, setCopies] = useState(0);
+  const copied = copies > 0;
   const toastRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!copied) return;
+    if (copies === 0) return;
     const id = setTimeout(() => {
-      setCopied(false);
+      setCopies(0);
     }, 2000);
     return () => {
       clearTimeout(id);
     };
-  }, [copied]);
+  }, [copies]);
 
   useEffect(() => {
     const node = toastRef.current;
     if (node === null) return;
+
+    // Every declared build target has the Popover API, but nothing stops an
+    // older engine from loading the page — and there, `matches(':popover-open')`
+    // throws on the unknown selector and takes the whole Links page down with
+    // it. Detected rather than assumed; without it the toast simply stays put.
+    if (!('showPopover' in node)) return;
 
     // `showPopover` throws if the popover is already open, and `hidePopover`
     // if it is already closed, so both are asked first.
@@ -69,7 +83,7 @@ export const DiscordCopy: FC<DiscordCopyProps> = ({ handle, copyLabel, copiedLab
         aria-label={copyLabel}
         className={BUTTON}
         onClick={() => {
-          setCopied(true);
+          setCopies(count => count + 1);
           // A React 19 action: the transition consumes the promise while the
           // write still runs in the click's own task, keeping the user
           // activation Safari insists on.
@@ -85,12 +99,18 @@ export const DiscordCopy: FC<DiscordCopyProps> = ({ handle, copyLabel, copiedLab
           <span aria-hidden='true' className={cn(LABEL, !copied && 'transform-[translateY(125%)] opacity-0')}>
             {copiedLabel}
           </span>
-          {/* The design's visually-hidden `role="status"`, as the element that
-              carries that role implicitly. Empty until the copy lands, so the
-              only thing it ever announces is the confirmation. */}
-          <output className='absolute size-px overflow-hidden [clip-path:inset(50%)]'>{copied ? copiedLabel : ''}</output>
         </span>
       </SweepButton>
+
+      {/* The design's visually-hidden `role="status"`, as the element that
+          carries that role implicitly. Empty until the copy lands, so the only
+          thing it ever announces is the confirmation. A sibling of the button
+          rather than a child: a live region inside the control it reports on is
+          content of that control, and its text is then in the running for the
+          button's own name. */}
+      <output key={copies} className='absolute size-px overflow-hidden [clip-path:inset(50%)]'>
+        {copied ? copiedLabel : ''}
+      </output>
 
       {/* A popover, so the toast sits in the top layer. Anchor positioning
           resolves inside the containing block, and every block around this
