@@ -2,7 +2,7 @@ import type { FC, ReactNode } from 'react';
 
 import { startTransition, useEffect, useState } from 'react';
 
-import { cn } from '../-ui/cn';
+import { cn } from '../../-ui/cn';
 
 import './command-box.css';
 

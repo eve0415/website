@@ -8,8 +8,8 @@ import { useActionState, useEffect, useId, useRef, useState, useSyncExternalStor
 import { CONTACT_COPY } from '#i18n/copy';
 import { TurnstileWidget } from '#turnstile/turnstile-widget';
 
-import { Button } from '../-ui/actions/button';
-import { cn } from '../-ui/cn';
+import { Button } from '../../-ui/actions/button';
+import { cn } from '../../-ui/cn';
 
 import './contact-form.css';
 import { swapInPlace } from './scoped-view-transition';

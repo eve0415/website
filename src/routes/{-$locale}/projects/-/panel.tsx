@@ -1,7 +1,7 @@
 import type { FC, ReactNode } from 'react';
 
-import { cn } from '../-ui/cn';
-import { Card } from '../-ui/surfaces/card';
+import { cn } from '../../-ui/cn';
+import { Card } from '../../-ui/surfaces/card';
 
 /**
  * Panel headings do not track the project's card hue — IFPatcher's cards are

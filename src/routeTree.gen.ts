@@ -11,15 +11,15 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
 import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
-import { Route as Char123LocaleChar125AboutRouteImport } from './routes/{-$locale}/about'
-import { Route as Char123LocaleChar125LinksRouteImport } from './routes/{-$locale}/links'
-import { Route as Char123LocaleChar125SkillsRouteImport } from './routes/{-$locale}/skills'
+import { Route as Char123LocaleChar125AboutIndexRouteImport } from './routes/{-$locale}/about/index'
+import { Route as Char123LocaleChar125LinksIndexRouteImport } from './routes/{-$locale}/links/index'
 import { Route as Char123LocaleChar125ProjectsIndexRouteImport } from './routes/{-$locale}/projects/index'
 import { Route as Char123LocaleChar125ProjectsCellaRouteImport } from './routes/{-$locale}/projects/cella'
 import { Route as Char123LocaleChar125ProjectsDotclaudeRouteImport } from './routes/{-$locale}/projects/dotclaude'
 import { Route as Char123LocaleChar125ProjectsIfpatcherRouteImport } from './routes/{-$locale}/projects/ifpatcher'
 import { Route as Char123LocaleChar125ProjectsOastsRouteImport } from './routes/{-$locale}/projects/oasts'
 import { Route as Char123LocaleChar125ProjectsWebsiteRouteImport } from './routes/{-$locale}/projects/website'
+import { Route as Char123LocaleChar125SkillsIndexRouteImport } from './routes/{-$locale}/skills/index'
 
 const Char123LocaleChar125RouteRoute =
   Char123LocaleChar125RouteRouteImport.update({
@@ -33,22 +33,16 @@ const Char123LocaleChar125IndexRoute =
     path: '/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
-const Char123LocaleChar125AboutRoute =
-  Char123LocaleChar125AboutRouteImport.update({
-    id: '/about',
-    path: '/about',
+const Char123LocaleChar125AboutIndexRoute =
+  Char123LocaleChar125AboutIndexRouteImport.update({
+    id: '/about/',
+    path: '/about/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
-const Char123LocaleChar125LinksRoute =
-  Char123LocaleChar125LinksRouteImport.update({
-    id: '/links',
-    path: '/links',
-    getParentRoute: () => Char123LocaleChar125RouteRoute,
-  } as any)
-const Char123LocaleChar125SkillsRoute =
-  Char123LocaleChar125SkillsRouteImport.update({
-    id: '/skills',
-    path: '/skills',
+const Char123LocaleChar125LinksIndexRoute =
+  Char123LocaleChar125LinksIndexRouteImport.update({
+    id: '/links/',
+    path: '/links/',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
 const Char123LocaleChar125ProjectsIndexRoute =
@@ -87,85 +81,91 @@ const Char123LocaleChar125ProjectsWebsiteRoute =
     path: '/projects/website',
     getParentRoute: () => Char123LocaleChar125RouteRoute,
   } as any)
+const Char123LocaleChar125SkillsIndexRoute =
+  Char123LocaleChar125SkillsIndexRouteImport.update({
+    id: '/skills/',
+    path: '/skills/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
-  '/{-$locale}/links': typeof Char123LocaleChar125LinksRoute
-  '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
   '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
   '/{-$locale}/projects/ifpatcher': typeof Char123LocaleChar125ProjectsIfpatcherRoute
   '/{-$locale}/projects/oasts': typeof Char123LocaleChar125ProjectsOastsRoute
   '/{-$locale}/projects/website': typeof Char123LocaleChar125ProjectsWebsiteRoute
+  '/{-$locale}/about/': typeof Char123LocaleChar125AboutIndexRoute
+  '/{-$locale}/links/': typeof Char123LocaleChar125LinksIndexRoute
   '/{-$locale}/projects/': typeof Char123LocaleChar125ProjectsIndexRoute
+  '/{-$locale}/skills/': typeof Char123LocaleChar125SkillsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
-  '/{-$locale}/links': typeof Char123LocaleChar125LinksRoute
-  '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
   '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
   '/{-$locale}/projects/ifpatcher': typeof Char123LocaleChar125ProjectsIfpatcherRoute
   '/{-$locale}/projects/oasts': typeof Char123LocaleChar125ProjectsOastsRoute
   '/{-$locale}/projects/website': typeof Char123LocaleChar125ProjectsWebsiteRoute
+  '/{-$locale}/about': typeof Char123LocaleChar125AboutIndexRoute
+  '/{-$locale}/links': typeof Char123LocaleChar125LinksIndexRoute
   '/{-$locale}/projects': typeof Char123LocaleChar125ProjectsIndexRoute
+  '/{-$locale}/skills': typeof Char123LocaleChar125SkillsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
-  '/{-$locale}/about': typeof Char123LocaleChar125AboutRoute
-  '/{-$locale}/links': typeof Char123LocaleChar125LinksRoute
-  '/{-$locale}/skills': typeof Char123LocaleChar125SkillsRoute
   '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
   '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
   '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
   '/{-$locale}/projects/ifpatcher': typeof Char123LocaleChar125ProjectsIfpatcherRoute
   '/{-$locale}/projects/oasts': typeof Char123LocaleChar125ProjectsOastsRoute
   '/{-$locale}/projects/website': typeof Char123LocaleChar125ProjectsWebsiteRoute
+  '/{-$locale}/about/': typeof Char123LocaleChar125AboutIndexRoute
+  '/{-$locale}/links/': typeof Char123LocaleChar125LinksIndexRoute
   '/{-$locale}/projects/': typeof Char123LocaleChar125ProjectsIndexRoute
+  '/{-$locale}/skills/': typeof Char123LocaleChar125SkillsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/{-$locale}'
-    | '/{-$locale}/about'
-    | '/{-$locale}/links'
-    | '/{-$locale}/skills'
     | '/{-$locale}/'
     | '/{-$locale}/projects/cella'
     | '/{-$locale}/projects/dotclaude'
     | '/{-$locale}/projects/ifpatcher'
     | '/{-$locale}/projects/oasts'
     | '/{-$locale}/projects/website'
+    | '/{-$locale}/about/'
+    | '/{-$locale}/links/'
     | '/{-$locale}/projects/'
+    | '/{-$locale}/skills/'
   fileRoutesByTo: FileRoutesByTo
   to:
-    | '/{-$locale}/about'
-    | '/{-$locale}/links'
-    | '/{-$locale}/skills'
     | '/{-$locale}'
     | '/{-$locale}/projects/cella'
     | '/{-$locale}/projects/dotclaude'
     | '/{-$locale}/projects/ifpatcher'
     | '/{-$locale}/projects/oasts'
     | '/{-$locale}/projects/website'
+    | '/{-$locale}/about'
+    | '/{-$locale}/links'
     | '/{-$locale}/projects'
+    | '/{-$locale}/skills'
   id:
     | '__root__'
     | '/{-$locale}'
-    | '/{-$locale}/about'
-    | '/{-$locale}/links'
-    | '/{-$locale}/skills'
     | '/{-$locale}/'
     | '/{-$locale}/projects/cella'
     | '/{-$locale}/projects/dotclaude'
     | '/{-$locale}/projects/ifpatcher'
     | '/{-$locale}/projects/oasts'
     | '/{-$locale}/projects/website'
+    | '/{-$locale}/about/'
+    | '/{-$locale}/links/'
     | '/{-$locale}/projects/'
+    | '/{-$locale}/skills/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -188,25 +188,18 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/{-$locale}/about': {
-      id: '/{-$locale}/about'
+    '/{-$locale}/about/': {
+      id: '/{-$locale}/about/'
       path: '/about'
-      fullPath: '/{-$locale}/about'
-      preLoaderRoute: typeof Char123LocaleChar125AboutRouteImport
+      fullPath: '/{-$locale}/about/'
+      preLoaderRoute: typeof Char123LocaleChar125AboutIndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/{-$locale}/links': {
-      id: '/{-$locale}/links'
+    '/{-$locale}/links/': {
+      id: '/{-$locale}/links/'
       path: '/links'
-      fullPath: '/{-$locale}/links'
-      preLoaderRoute: typeof Char123LocaleChar125LinksRouteImport
-      parentRoute: typeof Char123LocaleChar125RouteRoute
-    }
-    '/{-$locale}/skills': {
-      id: '/{-$locale}/skills'
-      path: '/skills'
-      fullPath: '/{-$locale}/skills'
-      preLoaderRoute: typeof Char123LocaleChar125SkillsRouteImport
+      fullPath: '/{-$locale}/links/'
+      preLoaderRoute: typeof Char123LocaleChar125LinksIndexRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
     '/{-$locale}/projects/': {
@@ -251,27 +244,31 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char123LocaleChar125ProjectsWebsiteRouteImport
       parentRoute: typeof Char123LocaleChar125RouteRoute
     }
+    '/{-$locale}/skills/': {
+      id: '/{-$locale}/skills/'
+      path: '/skills'
+      fullPath: '/{-$locale}/skills/'
+      preLoaderRoute: typeof Char123LocaleChar125SkillsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
   }
 }
 
 interface Char123LocaleChar125RouteRouteChildren {
-  Char123LocaleChar125AboutRoute: typeof Char123LocaleChar125AboutRoute
-  Char123LocaleChar125LinksRoute: typeof Char123LocaleChar125LinksRoute
-  Char123LocaleChar125SkillsRoute: typeof Char123LocaleChar125SkillsRoute
   Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
   Char123LocaleChar125ProjectsCellaRoute: typeof Char123LocaleChar125ProjectsCellaRoute
   Char123LocaleChar125ProjectsDotclaudeRoute: typeof Char123LocaleChar125ProjectsDotclaudeRoute
   Char123LocaleChar125ProjectsIfpatcherRoute: typeof Char123LocaleChar125ProjectsIfpatcherRoute
   Char123LocaleChar125ProjectsOastsRoute: typeof Char123LocaleChar125ProjectsOastsRoute
   Char123LocaleChar125ProjectsWebsiteRoute: typeof Char123LocaleChar125ProjectsWebsiteRoute
+  Char123LocaleChar125AboutIndexRoute: typeof Char123LocaleChar125AboutIndexRoute
+  Char123LocaleChar125LinksIndexRoute: typeof Char123LocaleChar125LinksIndexRoute
   Char123LocaleChar125ProjectsIndexRoute: typeof Char123LocaleChar125ProjectsIndexRoute
+  Char123LocaleChar125SkillsIndexRoute: typeof Char123LocaleChar125SkillsIndexRoute
 }
 
 const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
   {
-    Char123LocaleChar125AboutRoute: Char123LocaleChar125AboutRoute,
-    Char123LocaleChar125LinksRoute: Char123LocaleChar125LinksRoute,
-    Char123LocaleChar125SkillsRoute: Char123LocaleChar125SkillsRoute,
     Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
     Char123LocaleChar125ProjectsCellaRoute:
       Char123LocaleChar125ProjectsCellaRoute,
@@ -283,8 +280,11 @@ const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChil
       Char123LocaleChar125ProjectsOastsRoute,
     Char123LocaleChar125ProjectsWebsiteRoute:
       Char123LocaleChar125ProjectsWebsiteRoute,
+    Char123LocaleChar125AboutIndexRoute: Char123LocaleChar125AboutIndexRoute,
+    Char123LocaleChar125LinksIndexRoute: Char123LocaleChar125LinksIndexRoute,
     Char123LocaleChar125ProjectsIndexRoute:
       Char123LocaleChar125ProjectsIndexRoute,
+    Char123LocaleChar125SkillsIndexRoute: Char123LocaleChar125SkillsIndexRoute,
   }
 
 const Char123LocaleChar125RouteRouteWithChildren =

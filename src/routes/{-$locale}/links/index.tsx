@@ -3,11 +3,12 @@ import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-r
 import { CONTACT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { ContactForm } from './-links/contact-form';
-import { DiscordCopy } from './-links/discord-copy';
-import { PageHeader } from './-ui/content/page-header';
-import { Card } from './-ui/surfaces/card';
-import { LinkRow } from './-ui/surfaces/link-row';
+import { PageHeader } from '../-ui/content/page-header';
+import { Card } from '../-ui/surfaces/card';
+import { LinkRow } from '../-ui/surfaces/link-row';
+
+import { ContactForm } from './-/contact-form';
+import { DiscordCopy } from './-/discord-copy';
 
 const DISCORD_HANDLE = 'eve0415';
 
@@ -53,7 +54,7 @@ const Links = () => {
   );
 };
 
-export const Route = createFileRoute('/{-$locale}/links')({
+export const Route = createFileRoute('/{-$locale}/links/')({
   head: ({ match }) => localeHead(match.context.locale, '/links'),
   component: Links,
 });

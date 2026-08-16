@@ -3,10 +3,11 @@ import { Link, createFileRoute, rootRouteId, useRouteContext } from '@tanstack/r
 import { ABOUT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { LabCard } from './-about/lab-card';
-import { CometNavLink, localeParams } from './-site/links';
-import { PageHeader } from './-ui/content/page-header';
-import { Card } from './-ui/surfaces/card';
+import { CometNavLink, localeParams } from '../-site/links';
+import { PageHeader } from '../-ui/content/page-header';
+import { Card } from '../-ui/surfaces/card';
+
+import { LabCard } from './-/lab-card';
 
 const About = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
@@ -53,7 +54,7 @@ const About = () => {
   );
 };
 
-export const Route = createFileRoute('/{-$locale}/about')({
+export const Route = createFileRoute('/{-$locale}/about/')({
   head: ({ match }) => localeHead(match.context.locale, '/about'),
   component: About,
 });

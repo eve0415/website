@@ -1,5 +1,5 @@
 import type { Locale } from '#i18n/locale';
-import type { ProjectLink } from '../-projects/links-section';
+import type { ProjectLink } from './-/links-section';
 
 import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 import { Fragment } from 'react';
@@ -7,12 +7,13 @@ import { Fragment } from 'react';
 import { HISTORY_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { BackLink } from '../-projects/back-link';
-import { LinksSection } from '../-projects/links-section';
 import { cn } from '../-ui/cn';
 import { PageHeader } from '../-ui/content/page-header';
 import { Card } from '../-ui/surfaces/card';
 import { Chip } from '../-ui/surfaces/chip';
+
+import { BackLink } from './-/back-link';
+import { LinksSection } from './-/links-section';
 
 const DOT = 'mt-[5px] size-[12px] flex-none rounded-[50%] bg-[linear-gradient(135deg,#04feff,#00dda8)] shadow-[0_0_12px_2px_rgba(4,254,255,.55)]';
 

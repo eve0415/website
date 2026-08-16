@@ -2,9 +2,9 @@ import type { FC } from 'react';
 
 import { startTransition, useEffect, useRef, useState } from 'react';
 
-import { SweepButton } from '../-ui/actions/sweep-button';
-import { cn } from '../-ui/cn';
-import { Toast } from '../-ui/content/toast';
+import { SweepButton } from '../../-ui/actions/sweep-button';
+import { cn } from '../../-ui/cn';
+import { Toast } from '../../-ui/content/toast';
 
 import './discord-copy.css';
 

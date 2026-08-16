@@ -144,7 +144,7 @@ const SlatCurtain: FC<RunProps> = ({ run, onSettled }) => {
  * pseudo tree paints in the top layer and takes no child content, so neither
  * the wipe's star field and comet head nor five separately tinted slats can be
  * expressed in it — and a document-level capture would freeze the sky for the
- * length of the animation, which is the same thing `-links/scoped-view-
+ * length of the animation, which is the same thing `links/-/scoped-view-
  * transition.ts` avoids for the contact form.
  */
 export const PageTransition: FC = () => {

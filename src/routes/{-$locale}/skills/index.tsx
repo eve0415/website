@@ -1,14 +1,16 @@
-import type { SkillItem } from './-skills/skill-group';
+import type { SkillItem } from './-/skill-group';
 
 import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 
 import { SKILLS_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { SkillGroup } from './-skills/skill-group';
-import './-skills/skill-grid.css';
-import { PageHeader } from './-ui/content/page-header';
-import { Card } from './-ui/surfaces/card';
+import { PageHeader } from '../-ui/content/page-header';
+
+import './-/skill-grid.css';
+import { Card } from '../-ui/surfaces/card';
+
+import { SkillGroup } from './-/skill-group';
 
 const LANGUAGES: readonly SkillItem[] = [
   { label: 'TypeScript', href: 'https://www.typescriptlang.org/' },
@@ -75,7 +77,7 @@ const Skills = () => {
   );
 };
 
-export const Route = createFileRoute('/{-$locale}/skills')({
+export const Route = createFileRoute('/{-$locale}/skills/')({
   head: ({ match }) => localeHead(match.context.locale, '/skills'),
   component: Skills,
 });

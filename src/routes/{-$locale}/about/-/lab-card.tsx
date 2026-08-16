@@ -5,8 +5,8 @@ import { useSyncExternalStore } from 'react';
 
 import { LAB_COPY } from '#i18n/copy';
 
-import { cn } from '../-ui/cn';
-import { Card } from '../-ui/surfaces/card';
+import { cn } from '../../-ui/cn';
+import { Card } from '../../-ui/surfaces/card';
 
 import { LAB_PROBES, readSupport, readSupportOnServer, subscribeToSupport } from './lab-probes';
 import './lab-card.css';

@@ -1,18 +1,19 @@
-import type { CommandSegment } from '../-projects/command-box';
-import type { ProjectLink } from '../-projects/links-section';
+import type { CommandSegment } from './-/command-box';
+import type { ProjectLink } from './-/links-section';
 
 import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 
 import { CELLA_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { BackLink } from '../-projects/back-link';
-import { CommandBox } from '../-projects/command-box';
-import { LinksSection } from '../-projects/links-section';
-import { NotePanel } from '../-projects/panel';
-import { StatCard } from '../-projects/stat-card';
 import { PageHeader } from '../-ui/content/page-header';
 import { Tag } from '../-ui/surfaces/tag';
+
+import { BackLink } from './-/back-link';
+import { CommandBox } from './-/command-box';
+import { LinksSection } from './-/links-section';
+import { NotePanel } from './-/panel';
+import { StatCard } from './-/stat-card';
 
 const TAGS = ['Rust', 'CLI'];
 

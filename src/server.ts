@@ -6,6 +6,6 @@
  * and it replaces `@tanstack/react-start/server-entry` as the entry, so the
  * package default is re-exported here unchanged rather than rebuilt.
  */
-export { ContactRateLimiter } from '#routes/{-$locale}/-links/contact-rate-limiter';
+export { ContactRateLimiter } from '#routes/{-$locale}/links/-/contact-rate-limiter';
 
 export { default } from '@tanstack/react-start/server-entry';

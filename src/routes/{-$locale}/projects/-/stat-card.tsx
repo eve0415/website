@@ -1,8 +1,8 @@
-import type { Hue } from '../-ui/surfaces/card';
+import type { Hue } from '../../-ui/surfaces/card';
 import type { FC } from 'react';
 
-import { cn } from '../-ui/cn';
-import { Card } from '../-ui/surfaces/card';
+import { cn } from '../../-ui/cn';
+import { Card } from '../../-ui/surfaces/card';
 
 const VALUE = {
   cyan: 'text-(--accent-cyan)',
