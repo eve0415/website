@@ -93,9 +93,12 @@ const isFresh = (challengeTs: string | undefined): boolean => {
  * are not known ahead of time, while this still refuses a token minted for
  * another site.
  *
- * `remoteIp` is required rather than optional: binding the token to the address
- * that solved it is what stops one being harvested and replayed from elsewhere
- * inside its lifetime.
+ * Replay is stopped by the token being single-use — a second siteverify call on
+ * the same token comes back `timeout-or-duplicate`, which maps to
+ * `replayed-token` — and by the freshness check above, which refuses anything
+ * solved more than five minutes ago. `remoteIp` is documented as optional and
+ * Cloudflare does not say it is enforced against the solving address, so it is
+ * sent for their telemetry and risk scoring rather than as a binding.
  *
  * The idempotency key is generated once and reused across the retry, so a
  * retried call cannot itself burn the single-use token.
