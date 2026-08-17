@@ -89,8 +89,8 @@ const WebsiteHistory = () => {
                   {last ? null : <span className={RAIL} />}
                 </div>
                 <div className={cn('grid gap-[10px]', last ? 'pb-[26px]' : 'pb-[30px]')}>
-                  <p className='text-[13px] tracking-(--tracking-hero-kicker) text-(--ink-ice)'>{generation.date}</p>
-                  <h2 className='text-[20px] font-bold text-(--ink-title)'>{generation.title(copy)}</h2>
+                  <p className='text-(length:--text-caption) tracking-(--tracking-hero-kicker) text-(--ink-ice)'>{generation.date}</p>
+                  <h2 className='text-(length:--text-card-title) font-bold text-(--ink-title)'>{generation.title(copy)}</h2>
                   <div className='ev-stg flex flex-wrap gap-[8px]'>
                     {generation.stack(copy).map((item, itemIndex) => (
                       <Chip key={item} className={cn(CHIP, last && itemIndex === 0 && 'border-(--line-accent) text-(--ink-ice)')}>

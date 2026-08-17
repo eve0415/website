@@ -22,7 +22,7 @@ const LAYOUT = {
 const TITLE_ROW = 'flex flex-wrap items-center gap-[10px]';
 const DESCRIPTION = 'text-[length:var(--text-body)] leading-[1.75] text-[var(--ink-muted)]';
 /** Reads as a link cue, so it keeps the ice hue whatever the card's hue is. */
-const CTA = 'text-[14px] font-bold text-[var(--hue-cyan)]';
+const CTA = 'text-(length:--text-small) font-bold text-[var(--hue-cyan)]';
 
 interface ProjectCardBaseProps {
   name?: string;
@@ -54,7 +54,7 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
     <>
       <span className='grid flex-[1_1_320px] gap-[8px]'>
         <span className={TITLE_ROW}>
-          <span className='text-[22px] font-bold text-(--ink-title)'>{name}</span>
+          <span className='text-[1.375rem] font-bold text-(--ink-title)'>{name}</span>
           {tag ? <Tag hue={hue}>{tag}</Tag> : null}
         </span>
         <span className={DESCRIPTION}>{description}</span>
@@ -62,8 +62,8 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
       </span>
       {stat ? (
         <span className='grid gap-[2px] text-right'>
-          <span className={cn('text-[clamp(28px,4vw,40px)] leading-[1.1] font-bold', statColor)}>{stat}</span>
-          {statLabel ? <span className='text-[13px] text-(--ink-ice)'>{statLabel}</span> : null}
+          <span className={cn('text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.1] font-bold', statColor)}>{stat}</span>
+          {statLabel ? <span className='text-(length:--text-caption) text-(--ink-ice)'>{statLabel}</span> : null}
         </span>
       ) : null}
     </>
@@ -74,7 +74,7 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
         {tag ? <Tag hue={hue}>{tag}</Tag> : null}
       </span>
       <p className={DESCRIPTION}>{description}</p>
-      {stat ? <p className={cn('text-[16px] font-bold', statColor)}>{stat}</p> : null}
+      {stat ? <p className={cn('text-[1rem] font-bold', statColor)}>{stat}</p> : null}
       {cta ? <span className={CTA}>{cta}</span> : null}
     </>
   );

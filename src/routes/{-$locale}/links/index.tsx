@@ -40,14 +40,14 @@ const Links = () => {
 
       <Card className='ev-reveal grid gap-[16px] p-[26px_24px]'>
         <div className='grid gap-[6px]'>
-          <h2 className='text-[18px] font-bold text-(--ink-title)'>{copy.formHead}</h2>
-          <p className='text-[14.5px] leading-[1.8] text-(--ink-muted)'>{copy.formIntro}</p>
+          <h2 className='text-[1.125rem] font-bold text-(--ink-title)'>{copy.formHead}</h2>
+          <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>{copy.formIntro}</p>
         </div>
         <ContactForm locale={locale} />
       </Card>
 
       <Card variant='soft' className='ev-reveal grid gap-[12px] border-[rgba(0,221,168,0.35)] p-[22px]'>
-        <h2 className='text-[18px] font-bold text-(--hue-mint)'>{copy.workHead}</h2>
+        <h2 className='text-[1.125rem] font-bold text-(--hue-mint)'>{copy.workHead}</h2>
         <p className='text-(length:--text-body) leading-[1.8] text-(--ink-muted)'>{copy.workBody}</p>
       </Card>
     </div>

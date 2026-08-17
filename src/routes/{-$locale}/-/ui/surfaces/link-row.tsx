@@ -8,7 +8,7 @@ const BASE =
 const ANCHOR =
   'transition-[border-color,background,transform] duration-150 ease-[ease] hover:transform-[translateY(-2px)] hover:border-[var(--accent-cyan)] hover:bg-[rgba(4,254,255,0.08)]';
 
-const VALUE = 'text-[15px] text-[var(--ink-ice)]';
+const VALUE = 'text-(length:--text-ui) text-[var(--ink-ice)]';
 
 interface LinkRowBaseProps {
   label?: string;

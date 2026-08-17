@@ -3,7 +3,7 @@ import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 import { cn } from '../../cn';
 
 const ROOT =
-  'group relative isolate inline-flex min-h-[44px] cursor-pointer items-center overflow-hidden rounded-[999px] border border-[var(--line-white)] px-[28px] py-[13px] font-sans text-[15.5px] font-bold text-[var(--ink-title)] no-underline transition-[border-color] duration-300 ease-[ease] hover:border-[rgba(4,254,255,0.9)]';
+  'group relative isolate inline-flex min-h-[44px] cursor-pointer items-center overflow-hidden rounded-[999px] border border-[var(--line-white)] px-[28px] py-[13px] font-sans text-(length:--text-body) font-bold text-[var(--ink-title)] no-underline transition-[border-color] duration-300 ease-[ease] hover:border-[rgba(4,254,255,0.9)]';
 
 const SWEEP =
   'pointer-events-none absolute inset-[-2px_-22px] transform-[translateX(-108%)_skewX(-16deg)] transition-[transform] duration-500 ease-[var(--ease-comet)] group-hover:transform-[translateX(0)_skewX(-16deg)]';

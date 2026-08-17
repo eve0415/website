@@ -22,7 +22,7 @@ interface PanelHeadingProps {
   children?: ReactNode;
 }
 
-export const PanelHeading: FC<PanelHeadingProps> = ({ ink, children }) => <h2 className={cn('text-[16px] font-bold', INK[ink])}>{children}</h2>;
+export const PanelHeading: FC<PanelHeadingProps> = ({ ink, children }) => <h2 className={cn('text-[1rem] font-bold', INK[ink])}>{children}</h2>;
 
 interface NotePanelProps {
   ink: PanelInk;

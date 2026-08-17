@@ -12,7 +12,7 @@ const FRAME =
 const BAR = 'flex gap-[12px] border-b border-b-[rgba(160,150,255,.2)] bg-[rgba(13,8,54,.72)]';
 
 const BUTTON =
-  'min-h-[44px] cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-[20px] py-[8px] font-mono text-[13.5px] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]';
+  'min-h-[44px] cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-[20px] py-[8px] font-mono text-[0.84375rem] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]';
 
 const DOTS = ['bg-[rgba(247,105,151,.8)]', 'bg-[rgba(255,217,236,.65)]', 'bg-[rgba(0,221,168,.8)]'];
 
@@ -84,7 +84,7 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
       {tabs === undefined ? (
         <div className={cn(BAR, 'items-center p-[11px_16px]')}>
           {dots}
-          <span className='text-[12.5px] text-(--ink-faint)'>{title}</span>
+          <span className='text-[0.78125rem] text-(--ink-faint)'>{title}</span>
         </div>
       ) : (
         <div className={cn(BAR, 'items-end gap-[14px] p-[8px_14px_0]')}>
@@ -95,7 +95,7 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
 
       <div className='flex flex-wrap items-center justify-between gap-[14px] p-[14px_16px_12px]'>
         <div className='grid flex-[1_1_240px] gap-[5px]'>
-          <div className='flex items-baseline font-mono text-[15px]'>
+          <div className='flex items-baseline font-mono text-(length:--text-ui)'>
             <span className='mr-[10px] flex-none text-(--accent-mint)'>❯</span>
             <span className='wrap-anywhere'>
               {segments.map(segment => (
@@ -112,7 +112,10 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
               missing: the confirmation was painted and never announced. */}
           <output
             key={copies}
-            className={cn('block h-[19px] truncate font-mono text-[13px] leading-[19px] text-(--hue-mint)', copied && 'animate-[fadeIn_0.25s_ease_both]')}
+            className={cn(
+              'block h-[19px] truncate font-mono text-(length:--text-caption) leading-[19px] text-(--hue-mint)',
+              copied && 'animate-[fadeIn_0.25s_ease_both]',
+            )}
           >
             {copied ? copiedText : ''}
           </output>

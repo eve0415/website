@@ -15,7 +15,7 @@ import { cn } from '../cn';
 const GROUP = 'inline-flex min-h-(--header-row) items-center rounded-[999px] border border-(--line-header) p-[2px]';
 
 const PILL =
-  'inline-flex min-h-[40px] min-w-[46px] items-center justify-center rounded-[999px] px-[13px] py-[6px] font-sans text-[12.5px] font-bold tracking-[0.08em] no-underline transition-[color,background] duration-150 ease-[ease] active:transform-[scale(0.94)]';
+  'inline-flex min-h-[40px] min-w-[46px] items-center justify-center rounded-[999px] px-[13px] py-[6px] font-sans text-[0.78125rem] font-bold tracking-[0.08em] no-underline transition-[color,background] duration-150 ease-[ease] active:transform-[scale(0.94)]';
 
 const STATE = {
   on: 'bg-[rgba(4,254,255,0.13)] text-(--accent-cyan) hover:text-(--accent-cyan)',

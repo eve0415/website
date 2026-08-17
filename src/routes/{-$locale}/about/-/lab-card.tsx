@@ -11,7 +11,7 @@ import { Card } from '../../-/ui/surfaces/card';
 import { LAB_PROBES, readSupport, readSupportOnServer, subscribeToSupport } from './lab-probes';
 import './lab-card.css';
 
-const BADGE = 'inline-flex items-center rounded-[999px] border px-[10px] py-[3px] text-[11.5px] tracking-[0.1em]';
+const BADGE = 'inline-flex items-center rounded-[999px] border px-[10px] py-[3px] text-[0.71875rem] tracking-[0.1em]';
 
 const BADGE_SUPPORTED = 'border-[rgba(0,221,168,.45)] text-(--hue-mint)';
 
@@ -43,12 +43,12 @@ export const LabCard: FC<LabCardProps> = ({ locale }) => {
     <Card variant='dashed' className='ev-reveal grid gap-[16px]'>
       <div className='grid gap-[7px]'>
         <p className='text-(length:--text-caption) tracking-(--tracking-kicker) text-(--ink-ice)'>LAB</p>
-        <h2 className='text-[18px] font-bold text-(--ink-title)'>{copy.title}</h2>
-        <p className='text-[14.5px] leading-[1.8] text-(--ink-muted)'>{copy.intro}</p>
+        <h2 className='text-[1.125rem] font-bold text-(--ink-title)'>{copy.title}</h2>
+        <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>{copy.intro}</p>
       </div>
 
       <details className='ev-labdt'>
-        <summary className='flex min-h-[44px] items-center gap-[10px] text-[14.5px] font-bold text-(--ink-ice)'>
+        <summary className='flex min-h-[44px] items-center gap-[10px] text-(length:--text-nav) font-bold text-(--ink-ice)'>
           <span aria-hidden='true' className='ev-labarr inline-block text-(--accent-cyan)'>
             →
           </span>
@@ -61,11 +61,11 @@ export const LabCard: FC<LabCardProps> = ({ locale }) => {
 
             return (
               <div key={entry.key} className='flex flex-wrap items-baseline gap-[12px] border-t border-t-[rgba(160,150,255,.16)] pt-[11px]'>
-                <span className='text-[14.5px] font-bold text-(--ink-body)'>{entry.name}</span>
+                <span className='text-(length:--text-nav) font-bold text-(--ink-body)'>{entry.name}</span>
                 <span className={cn(BADGE, isSupported === true ? BADGE_SUPPORTED : BADGE_MUTED)}>
                   {isSupported === undefined ? copy.stateUnknown : isSupported ? copy.stateSupported : copy.stateUnsupported}
                 </span>
-                <span className='flex-[1_1_260px] text-[14px] leading-[1.75] text-(--ink-muted)'>{copy.notes[entry.key]}</span>
+                <span className='flex-[1_1_260px] text-(length:--text-small) leading-[1.75] text-(--ink-muted)'>{copy.notes[entry.key]}</span>
               </div>
             );
           })}

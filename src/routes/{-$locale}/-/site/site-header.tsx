@@ -10,7 +10,7 @@ const ROOT =
   'ev-hdr sticky top-0 z-10 flex items-center justify-between gap-[12px] border-b border-b-[var(--line-header)] bg-[var(--surface-header)] p-(--header-pad) font-sans backdrop-blur-[10px]';
 
 /** Exported so a caller supplying its own `brandElement` can style it identically. */
-export const BRAND_CLASS = 'flex min-h-[44px] items-center gap-[10px] text-[16px] font-bold text-[#eae6ff] no-underline';
+export const BRAND_CLASS = 'flex min-h-[44px] items-center gap-[10px] text-[1rem] font-bold text-[#eae6ff] no-underline';
 
 /** Exported so a caller supplying its own `element` can style it identically. */
 export const NAV_LINK_CLASS =

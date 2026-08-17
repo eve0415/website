@@ -5,7 +5,7 @@ import { cn } from '../../cn';
 import './comet-link.css';
 
 const ROOT =
-  'group relative inline-flex min-h-[44px] cursor-pointer items-center gap-[10px] font-sans text-[15px] font-bold tracking-[0.06em] text-[var(--link)] no-underline hover:text-[var(--link-hover)]';
+  'group relative inline-flex min-h-[44px] cursor-pointer items-center gap-[10px] font-sans text-(length:--text-ui) font-bold tracking-[0.06em] text-[var(--link)] no-underline hover:text-[var(--link-hover)]';
 
 interface CometLinkBaseProps {
   children?: ReactNode;

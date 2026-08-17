@@ -26,8 +26,8 @@ const About = () => {
           className='size-[112px] flex-none animate-[floaty_6s_ease-in-out_infinite] rounded-[50%] border border-[rgba(160,150,255,.4)]'
         />
         <div className='grid flex-[1_1_320px] gap-[14px]'>
-          <p className='text-[16px] leading-[1.9] text-(--ink-body)'>{copy.p1}</p>
-          <p className='text-[16px] leading-[1.9] text-(--ink-body)'>{copy.p2}</p>
+          <p className='text-[1rem] leading-[1.9] text-(--ink-body)'>{copy.p1}</p>
+          <p className='text-[1rem] leading-[1.9] text-(--ink-body)'>{copy.p2}</p>
           <CometNavLink to='/{-$locale}/links' params={localeParams(locale)} className='justify-self-start'>
             {copy.seeContact}
           </CometNavLink>
@@ -35,8 +35,8 @@ const About = () => {
       </div>
 
       <Card variant='soft' className='ev-reveal grid gap-[10px] border-(--line-row) p-[20px_22px]'>
-        <h2 className='text-[16px] font-bold text-(--ink-ice)'>{copy.siteHead}</h2>
-        <p className='text-[14.5px] leading-[1.8] text-(--ink-muted)'>
+        <h2 className='text-[1rem] font-bold text-(--ink-ice)'>{copy.siteHead}</h2>
+        <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>
           {copy.siteBefore}
           {/* The design distinguishes this inline link from the surrounding
               prose by colour alone, and #9fe8ff on #cfc9f2 is 1.16:1 — WCAG

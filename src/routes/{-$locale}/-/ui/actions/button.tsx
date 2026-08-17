@@ -6,7 +6,7 @@ type ButtonVariant = 'primary' | 'glass' | 'ghost';
 type ButtonSize = 'md' | 'sm';
 
 const BASE =
-  'inline-flex min-h-[44px] cursor-pointer items-center gap-[10px] rounded-[999px] px-[26px] py-[13px] font-sans text-[16px] font-bold no-underline active:transform-[scale(0.97)]';
+  'inline-flex min-h-[44px] cursor-pointer items-center gap-[10px] rounded-[999px] px-[26px] py-[13px] font-sans text-[1rem] font-bold no-underline active:transform-[scale(0.97)]';
 
 const VARIANT = {
   primary:
@@ -14,12 +14,12 @@ const VARIANT = {
   glass:
     'border border-[var(--line-white)] bg-[var(--surface-glass)] text-[var(--ink-title)] backdrop-blur-[4px] transition-[border-color,background] duration-150 ease-[ease] hover:border-[var(--accent-cyan)] hover:bg-[rgba(4,254,255,0.12)]',
   ghost:
-    'border border-[var(--line-accent)] px-[18px] py-[8px] text-[14px] text-[var(--hue-cyan)] transition-[background] duration-150 ease-[ease] hover:bg-[rgba(4,254,255,0.1)]',
+    'border border-[var(--line-accent)] px-[18px] py-[8px] text-(length:--text-small) text-[var(--hue-cyan)] transition-[background] duration-150 ease-[ease] hover:bg-[rgba(4,254,255,0.1)]',
 };
 
 const SIZE = {
   md: '',
-  sm: 'px-[18px] py-[8px] text-[14px]',
+  sm: 'px-[18px] py-[8px] text-(length:--text-small)',
 };
 
 interface ButtonBaseProps {

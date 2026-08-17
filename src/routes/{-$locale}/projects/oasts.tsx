@@ -28,7 +28,7 @@ const PACKAGE_MANAGERS = ['pnpm', 'npm', 'bun', 'yarn'] as const;
 type PackageManager = (typeof PACKAGE_MANAGERS)[number];
 
 const TAB =
-  'min-h-[42px] cursor-pointer rounded-t-[9px] border border-b-0 p-[10px_16px_11px] font-mono text-[13px] transition-[color,background] duration-150 ease-[ease] hover:text-(--ink-ice) -mb-px';
+  'min-h-[42px] cursor-pointer rounded-t-[9px] border border-b-0 p-[10px_16px_11px] font-mono text-(length:--text-caption) transition-[color,background] duration-150 ease-[ease] hover:text-(--ink-ice) -mb-px';
 
 const segmentsFor = (pm: PackageManager): readonly CommandSegment[] => [
   { key: 'pm', text: pm, color: 'text-(--accent-cyan)' },

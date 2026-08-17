@@ -5,7 +5,7 @@ import { cn } from '../../cn';
 import './encore-button.css';
 
 const ROOT =
-  'group relative isolate inline-flex min-h-[44px] cursor-pointer items-center overflow-hidden rounded-[999px] border border-[var(--line-header)] px-[22px] py-[9px] font-sans text-[14px] text-[var(--ink-faint)] no-underline transition-[border-color] duration-300 ease-[ease] hover:border-[rgba(4,254,255,0.75)]';
+  'group relative isolate inline-flex min-h-[44px] cursor-pointer items-center overflow-hidden rounded-[999px] border border-[var(--line-header)] px-[22px] py-[9px] font-sans text-(length:--text-small) text-[var(--ink-faint)] no-underline transition-[border-color] duration-300 ease-[ease] hover:border-[rgba(4,254,255,0.75)]';
 
 const WIPE = 'absolute top-[-2px] bottom-[-2px] w-[54%] transition-[transform] duration-[0.45s] ease-[var(--ease-comet)] group-hover:transform-[translateX(0)]';
 

@@ -207,7 +207,7 @@ export const NotFound = () => {
         <div className='pointer-events-auto grid max-w-[760px] justify-items-center gap-[clamp(7px,1.4svh,18px)] text-center'>
           <title>{copy.docTitle}</title>
 
-          <p className='animate-[fadeUp_0.6s_ease_0.15s_backwards] text-[13px] tracking-[0.26em] text-(--ink-ice)'>
+          <p className='animate-[fadeUp_0.6s_ease_0.15s_backwards] text-(length:--text-caption) tracking-[0.26em] text-(--ink-ice)'>
             NOT FOUND · HTTP{' '}
             <span ref={codeRef} className='inline-block min-w-[3ch] text-left font-bold text-(--accent-cyan)'>
               404
@@ -237,11 +237,11 @@ export const NotFound = () => {
             </span>
           </div>
 
-          <h1 className='mt-[6px] animate-[fadeUp_0.7s_ease_0.75s_backwards] text-[clamp(22px,min(4.4vw,4.6svh),38px)] leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_24px_rgba(3,1,20,.6)]'>
+          <h1 className='mt-[6px] animate-[fadeUp_0.7s_ease_0.75s_backwards] text-[clamp(1.375rem,min(4.4vw,4.6svh),2.375rem)] leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_24px_rgba(3,1,20,.6)]'>
             {copy.title}
           </h1>
 
-          <p className='animate-[fadeUp_0.7s_ease_0.9s_backwards] text-[clamp(13.5px,min(1.9vw,2.4svh),16.5px)] leading-[1.75] text-(--ink-muted) [text-shadow:0_1px_14px_rgba(3,1,20,.6)]'>
+          <p className='animate-[fadeUp_0.7s_ease_0.9s_backwards] text-[clamp(0.84375rem,min(1.9vw,2.4svh),1.03125rem)] leading-[1.75] text-(--ink-muted) [text-shadow:0_1px_14px_rgba(3,1,20,.6)]'>
             {copy.lede1}
             <br />
             {copy.lede2}
@@ -273,22 +273,24 @@ export const NotFound = () => {
               className='pointer-events-none absolute top-[calc(100%+16px)] left-1/2 grid w-[min(92vw,640px)] -translate-x-1/2 content-start justify-items-center gap-[10px]'
             >
               {item !== undefined && !searching ? (
-                <p className='ev-404-resline text-[15px] leading-[1.7] text-(--ink-ice) [text-shadow:0_1px_12px_rgba(3,1,20,.8)] [view-transition-name:resline]'>
+                <p className='ev-404-resline text-(length:--text-ui) leading-[1.7] text-(--ink-ice) [text-shadow:0_1px_12px_rgba(3,1,20,.8)] [view-transition-name:resline]'>
                   {copy.rescued(item)}
                 </p>
               ) : null}
               {done && !searching ? (
-                <p className='ev-404-resline text-[14.5px] leading-[1.7] text-(--hue-violet) [text-shadow:0_1px_12px_rgba(3,1,20,.8)]'>{copy.resultFinal}</p>
+                <p className='ev-404-resline text-(length:--text-nav) leading-[1.7] text-(--hue-violet) [text-shadow:0_1px_12px_rgba(3,1,20,.8)]'>
+                  {copy.resultFinal}
+                </p>
               ) : null}
               {foundCount > 0 ? (
                 <div className='flex flex-wrap items-center justify-center gap-[8px]'>
-                  <span className='rounded-[999px] border border-(--line-panel) bg-(--surface-panel) px-[12px] py-[4px] text-[12.5px] tracking-[0.14em] text-(--ink-muted)'>
+                  <span className='rounded-[999px] border border-(--line-panel) bg-(--surface-panel) px-[12px] py-[4px] text-[0.78125rem] tracking-[0.14em] text-(--ink-muted)'>
                     {copy.foundLabel}
                   </span>
                   {copy.items.slice(0, foundCount).map((label, index) => (
                     <span
                       key={label}
-                      className='ev-404-chip rounded-[999px] border border-dashed border-(--line-accent-dashed) bg-(--surface-panel) px-[12px] py-[4px] text-[12.5px] text-(--ink-ice)'
+                      className='ev-404-chip rounded-[999px] border border-dashed border-(--line-accent-dashed) bg-(--surface-panel) px-[12px] py-[4px] text-[0.78125rem] text-(--ink-ice)'
                       style={{ viewTransitionName: `chip${index}` }}
                     >
                       {label}
@@ -331,7 +333,7 @@ export const NotFound = () => {
             style={{ background: CAT_GLOW }}
           />
           {bubbleOn ? (
-            <span className='ev-404-bubble absolute bottom-[calc(100%+14px)] left-1/2 z-2 -translate-x-1/2 rounded-[999px] border border-(--line-accent) bg-(--surface-toast) px-[16px] py-[11px] text-[13.5px] leading-none whitespace-nowrap text-[#d8f9ff] shadow-(--glow-toast)'>
+            <span className='ev-404-bubble absolute bottom-[calc(100%+14px)] left-1/2 z-2 -translate-x-1/2 rounded-[999px] border border-(--line-accent) bg-(--surface-toast) px-[16px] py-[11px] text-[0.84375rem] leading-none whitespace-nowrap text-[#d8f9ff] shadow-(--glow-toast)'>
               {copy.meows[meowIdx] ?? copy.meows[0]}
               <span
                 aria-hidden='true'

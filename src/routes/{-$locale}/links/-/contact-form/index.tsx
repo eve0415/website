@@ -20,7 +20,7 @@ import { sendContact } from './send-contact';
 import { isNarrowSlot, notNarrowWhenPrerendered, sizeDecidedOnce } from './turnstile-size';
 import { MESSAGE_MAX, checkContact } from './validation';
 
-const LABEL = 'grid gap-[7px] text-[13.5px] text-(--ink-ice)';
+const LABEL = 'grid gap-[7px] text-[0.84375rem] text-(--ink-ice)';
 
 /**
  * The resting border is `rgba(160,150,255,.55)` where the design has `.28`.
@@ -31,7 +31,7 @@ const LABEL = 'grid gap-[7px] text-[13.5px] text-(--ink-ice)';
  * untouched: it swaps to `#04feff` at 15.74:1.
  */
 const FIELD =
-  'w-full min-h-[44px] rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-[15.5px] leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-none';
+  'w-full min-h-[44px] rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-(length:--text-body) leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-none';
 
 interface ContactFormProps {
   locale: Locale;
@@ -206,10 +206,10 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
               aria-hidden='true'
               className='size-[14px] bg-(--hue-mint) drop-shadow-[0_0_6px_rgba(0,221,168,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]'
             />
-            <p className='text-[16.5px] font-bold text-(--hue-mint)'>{copy.sentHead}</p>
+            <p className='text-[1.03125rem] font-bold text-(--hue-mint)'>{copy.sentHead}</p>
           </div>
-          <p className='text-[14.5px] leading-[1.8] text-(--ink-muted)'>{copy.sentBody}</p>
-          <Button variant='glass' className='bg-(--surface-row) px-[22px] py-[10px] text-[14.5px]' onClick={sendAnother}>
+          <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>{copy.sentBody}</p>
+          <Button variant='glass' className='bg-(--surface-row) px-[22px] py-[10px] text-(length:--text-nav)' onClick={sendAnother}>
             {copy.sendAnother}
           </Button>
         </div>
@@ -294,13 +294,13 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
           </div>
 
           <div className='flex flex-wrap items-center gap-[16px]'>
-            <Button type='submit' disabled={sending} className='px-[30px] py-[12px] text-[15.5px]'>
+            <Button type='submit' disabled={sending} className='px-[30px] py-[12px] text-(length:--text-body)'>
               {sending ? copy.submitting : copy.submit}
             </Button>
             {/* Keyed on the attempt so an identical failure twice in a row is a
                 new node: `role="alert"` announces on insertion, and re-rendering
                 the same text into the same node is not a change to announce. */}
-            <span key={failure === null ? 0 : failure.seq} id={errorId} role='alert' className='text-[14px] text-(--hue-rose)'>
+            <span key={failure === null ? 0 : failure.seq} id={errorId} role='alert' className='text-(length:--text-small) text-(--hue-rose)'>
               {failure === null ? '' : errorCopy[failure.code]}
             </span>
           </div>
