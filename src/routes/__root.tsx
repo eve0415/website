@@ -55,6 +55,9 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      // Pairs with the rem type scale in __root.css: lets the OS/browser
+      // text-size preference scale the page instead of being ignored.
+      { name: 'text-scale', content: 'scale' },
       { name: 'theme-color', content: '#0a0a0a' },
       { name: 'apple-mobile-web-app-title', content: SITE_NAME },
       { property: 'og:site_name', content: SITE_NAME },

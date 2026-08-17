@@ -90,19 +90,21 @@
   --text-body-color: var(--ink-muted);
   --surface-card: var(--surface-panel);
 
-  /* 字 — Noto Sans JP only, weights 400/700. No serif, no italic. */
+  /* 字 — Noto Sans JP only, weights 400/700. No serif, no italic.
+     Sizes are rem against the 16px root so the OS/browser text-size preference
+     scales them. Nothing may override the :root font-size. */
   --font-sans: 'Noto Sans JP', sans-serif;
-  --text-hero: clamp(42px, 8vw, 74px);
-  --text-h1: clamp(30px, 5vw, 42px);
-  --text-h2: clamp(24px, 3vw, 28px);
-  --text-card-title: 20px;
-  --text-panel-title: 17px;
-  --text-body: 15.5px;
-  --text-ui: 15px;
-  --text-nav: 14.5px;
-  --text-small: 14px;
-  --text-caption: 13px;
-  --text-tag: 12px;
+  --text-hero: clamp(2.625rem, 8vw, 4.625rem);
+  --text-h1: clamp(1.875rem, 5vw, 2.625rem);
+  --text-h2: clamp(1.5rem, 3vw, 1.75rem);
+  --text-card-title: 1.25rem;
+  --text-panel-title: 1.0625rem;
+  --text-body: 0.96875rem;
+  --text-ui: 0.9375rem;
+  --text-nav: 0.90625rem;
+  --text-small: 0.875rem;
+  --text-caption: 0.8125rem;
+  --text-tag: 0.75rem;
   --leading-display: 1.05;
   --leading-heading: 1.1;
   --leading-body: 1.75;
