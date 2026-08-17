@@ -11,7 +11,8 @@ import { Card } from '../../-/ui/surfaces/card';
 import { LAB_PROBES, readSupport, readSupportOnServer, subscribeToSupport } from './lab-probes';
 import './lab-card.css';
 
-const BADGE = 'inline-flex items-center rounded-[999px] border px-[10px] py-[3px] text-[0.71875rem] tracking-[0.1em]';
+const BADGE =
+  'inline-flex min-w-[76px] items-center justify-center justify-self-end rounded-[999px] border px-[10px] py-[3px] text-[0.71875rem] tracking-[0.1em]';
 
 const BADGE_SUPPORTED = 'border-[rgba(0,221,168,.45)] text-(--hue-mint)';
 
@@ -60,12 +61,15 @@ export const LabCard: FC<LabCardProps> = ({ locale }) => {
             const isSupported = supported === undefined ? undefined : supported.has(entry.key);
 
             return (
-              <div key={entry.key} className='flex flex-wrap items-baseline gap-[12px] border-t border-t-[rgba(160,150,255,.16)] pt-[11px]'>
-                <span className='text-(length:--text-nav) font-bold text-(--ink-body)'>{entry.name}</span>
+              <div
+                key={entry.key}
+                className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-[12px] gap-y-[6px] border-t border-t-[rgba(160,150,255,.16)] pt-[11px]'
+              >
+                <span className='text-(length:--text-nav) font-bold wrap-anywhere text-(--ink-body)'>{entry.name}</span>
                 <span className={cn(BADGE, isSupported === true ? BADGE_SUPPORTED : BADGE_MUTED)}>
                   {isSupported === undefined ? copy.stateUnknown : isSupported ? copy.stateSupported : copy.stateUnsupported}
                 </span>
-                <span className='flex-[1_1_260px] text-(length:--text-small) leading-[1.75] text-(--ink-muted)'>{copy.notes[entry.key]}</span>
+                <span className='col-span-full text-(length:--text-small) leading-[1.75] text-(--ink-muted)'>{copy.notes[entry.key]}</span>
               </div>
             );
           })}
