@@ -28,7 +28,7 @@ const LocaleLayout = () => {
   const pathname = useRouterState({ select: state => state.location.pathname });
 
   return (
-    <div className='relative flex min-h-svh flex-col' style={{ background: SKY.rootBg }}>
+    <div className='relative flex min-h-[calc(100svh/var(--z,1))] flex-col' style={{ background: SKY.rootBg }}>
       <div aria-hidden='true' className='pointer-events-none absolute inset-0 overflow-hidden' style={{ background: SKY.nebulaBg }}>
         <div className='absolute inset-0' style={{ opacity: SKY.starAlpha }}>
           <StarField count={36} seed={ROOT_STAR_SEED} />

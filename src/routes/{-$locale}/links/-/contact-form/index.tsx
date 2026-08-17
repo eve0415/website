@@ -145,7 +145,9 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     }
 
     const box = boxRef.current;
-    if (box !== null) setLockHeight(Math.round(box.getBoundingClientRect().height));
+    // getBoundingClientRect reports zoomed pixels but the height is written
+    // back as CSS px, so it has to come back out of the ultra-wide zoom.
+    if (box !== null) setLockHeight(Math.round(box.getBoundingClientRect().height / (box.currentCSSZoom || 1)));
 
     const result = await sendContact({ data: input });
     if (!result.ok) {

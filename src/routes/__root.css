@@ -173,6 +173,42 @@
   --corner-smooth: squircle;
   --blur-header: blur(10px);
   --blur-glass: blur(4px);
+
+  /* 拡 — ultra-wide scaling. Past roughly 2100px the layout has stopped
+     growing and the page just gains margin, so the whole thing zooms up in
+     steps instead. Anything sized in viewport units divides by this, since
+     those units are measured before the zoom applies. */
+  --z: 1;
+}
+
+@media (min-width: 2100px) {
+  :root {
+    --z: 1.15;
+  }
+}
+
+@media (min-width: 2800px) {
+  :root {
+    --z: 1.4;
+  }
+}
+
+@media (min-width: 3600px) {
+  :root {
+    --z: 1.7;
+  }
+}
+
+@media (min-width: 5100px) {
+  :root {
+    --z: 2.3;
+  }
+}
+
+@media (min-width: 6800px) {
+  :root {
+    --z: 3;
+  }
 }
 
 /* Noto Sans JP 400/700, self-hosted from @fontsource/noto-sans-jp.
@@ -248,6 +284,7 @@ html {
 }
 
 body {
+  zoom: var(--z, 1);
   background: var(--grad-sky);
   font-family: var(--font-sans);
   color: var(--ink-muted);

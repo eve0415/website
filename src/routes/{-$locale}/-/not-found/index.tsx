@@ -180,7 +180,7 @@ export const NotFound = () => {
   const item = result === null ? undefined : copy.items[result];
 
   return (
-    <div ref={rootRef} className='ev-404 relative flex min-h-svh flex-col overflow-clip' style={{ background: SKY.rootBg }}>
+    <div ref={rootRef} className='ev-404 relative flex min-h-[calc(100svh/var(--z,1))] flex-col overflow-clip' style={{ background: SKY.rootBg }}>
       <div
         aria-hidden='true'
         className='pointer-events-none absolute inset-0 [translate:calc(var(--mx,0px)*-0.3)_calc(var(--my,0px)*-0.3)] overflow-hidden'

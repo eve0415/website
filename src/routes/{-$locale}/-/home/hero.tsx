@@ -68,7 +68,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
   const copy = HOME_COPY[locale];
 
   return (
-    <section className='relative mt-[-61px] grid min-h-[calc(100svh-61px)] content-end'>
+    <section className='relative mt-[-61px] grid min-h-[calc(100svh/var(--z,1)-61px)] content-end'>
       <div aria-hidden='true' className={`absolute inset-x-0 top-0 bottom-[-240px] ${MASK_HERO}`} style={{ background: SKY.heroBg }}>
         <div className='absolute inset-x-0 top-0 bottom-[240px]'>
           {HERO_GLOWS.map(spot => (
