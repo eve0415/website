@@ -119,6 +119,9 @@
   /* 間 — layout, spacing & radius */
   /* Page shells grow with the viewport instead of stopping dead at a fixed
      width, so very wide displays get more content rather than more margin. */
+  /* The full-bleed chrome — header, footer, hero — keeps its background edge
+     to edge but stops its content here. */
+  --page-max-wide: 1680px;
   --page-max: clamp(1060px, 66vw, 1280px);
   --page-max-article: clamp(860px, 54vw, 1020px);
   --page-max-narrow: clamp(720px, 46vw, 880px);

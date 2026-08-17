@@ -6,8 +6,10 @@ import { cn } from '../cn';
 
 import './site-header.css';
 
-const ROOT =
-  'ev-hdr sticky top-0 z-10 flex items-center justify-between gap-[12px] border-b border-b-[var(--line-header)] bg-[var(--surface-header)] p-(--header-pad) font-sans backdrop-blur-[10px]';
+const ROOT = 'ev-hdr sticky top-0 z-10 border-b border-b-[var(--line-header)] bg-[var(--surface-header)] p-(--header-pad) font-sans backdrop-blur-[10px]';
+
+/** The bar stays full-bleed; only its contents stop at the shell width. */
+const INNER = 'mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-[12px]';
 
 /** Exported so a caller supplying its own `brandElement` can style it identically. */
 export const BRAND_CLASS = 'flex min-h-[44px] items-center gap-[10px] text-[1rem] font-bold text-[#eae6ff] no-underline';
@@ -83,40 +85,44 @@ export const SiteHeader: FC<SiteHeaderProps> = ({
 
   return (
     <header className={cn(ROOT, className)}>
-      {brandElement === undefined ? (
-        <a className={BRAND_CLASS} href={brandHref} onClick={onSelect === undefined ? undefined : handleBrandClick}>
-          {avatarSrc ? <img src={avatarSrc} alt='' width='32' height='32' className='size-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' /> : null}
-          {brand}
-        </a>
-      ) : (
-        brandElement
-      )}
-      <nav aria-label={navLabel} className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
-        {items.map(item =>
-          item.element === undefined ? (
-            onSelect === undefined ? (
-              <a key={item.key} className={NAV_LINK_CLASS} href={item.href} aria-current={active === item.key ? 'page' : undefined}>
-                {item.label}
-              </a>
-            ) : (
-              <button
-                key={item.key}
-                type='button'
-                className={NAV_LINK_CLASS}
-                aria-current={active === item.key ? 'page' : undefined}
-                onClick={() => {
-                  onSelect(item.key);
-                }}
-              >
-                {item.label}
-              </button>
-            )
-          ) : (
-            <Fragment key={item.key}>{item.element}</Fragment>
-          ),
+      <div className={INNER}>
+        {brandElement === undefined ? (
+          <a className={BRAND_CLASS} href={brandHref} onClick={onSelect === undefined ? undefined : handleBrandClick}>
+            {avatarSrc ? (
+              <img src={avatarSrc} alt='' width='32' height='32' className='size-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' />
+            ) : null}
+            {brand}
+          </a>
+        ) : (
+          brandElement
         )}
-        {children}
-      </nav>
+        <nav aria-label={navLabel} className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
+          {items.map(item =>
+            item.element === undefined ? (
+              onSelect === undefined ? (
+                <a key={item.key} className={NAV_LINK_CLASS} href={item.href} aria-current={active === item.key ? 'page' : undefined}>
+                  {item.label}
+                </a>
+              ) : (
+                <button
+                  key={item.key}
+                  type='button'
+                  className={NAV_LINK_CLASS}
+                  aria-current={active === item.key ? 'page' : undefined}
+                  onClick={() => {
+                    onSelect(item.key);
+                  }}
+                >
+                  {item.label}
+                </button>
+              )
+            ) : (
+              <Fragment key={item.key}>{item.element}</Fragment>
+            ),
+          )}
+          {children}
+        </nav>
+      </div>
       <span
         className='ev-hdr-line pointer-events-none absolute inset-x-0 -bottom-px h-[2px] opacity-0 transition-opacity duration-[0.4s] ease-(--ease-comet)'
         aria-hidden='true'
