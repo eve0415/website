@@ -62,7 +62,7 @@ const Skills = () => {
     <div className='relative mx-auto grid max-w-(--page-max) gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
       <PageHeader kicker='SKILLS' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_backwards]' />
 
-      <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(270px,1fr))] gap-[18px]'>
+      <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(var(--card-min-skills),1fr))] gap-[18px]'>
         <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='animate-[fadeUp_0.6s_ease_0.08s_backwards]' />
         <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} className='ev-reveal' />
         <SkillGroup ink='sky' heading={copy.groupInfra} items={INFRA} className='ev-reveal' />
