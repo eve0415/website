@@ -117,8 +117,11 @@
   --weight-bold: 700;
 
   /* 間 — layout, spacing & radius */
-  --page-max: 1060px;
-  --page-max-narrow: 720px;
+  /* Page shells grow with the viewport instead of stopping dead at a fixed
+     width, so very wide displays get more content rather than more margin. */
+  --page-max: clamp(1060px, 66vw, 1280px);
+  --page-max-article: clamp(860px, 54vw, 1020px);
+  --page-max-narrow: clamp(720px, 46vw, 880px);
   --page-pad-x: 24px;
   --page-pad-top: 48px;
   --page-pad-bottom: 96px;

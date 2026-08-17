@@ -17,7 +17,7 @@ const Links = () => {
   const copy = CONTACT_COPY[locale];
 
   return (
-    <div className='relative mx-auto grid max-w-[720px] gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max-narrow) gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
       <PageHeader kicker='CONTACT' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_backwards]' />
 
       <div className='grid gap-[12px]'>

@@ -45,7 +45,7 @@ export const Highlights: FC<HighlightsProps> = ({ locale }) => {
         ))}
       </div>
 
-      <section className='ev-hl relative mx-auto grid max-w-[1060px] gap-[26px] px-[24px] pt-[72px] pb-[88px]'>
+      <section className='ev-hl relative mx-auto grid max-w-(--page-max) gap-[26px] px-[24px] pt-[72px] pb-[88px]'>
         <SectionHeading>{copy.homeHighlights}</SectionHeading>
         <div className='grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[18px]'>
           <ProjectCardLink

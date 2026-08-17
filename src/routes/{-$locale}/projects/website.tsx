@@ -73,7 +73,7 @@ const WebsiteHistory = () => {
   ];
 
   return (
-    <div className='relative mx-auto grid max-w-[860px] gap-[24px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max-article) gap-[24px] px-[24px] pt-[48px] pb-[96px]'>
       <BackLink locale={locale} />
 
       <PageHeader kicker='HISTORY' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-[10px]' />

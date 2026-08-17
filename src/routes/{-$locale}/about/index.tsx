@@ -14,7 +14,7 @@ const About = () => {
   const copy = ABOUT_COPY[locale];
 
   return (
-    <div className='relative mx-auto grid max-w-[720px] gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max-narrow) gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
       <PageHeader kicker='ABOUT' title={copy.title} className='animate-[fadeUp_0.6s_ease_backwards]' />
 
       <div className='flex animate-[fadeUp_0.6s_ease_0.08s_backwards] flex-wrap items-start gap-[22px]'>
