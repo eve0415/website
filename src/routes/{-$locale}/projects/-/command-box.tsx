@@ -14,7 +14,7 @@ const BAR = 'flex gap-[12px] border-b border-b-[rgba(160,150,255,.2)] bg-[rgba(1
 const BUTTON =
   'min-h-[44px] cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-[20px] py-[8px] font-mono text-[0.84375rem] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]';
 
-const DOTS = ['bg-[rgba(247,105,151,.8)]', 'bg-[rgba(255,217,236,.65)]', 'bg-[rgba(0,221,168,.8)]'];
+const DOTS = ['bg-[rgba(247,105,151,.8)]', 'bg-[rgba(255,217,236,.65)]', 'bg-[rgba(0,221,168,.8)]'] as const;
 
 /**
  * Fire-and-forget: the clipboard can refuse (permission, insecure context) and

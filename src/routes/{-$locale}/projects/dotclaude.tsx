@@ -12,7 +12,7 @@ import { BackLink } from './-/back-link';
 import { LinksSection } from './-/links-section';
 import { NotePanel } from './-/panel';
 
-const TAGS = ['TypeScript', 'Cloudflare Workers'];
+const TAGS = ['TypeScript', 'Cloudflare Workers'] as const;
 
 const Dotclaude = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });

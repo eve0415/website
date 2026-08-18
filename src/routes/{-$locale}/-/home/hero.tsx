@@ -36,14 +36,14 @@ const HERO_GLOWS = [
   { key: 'f', left: '12%', right: '12%', bottom: '-55px', height: '190px', color: GLOW_W, fade: 74, blur: 36 },
   { key: 'g', left: '28%', right: '32%', bottom: '-45px', height: '165px', color: GLOW_W, fade: 70, blur: 28 },
   { key: 'h', left: '54%', right: '4%', bottom: '-30px', height: '145px', color: GLOW_W, fade: 72, blur: 24 },
-];
+] as const;
 
 /** The three puffs that break over the cat's feet, in front of it. */
 const CAT_CLOUDS = [
   { key: 'a', left: '-18%', right: '48%', bottom: '-4%', height: '28%', blur: 9 },
   { key: 'b', left: '-6%', right: '-10%', bottom: '-9%', height: '32%', blur: 10 },
   { key: 'c', left: '46%', right: '-24%', bottom: '-3%', height: '25%', blur: 9 },
-];
+] as const;
 
 const CLOUDS_BACK = puffs(1_010_415, 9, -25, 40, 220, 380);
 const CLOUDS_MID = puffs(2_020_415, 11, -45, 5, 170, 300);

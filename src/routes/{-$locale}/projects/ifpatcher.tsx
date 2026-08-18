@@ -13,7 +13,7 @@ import { LinksSection } from './-/links-section';
 import { NotePanel } from './-/panel';
 import { StatCard } from './-/stat-card';
 
-const TAGS = ['Java', 'Minecraft Forge', 'ASM'];
+const TAGS = ['Java', 'Minecraft Forge', 'ASM'] as const;
 
 const LINKS = [
   { label: 'GitHub', value: 'github.com/eve0415/IFPatcher ↗', href: 'https://github.com/eve0415/IFPatcher' },

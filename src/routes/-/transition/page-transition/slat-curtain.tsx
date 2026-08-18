@@ -8,7 +8,7 @@ const SLAT_KEYFRAMES = {
   down: { in: 'slatDownIn', out: 'slatDownOut' },
 } satisfies Record<'up' | 'down', Record<Phase, string>>;
 
-const SLAT_ORDER = [0, 1, 2, 3, 4];
+const SLAT_ORDER = [0, 1, 2, 3, 4] as const;
 const LAST_SLAT = SLAT_ORDER.length - 1;
 
 export const SlatCurtain: FC<RunProps> = ({ run, onSettled }) => {

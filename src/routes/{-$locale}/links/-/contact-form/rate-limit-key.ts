@@ -23,7 +23,7 @@ const HEXTET_MAX = 0xff_ff;
 const OCTET_MAX = 0xff;
 
 /** The /96 that IPv4 addresses are embedded in as `::ffff:a.b.c.d`. */
-const V4_MAPPED_HEXTETS = [0, 0, 0, 0, 0, HEXTET_MAX];
+const V4_MAPPED_HEXTETS = [0, 0, 0, 0, 0, HEXTET_MAX] as const;
 
 const parseIpv4 = (value: string): readonly number[] | undefined => {
   if (!DOTTED_QUAD.test(value)) return undefined;

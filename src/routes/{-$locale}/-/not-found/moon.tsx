@@ -26,7 +26,7 @@ const CRATERS = [
     tint: 'rgba(138,70,200,.26)',
     shadow: 'inset 2px 2px 5px rgba(58,29,122,.45), inset -1px -2px 3px rgba(255,247,255,.25)',
   },
-];
+] as const;
 
 const ORBIT_DEPTH = 'animate-[evOrbitDepth_9s_linear_infinite]';
 

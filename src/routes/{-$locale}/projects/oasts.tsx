@@ -16,7 +16,7 @@ import { CommandBox } from './-/command-box';
 import { LinksSection } from './-/links-section';
 import { StatCard } from './-/stat-card';
 
-const TAGS = ['Rust', 'TypeScript'];
+const TAGS = ['Rust', 'TypeScript'] as const;
 
 const LINKS = [
   { label: 'GitHub', value: 'github.com/eve0415/oasts ↗', href: 'https://github.com/eve0415/oasts' },

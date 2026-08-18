@@ -15,7 +15,7 @@ import { LinksSection } from './-/links-section';
 import { NotePanel } from './-/panel';
 import { StatCard } from './-/stat-card';
 
-const TAGS = ['Rust', 'CLI'];
+const TAGS = ['Rust', 'CLI'] as const;
 
 const BREW = 'brew install eve0415/tap/cella';
 
