@@ -1,4 +1,4 @@
-import { seededRandom } from '../ui/ambient/star-field';
+import { seededRandom } from './star-field';
 
 export interface Puff {
   key: string;

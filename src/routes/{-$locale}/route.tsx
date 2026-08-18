@@ -9,9 +9,9 @@ import { LanguageSwitch } from './-/site/language-switch';
 import { activeNavKey, navItems } from './-/site/nav';
 import { SiteFooter } from './-/site/site-footer';
 import { SiteHeader } from './-/site/site-header';
-import { ShootingStar } from './-/ui/ambient/shooting-star';
-import { skyCss } from './-/ui/ambient/sky-background/palette';
-import { StarField } from './-/ui/ambient/star-field';
+import { skyCss } from './-/sky/palette';
+import { ShootingStar } from './-/sky/shooting-star';
+import { StarField } from './-/sky/star-field';
 
 /**
  * Midnight — the design's canonical sky and the one `__root.css` ships tokens

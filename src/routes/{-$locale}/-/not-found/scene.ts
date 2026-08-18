@@ -1,7 +1,7 @@
 import { tw } from '#lib/tw';
 
-import { puffs } from '../site/puffs';
-import { skyCss } from '../ui/ambient/sky-background/palette';
+import { skyCss } from '../sky/palette';
+import { puffs } from '../sky/puffs';
 
 export const SKY = skyCss(0);
 
