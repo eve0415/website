@@ -113,7 +113,7 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
           <output
             key={copies}
             className={cn(
-              'block h-[19px] truncate font-mono text-(length:--text-caption) leading-[19px] text-(--hue-mint)',
+              'block h-[1.1875rem] truncate font-mono text-(length:--text-caption) leading-[1.1875rem] text-(--hue-mint)',
               copied && 'animate-[fadeIn_0.25s_ease_both]',
             )}
           >
