@@ -14,7 +14,7 @@ const FRAME = tw(
 const BAR = tw('flex gap-[12px] border-b border-b-[rgba(160,150,255,.2)] bg-[rgba(13,8,54,.72)]');
 
 const BUTTON = tw(
-  'min-h-[44px] cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-[20px] py-[8px] font-mono text-[0.84375rem] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]',
+  'min-h-(--hit-target) cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-[20px] py-[8px] font-mono text-[0.84375rem] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]',
 );
 
 const DOTS = [tw('bg-[rgba(247,105,151,.8)]'), tw('bg-[rgba(255,217,236,.65)]'), tw('bg-[rgba(0,221,168,.8)]')] as const;

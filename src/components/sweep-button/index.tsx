@@ -4,7 +4,7 @@ import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
 const ROOT = tw(
-  'group relative isolate inline-flex min-h-[44px] cursor-pointer items-center overflow-hidden rounded-[999px] border border-(--line-white) px-[28px] py-[13px] font-sans text-(length:--text-body) font-bold text-(--ink-title) no-underline transition-[border-color] duration-300 ease-[ease] hover:border-[rgba(4,254,255,0.9)]',
+  'group relative isolate inline-flex min-h-(--hit-target) cursor-pointer items-center overflow-hidden rounded-[999px] border border-(--line-white) px-[28px] py-[13px] font-sans text-(length:--text-body) font-bold text-(--ink-title) no-underline transition-[border-color] duration-300 ease-[ease] hover:border-[rgba(4,254,255,0.9)]',
 );
 
 const SWEEP = tw(

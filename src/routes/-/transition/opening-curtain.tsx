@@ -99,7 +99,7 @@ export const OpeningCurtain: FC<{ skipLabel: string }> = ({ skipLabel }) => {
           onClick={() => {
             setOpen(false);
           }}
-          className='pointer-events-auto absolute right-[24px] bottom-[24px] min-h-[44px] animate-[fadeIn_.4s_ease_.8s_both] rounded-[999px] border border-(--line-white) bg-[rgba(0,0,10,.4)] px-[22px] py-[10px] font-sans text-(length:--text-small) text-(--ink-title)'
+          className='pointer-events-auto absolute right-[24px] bottom-[24px] min-h-(--hit-target) animate-[fadeIn_.4s_ease_.8s_both] rounded-[999px] border border-(--line-white) bg-[rgba(0,0,10,.4)] px-[22px] py-[10px] font-sans text-(length:--text-small) text-(--ink-title)'
         >
           {skipLabel}
         </button>

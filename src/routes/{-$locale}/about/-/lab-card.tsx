@@ -50,7 +50,7 @@ export const LabCard: FC<LabCardProps> = ({ locale }) => {
       </div>
 
       <details className='ev-labdt'>
-        <summary className='flex min-h-[44px] items-center gap-[10px] text-(length:--text-nav) font-bold text-(--ink-ice)'>
+        <summary className='flex min-h-(--hit-target) items-center gap-[10px] text-(length:--text-nav) font-bold text-(--ink-ice)'>
           <span aria-hidden='true' className='ev-labarr inline-block text-(--accent-cyan)'>
             →
           </span>
