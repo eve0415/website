@@ -405,7 +405,7 @@ export const HISTORY_COPY = {
     v4Title: 'v4 — TanStack Start へ',
     v4Body:
       '約1年半ぶりの全面作り直し。Next.js をやめて TanStack Start + React 19(React Compiler) + Tailwind CSS 4、Cloudflare Workers 上で SSR という構成に。コミット履歴から AI がスキルを判定する機能や、BSOD 風のエラー画面などの実験も足しています。リンターは oxlint、フォーマッターは oxfmt。',
-    v5Title: 'v5 — 「雲の上」',
+    v5Title: 'v5 — 夜空の再設計',
     v5Body:
       '夜空と雲海の世界観で再設計した5代目。いま見ているこのデザインです。技術を入れ替える回ではなく、見た目と言葉を決め直す回にしました。デザインは Claude Design で組み立てて、色・文字・余白・動きをトークンに落としてからコンポーネントとして積み上げています。',
     tagDS: 'デザインシステム',
@@ -424,7 +424,7 @@ export const HISTORY_COPY = {
     v4Title: 'v4 — Enter TanStack Start',
     v4Body:
       'First full rebuild in a year and a half. Next.js out; TanStack Start + React 19 (React Compiler) + Tailwind CSS 4 in, SSR on Cloudflare Workers. Picked up some side quests too: AI grading my skills off commit history, a BSOD-style error screen. oxlint lints, oxfmt formats.',
-    v5Title: 'v5 — “Above the Clouds”',
+    v5Title: 'v5 — The Night-Sky Redesign',
     v5Body:
       "Generation five, rebuilt around a night sky and a sea of clouds — the one you're looking at. This round wasn't a stack swap; it was about redeciding how the site looks and talks. Assembled in Claude Design: color, type, spacing, and motion boiled down to tokens, then stacked back up as components.",
     tagDS: 'Design system',
