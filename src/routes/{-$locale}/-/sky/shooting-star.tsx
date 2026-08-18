@@ -18,24 +18,24 @@ const VARIANT = {
   sweepLeft: {
     animation: 'evShootL',
     head: tw('size-[7px] shadow-(--glow-star)'),
-    tail: tw('ml-[-3px] h-[2px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.6),transparent)]'),
+    tail: tw('ml-[-3px] h-0.5 bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.6),transparent)]'),
     headFirst: true,
   },
   sweepRight: {
     animation: 'evShootR',
     head: tw('size-[7px] shadow-(--glow-star)'),
-    tail: tw('mr-[-3px] h-[2px] bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.55),#04feff)]'),
+    tail: tw('mr-[-3px] h-0.5 bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.55),#04feff)]'),
     headFirst: false,
   },
   steep: {
     animation: 'evShootB',
-    head: tw('size-[6px] shadow-(--glow-comet-head)'),
-    tail: tw('ml-[-3px] h-[2px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.55),transparent)]'),
+    head: tw('size-1.5 shadow-(--glow-comet-head)'),
+    tail: tw('ml-[-3px] h-0.5 bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.55),transparent)]'),
     headFirst: true,
   },
   long: {
     animation: 'evShootD',
-    head: tw('size-[6px] shadow-[0_0_9px_2px_rgba(159,232,255,.7)]'),
+    head: tw('size-1.5 shadow-[0_0_9px_2px_rgba(159,232,255,.7)]'),
     tail: tw('ml-[-3px] h-[1.5px] bg-[linear-gradient(90deg,#9fe8ff,rgba(0,221,168,.4),transparent)]'),
     headFirst: true,
   },
@@ -67,7 +67,7 @@ export const ShootingStar: FC<ShootingStarProps> = props => {
   const variant = props.arc === 'steep' || props.arc === 'long' ? VARIANT[props.arc] : props.direction === 'right' ? VARIANT.sweepRight : VARIANT.sweepLeft;
 
   const head = <span className={cn('flex-none rounded-[50%] bg-(--star-white)', variant.head)} />;
-  const trail = <span className={cn('rounded-[2px]', variant.tail)} style={{ width: tail }} />;
+  const trail = <span className={cn('rounded-xs', variant.tail)} style={{ width: tail }} />;
 
   return (
     <div

@@ -8,7 +8,7 @@ const ROOT = tw(
 );
 
 /** The bar stays full-bleed; only its contents stop at the shell width. */
-const INNER = tw('mx-auto flex max-w-(--page-max-wide) flex-wrap items-center gap-[18px]');
+const INNER = tw('mx-auto flex max-w-(--page-max-wide) flex-wrap items-center gap-4.5');
 
 interface SiteFooterProps {
   className?: string;

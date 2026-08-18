@@ -7,7 +7,7 @@ type ButtonVariant = 'primary' | 'glass' | 'ghost';
 type ButtonSize = 'md' | 'sm';
 
 const BASE = tw(
-  'inline-flex min-h-(--hit-target) cursor-pointer items-center gap-[10px] rounded-[999px] px-[26px] py-[13px] font-sans text-[1rem] font-bold no-underline active:transform-[scale(0.97)]',
+  'inline-flex min-h-(--hit-target) cursor-pointer items-center gap-2.5 rounded-[999px] px-6.5 py-[13px] font-sans text-[1rem] font-bold no-underline active:transform-[scale(0.97)]',
 );
 
 const VARIANT = {
@@ -18,13 +18,13 @@ const VARIANT = {
     'border border-(--line-white) bg-(--surface-glass) text-(--ink-title) backdrop-blur-[4px] transition-[border-color,background] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:bg-[rgba(4,254,255,0.12)]',
   ),
   ghost: tw(
-    'border border-(--line-accent) px-[18px] py-[8px] text-(length:--text-small) text-(--hue-cyan) transition-[background] duration-150 ease-[ease] hover:bg-[rgba(4,254,255,0.1)]',
+    'border border-(--line-accent) px-4.5 py-2 text-(length:--text-small) text-(--hue-cyan) transition-[background] duration-150 ease-[ease] hover:bg-[rgba(4,254,255,0.1)]',
   ),
 } satisfies Record<ButtonVariant, string>;
 
 const SIZE = {
   md: '',
-  sm: tw('px-[18px] py-[8px] text-(length:--text-small)'),
+  sm: tw('px-4.5 py-2 text-(length:--text-small)'),
 } satisfies Record<ButtonSize, string>;
 
 interface ButtonBaseProps {

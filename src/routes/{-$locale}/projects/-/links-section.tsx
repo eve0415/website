@@ -19,7 +19,7 @@ interface LinksSectionProps {
 }
 
 export const LinksSection: FC<LinksSectionProps> = ({ ink, heading, links }) => (
-  <section className='ev-reveal grid gap-[12px]'>
+  <section className='ev-reveal grid gap-3'>
     <PanelHeading ink={ink}>{heading}</PanelHeading>
     {links.map(link => (
       <LinkRow key={link.href} href={link.href} target='_blank' rel='noopener' label={link.label} value={link.value} className='flex-wrap py-[15px]' />

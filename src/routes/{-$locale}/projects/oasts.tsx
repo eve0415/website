@@ -28,7 +28,7 @@ const PACKAGE_MANAGERS = ['pnpm', 'npm', 'bun', 'yarn'] as const;
 type PackageManager = (typeof PACKAGE_MANAGERS)[number];
 
 const TAB = tw(
-  '-mb-px min-h-[42px] cursor-pointer rounded-t-[9px] border border-b-0 p-[10px_16px_11px] font-mono text-(length:--text-caption) transition-[color,background] duration-150 ease-[ease] hover:text-(--ink-ice)',
+  '-mb-px min-h-10.5 cursor-pointer rounded-t-[9px] border border-b-0 p-[10px_16px_11px] font-mono text-(length:--text-caption) transition-[color,background] duration-150 ease-[ease] hover:text-(--ink-ice)',
 );
 
 const segmentsFor = (pm: PackageManager): readonly CommandSegment[] => [
@@ -117,22 +117,22 @@ const Oasts = () => {
   );
 
   return (
-    <div className='relative mx-auto grid max-w-(--page-max-article) gap-[24px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max-article) gap-6 px-6 pt-12 pb-24'>
       <BackLink locale={locale} />
 
       <PageHeader
         kicker='PROJECT'
         title='oasts'
         lede={copy.lede}
-        className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-[10px]'
+        className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-2.5'
         tags={TAGS.map(tag => (
-          <Tag key={tag} hue='sky' className='px-[12px] py-[3px]'>
+          <Tag key={tag} hue='sky' className='px-3 py-[3px]'>
             {tag}
           </Tag>
         ))}
       />
 
-      <div className='ev-reveal grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[14px]'>
+      <div className='ev-reveal grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3.5'>
         <StatCard hue='sky' value={copy.stat1} label={copy.stat1Label} />
         <StatCard hue='sky' value={copy.stat2} label={copy.stat2Label} />
         <StatCard hue='sky' value='0' label={copy.stat3Label} />

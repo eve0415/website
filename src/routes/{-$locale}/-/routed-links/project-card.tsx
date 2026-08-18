@@ -15,11 +15,11 @@ const STAT = {
 } satisfies Record<Hue, string>;
 
 const LAYOUT = {
-  featured: tw('flex flex-wrap items-center justify-between gap-[24px] rounded-(--radius-card-lg) border-(--line-accent-dashed) p-(--pad-card-lg)'),
-  plain: tw('grid content-start gap-[10px]'),
+  featured: tw('flex flex-wrap items-center justify-between gap-6 rounded-(--radius-card-lg) border-(--line-accent-dashed) p-(--pad-card-lg)'),
+  plain: tw('grid content-start gap-2.5'),
 };
 
-const TITLE_ROW = tw('flex flex-wrap items-center gap-[10px]');
+const TITLE_ROW = tw('flex flex-wrap items-center gap-2.5');
 const DESCRIPTION = tw('text-(length:--text-body) leading-[1.75] text-(--ink-muted)');
 /** Reads as a link cue, so it keeps the ice hue whatever the card's hue is. */
 const CTA = tw('text-(length:--text-small) font-bold text-(--hue-cyan)');
@@ -52,7 +52,7 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
 
   const body = featured ? (
     <>
-      <span className='grid flex-[1_1_320px] gap-[8px]'>
+      <span className='grid flex-[1_1_320px] gap-2'>
         <span className={TITLE_ROW}>
           <span className='text-[1.375rem] font-bold text-(--ink-title)'>{name}</span>
           {tag ? <Tag hue={hue}>{tag}</Tag> : null}
@@ -61,7 +61,7 @@ export const ProjectCard: FC<ProjectCardProps> = props => {
         {cta ? <span className={CTA}>{cta}</span> : null}
       </span>
       {stat ? (
-        <span className='grid gap-[2px] text-right'>
+        <span className='grid gap-0.5 text-right'>
           <span className={cn('text-[clamp(1.75rem,4vw,2.5rem)] leading-[1.1] font-bold', statColor)}>{stat}</span>
           {statLabel ? <span className='text-(length:--text-caption) text-(--ink-ice)'>{statLabel}</span> : null}
         </span>

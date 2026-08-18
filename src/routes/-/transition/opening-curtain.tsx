@@ -72,25 +72,25 @@ export const OpeningCurtain: FC<{ skipLabel: string }> = ({ skipLabel }) => {
     <div className='pointer-events-none fixed inset-0 z-50 overflow-hidden'>
       <div className={`${HALF} top-0 bottom-1/2 animate-[curtainUp_.8s_var(--ease-curtain)_2.15s_forwards]`}>
         <span aria-hidden='true' className={`${STAR} top-[30%] left-[15%] size-[3px] animate-[twinkle_1.8s_ease-in-out_infinite] bg-(--star-white)`} />
-        <span aria-hidden='true' className={`${STAR} top-[55%] left-[70%] size-[2px] animate-[twinkle_2.2s_ease-in-out_.5s_infinite] bg-(--star-white)`} />
-        <span aria-hidden='true' className={`${STAR} top-[20%] left-[85%] size-[2px] animate-[twinkle_1.6s_ease-in-out_.9s_infinite] bg-(--star-ice)`} />
-        <span aria-hidden='true' className={`${STAR} top-[70%] left-[40%] size-[2px] animate-[twinkle_2s_ease-in-out_.3s_infinite] bg-(--star-white)`} />
+        <span aria-hidden='true' className={`${STAR} top-[55%] left-[70%] size-0.5 animate-[twinkle_2.2s_ease-in-out_.5s_infinite] bg-(--star-white)`} />
+        <span aria-hidden='true' className={`${STAR} top-[20%] left-[85%] size-0.5 animate-[twinkle_1.6s_ease-in-out_.9s_infinite] bg-(--star-ice)`} />
+        <span aria-hidden='true' className={`${STAR} top-[70%] left-[40%] size-0.5 animate-[twinkle_2s_ease-in-out_.3s_infinite] bg-(--star-white)`} />
       </div>
 
       <div className={`${HALF} top-1/2 bottom-0 animate-[curtainDown_.8s_var(--ease-curtain)_2.15s_forwards]`}>
-        <span aria-hidden='true' className={`${STAR} top-[40%] left-[25%] size-[2px] animate-[twinkle_2.1s_ease-in-out_.7s_infinite] bg-(--star-white)`} />
+        <span aria-hidden='true' className={`${STAR} top-[40%] left-[25%] size-0.5 animate-[twinkle_2.1s_ease-in-out_.7s_infinite] bg-(--star-white)`} />
         <span aria-hidden='true' className={`${STAR} top-[65%] left-[80%] size-[3px] animate-[twinkle_1.7s_ease-in-out_.2s_infinite] bg-(--star-ice)`} />
       </div>
 
       <div aria-hidden='true' className='absolute top-0 left-0 animate-[cometFly_1.1s_cubic-bezier(.3,.1,.35,1)_.35s_both]'>
         <div className='flex rotate-[-11deg] items-center'>
-          <span className='h-[3px] w-[180px] rounded-[2px] bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.7),#04feff)]' />
-          <span className='ml-[-4px] size-[10px] rounded-full bg-(--star-white) shadow-[0_0_14px_4px_rgba(4,254,255,.8)]' />
+          <span className='h-[3px] w-45 rounded-xs bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.7),#04feff)]' />
+          <span className='ml-[-4px] size-2.5 rounded-full bg-(--star-white) shadow-[0_0_14px_4px_rgba(4,254,255,.8)]' />
         </div>
       </div>
 
       <div aria-hidden='true' className='pointer-events-none absolute inset-0 flex items-center justify-center'>
-        <span className='block h-[2px] animate-[lineGrow_.5s_ease-out_1.5s_both,lineFade_.3s_ease_2.1s_forwards] rounded-[1px] bg-[linear-gradient(90deg,transparent,#04feff_25%,#00dda8_75%,transparent)] shadow-[0_0_18px_rgba(4,254,255,.7)]' />
+        <span className='block h-0.5 animate-[lineGrow_.5s_ease-out_1.5s_both,lineFade_.3s_ease_2.1s_forwards] rounded-[1px] bg-[linear-gradient(90deg,transparent,#04feff_25%,#00dda8_75%,transparent)] shadow-[0_0_18px_rgba(4,254,255,.7)]' />
       </div>
 
       {plays ? (
@@ -99,7 +99,7 @@ export const OpeningCurtain: FC<{ skipLabel: string }> = ({ skipLabel }) => {
           onClick={() => {
             setOpen(false);
           }}
-          className='pointer-events-auto absolute right-[24px] bottom-[24px] min-h-(--hit-target) animate-[fadeIn_.4s_ease_.8s_both] rounded-[999px] border border-(--line-white) bg-[rgba(0,0,10,.4)] px-[22px] py-[10px] font-sans text-(length:--text-small) text-(--ink-title)'
+          className='pointer-events-auto absolute right-6 bottom-6 min-h-(--hit-target) animate-[fadeIn_.4s_ease_.8s_both] rounded-[999px] border border-(--line-white) bg-[rgba(0,0,10,.4)] px-5.5 py-2.5 font-sans text-(length:--text-small) text-(--ink-title)'
         >
           {skipLabel}
         </button>

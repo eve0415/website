@@ -34,7 +34,7 @@ interface NotePanelProps {
 }
 
 export const NotePanel: FC<NotePanelProps> = ({ ink, head, body, dashed = false }) => (
-  <Card variant={dashed ? 'dashed' : 'solid'} className={cn('ev-reveal grid', dashed ? 'gap-[10px] p-[20px_22px]' : 'gap-[12px] p-[22px]')}>
+  <Card variant={dashed ? 'dashed' : 'solid'} className={cn('ev-reveal grid', dashed ? 'gap-2.5 p-[20px_22px]' : 'gap-3 p-5.5')}>
     <PanelHeading ink={ink}>{head}</PanelHeading>
     <p className={cn('text-(length:--text-body) text-(--ink-muted)', dashed ? 'leading-[1.8]' : 'leading-[1.9]')}>{body}</p>
   </Card>

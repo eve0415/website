@@ -9,7 +9,7 @@ import { tw } from '#lib/tw';
 import { localeParams } from '../../-/routed-links';
 
 const ROOT = tw(
-  'inline-flex min-h-(--hit-target) animate-[fadeUp_0.6s_ease_backwards] items-center gap-[8px] justify-self-start text-(length:--text-nav) font-bold text-(--ink-ice) no-underline transition-colors duration-150 ease-[ease] hover:text-(--accent-cyan)',
+  'inline-flex min-h-(--hit-target) animate-[fadeUp_0.6s_ease_backwards] items-center gap-2 justify-self-start text-(length:--text-nav) font-bold text-(--ink-ice) no-underline transition-colors duration-150 ease-[ease] hover:text-(--accent-cyan)',
 );
 
 interface BackLinkProps {

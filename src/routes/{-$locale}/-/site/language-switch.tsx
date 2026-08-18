@@ -12,10 +12,10 @@ import { tw } from '#lib/tw';
  * row, so `--header-h` — and the `scroll-padding-top` derived from it — is only
  * right for as long as the two agree.
  */
-const GROUP = tw('inline-flex min-h-(--header-row) items-center rounded-[999px] border border-(--line-header) p-[2px]');
+const GROUP = tw('inline-flex min-h-(--header-row) items-center rounded-[999px] border border-(--line-header) p-0.5');
 
 const PILL = tw(
-  'inline-flex min-h-[40px] min-w-[46px] items-center justify-center rounded-[999px] px-[13px] py-[6px] font-sans text-[0.78125rem] font-bold tracking-[0.08em] no-underline transition-[color,background] duration-150 ease-[ease] active:transform-[scale(0.94)]',
+  'inline-flex min-h-10 min-w-11.5 items-center justify-center rounded-[999px] px-[13px] py-1.5 font-sans text-[0.78125rem] font-bold tracking-[0.08em] no-underline transition-[color,background] duration-150 ease-[ease] active:transform-[scale(0.94)]',
 );
 
 const STATE = {

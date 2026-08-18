@@ -4,7 +4,7 @@ import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
 const BASE = tw(
-  'flex items-center justify-between gap-[12px] rounded-(--radius-row) border border-(--line-row) bg-(--surface-row) px-[20px] py-[17px] font-sans text-(--ink-title) no-underline',
+  'flex items-center justify-between gap-3 rounded-(--radius-row) border border-(--line-row) bg-(--surface-row) px-5 py-[17px] font-sans text-(--ink-title) no-underline',
 );
 
 const ANCHOR = tw(
@@ -36,9 +36,9 @@ export const LinkRow: FC<LinkRowProps> = props => {
 
   if (rest.href === undefined) {
     return (
-      <div className={cn(BASE, 'flex-wrap px-[20px] py-[12px]', className)} {...rest}>
+      <div className={cn(BASE, 'flex-wrap px-5 py-3', className)} {...rest}>
         <strong>{label}</strong>
-        <span className='flex items-center gap-[12px]'>
+        <span className='flex items-center gap-3'>
           {value ? <span className={VALUE}>{value}</span> : null}
           {action}
         </span>

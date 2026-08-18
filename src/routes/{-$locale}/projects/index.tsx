@@ -15,10 +15,10 @@ const Works = () => {
   const params = { locale: locale === 'en' ? 'en' : undefined };
 
   return (
-    <div className='relative mx-auto grid max-w-(--page-max) gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max) gap-7 px-6 pt-12 pb-24'>
       <PageHeader kicker='WORKS' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_backwards]' />
 
-      <div className='grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-[18px]'>
+      <div className='grid grid-cols-[repeat(auto-fit,minmax(280px,1fr))] gap-4.5'>
         <ProjectCardLink
           to='/{-$locale}/projects/ifpatcher'
           params={params}

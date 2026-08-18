@@ -193,8 +193,8 @@ export const NotFound = () => {
         <ShootingStar arc='long' tail={200} duration={26} delay={11} className='top-[46%] right-[-4%]' />
         <span ref={sstarRef} aria-hidden='true' className='ev-404-sstar absolute top-0 left-0 opacity-0'>
           <span className='flex items-center'>
-            <span className='mr-[-3px] h-[2px] w-[150px] rounded-[2px] bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.6),#04feff)]' />
-            <span className='size-[8px] rounded-[50%] bg-(--star-white) shadow-(--glow-star)' />
+            <span className='mr-[-3px] h-0.5 w-37.5 rounded-xs bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.6),#04feff)]' />
+            <span className='size-2 rounded-[50%] bg-(--star-white) shadow-(--glow-star)' />
           </span>
         </span>
       </div>
@@ -204,7 +204,7 @@ export const NotFound = () => {
       </SiteHeader>
 
       <main className='pointer-events-none relative z-3 grid flex-1 place-items-center px-[clamp(20px,5vw,48px)] pt-[clamp(8px,1.6svh,28px)] pb-[clamp(88px,18svh,250px)]'>
-        <div className='pointer-events-auto grid max-w-[760px] justify-items-center gap-[clamp(7px,1.4svh,18px)] text-center'>
+        <div className='pointer-events-auto grid max-w-190 justify-items-center gap-[clamp(7px,1.4svh,18px)] text-center'>
           <title>{copy.docTitle}</title>
 
           <p className='animate-[fadeUp_0.6s_ease_0.15s_backwards] text-(length:--text-caption) tracking-[0.26em] text-(--ink-ice)'>
@@ -237,7 +237,7 @@ export const NotFound = () => {
             </span>
           </div>
 
-          <h1 className='mt-[6px] animate-[fadeUp_0.7s_ease_0.75s_backwards] text-[clamp(1.375rem,min(4.4vw,4.6svh),2.375rem)] leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_24px_rgba(3,1,20,.6)]'>
+          <h1 className='mt-1.5 animate-[fadeUp_0.7s_ease_0.75s_backwards] text-[clamp(1.375rem,min(4.4vw,4.6svh),2.375rem)] leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_24px_rgba(3,1,20,.6)]'>
             {copy.title}
           </h1>
 
@@ -247,7 +247,7 @@ export const NotFound = () => {
             {copy.lede2}
           </p>
 
-          <div className='relative mt-[8px] flex animate-[fadeUp_0.7s_ease_1.05s_backwards] flex-wrap justify-center gap-[14px]'>
+          <div className='relative mt-2 flex animate-[fadeUp_0.7s_ease_1.05s_backwards] flex-wrap justify-center gap-3.5'>
             <ButtonLink to='/{-$locale}' params={localeParams(locale)}>
               {copy.btnHome}
             </ButtonLink>
@@ -257,7 +257,7 @@ export const NotFound = () => {
             <Button
               variant='ghost'
               disabled={searching || done}
-              className='min-w-[186px] justify-center disabled:pointer-events-none disabled:cursor-default disabled:opacity-45'
+              className='min-w-46.5 justify-center disabled:pointer-events-none disabled:cursor-default disabled:opacity-45'
               onClick={() => {
                 if (searching || done) return;
                 setSearching(true);
@@ -270,7 +270,7 @@ export const NotFound = () => {
 
             <div
               aria-live='polite'
-              className='pointer-events-none absolute top-[calc(100%+16px)] left-1/2 grid w-[min(92vw,640px)] -translate-x-1/2 content-start justify-items-center gap-[10px]'
+              className='pointer-events-none absolute top-[calc(100%+16px)] left-1/2 grid w-[min(92vw,640px)] -translate-x-1/2 content-start justify-items-center gap-2.5'
             >
               {item !== undefined && !searching ? (
                 <p className='ev-404-resline text-(length:--text-ui) leading-[1.7] text-(--ink-ice) [text-shadow:0_1px_12px_rgba(3,1,20,.8)] [view-transition-name:resline]'>
@@ -283,14 +283,14 @@ export const NotFound = () => {
                 </p>
               ) : null}
               {foundCount > 0 ? (
-                <div className='flex flex-wrap items-center justify-center gap-[8px]'>
-                  <span className='rounded-[999px] border border-(--line-panel) bg-(--surface-panel) px-[12px] py-[4px] text-[0.78125rem] tracking-[0.14em] text-(--ink-muted)'>
+                <div className='flex flex-wrap items-center justify-center gap-2'>
+                  <span className='rounded-[999px] border border-(--line-panel) bg-(--surface-panel) px-3 py-1 text-[0.78125rem] tracking-[0.14em] text-(--ink-muted)'>
                     {copy.foundLabel}
                   </span>
                   {copy.items.slice(0, foundCount).map((label, index) => (
                     <span
                       key={label}
-                      className='ev-404-chip rounded-[999px] border border-dashed border-(--line-accent-dashed) bg-(--surface-panel) px-[12px] py-[4px] text-[0.78125rem] text-(--ink-ice)'
+                      className='ev-404-chip rounded-[999px] border border-dashed border-(--line-accent-dashed) bg-(--surface-panel) px-3 py-1 text-[0.78125rem] text-(--ink-ice)'
                       style={{ viewTransitionName: `chip${index}` }}
                     >
                       {label}
@@ -310,12 +310,12 @@ export const NotFound = () => {
         />
         <span
           aria-hidden='true'
-          className='absolute bottom-[-30px] left-[8%] h-[150px] w-[52vw] rounded-[50%] blur-[36px]'
+          className='absolute bottom-[-30px] left-[8%] h-37.5 w-[52vw] rounded-[50%] blur-[36px]'
           style={{ background: glow('rgba(142,70,217,.34)', 72) }}
         />
         <span
           aria-hidden='true'
-          className='absolute right-[4%] bottom-[-20px] h-[130px] w-[44vw] rounded-[50%] blur-[32px]'
+          className='absolute right-[4%] bottom-[-20px] h-32.5 w-[44vw] rounded-[50%] blur-[32px]'
           style={{ background: glow('rgba(138,70,200,.3)', 72) }}
         />
 
@@ -333,7 +333,7 @@ export const NotFound = () => {
             style={{ background: CAT_GLOW }}
           />
           {bubbleOn ? (
-            <span className='ev-404-bubble absolute bottom-[calc(100%+14px)] left-1/2 z-2 -translate-x-1/2 rounded-[999px] border border-(--line-accent) bg-(--surface-toast) px-[16px] py-[11px] text-[0.84375rem] leading-none whitespace-nowrap text-[#d8f9ff] shadow-(--glow-toast)'>
+            <span className='ev-404-bubble absolute bottom-[calc(100%+14px)] left-1/2 z-2 -translate-x-1/2 rounded-[999px] border border-(--line-accent) bg-(--surface-toast) px-4 py-[11px] text-[0.84375rem] leading-none whitespace-nowrap text-[#d8f9ff] shadow-(--glow-toast)'>
               {copy.meows[meowIdx] ?? copy.meows[0]}
               <span
                 aria-hidden='true'

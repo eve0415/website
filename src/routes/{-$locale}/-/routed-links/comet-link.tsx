@@ -6,7 +6,7 @@ import './comet-link.css';
 import { tw } from '#lib/tw';
 
 const ROOT = tw(
-  'group relative inline-flex min-h-(--hit-target) cursor-pointer items-center gap-[10px] font-sans text-(length:--text-ui) font-bold tracking-[0.06em] text-(--link) no-underline hover:text-(--link-hover)',
+  'group relative inline-flex min-h-(--hit-target) cursor-pointer items-center gap-2.5 font-sans text-(length:--text-ui) font-bold tracking-[0.06em] text-(--link) no-underline hover:text-(--link-hover)',
 );
 
 interface CometLinkBaseProps {
@@ -31,14 +31,14 @@ export const CometLink: FC<CometLinkProps> = props => {
       <span className='relative inline-block pb-[5px]'>
         {children}
         <span
-          className='absolute inset-x-0 bottom-0 h-[2px] origin-right transform-[scaleX(0)] rounded-[1px] bg-(image:--grad-comet) transition-[transform] duration-500 ease-(--ease-comet) group-hover:origin-left group-hover:transform-[scaleX(1)]'
+          className='absolute inset-x-0 bottom-0 h-0.5 origin-right transform-[scaleX(0)] rounded-[1px] bg-(image:--grad-comet) transition-[transform] duration-500 ease-(--ease-comet) group-hover:origin-left group-hover:transform-[scaleX(1)]'
           aria-hidden='true'
         />
         <span
           className='absolute bottom-[-1.5px] left-0 h-[5px] w-full transform-[translateX(calc(-100%+10px))] opacity-0 group-hover:[animation:evCometRun_0.6s_var(--ease-comet)_0.08s_both]'
           aria-hidden='true'
         >
-          <span className='absolute top-px right-0 h-[3px] w-[26px] rounded-[3px] bg-[linear-gradient(90deg,transparent,rgba(252,247,253,.95))] shadow-[0_0_8px_1px_rgba(4,254,255,.8)]' />
+          <span className='absolute top-px right-0 h-[3px] w-6.5 rounded-[3px] bg-[linear-gradient(90deg,transparent,rgba(252,247,253,.95))] shadow-[0_0_8px_1px_rgba(4,254,255,.8)]' />
           <span className='absolute top-0 right-[-2px] size-[5px] rounded-[50%] bg-(--star-white) shadow-[0_0_10px_3px_rgba(4,254,255,.9)]' />
         </span>
         <span

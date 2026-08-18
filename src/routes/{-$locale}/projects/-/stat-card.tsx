@@ -22,7 +22,7 @@ interface StatCardProps {
 }
 
 export const StatCard: FC<StatCardProps> = ({ hue, value, label, note }) => (
-  <Card className='grid content-start gap-[4px] p-[20px_22px]'>
+  <Card className='grid content-start gap-1 p-[20px_22px]'>
     <span className={cn('text-[clamp(1.625rem,3vw,2.125rem)] leading-[1.1] font-bold', VALUE[hue])}>{value}</span>
     <span className='text-(length:--text-caption) text-(--ink-ice)'>{label}</span>
     {note === undefined ? null : <span className='text-[0.78125rem] leading-[1.7] text-[#9a93c8]'>{note}</span>}

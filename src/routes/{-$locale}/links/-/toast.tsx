@@ -4,7 +4,7 @@ import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
 const BASE = tw(
-  'inline-block rounded-[999px] border border-(--line-accent) bg-(--surface-toast) px-[22px] py-[12px] font-sans text-(length:--text-nav) text-[#d8f9ff] shadow-(--glow-toast)',
+  'inline-block rounded-[999px] border border-(--line-accent) bg-(--surface-toast) px-5.5 py-3 font-sans text-(length:--text-nav) text-[#d8f9ff] shadow-(--glow-toast)',
 );
 
 interface ToastProps extends Omit<ComponentPropsWithoutRef<'div'>, 'style' | 'children'> {

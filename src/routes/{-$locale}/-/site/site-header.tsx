@@ -10,10 +10,10 @@ import { tw } from '#lib/tw';
 const ROOT = tw('ev-hdr sticky top-0 z-10 border-b border-b-(--line-header) bg-(--surface-header) p-(--header-pad) font-sans backdrop-blur-[10px]');
 
 /** The bar stays full-bleed; only its contents stop at the shell width. */
-const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-[12px]');
+const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-3');
 
 /** Exported so a caller supplying its own `brandElement` can style it identically. */
-export const BRAND_CLASS = tw('flex min-h-(--hit-target) items-center gap-[10px] text-[1rem] font-bold text-[#eae6ff] no-underline');
+export const BRAND_CLASS = tw('flex min-h-(--hit-target) items-center gap-2.5 text-[1rem] font-bold text-[#eae6ff] no-underline');
 
 /** Exported so a caller supplying its own `element` can style it identically. */
 export const NAV_LINK_CLASS = tw(
@@ -90,9 +90,7 @@ export const SiteHeader: FC<SiteHeaderProps> = ({
       <div className={INNER}>
         {brandElement === undefined ? (
           <a className={BRAND_CLASS} href={brandHref} onClick={onSelect === undefined ? undefined : handleBrandClick}>
-            {avatarSrc ? (
-              <img src={avatarSrc} alt='' width='32' height='32' className='size-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' />
-            ) : null}
+            {avatarSrc ? <img src={avatarSrc} alt='' width='32' height='32' className='size-8 rounded-[50%] border border-[rgba(252,247,253,.4)]' /> : null}
             {brand}
           </a>
         ) : (
@@ -126,12 +124,12 @@ export const SiteHeader: FC<SiteHeaderProps> = ({
         </nav>
       </div>
       <span
-        className='ev-hdr-line pointer-events-none absolute inset-x-0 -bottom-px h-[2px] opacity-0 transition-opacity duration-[0.4s] ease-(--ease-comet)'
+        className='ev-hdr-line pointer-events-none absolute inset-x-0 -bottom-px h-0.5 opacity-0 transition-opacity duration-[0.4s] ease-(--ease-comet)'
         aria-hidden='true'
       >
         <span />
       </span>
-      <span className='ev-prg pointer-events-none absolute inset-x-0 -bottom-px h-[2px] opacity-0' aria-hidden='true'>
+      <span className='ev-prg pointer-events-none absolute inset-x-0 -bottom-px h-0.5 opacity-0' aria-hidden='true'>
         <span className='ev-prg-b' />
         <span className='ev-prg-h' />
       </span>

@@ -4,7 +4,7 @@ import type { FC, ReactNode } from 'react';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
-const BASE = tw('inline-flex items-center rounded-[999px] border px-[10px] py-[2px] font-sans text-(length:--text-tag)');
+const BASE = tw('inline-flex items-center rounded-[999px] border px-2.5 py-0.5 font-sans text-(length:--text-tag)');
 
 const HUES = {
   cyan: tw('border-(--hue-cyan-line) text-(--hue-cyan)'),

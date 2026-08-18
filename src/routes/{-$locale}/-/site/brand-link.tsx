@@ -22,7 +22,7 @@ interface BrandLinkProps {
  */
 export const BrandLink: FC<BrandLinkProps> = ({ locale }) => (
   <Link to='/{-$locale}' params={localeParams(locale)} className={BRAND_CLASS}>
-    <img src='/web-app-icon-192x192.png' alt='' width='32' height='32' className='size-[32px] rounded-[50%] border border-[rgba(252,247,253,.4)]' />
+    <img src='/web-app-icon-192x192.png' alt='' width='32' height='32' className='size-8 rounded-[50%] border border-[rgba(252,247,253,.4)]' />
     eve0415.net
   </Link>
 );

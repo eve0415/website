@@ -58,10 +58,10 @@ const Skills = () => {
   ] as const satisfies SkillItem[];
 
   return (
-    <div className='relative mx-auto grid max-w-(--page-max) gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max) gap-7 px-6 pt-12 pb-24'>
       <PageHeader kicker='SKILLS' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_backwards]' />
 
-      <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-[18px]'>
+      <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-4.5'>
         <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='animate-[fadeUp_0.6s_ease_0.08s_backwards]' />
         <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} className='ev-reveal' />
         <SkillGroup ink='sky' heading={copy.groupInfra} items={INFRA} className='ev-reveal' />

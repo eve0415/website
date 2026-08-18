@@ -8,7 +8,7 @@ interface SectionHeadingProps {
 }
 
 export const SectionHeading: FC<SectionHeadingProps> = ({ className, children }) => (
-  <h2 className={cn('flex items-center gap-[14px] font-sans text-(length:--text-h2) font-bold text-(--ink-title)', className)}>
+  <h2 className={cn('flex items-center gap-3.5 font-sans text-(length:--text-h2) font-bold text-(--ink-title)', className)}>
     {children}
     <span aria-hidden='true' className='h-px flex-1 bg-[linear-gradient(90deg,rgba(4,254,255,.45),transparent)]' />
   </h2>

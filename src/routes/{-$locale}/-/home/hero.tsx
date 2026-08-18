@@ -76,7 +76,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
   return (
     <section className='relative mt-[-61px] grid min-h-[calc(100svh/var(--z,1)-61px)] content-end'>
       <div aria-hidden='true' className={`absolute inset-x-0 top-0 bottom-[-240px] ${MASK_HERO}`} style={{ background: SKY.heroBg }}>
-        <div className='absolute inset-x-0 top-0 bottom-[240px]'>
+        <div className='absolute inset-x-0 top-0 bottom-60'>
           {HERO_GLOWS.map(spot => (
             <span
               key={spot.key}
@@ -95,10 +95,10 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
       </div>
 
       <div aria-hidden='true' className={`pointer-events-none absolute inset-x-0 top-0 bottom-[-240px] ${MASK_BACK}`}>
-        <div className='absolute inset-x-0 top-0 bottom-[240px] animate-[driftX_44s_ease-in-out_infinite_alternate]'>
+        <div className='absolute inset-x-0 top-0 bottom-60 animate-[driftX_44s_ease-in-out_infinite_alternate]'>
           <CloudLayer puffs={CLOUDS_BACK} background={CLOUD_BACK} blur={13} />
         </div>
-        <div className='absolute inset-x-0 top-0 bottom-[240px] animate-[evDriftXY_32s_ease-in-out_infinite_alternate-reverse]'>
+        <div className='absolute inset-x-0 top-0 bottom-60 animate-[evDriftXY_32s_ease-in-out_infinite_alternate-reverse]'>
           <CloudLayer puffs={CLOUDS_MID} background={CLOUD_MID} blur={9} />
           <CloudLayer puffs={CLOUDS_LOW} background={CLOUD_BACK} blur={15} />
         </div>
@@ -122,7 +122,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
       </div>
 
       <div aria-hidden='true' className={`pointer-events-none absolute inset-x-0 top-0 bottom-[-240px] z-1 ${MASK_FRONT}`}>
-        <div className='absolute inset-x-0 top-0 bottom-[240px] animate-[driftX_26s_ease-in-out_infinite_alternate]'>
+        <div className='absolute inset-x-0 top-0 bottom-60 animate-[driftX_26s_ease-in-out_infinite_alternate]'>
           <CloudLayer puffs={CLOUDS_FRONT} background={CLOUD_FRONT} blur={7} />
         </div>
       </div>
@@ -136,7 +136,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
       <ShootingStar tail={160} duration={12} delay={4} className='pointer-events-none top-[9%] right-[5%]' style={{ opacity: SKY.starAlpha }} />
 
       <div className='relative z-2 mx-auto w-full max-w-(--page-max-wide) px-[clamp(22px,6vw,72px)] pb-[clamp(56px,11vh,110px)]'>
-        <div className='grid max-w-[680px] justify-items-start gap-[16px]'>
+        <div className='grid max-w-170 justify-items-start gap-4'>
           <p className='animate-[fadeUp_0.7s_ease_0.2s_backwards] text-(length:--text-small) tracking-[0.22em] text-(--ink-ice) [text-shadow:0_1px_10px_rgba(3,1,20,.6)]'>
             {copy.greeting}
           </p>
@@ -148,7 +148,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
             <br />
             {copy.heroSub2}
           </p>
-          <div className='mt-[6px] flex animate-[fadeUp_0.7s_ease_0.65s_backwards] flex-wrap gap-[14px]'>
+          <div className='mt-1.5 flex animate-[fadeUp_0.7s_ease_0.65s_backwards] flex-wrap gap-3.5'>
             <ButtonLink to='/{-$locale}/projects' params={localeParams(locale)}>
               {copy.ctaProjects}
             </ButtonLink>

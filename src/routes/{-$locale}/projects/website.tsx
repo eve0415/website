@@ -15,11 +15,11 @@ import { tw } from '#lib/tw';
 import { BackLink } from './-/back-link';
 import { LinksSection } from './-/links-section';
 
-const DOT = tw('mt-[5px] size-[12px] flex-none rounded-[50%] bg-[linear-gradient(135deg,#04feff,#00dda8)] shadow-[0_0_12px_2px_rgba(4,254,255,.55)]');
+const DOT = tw('mt-[5px] size-3 flex-none rounded-[50%] bg-[linear-gradient(135deg,#04feff,#00dda8)] shadow-[0_0_12px_2px_rgba(4,254,255,.55)]');
 
-const RAIL = tw('w-[2px] flex-1 rounded-[1px] bg-[linear-gradient(180deg,rgba(4,254,255,.45),rgba(160,150,255,.15))]');
+const RAIL = tw('w-0.5 flex-1 rounded-[1px] bg-[linear-gradient(180deg,rgba(4,254,255,.45),rgba(160,150,255,.15))]');
 
-const CHIP = tw('px-[12px] py-[3px] text-(length:--text-tag)');
+const CHIP = tw('px-3 py-[3px] text-(length:--text-tag)');
 
 interface Generation {
   date: string;
@@ -73,25 +73,25 @@ const WebsiteHistory = () => {
   ] as const satisfies ProjectLink[];
 
   return (
-    <div className='relative mx-auto grid max-w-(--page-max-article) gap-[24px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max-article) gap-6 px-6 pt-12 pb-24'>
       <BackLink locale={locale} />
 
-      <PageHeader kicker='HISTORY' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-[10px]' />
+      <PageHeader kicker='HISTORY' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-2.5' />
 
       <Card variant='soft' className='ev-reveal rounded-(--radius-card-lg) p-[26px_26px_6px]'>
-        <div className='grid grid-cols-[16px_1fr] gap-[18px]'>
+        <div className='grid grid-cols-[16px_1fr] gap-4.5'>
           {GENERATIONS.map((generation, index) => {
             const last = index === GENERATIONS.length - 1;
             return (
               <Fragment key={generation.date}>
-                <div className={cn('flex flex-col items-center', last ? undefined : 'gap-[6px]')}>
+                <div className={cn('flex flex-col items-center', last ? undefined : 'gap-1.5')}>
                   <span className={DOT} />
                   {last ? null : <span className={RAIL} />}
                 </div>
-                <div className={cn('grid gap-[10px]', last ? 'pb-[26px]' : 'pb-[30px]')}>
+                <div className={cn('grid gap-2.5', last ? 'pb-6.5' : 'pb-7.5')}>
                   <p className='text-(length:--text-caption) tracking-(--tracking-hero-kicker) text-(--ink-ice)'>{generation.date}</p>
                   <h2 className='text-(length:--text-card-title) font-bold text-(--ink-title)'>{generation.title(copy)}</h2>
-                  <div className='ev-stg flex flex-wrap gap-[8px]'>
+                  <div className='ev-stg flex flex-wrap gap-2'>
                     {generation.stack(copy).map((item, itemIndex) => (
                       <Chip key={item} className={cn(CHIP, last && itemIndex === 0 && 'border-(--line-accent) text-(--ink-ice)')}>
                         {item}

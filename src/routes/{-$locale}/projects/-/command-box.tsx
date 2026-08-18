@@ -8,13 +8,13 @@ import './command-box.css';
 import { tw } from '#lib/tw';
 
 const FRAME = tw(
-  'animate-[fadeUp_0.6s_ease_0.2s_backwards] overflow-hidden rounded-[12px] border border-[rgba(160,150,255,.3)] bg-[rgba(3,1,17,.88)] shadow-[0_12px_40px_rgba(2,1,14,.45)]',
+  'animate-[fadeUp_0.6s_ease_0.2s_backwards] overflow-hidden rounded-xl border border-[rgba(160,150,255,.3)] bg-[rgba(3,1,17,.88)] shadow-[0_12px_40px_rgba(2,1,14,.45)]',
 );
 
-const BAR = tw('flex gap-[12px] border-b border-b-[rgba(160,150,255,.2)] bg-[rgba(13,8,54,.72)]');
+const BAR = tw('flex gap-3 border-b border-b-[rgba(160,150,255,.2)] bg-[rgba(13,8,54,.72)]');
 
 const BUTTON = tw(
-  'min-h-(--hit-target) cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-[20px] py-[8px] font-mono text-[0.84375rem] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]',
+  'min-h-(--hit-target) cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-5 py-2 font-mono text-[0.84375rem] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]',
 );
 
 const DOTS = [tw('bg-[rgba(247,105,151,.8)]'), tw('bg-[rgba(255,217,236,.65)]'), tw('bg-[rgba(0,221,168,.8)]')] as const;
@@ -75,9 +75,9 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
   }, [copies]);
 
   const dots = (
-    <span aria-hidden='true' className={cn('flex gap-[6px]', tabs === undefined ? undefined : 'self-center pb-[7px]')}>
+    <span aria-hidden='true' className={cn('flex gap-1.5', tabs === undefined ? undefined : 'self-center pb-[7px]')}>
       {DOTS.map(dot => (
-        <span key={dot} className={cn('size-[10px] rounded-[50%]', dot)} />
+        <span key={dot} className={cn('size-2.5 rounded-[50%]', dot)} />
       ))}
     </span>
   );
@@ -90,16 +90,16 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
           <span className='text-[0.78125rem] text-(--ink-faint)'>{title}</span>
         </div>
       ) : (
-        <div className={cn(BAR, 'items-end gap-[14px] p-[8px_14px_0]')}>
+        <div className={cn(BAR, 'items-end gap-3.5 p-[8px_14px_0]')}>
           {dots}
           {tabs}
         </div>
       )}
 
-      <div className='flex flex-wrap items-center justify-between gap-[14px] p-[14px_16px_12px]'>
+      <div className='flex flex-wrap items-center justify-between gap-3.5 p-[14px_16px_12px]'>
         <div className='grid flex-[1_1_240px] gap-[5px]'>
           <div className='flex items-baseline font-mono text-(length:--text-ui)'>
-            <span className='mr-[10px] flex-none text-(--accent-mint)'>❯</span>
+            <span className='mr-2.5 flex-none text-(--accent-mint)'>❯</span>
             <span className='wrap-anywhere'>
               {segments.map(segment => (
                 <span key={segment.key} className={cn('whitespace-pre-wrap', segment.color)}>

@@ -25,22 +25,22 @@ const IfPatcher = () => {
   const copy = IFPATCHER_COPY[locale];
 
   return (
-    <div className='relative mx-auto grid max-w-(--page-max-article) gap-[24px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max-article) gap-6 px-6 pt-12 pb-24'>
       <BackLink locale={locale} />
 
       <PageHeader
         kicker='PROJECT'
         title='IFPatcher'
         lede={copy.lede}
-        className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-[10px]'
+        className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-2.5'
         tags={TAGS.map(tag => (
-          <Tag key={tag} hue='cyan' className='px-[12px] py-[3px]'>
+          <Tag key={tag} hue='cyan' className='px-3 py-[3px]'>
             {tag}
           </Tag>
         ))}
       />
 
-      <div className='ev-reveal grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-[14px]'>
+      <div className='ev-reveal grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-3.5'>
         <StatCard hue='cyan' value='930,000+' label={copy.dlTotal} note='CurseForge 871,671 / Modrinth 58,219' />
         <StatCard hue='cyan' value='1.12.2' label={copy.version} />
         <StatCard hue='cyan' value='Tekkit 2' label={copy.tekkit} />

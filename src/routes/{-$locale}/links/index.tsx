@@ -16,10 +16,10 @@ const Links = () => {
   const copy = CONTACT_COPY[locale];
 
   return (
-    <div className='relative mx-auto grid max-w-(--page-max-narrow) gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max-narrow) gap-7 px-6 pt-12 pb-24'>
       <PageHeader kicker='CONTACT' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_backwards]' />
 
-      <div className='grid gap-[12px]'>
+      <div className='grid gap-3'>
         <LinkRow
           href='https://github.com/eve0415'
           target='_blank'
@@ -37,15 +37,15 @@ const Links = () => {
         />
       </div>
 
-      <Card className='ev-reveal grid gap-[16px] p-[26px_24px]'>
-        <div className='grid gap-[6px]'>
+      <Card className='ev-reveal grid gap-4 p-[26px_24px]'>
+        <div className='grid gap-1.5'>
           <h2 className='text-[1.125rem] font-bold text-(--ink-title)'>{copy.formHead}</h2>
           <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>{copy.formIntro}</p>
         </div>
         <ContactForm locale={locale} />
       </Card>
 
-      <Card variant='soft' className='ev-reveal grid gap-[12px] border-[rgba(0,221,168,0.35)] p-[22px]'>
+      <Card variant='soft' className='ev-reveal grid gap-3 border-[rgba(0,221,168,0.35)] p-5.5'>
         <h2 className='text-[1.125rem] font-bold text-(--hue-mint)'>{copy.workHead}</h2>
         <p className='text-(length:--text-body) leading-[1.8] text-(--ink-muted)'>{copy.workBody}</p>
       </Card>

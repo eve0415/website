@@ -4,7 +4,7 @@ import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
 const ROOT = tw(
-  'group relative isolate inline-flex min-h-(--hit-target) cursor-pointer items-center overflow-hidden rounded-[999px] border border-(--line-white) px-[28px] py-[13px] font-sans text-(length:--text-body) font-bold text-(--ink-title) no-underline transition-[border-color] duration-300 ease-[ease] hover:border-[rgba(4,254,255,0.9)]',
+  'group relative isolate inline-flex min-h-(--hit-target) cursor-pointer items-center overflow-hidden rounded-[999px] border border-(--line-white) px-7 py-[13px] font-sans text-(length:--text-body) font-bold text-(--ink-title) no-underline transition-[border-color] duration-300 ease-[ease] hover:border-[rgba(4,254,255,0.9)]',
 );
 
 const SWEEP = tw(
@@ -34,7 +34,7 @@ export const SweepButton: FC<SweepButtonProps> = props => {
     <>
       <span className={cn(SWEEP, 'bg-[rgba(159,232,255,0.95)]')} aria-hidden='true' />
       <span className={cn(SWEEP, 'bg-(image:--grad-comet) delay-[0.08s]')} aria-hidden='true' />
-      <span className='relative z-1 inline-flex items-center gap-[10px] transition-[color] delay-[0.12s] duration-[0.25s] ease-[ease] group-hover:text-(--ink-on-accent)'>
+      <span className='relative z-1 inline-flex items-center gap-2.5 transition-[color] delay-[0.12s] duration-[0.25s] ease-[ease] group-hover:text-(--ink-on-accent)'>
         {children}
         {arrow ? (
           <span

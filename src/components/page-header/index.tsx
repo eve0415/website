@@ -15,12 +15,12 @@ interface PageHeaderProps {
 const TITLE = tw('text-(length:--text-h1) leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic]');
 
 export const PageHeader: FC<PageHeaderProps> = ({ kicker, title, lede, tags, className }) => (
-  <div className={cn('grid gap-[8px] font-sans', className)}>
+  <div className={cn('grid gap-2 font-sans', className)}>
     {kicker ? <p className='text-(length:--text-caption) tracking-(--tracking-kicker) text-(--ink-ice)'>{kicker}</p> : null}
     {tags === undefined ? (
       <h1 className={TITLE}>{title}</h1>
     ) : (
-      <div className='flex flex-wrap items-center gap-[14px]'>
+      <div className='flex flex-wrap items-center gap-3.5'>
         <h1 className={TITLE}>{title}</h1>
         {tags}
       </div>

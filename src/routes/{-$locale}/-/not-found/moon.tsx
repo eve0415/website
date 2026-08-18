@@ -51,7 +51,7 @@ export const Moon: FC<MoonProps> = ({ beamRef }) => (
         className={`absolute inset-0 rounded-[50%] bg-[conic-gradient(from_292deg_at_50%_50%,transparent_0deg,rgba(4,254,255,.08)_8deg,rgba(4,254,255,.45)_40deg,rgba(4,254,255,1)_68deg,transparent_68.5deg_360deg)] drop-shadow-[0_0_5px_rgba(4,254,255,.6)] [mask:radial-gradient(closest-side,transparent_93.5%,#000_95.5%,#000_100%)] ${ORBIT_DEPTH}`}
       />
       <span className={`absolute top-0 left-1/2 ${ORBIT_DEPTH}`}>
-        <span className='absolute top-[-4px] left-[-4px] size-[8px] rounded-[50%] bg-(--star-white) shadow-(--glow-comet-head)' />
+        <span className='absolute top-[-4px] left-[-4px] size-2 rounded-[50%] bg-(--star-white) shadow-(--glow-comet-head)' />
       </span>
     </span>
     <span className='relative z-1 block size-full animate-[evMoonIn_0.9s_var(--ev-spring)_0.3s_both,floaty_7s_ease-in-out_1.5s_infinite] rounded-[50%] bg-[radial-gradient(circle_at_33%_30%,#fff7ff,#eee0ff_34%,#cdb2ec_62%,#8a46c8_100%)] shadow-[0_0_44px_10px_rgba(238,224,255,.3),0_0_120px_34px_rgba(142,70,217,.28),inset_-14px_-18px_40px_rgba(58,29,122,.5)] transition-[filter] duration-300 ease-[ease] hover:filter-[brightness(1.12)]'>

@@ -31,7 +31,7 @@ const LABEL = tw('grid gap-[7px] text-[0.84375rem] text-(--ink-ice)');
  * untouched: it swaps to `#04feff` at 15.74:1.
  */
 const FIELD = tw(
-  'min-h-(--hit-target) w-full rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-(length:--text-body) leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-hidden',
+  'min-h-(--hit-target) w-full rounded-xl border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-4 py-[11px] font-[inherit] text-(length:--text-body) leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-hidden',
 );
 
 interface ContactFormProps {
@@ -202,17 +202,17 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
         <div
           ref={sentRef}
           tabIndex={-1}
-          className='grid justify-items-start gap-[12px] p-[6px_0_2px] focus-visible:outline-2 focus-visible:outline-offset-[6px] focus-visible:outline-(--accent-cyan)'
+          className='grid justify-items-start gap-3 p-[6px_0_2px] focus-visible:outline-2 focus-visible:outline-offset-[6px] focus-visible:outline-(--accent-cyan)'
         >
-          <div className='flex items-center gap-[10px]'>
+          <div className='flex items-center gap-2.5'>
             <span
               aria-hidden='true'
-              className='size-[14px] bg-(--hue-mint) drop-shadow-[0_0_6px_rgba(0,221,168,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]'
+              className='size-3.5 bg-(--hue-mint) drop-shadow-[0_0_6px_rgba(0,221,168,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]'
             />
             <p className='text-[1.03125rem] font-bold text-(--hue-mint)'>{copy.sentHead}</p>
           </div>
           <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>{copy.sentBody}</p>
-          <Button variant='glass' className='bg-(--surface-row) px-[22px] py-[10px] text-(length:--text-nav)' onClick={sendAnother}>
+          <Button variant='glass' className='bg-(--surface-row) px-5.5 py-2.5 text-(length:--text-nav)' onClick={sendAnother}>
             {copy.sendAnother}
           </Button>
         </div>
@@ -221,8 +221,8 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
         // rather than per-field bubbles, and `checkContact` is stricter than the
         // native checks anyway. `required` still belongs on the controls: it is
         // what announces them as required, and it is not what validates them.
-        <form action={submit} noValidate className='grid gap-[16px]'>
-          <div className='grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-[14px]'>
+        <form action={submit} noValidate className='grid gap-4'>
+          <div className='grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5'>
             <label className={LABEL}>
               {copy.fName}
               <input
@@ -274,7 +274,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
               placeholder={copy.phMsg}
               aria-invalid={invalidField === 'message' ? true : undefined}
               aria-describedby={invalidField === 'message' ? errorId : undefined}
-              className={cn(FIELD, 'field-sizing-content min-h-[130px] resize-y leading-[1.7]')}
+              className={cn(FIELD, 'field-sizing-content min-h-32.5 resize-y leading-[1.7]')}
               onFocus={startChallenge}
               onChange={event => {
                 setMessage(event.target.value);
@@ -296,8 +296,8 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
             />
           </div>
 
-          <div className='flex flex-wrap items-center gap-[16px]'>
-            <Button type='submit' disabled={sending} className='px-[30px] py-[12px] text-(length:--text-body)'>
+          <div className='flex flex-wrap items-center gap-4'>
+            <Button type='submit' disabled={sending} className='px-7.5 py-3 text-(length:--text-body)'>
               {sending ? copy.submitting : copy.submit}
             </Button>
             {/* Keyed on the attempt so an identical failure twice in a row is a

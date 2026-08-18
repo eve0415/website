@@ -24,16 +24,16 @@ const Dotclaude = () => {
   ] as const satisfies ProjectLink[];
 
   return (
-    <div className='relative mx-auto grid max-w-(--page-max-article) gap-[24px] px-[24px] pt-[48px] pb-[96px]'>
+    <div className='relative mx-auto grid max-w-(--page-max-article) gap-6 px-6 pt-12 pb-24'>
       <BackLink locale={locale} />
 
       <PageHeader
         kicker='PROJECT'
         title='dotclaude'
         lede={copy.lede}
-        className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-[10px]'
+        className='animate-[fadeUp_0.6s_ease_0.08s_backwards] gap-2.5'
         tags={TAGS.map(tag => (
-          <Tag key={tag} hue='violet' className='px-[12px] py-[3px]'>
+          <Tag key={tag} hue='violet' className='px-3 py-[3px]'>
             {tag}
           </Tag>
         ))}

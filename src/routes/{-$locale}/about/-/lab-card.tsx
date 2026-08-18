@@ -11,9 +11,7 @@ import { tw } from '#lib/tw';
 import './lab-card.css';
 import { LAB_PROBES, readSupport, readSupportOnServer, subscribeToSupport } from './lab-probes';
 
-const BADGE = tw(
-  'inline-flex min-w-[76px] items-center justify-center justify-self-end rounded-[999px] border px-[10px] py-[3px] text-[0.71875rem] tracking-[0.1em]',
-);
+const BADGE = tw('inline-flex min-w-19 items-center justify-center justify-self-end rounded-[999px] border px-2.5 py-[3px] text-[0.71875rem] tracking-[0.1em]');
 
 const BADGE_SUPPORTED = tw('border-[rgba(0,221,168,.45)] text-(--hue-mint)');
 
@@ -42,7 +40,7 @@ export const LabCard: FC<LabCardProps> = ({ locale }) => {
   const supported = useSyncExternalStore(subscribeToSupport, readSupport, readSupportOnServer);
 
   return (
-    <Card variant='dashed' className='ev-reveal grid gap-[16px]'>
+    <Card variant='dashed' className='ev-reveal grid gap-4'>
       <div className='grid gap-[7px]'>
         <p className='text-(length:--text-caption) tracking-(--tracking-kicker) text-(--ink-ice)'>LAB</p>
         <h2 className='text-[1.125rem] font-bold text-(--ink-title)'>{copy.title}</h2>
@@ -50,21 +48,21 @@ export const LabCard: FC<LabCardProps> = ({ locale }) => {
       </div>
 
       <details className='ev-labdt'>
-        <summary className='flex min-h-(--hit-target) items-center gap-[10px] text-(length:--text-nav) font-bold text-(--ink-ice)'>
+        <summary className='flex min-h-(--hit-target) items-center gap-2.5 text-(length:--text-nav) font-bold text-(--ink-ice)'>
           <span aria-hidden='true' className='ev-labarr inline-block text-(--accent-cyan)'>
             →
           </span>
           {copy.toggle(supported?.size, LAB_PROBES.length)}
         </summary>
 
-        <div className='grid gap-[11px] pt-[8px]'>
+        <div className='grid gap-[11px] pt-2'>
           {LAB_PROBES.map(entry => {
             const isSupported = supported === undefined ? undefined : supported.has(entry.key);
 
             return (
               <div
                 key={entry.key}
-                className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-[12px] gap-y-[6px] border-t border-t-[rgba(160,150,255,.16)] pt-[11px]'
+                className='grid grid-cols-[minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5 border-t border-t-[rgba(160,150,255,.16)] pt-[11px]'
               >
                 <span className='text-(length:--text-nav) font-bold wrap-anywhere text-(--ink-body)'>{entry.name}</span>
                 <span className={cn(BADGE, isSupported === true ? BADGE_SUPPORTED : BADGE_MUTED)}>

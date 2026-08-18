@@ -33,10 +33,10 @@ interface SkillGroupProps {
 }
 
 export const SkillGroup: FC<SkillGroupProps> = ({ ink, heading, items, className }) => (
-  <Card className={cn('grid content-start gap-[14px]', className)}>
+  <Card className={cn('grid content-start gap-3.5', className)}>
     <h2 className={cn('text-(length:--text-panel-title) font-bold', INK[ink])}>{heading}</h2>
     {/* ev-stg staggers the chips in by sibling-index(), with no JavaScript. */}
-    <div className='ev-stg flex flex-wrap gap-[8px]'>
+    <div className='ev-stg flex flex-wrap gap-2'>
       {items.map(item =>
         item.href === undefined ? (
           <Chip key={item.label}>{item.label}</Chip>

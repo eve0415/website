@@ -9,7 +9,7 @@ import { tw } from '#lib/tw';
 import './discord-copy.css';
 import { Toast } from './toast';
 
-const BUTTON = tw('ev-cp-discord border-[rgba(4,254,255,0.55)] px-[18px] py-[8px] text-(length:--text-small) font-normal text-(--hue-cyan)');
+const BUTTON = tw('ev-cp-discord border-[rgba(4,254,255,0.55)] px-4.5 py-2 text-(length:--text-small) font-normal text-(--hue-cyan)');
 
 /** The two labels ride the same grid cell and slide past each other. */
 const LABEL = tw('col-start-1 row-start-1 [transition:opacity_0.3s_ease,transform_0.45s_var(--ease-comet)]');
