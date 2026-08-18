@@ -18,6 +18,21 @@ interface LabProbe {
  */
 const css = (condition: string): boolean => CSS.supports(condition);
 
+/**
+ * `CSS.supports` cannot answer this one: an unknown `env()` still parses, so it
+ * reports true everywhere. Measuring is the only honest probe — a browser that
+ * knows `preferred-text-scale` resolves the width, one that does not leaves the
+ * declaration invalid and the element at zero.
+ */
+const preferredTextScale = (): boolean => {
+  const probe = document.createElement('div');
+  probe.style.cssText = 'position:absolute;visibility:hidden;width:calc(10px * env(preferred-text-scale))';
+  document.body.insertAdjacentElement('beforeend', probe);
+  const { width } = probe.getBoundingClientRect();
+  probe.remove();
+  return width > 0;
+};
+
 /** Declaration order is render order. */
 export const LAB_PROBES: readonly LabProbe[] = [
   { key: 'navigationApi', name: 'Navigation API', probe: () => 'navigation' in globalThis },
@@ -27,6 +42,7 @@ export const LAB_PROBES: readonly LabProbe[] = [
   { key: 'siblingIndex', name: 'sibling-index()', probe: () => css('animation-delay: calc(sibling-index() * 1s)') },
   { key: 'squircleCorners', name: 'corner-shape', probe: () => css('corner-shape: squircle') },
   { key: 'textBoxTrim', name: 'text-box-trim', probe: () => css('text-box: trim-both cap alphabetic') },
+  { key: 'textScale', name: 'text-scale (meta)', probe: preferredTextScale },
   { key: 'fieldSizing', name: 'field-sizing', probe: () => css('field-sizing: content') },
   { key: 'cssFunction', name: 'CSS @function', probe: () => css('at-rule(@function)') },
   { key: 'gapDecorations', name: 'Gap decorations', probe: () => css('row-rule: 1px solid red') },

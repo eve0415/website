@@ -633,6 +633,7 @@ export type LabKey =
   | 'siblingIndex'
   | 'squircleCorners'
   | 'textBoxTrim'
+  | 'textScale'
   | 'fieldSizing'
   | 'cssFunction'
   | 'gapDecorations'
@@ -682,6 +683,7 @@ export const LAB_COPY = {
       siblingIndex: 'タグの登場を1つずつずらしています。JS は使っていません。',
       squircleCorners: 'まだ入れていません。カードの角は今のところ普通の丸角です。',
       textBoxTrim: '見出しの上下の余白を字面に合わせて詰めています。',
+      textScale: '文字を全部 rem で組んであり、OS の文字サイズ設定がそのまま反映されます。',
       fieldSizing: 'お問い合わせの入力欄が中身に合わせて伸びます。',
       cssFunction: '光り方の処方を CSS の関数にまとめています。',
       gapDecorations: 'できること のグリッドの隙間に区切り線を引いています。',
@@ -709,6 +711,7 @@ export const LAB_COPY = {
       siblingIndex: 'Tags stagger in by their index, with no JavaScript.',
       squircleCorners: 'Not in yet — card corners are still plain radii.',
       textBoxTrim: 'Headings are trimmed to their cap height and baseline.',
+      textScale: 'All type is set in rem, so your OS text-size setting carries through.',
       fieldSizing: 'The contact textarea grows with its content.',
       cssFunction: 'The glow recipe is a native CSS function.',
       gapDecorations: 'Rules are drawn into the grid gaps on the skills page.',

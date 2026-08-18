@@ -119,6 +119,11 @@ export default defineConfig({
     'unicorn/no-nested-ternary': 'off',
     'unicorn/max-nested-calls': 'off',
 
+    // The Workers types in worker-configuration.d.ts merge into the DOM `Element`,
+    // and their `append(string | ReadableStream | Response)` overload wins — so the
+    // modern spelling this rule wants is the one that does not typecheck here.
+    'unicorn/prefer-modern-dom-apis': 'off',
+
     // ev-* are hooks the @supports/@container rules in the colocated stylesheets
     // select on; they are deliberately not utilities.
     'tailwindcss/no-unknown-classes': ['error', { ignorePrefixes: ['ev-'] }],
