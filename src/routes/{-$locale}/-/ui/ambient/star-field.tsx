@@ -6,7 +6,7 @@ import { cn } from '../../cn';
 
 import './star-field.css';
 
-const COLORS: readonly [string, ...string[]] = ['#fcf7fd', '#fcf7fd', '#fcf7fd', '#9fe8ff', '#9fe8ff', '#c9a6ff', '#ffd9ec'];
+const COLORS = ['#fcf7fd', '#fcf7fd', '#fcf7fd', '#9fe8ff', '#9fe8ff', '#c9a6ff', '#ffd9ec'] as const satisfies string[];
 
 /** Any constant works — it only has to be the same one on the server and in the browser. */
 const DEFAULT_SEED = 20_150_415;

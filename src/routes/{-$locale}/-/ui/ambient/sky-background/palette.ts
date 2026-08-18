@@ -61,7 +61,7 @@ export interface SkyCss {
 }
 
 /* 24h sky palette — 11 keyframes interpolated (verbatim from eve0415.net v3). */
-const RAW: readonly [RawStop, ...RawStop[]] = [
+const RAW = [
   {
     t: 0,
     hero: ['#01010e', '#0a0533', '#1c1060', '#3a1d7a', '#6a2f95', '#8e46d9'],
@@ -227,7 +227,7 @@ const RAW: readonly [RawStop, ...RawStop[]] = [
     inkK: '#9fe8ff',
     inkS: '#e9e4ff',
   },
-];
+] as const satisfies RawStop[];
 
 const hex = (value: string): Rgb => {
   const h = value.replace('#', '');
