@@ -54,11 +54,15 @@ const CLOUDS_LOW = puffs(4_040_415, 11, -175, -55, 220, 360);
  * The cat sits at the right edge on a wide screen and slides off it, larger and
  * higher, once the viewport turns portrait. The design switches on the same
  * threshold from a measured aspect ratio; here the media query is the measure.
+ *
+ * On a wide screen it also divides its vw sizing by the ultra-wide zoom and
+ * pins itself to the shell edge, so it tracks the content instead of drifting
+ * out to the corner of a very wide display.
  */
 const CAT_BOX =
-  'absolute right-[-9vw] bottom-[40%] z-1 w-[clamp(200px,58vw,330px)] [@media(min-aspect-ratio:1.02)]:right-[3vw] [@media(min-aspect-ratio:1.02)]:bottom-[5%] [@media(min-aspect-ratio:1.02)]:w-[clamp(260px,36vw,540px)]';
+  'absolute right-[-9vw] bottom-[40%] z-1 w-[clamp(200px,58vw,330px)] [@media(min-aspect-ratio:1.02)]:right-[max(3vw/var(--z,1),50vw/var(--z,1)_-_810px)] [@media(min-aspect-ratio:1.02)]:bottom-[5%] [@media(min-aspect-ratio:1.02)]:w-[clamp(260px,36vw/var(--z,1),600px)]';
 
-const CAT_SIZES = '(min-aspect-ratio: 1.02) clamp(260px, 36vw, 540px), clamp(200px, 58vw, 330px)';
+const CAT_SIZES = '(min-aspect-ratio: 1.02) clamp(260px, 36vw, 600px), clamp(200px, 58vw, 330px)';
 
 interface HeroProps {
   locale: Locale;
