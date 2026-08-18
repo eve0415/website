@@ -31,7 +31,7 @@ const LABEL = tw('grid gap-[7px] text-[0.84375rem] text-(--ink-ice)');
  * untouched: it swaps to `#04feff` at 15.74:1.
  */
 const FIELD = tw(
-  'min-h-[44px] w-full rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-(length:--text-body) leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-none',
+  'min-h-[44px] w-full rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-(length:--text-body) leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-hidden',
 );
 
 interface ContactFormProps {
