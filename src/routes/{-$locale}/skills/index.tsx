@@ -12,51 +12,51 @@ import { Card } from '../-/ui/surfaces/card';
 
 import { SkillGroup } from './-/skill-group';
 
-const LANGUAGES: readonly SkillItem[] = [
+const LANGUAGES = [
   { label: 'TypeScript', href: 'https://www.typescriptlang.org/' },
   { label: 'Rust', href: 'https://www.rust-lang.org/' },
   { label: 'Java', href: 'https://openjdk.org/' },
   { label: 'Kotlin', href: 'https://kotlinlang.org/' },
   { label: 'Swift', href: 'https://www.swift.org/' },
-];
+] as const satisfies SkillItem[];
 
-const FRONTEND: readonly SkillItem[] = [
+const FRONTEND = [
   { label: 'React', href: 'https://react.dev/' },
   { label: 'TanStack Start / Router', href: 'https://tanstack.com/' },
   { label: 'Tailwind CSS', href: 'https://tailwindcss.com/' },
   { label: 'Vite', href: 'https://vite.dev/' },
   { label: 'Storybook', href: 'https://storybook.js.org/' },
-];
+] as const satisfies SkillItem[];
 
-const INFRA: readonly SkillItem[] = [
+const INFRA = [
   { label: 'Cloudflare Workers', href: 'https://workers.cloudflare.com/' },
   { label: 'Workers KV / D1', href: 'https://developers.cloudflare.com/kv/' },
   { label: 'Docker', href: 'https://www.docker.com/' },
   { label: 'Kubernetes', href: 'https://kubernetes.io/' },
   { label: 'GitHub Actions', href: 'https://github.com/features/actions' },
-];
+] as const satisfies SkillItem[];
 
 /** The only group with six items rather than five. */
-const TOOLCHAIN: readonly SkillItem[] = [
+const TOOLCHAIN = [
   { label: 'Vitest', href: 'https://vitest.dev/' },
   { label: 'Playwright', href: 'https://playwright.dev/' },
   { label: 'MSW', href: 'https://mswjs.io/' },
   { label: 'oxlint / oxfmt', href: 'https://oxc.rs/' },
   { label: 'pnpm', href: 'https://pnpm.io/' },
   { label: 'napi-rs', href: 'https://napi.rs/' },
-];
+] as const satisfies SkillItem[];
 
 const Skills = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
   const copy = SKILLS_COPY[locale];
 
-  const often: readonly SkillItem[] = [
+  const often = [
     { label: copy.chipWeb },
     { label: copy.chipCli },
     { label: copy.chipMc },
     { label: copy.chipBot },
     { label: copy.chipMac },
-  ];
+  ] as const satisfies SkillItem[];
 
   return (
     <div className='relative mx-auto grid max-w-(--page-max) gap-[28px] px-[24px] pt-[48px] pb-[96px]'>
