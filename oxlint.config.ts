@@ -138,6 +138,7 @@ export default defineConfig({
     'tailwindcss/no-unnecessary-whitespace': 'error',
     'tailwindcss/no-dark-without-light': 'error',
     'tailwindcss/no-contradicting-variants': 'error',
+    'tailwindcss/no-unnecessary-arbitrary-value': 'error',
     'tailwindcss/enforce-canonical': 'error',
     'tailwindcss/enforce-shorthand': 'error',
     'tailwindcss/enforce-consistent-important-position': 'error',
@@ -145,7 +146,7 @@ export default defineConfig({
     'tailwindcss/enforce-consistent-variable-syntax': 'error',
     'tailwindcss/enforce-physical': 'error',
     'tailwindcss/consistent-variant-order': 'error',
-    'tailwindcss/no-unnecessary-arbitrary-value': 'error',
+    'tailwindcss/prefer-scale-token': 'error',
 
     // enforce-physical's exact inverse; with both on, every inline-axis utility
     // is an error under one of them. This site is ja/en, so LTR-only.
