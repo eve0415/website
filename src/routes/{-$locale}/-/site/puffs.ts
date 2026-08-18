@@ -9,6 +9,16 @@ export interface Puff {
 }
 
 /**
+ * The design widens every puff on a large viewport — `k` in its own source — so
+ * the cloud sea keeps its proportions instead of breaking into small blobs. It
+ * derives that from `window.innerWidth`, which cannot survive the prerender, so
+ * the same curve is expressed in CSS: the viewport width with the ultra-wide
+ * zoom taken back out, over 1500, clamped to 1–1.7. Below 1500px it resolves to
+ * exactly the authored size.
+ */
+const scaled = (px: number): string => `clamp(${px.toFixed(0)}px, ${(px / 1500).toFixed(4)} * 100vw / var(--z, 1), ${(px * 1.7).toFixed(0)}px)`;
+
+/**
  * One drifting layer of the cloud sea: `count` ellipses spread evenly across a
  * band wider than the viewport, each jittered within it.
  *
@@ -27,8 +37,8 @@ export const puffs = (seed: number, count: number, bottom0: number, bottom1: num
       key: `puff-${i}`,
       left: `${(-8 + ((i + random() * 0.9) / count) * 114).toFixed(1)}%`,
       bottom: `${(bottom0 + random() * (bottom1 - bottom0)).toFixed(0)}px`,
-      width: `${w.toFixed(0)}px`,
-      height: `${(w * (0.4 + random() * 0.18)).toFixed(0)}px`,
+      width: scaled(w),
+      height: scaled(w * (0.4 + random() * 0.18)),
     });
   }
   return generated;
