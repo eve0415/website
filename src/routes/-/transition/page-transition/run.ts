@@ -1,4 +1,4 @@
-import { tw } from '#routes/-/tw';
+import { tw } from '#lib/tw';
 
 export const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 

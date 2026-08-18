@@ -1,6 +1,6 @@
 import type { FC, RefObject } from 'react';
 
-import { tw } from '#routes/-/tw';
+import { tw } from '#lib/tw';
 
 /** Craters, as a fraction of the moon's own box. */
 const CRATERS = [

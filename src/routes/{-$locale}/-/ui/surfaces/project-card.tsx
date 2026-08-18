@@ -1,9 +1,8 @@
 import type { Hue } from './card';
 import type { ComponentPropsWithoutRef, FC } from 'react';
 
-import { tw } from '#routes/-/tw';
-
-import { cn } from '../../cn';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
 import { Card } from './card';
 import { Tag } from './tag';

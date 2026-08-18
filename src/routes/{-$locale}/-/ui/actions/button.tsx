@@ -1,8 +1,7 @@
 import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
-import { tw } from '#routes/-/tw';
-
-import { cn } from '../../cn';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
 type ButtonVariant = 'primary' | 'glass' | 'ghost';
 type ButtonSize = 'md' | 'sm';

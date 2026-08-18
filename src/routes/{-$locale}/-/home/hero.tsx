@@ -2,7 +2,7 @@ import type { Locale } from '#i18n/locale';
 import type { FC } from 'react';
 
 import { HOME_COPY } from '#i18n/copy';
-import { tw } from '#routes/-/tw';
+import { tw } from '#lib/tw';
 
 import { CatArt } from '../site/cat-art';
 import { CloudLayer } from '../site/cloud-layer';

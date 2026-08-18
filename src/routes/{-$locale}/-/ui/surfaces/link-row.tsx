@@ -1,8 +1,7 @@
 import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
-import { tw } from '#routes/-/tw';
-
-import { cn } from '../../cn';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
 const BASE = tw(
   'flex items-center justify-between gap-[12px] rounded-(--radius-row) border border-(--line-row) bg-(--surface-row) px-[20px] py-[17px] font-sans text-(--ink-title) no-underline',

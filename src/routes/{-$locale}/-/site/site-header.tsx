@@ -2,10 +2,10 @@ import type { FC, MouseEvent, ReactNode } from 'react';
 
 import { Fragment } from 'react';
 
-import { tw } from '#routes/-/tw';
+import { cn } from '#lib/cn';
 
 import './site-header.css';
-import { cn } from '../cn';
+import { tw } from '#lib/tw';
 
 const ROOT = tw('ev-hdr sticky top-0 z-10 border-b border-b-(--line-header) bg-(--surface-header) p-(--header-pad) font-sans backdrop-blur-[10px]');
 

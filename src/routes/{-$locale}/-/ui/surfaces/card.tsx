@@ -1,8 +1,7 @@
 import type { CSSProperties, ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
-import { tw } from '#routes/-/tw';
-
-import { cn } from '../../cn';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
 /** Project accent hue, shared by Card, Tag and ProjectCard. */
 export type Hue = 'cyan' | 'mint' | 'sky' | 'violet' | 'rose';

@@ -1,8 +1,7 @@
 import type { FC, ReactNode } from 'react';
 
-import { tw } from '#routes/-/tw';
-
-import { cn } from '../../cn';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
 interface PageHeaderProps {
   kicker?: string;

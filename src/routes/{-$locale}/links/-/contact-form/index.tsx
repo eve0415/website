@@ -7,11 +7,12 @@ import type { FC } from 'react';
 import { useActionState, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
 import { CONTACT_COPY } from '#i18n/copy';
-import { tw } from '#routes/-/tw';
-import { TurnstileWidget } from '#turnstile/turnstile-widget';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
 import './contact-form.css';
-import { cn } from '../../../-/cn';
+import { TurnstileWidget } from '#turnstile/turnstile-widget';
+
 import { Button } from '../../../-/ui/actions/button';
 
 import { fieldOf, readField } from './form-state';

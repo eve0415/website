@@ -33,7 +33,7 @@ If a rule fires wrongly, fix it in `oxlint.config.ts` by configuring the rule �
 
 ## Styling
 
-Tailwind v4, with a `cn` helper (clsx + tailwind-merge) at `src/routes/{-$locale}/-/cn.ts` for anything conditional. Design tokens are CSS custom properties defined in `src/routes/__root.css`.
+Tailwind v4, with a `cn` helper (clsx + tailwind-merge) at `src/lib/cn.ts` (`#lib/cn`) for anything conditional. Design tokens are CSS custom properties defined in `src/routes/__root.css`.
 
 Write the canonical form the linter wants: `text-(--ink-title)` not `text-[var(--ink-title)]`, `size-[6px]` not `w-[6px] h-[6px]`, `transition-opacity` not `transition-[opacity]`. Reach through `var()` for tokens rather than repeating literal values.
 
@@ -42,7 +42,7 @@ A colocated `.css` file is for what utilities cannot express — `@keyframes`, `
 Class order is oxfmt's job. Don't hand-sort.
 
 **A class list only gets linted and sorted where the tools are told to look**: `className`, a `cn()` argument, or a `tw()` argument.
-A list hoisted into a constant, an object value or an array is invisible to both unless it is wrapped in `tw()` (`src/routes/-/tw.ts`), which babel strips in `vite.config.ts` — the built output is the bare string, so the marker costs nothing.
+A list hoisted into a constant, an object value or an array is invisible to both unless it is wrapped in `tw()` (`src/lib/tw.ts`, `#lib/tw`), which babel strips in `vite.config.ts` — the built output is the bare string, so the marker costs nothing.
 `cn` combines and overrides; `tw` marks. A class-valued JSX prop not named `className` needs adding to `attributes` in both configs.
 
 ## Layout

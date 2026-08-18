@@ -5,7 +5,7 @@ import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-r
 
 import { CELLA_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
-import { tw } from '#routes/-/tw';
+import { tw } from '#lib/tw';
 
 import { PageHeader } from '../-/ui/content/page-header';
 import { Tag } from '../-/ui/surfaces/tag';

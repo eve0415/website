@@ -1,9 +1,9 @@
 import type { CSSProperties, FC } from 'react';
 
-import { tw } from '#routes/-/tw';
+import { cn } from '#lib/cn';
 
 import './shooting-star.css';
-import { cn } from '../../cn';
+import { tw } from '#lib/tw';
 
 type ShootingStarDirection = 'left' | 'right';
 

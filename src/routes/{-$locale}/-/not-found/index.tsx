@@ -3,8 +3,8 @@ import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 
 import { NOT_FOUND_COPY, SITE_COPY } from '#i18n/copy';
+import { cn } from '#lib/cn';
 
-import { cn } from '../cn';
 import { BrandLink } from '../site/brand-link';
 import { CatArt } from '../site/cat-art';
 import { CloudLayer } from '../site/cloud-layer';

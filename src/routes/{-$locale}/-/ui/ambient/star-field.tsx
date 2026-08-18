@@ -2,7 +2,7 @@ import type { CSSProperties, FC } from 'react';
 
 import { useMemo } from 'react';
 
-import { cn } from '../../cn';
+import { cn } from '#lib/cn';
 
 import './star-field.css';
 

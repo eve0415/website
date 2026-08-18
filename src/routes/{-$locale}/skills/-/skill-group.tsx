@@ -1,8 +1,8 @@
 import type { FC } from 'react';
 
-import { tw } from '#routes/-/tw';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
-import { cn } from '../../-/cn';
 import { Card } from '../../-/ui/surfaces/card';
 import { Chip } from '../../-/ui/surfaces/chip';
 

@@ -2,10 +2,10 @@ import type { FC, ReactNode } from 'react';
 
 import { startTransition, useEffect, useState } from 'react';
 
-import { tw } from '#routes/-/tw';
+import { cn } from '#lib/cn';
 
 import './command-box.css';
-import { cn } from '../../-/cn';
+import { tw } from '#lib/tw';
 
 const FRAME = tw(
   'animate-[fadeUp_0.6s_ease_0.2s_backwards] overflow-hidden rounded-[12px] border border-[rgba(160,150,255,.3)] bg-[rgba(3,1,17,.88)] shadow-[0_12px_40px_rgba(2,1,14,.45)]',

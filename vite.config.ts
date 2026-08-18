@@ -110,7 +110,7 @@ const stripTw = (): PluginObj => ({
       if (argument?.type !== 'StringLiteral') return;
 
       const binding = path.scope.getBinding('tw');
-      if (binding?.path.parent.type !== 'ImportDeclaration' || binding.path.parent.source.value !== '#routes/-/tw') return;
+      if (binding?.path.parent.type !== 'ImportDeclaration' || binding.path.parent.source.value !== '#lib/tw') return;
 
       path.replaceWith(argument);
     },

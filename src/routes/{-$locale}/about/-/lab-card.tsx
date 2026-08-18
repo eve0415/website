@@ -4,9 +4,9 @@ import type { FC } from 'react';
 import { useSyncExternalStore } from 'react';
 
 import { LAB_COPY } from '#i18n/copy';
-import { tw } from '#routes/-/tw';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
-import { cn } from '../../-/cn';
 import { Card } from '../../-/ui/surfaces/card';
 
 import './lab-card.css';

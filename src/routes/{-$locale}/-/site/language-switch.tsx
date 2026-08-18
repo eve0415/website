@@ -4,9 +4,8 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 
 import { SITE_COPY } from '#i18n/copy';
-import { tw } from '#routes/-/tw';
-
-import { cn } from '../cn';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
 /**
  * `min-h` is the header row's own token: this group is the tallest thing on the

@@ -1,6 +1,6 @@
 import type { FC, ReactNode } from 'react';
 
-import { cn } from '../../cn';
+import { cn } from '#lib/cn';
 
 interface SectionHeadingProps {
   className?: string;

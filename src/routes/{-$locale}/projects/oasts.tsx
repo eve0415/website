@@ -6,9 +6,9 @@ import { useEffect, useState } from 'react';
 
 import { OASTS_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
-import { tw } from '#routes/-/tw';
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
 
-import { cn } from '../-/cn';
 import { PageHeader } from '../-/ui/content/page-header';
 import { Tag } from '../-/ui/surfaces/tag';
 

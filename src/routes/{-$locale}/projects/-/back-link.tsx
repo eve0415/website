@@ -4,7 +4,7 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 
 import { PROJECT_COPY } from '#i18n/copy';
-import { tw } from '#routes/-/tw';
+import { tw } from '#lib/tw';
 
 import { localeParams } from '../../-/site/links';
 
