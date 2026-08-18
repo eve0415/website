@@ -10,7 +10,7 @@ interface SlatHue {
   shadow: string;
 }
 
-const CYAN: SlatHue = { edge: '#04feff', top: 'rgb(6,109,130)', shadow: '0 0 22px 6px rgba(4,254,255,0.55)' };
+const CYAN = { edge: '#04feff', top: 'rgb(6,109,130)', shadow: '0 0 22px 6px rgba(4,254,255,0.55)' } as const satisfies SlatHue;
 
 /**
  * Keyed by the project's URL slug. These are the comp's own hues rather than

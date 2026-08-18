@@ -46,7 +46,7 @@ interface Budget {
   expiresAt: number;
 }
 
-const EMPTY: Budget = { used: 0, released: 0, expiresAt: 0 };
+const EMPTY = { used: 0, released: 0, expiresAt: 0 } as const satisfies Budget;
 
 /**
  * Storage hands back `unknown`, so the stored shape is checked rather than

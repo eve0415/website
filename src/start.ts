@@ -44,12 +44,12 @@ const buildCsp = (dev: boolean): string => {
 };
 
 /** X-Frame-Options is absent on purpose: `frame-ancestors 'none'` supersedes it. */
-const SECURITY_HEADERS: readonly (readonly [string, string])[] = [
+const SECURITY_HEADERS = [
   ['Content-Security-Policy', buildCsp(import.meta.env.DEV)],
   ['X-Content-Type-Options', 'nosniff'],
   ['Referrer-Policy', 'strict-origin-when-cross-origin'],
   ['Permissions-Policy', 'camera=(), microphone=(), geolocation=(), payment=()'],
-];
+] as const satisfies [string, string][];
 
 // `next` is aliased because `node/callback-return` treats that exact name as a
 // Node-style callback and demands its call be returned.
