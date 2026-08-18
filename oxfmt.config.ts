@@ -8,7 +8,7 @@ export default defineConfig({
   printWidth: 160,
   sortTailwindcss: {
     stylesheet: 'src/routes/__root.css',
-    functions: ['cn'],
+    functions: ['cn', 'tw'],
   },
   sortImports: {
     order: 'asc',

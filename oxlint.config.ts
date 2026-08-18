@@ -7,6 +7,7 @@ export default defineConfig({
   settings: {
     tailwindcss: {
       entryPoint: 'src/routes/__root.css',
+      callees: ['tw'],
     },
   },
   options: {
@@ -61,6 +62,9 @@ export default defineConfig({
     'require-unicode-regexp': 'off',
     'no-inline-comments': 'off',
     'no-underscore-dangle': 'off',
+    // oxfmt lowercases numeric literals and runs last, so this rule's uppercase
+    // autofix is undone on every `pnpm lint`.
+    'unicorn/number-literal-case': 'off',
 
     'import/no-default-export': 'off',
     'import/prefer-default-export': 'off',
