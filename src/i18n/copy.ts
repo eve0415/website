@@ -735,7 +735,7 @@ export const LAB_COPY = {
 export const PAGE_COPY = {
   ja: {
     '/': {
-      title: 'eve0415.net — 雲の上より',
+      title: 'eve0415.net — プロダクトエンジニア',
       description: '広く浅く技術を嗜むプロダクトエンジニア。新しい技術はとりあえず試す派です。',
     },
     '/projects': { title: '作ったもの | eve0415.net', description: WORKS_COPY.ja.intro },
@@ -750,7 +750,7 @@ export const PAGE_COPY = {
   },
   en: {
     '/': {
-      title: 'eve0415.net — live from above the clouds',
+      title: 'eve0415.net — Product Engineer',
       description: "Product engineer who dabbles in a bit of everything. If it's new, I've probably already tried it.",
     },
     '/projects': { title: 'Works | eve0415.net', description: WORKS_COPY.en.intro },
