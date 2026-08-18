@@ -12,7 +12,7 @@ const STAT = {
   sky: 'text-[var(--hue-sky)]',
   violet: 'text-[var(--hue-violet)]',
   rose: 'text-[var(--hue-rose)]',
-};
+} satisfies Record<Hue, string>;
 
 const LAYOUT = {
   featured: 'flex flex-wrap items-center justify-between gap-[24px] rounded-[var(--radius-card-lg)] border-[var(--line-accent-dashed)] p-[var(--pad-card-lg)]',

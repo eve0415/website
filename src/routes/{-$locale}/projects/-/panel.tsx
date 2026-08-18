@@ -15,7 +15,7 @@ const INK = {
   sky: 'text-(--hue-sky)',
   violet: 'text-(--hue-violet)',
   rose: 'text-(--hue-rose)',
-};
+} satisfies Record<PanelInk, string>;
 
 interface PanelHeadingProps {
   ink: PanelInk;

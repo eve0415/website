@@ -16,7 +16,7 @@ const INK = {
   sky: 'text-(--hue-sky)',
   violet: 'text-(--hue-violet)',
   rose: 'text-(--hue-rose)',
-};
+} satisfies Record<SkillInk, string>;
 
 export interface SkillItem {
   label: string;

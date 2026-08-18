@@ -14,7 +14,7 @@ const VARIANT = {
   solid: '',
   soft: 'bg-[var(--surface-panel-soft)]',
   dashed: 'border-dashed border-[var(--line-accent-dashed)] bg-[var(--surface-panel-soft)]',
-};
+} satisfies Record<CardVariant, string>;
 
 const HOVER = 'transition-[transform,border-color,box-shadow] duration-150 ease-[ease] hover:transform-[var(--lift-hover)]';
 
@@ -24,7 +24,7 @@ const HUE_HOVER = {
   sky: 'hover:border-[rgba(4,176,236,.65)] hover:shadow-[0_10px_36px_var(--hue-sky-glow)]',
   violet: 'hover:border-[rgba(196,73,208,.65)] hover:shadow-[0_10px_36px_var(--hue-violet-glow)]',
   rose: 'hover:border-[rgba(247,105,151,.6)] hover:shadow-[0_10px_36px_var(--hue-rose-glow)]',
-};
+} satisfies Record<Hue, string>;
 
 interface CardBaseProps {
   hue?: Hue;

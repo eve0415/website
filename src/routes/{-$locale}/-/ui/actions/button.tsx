@@ -15,12 +15,12 @@ const VARIANT = {
     'border border-[var(--line-white)] bg-[var(--surface-glass)] text-[var(--ink-title)] backdrop-blur-[4px] transition-[border-color,background] duration-150 ease-[ease] hover:border-[var(--accent-cyan)] hover:bg-[rgba(4,254,255,0.12)]',
   ghost:
     'border border-[var(--line-accent)] px-[18px] py-[8px] text-(length:--text-small) text-[var(--hue-cyan)] transition-[background] duration-150 ease-[ease] hover:bg-[rgba(4,254,255,0.1)]',
-};
+} satisfies Record<ButtonVariant, string>;
 
 const SIZE = {
   md: '',
   sm: 'px-[18px] py-[8px] text-(length:--text-small)',
-};
+} satisfies Record<ButtonSize, string>;
 
 interface ButtonBaseProps {
   variant?: ButtonVariant;

@@ -10,7 +10,7 @@ const VALUE = {
   sky: 'text-(--hue-sky)',
   violet: 'text-(--hue-violet)',
   rose: 'text-(--hue-rose)',
-};
+} satisfies Record<Hue, string>;
 
 interface StatCardProps {
   hue: Hue;

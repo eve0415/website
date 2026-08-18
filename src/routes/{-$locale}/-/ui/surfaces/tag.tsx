@@ -11,7 +11,7 @@ const HUES = {
   sky: 'border-[var(--hue-sky-line)] text-[var(--hue-sky)]',
   violet: 'border-[var(--hue-violet-line)] text-[var(--hue-violet)]',
   rose: 'border-[var(--hue-rose-line)] text-[var(--hue-rose)]',
-};
+} satisfies Record<Hue, string>;
 
 interface TagProps {
   hue?: Hue;
