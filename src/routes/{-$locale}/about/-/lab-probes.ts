@@ -34,7 +34,7 @@ const preferredTextScale = (): boolean => {
 };
 
 /** Declaration order is render order. */
-export const LAB_PROBES: readonly LabProbe[] = [
+export const LAB_PROBES = [
   { key: 'navigationApi', name: 'Navigation API', probe: () => 'navigation' in globalThis },
   { key: 'viewTransitions', name: 'View Transitions (element)', probe: () => 'startViewTransition' in Element.prototype },
   { key: 'scrollState', name: 'scroll-state()', probe: () => css('container-type: scroll-state') },
@@ -52,7 +52,7 @@ export const LAB_PROBES: readonly LabProbe[] = [
   { key: 'scrollend', name: 'scrollend', probe: () => 'onscrollend' in globalThis },
   { key: 'durationFormat', name: 'Intl.DurationFormat', probe: () => 'DurationFormat' in Intl },
   { key: 'promiseTry', name: 'Promise.try()', probe: () => 'try' in Promise },
-];
+] as const satisfies LabProbe[];
 
 /**
  * The keys this browser supports. A set rather than a per-key record so
