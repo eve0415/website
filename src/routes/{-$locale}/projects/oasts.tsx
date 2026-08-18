@@ -18,10 +18,10 @@ import { StatCard } from './-/stat-card';
 
 const TAGS = ['Rust', 'TypeScript'];
 
-const LINKS: readonly ProjectLink[] = [
+const LINKS = [
   { label: 'GitHub', value: 'github.com/eve0415/oasts ↗', href: 'https://github.com/eve0415/oasts' },
   { label: 'npm', value: '@oasts/cli ↗', href: 'https://www.npmjs.com/package/@oasts/cli' },
-];
+] as const satisfies ProjectLink[];
 
 const PACKAGE_MANAGERS = ['pnpm', 'npm', 'bun', 'yarn'] as const;
 

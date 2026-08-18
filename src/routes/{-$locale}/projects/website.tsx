@@ -29,7 +29,7 @@ interface Generation {
 }
 
 /** v1's heading is the same in both locales, so it is not in the copy module. */
-const GENERATIONS: readonly Generation[] = [
+const GENERATIONS = [
   {
     date: '2022.04',
     title: () => 'v1 — Next.js + MUI',
@@ -60,17 +60,17 @@ const GENERATIONS: readonly Generation[] = [
     stack: copy => ['Claude Design', copy.tagDS, 'Noto Sans JP', 'prefers-reduced-motion'],
     body: copy => copy.v5Body,
   },
-];
+] as const satisfies Generation[];
 
 const WebsiteHistory = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
   const copy = HISTORY_COPY[locale];
   const chrome = PROJECT_COPY[locale];
 
-  const links: readonly ProjectLink[] = [
+  const links = [
     { label: 'GitHub', value: 'github.com/eve0415/website ↗', href: 'https://github.com/eve0415/website' },
     { label: copy.prodSite, value: 'eve0415.net ↗', href: 'https://eve0415.net' },
-  ];
+  ] as const satisfies ProjectLink[];
 
   return (
     <div className='relative mx-auto grid max-w-(--page-max-article) gap-[24px] px-[24px] pt-[48px] pb-[96px]'>

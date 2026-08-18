@@ -19,21 +19,21 @@ const TAGS = ['Rust', 'CLI'];
 
 const BREW = 'brew install eve0415/tap/cella';
 
-const BREW_SEGMENTS: readonly CommandSegment[] = [
+const BREW_SEGMENTS = [
   { key: 'cmd', text: 'brew', color: 'text-(--accent-cyan)' },
   { key: 'verb', text: ' install', color: 'text-(--ink-ice)' },
   { key: 'pkg', text: ' eve0415/tap/cella', color: 'text-(--ink-title)' },
-];
+] as const satisfies CommandSegment[];
 
 const Cella = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
   const copy = CELLA_COPY[locale];
   const chrome = PROJECT_COPY[locale];
 
-  const links: readonly ProjectLink[] = [
+  const links = [
     { label: 'GitHub', value: 'github.com/eve0415/cella ↗', href: 'https://github.com/eve0415/cella' },
     { label: copy.releases, value: copy.relBins, href: 'https://github.com/eve0415/cella/releases' },
-  ];
+  ] as const satisfies ProjectLink[];
 
   return (
     <div className='relative mx-auto grid max-w-(--page-max-article) gap-[24px] px-[24px] pt-[48px] pb-[96px]'>

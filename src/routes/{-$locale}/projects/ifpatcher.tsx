@@ -15,11 +15,11 @@ import { StatCard } from './-/stat-card';
 
 const TAGS = ['Java', 'Minecraft Forge', 'ASM'];
 
-const LINKS: readonly ProjectLink[] = [
+const LINKS = [
   { label: 'GitHub', value: 'github.com/eve0415/IFPatcher ↗', href: 'https://github.com/eve0415/IFPatcher' },
   { label: 'CurseForge', value: 'curseforge.com/minecraft/mc-mods/ifpatcher ↗', href: 'https://www.curseforge.com/minecraft/mc-mods/ifpatcher' },
   { label: 'Modrinth', value: 'modrinth.com/mod/ifpatcher ↗', href: 'https://modrinth.com/mod/ifpatcher' },
-];
+] as const satisfies ProjectLink[];
 
 const IfPatcher = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });

@@ -19,10 +19,10 @@ const Dotclaude = () => {
   const copy = DOTCLAUDE_COPY[locale];
   const chrome = PROJECT_COPY[locale];
 
-  const links: readonly ProjectLink[] = [
+  const links = [
     { label: copy.try, value: 'dotclaude.eve0415.workers.dev ↗', href: 'https://dotclaude.eve0415.workers.dev/' },
     { label: 'GitHub', value: 'github.com/eve0415/dotclaude ↗', href: 'https://github.com/eve0415/dotclaude' },
-  ];
+  ] as const satisfies ProjectLink[];
 
   return (
     <div className='relative mx-auto grid max-w-(--page-max-article) gap-[24px] px-[24px] pt-[48px] pb-[96px]'>
