@@ -1,3 +1,4 @@
+import type { PluginObj } from '@babel/core';
 import type { Plugin } from 'vite';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
@@ -91,6 +92,31 @@ const sitemap = (): Plugin => ({
   },
 });
 
+/**
+ * Drops the `tw()` marker calls, leaving the class list they wrap.
+ *
+ * `tw` exists so oxlint and oxfmt can see a class list that lives in a constant
+ * rather than in JSX. It returns its argument unchanged, so nothing about it
+ * needs to reach the browser.
+ */
+const stripTw = (): PluginObj => ({
+  name: 'strip-tw',
+  visitor: {
+    CallExpression(path) {
+      const { callee, arguments: args } = path.node;
+      if (callee.type !== 'Identifier' || callee.name !== 'tw' || args.length !== 1) return;
+
+      const [argument] = args;
+      if (argument?.type !== 'StringLiteral') return;
+
+      const binding = path.scope.getBinding('tw');
+      if (binding?.path.parent.type !== 'ImportDeclaration' || binding.path.parent.source.value !== '#routes/-/tw') return;
+
+      path.replaceWith(argument);
+    },
+  },
+});
+
 export default defineConfig({
   plugins: [
     cloudflare({
@@ -121,6 +147,7 @@ export default defineConfig({
     react(),
     babel({
       presets: [reactCompilerPreset({ panicThreshold: 'critical_errors' })],
+      plugins: [stripTw],
     }),
     tailwindcss(),
     devtoolsJson(),
