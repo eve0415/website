@@ -1,4 +1,4 @@
-import type { PluginObj } from '@babel/core';
+import type { PluginObject } from '@babel/core';
 import type { Plugin } from 'vite';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
@@ -99,7 +99,7 @@ const sitemap = (): Plugin => ({
  * rather than in JSX. It returns its argument unchanged, so nothing about it
  * needs to reach the browser.
  */
-const stripTw = (): PluginObj => ({
+const stripTw = (): PluginObject => ({
   name: 'strip-tw',
   visitor: {
     CallExpression(path) {
