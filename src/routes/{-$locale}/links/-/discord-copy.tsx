@@ -2,13 +2,12 @@ import type { FC } from 'react';
 
 import { startTransition, useEffect, useRef, useState } from 'react';
 
+import { SweepButton } from '#components/sweep-button';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
-import { SweepButton } from '../../-/ui/actions/sweep-button';
-
 import './discord-copy.css';
-import { Toast } from '../../-/ui/content/toast';
+import { Toast } from './toast';
 
 const BUTTON = tw('ev-cp-discord border-[rgba(4,254,255,0.55)] px-[18px] py-[8px] text-(length:--text-small) font-normal text-(--hue-cyan)');
 

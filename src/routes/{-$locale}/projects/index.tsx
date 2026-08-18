@@ -1,11 +1,11 @@
 import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 
+import { PageHeader } from '#components/page-header';
+import { SweepButton } from '#components/sweep-button';
 import { HOME_COPY, WORKS_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { ProjectCardLink } from '../-/site/links';
-import { SweepButton } from '../-/ui/actions/sweep-button';
-import { PageHeader } from '../-/ui/content/page-header';
+import { ProjectCardLink } from '../-/routed-links';
 
 const Works = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });

@@ -2,18 +2,18 @@ import { rootRouteId, useRouteContext } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 
+import { Button } from '#components/button';
 import { NOT_FOUND_COPY, SITE_COPY } from '#i18n/copy';
 import { cn } from '#lib/cn';
 
+import { ButtonLink, localeParams } from '../routed-links';
 import { BrandLink } from '../site/brand-link';
 import { CatArt } from '../site/cat-art';
 import { CloudLayer } from '../site/cloud-layer';
 import { LanguageSwitch } from '../site/language-switch';
-import { ButtonLink, localeParams } from '../site/links';
 import { navItems } from '../site/nav';
 import { SiteHeader } from '../site/site-header';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, glow } from '../site/sky-scene';
-import { Button } from '../ui/actions/button';
 import { ShootingStar } from '../ui/ambient/shooting-star';
 import { StarField } from '../ui/ambient/star-field';
 

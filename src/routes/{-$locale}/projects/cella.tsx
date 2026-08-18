@@ -3,12 +3,11 @@ import type { ProjectLink } from './-/links-section';
 
 import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 
+import { PageHeader } from '#components/page-header';
+import { Tag } from '#components/tag';
 import { CELLA_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 import { tw } from '#lib/tw';
-
-import { PageHeader } from '../-/ui/content/page-header';
-import { Tag } from '../-/ui/surfaces/tag';
 
 import { BackLink } from './-/back-link';
 import { CommandBox } from './-/command-box';

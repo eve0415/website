@@ -4,9 +4,9 @@ import type { FC } from 'react';
 import { HOME_COPY } from '#i18n/copy';
 import { tw } from '#lib/tw';
 
+import { ButtonLink, localeParams } from '../routed-links';
 import { CatArt } from '../site/cat-art';
 import { CloudLayer } from '../site/cloud-layer';
-import { ButtonLink, localeParams } from '../site/links';
 import { puffs } from '../site/puffs';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, GLOW_A, GLOW_B, GLOW_W, glow } from '../site/sky-scene';
 import { ShootingStar } from '../ui/ambient/shooting-star';

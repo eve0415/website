@@ -6,7 +6,7 @@ import { Link } from '@tanstack/react-router';
 import { PROJECT_COPY } from '#i18n/copy';
 import { tw } from '#lib/tw';
 
-import { localeParams } from '../../-/site/links';
+import { localeParams } from '../../-/routed-links';
 
 const ROOT = tw(
   'inline-flex min-h-[44px] animate-[fadeUp_0.6s_ease_backwards] items-center gap-[8px] justify-self-start text-(length:--text-nav) font-bold text-(--ink-ice) no-underline transition-colors duration-150 ease-[ease] hover:text-(--accent-cyan)',

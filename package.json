@@ -4,7 +4,9 @@
     "#*": [
       "./src/*",
       "./src/*.ts",
-      "./src/*.tsx"
+      "./src/*.tsx",
+      "./src/*/index.ts",
+      "./src/*/index.tsx"
     ]
   },
   "scripts": {

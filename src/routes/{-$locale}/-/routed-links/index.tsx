@@ -2,9 +2,10 @@ import type { Locale } from '#i18n/locale';
 
 import { createLink } from '@tanstack/react-router';
 
-import { Button } from '../ui/actions/button';
-import { CometLink } from '../ui/actions/comet-link';
-import { ProjectCard } from '../ui/surfaces/project-card';
+import { Button } from '#components/button';
+
+import { CometLink } from './comet-link';
+import { ProjectCard } from './project-card';
 
 /**
  * The design library renders plain anchors and knows nothing about routing —

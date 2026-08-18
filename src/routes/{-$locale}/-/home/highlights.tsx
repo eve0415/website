@@ -3,10 +3,10 @@ import type { FC } from 'react';
 
 import { HOME_COPY } from '#i18n/copy';
 
-import { CometNavLink, ProjectCardLink, localeParams } from '../site/links';
+import { CometNavLink, ProjectCardLink, localeParams } from '../routed-links';
 import { GLOW_MID_A, GLOW_MID_B, GLOW_MID_C, glow } from '../site/sky-scene';
-import { SectionHeading } from '../ui/content/section-heading';
 
+import { SectionHeading } from './section-heading';
 import './highlights.css';
 
 /** Zero-height band of light where the cloud sea meets the page below it. */

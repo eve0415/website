@@ -3,11 +3,10 @@ import type { FC } from 'react';
 
 import { useSyncExternalStore } from 'react';
 
+import { Card } from '#components/card';
 import { LAB_COPY } from '#i18n/copy';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
-
-import { Card } from '../../-/ui/surfaces/card';
 
 import './lab-card.css';
 import { LAB_PROBES, readSupport, readSupportOnServer, subscribeToSupport } from './lab-probes';

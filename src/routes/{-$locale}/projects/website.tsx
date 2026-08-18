@@ -4,14 +4,13 @@ import type { ProjectLink } from './-/links-section';
 import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 import { Fragment } from 'react';
 
+import { Card } from '#components/card';
+import { Chip } from '#components/chip';
+import { PageHeader } from '#components/page-header';
 import { HISTORY_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
-
-import { PageHeader } from '../-/ui/content/page-header';
-import { Card } from '../-/ui/surfaces/card';
-import { Chip } from '../-/ui/surfaces/chip';
 
 import { BackLink } from './-/back-link';
 import { LinksSection } from './-/links-section';

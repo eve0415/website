@@ -6,14 +6,13 @@ import type { FC } from 'react';
 
 import { useActionState, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
+import { Button } from '#components/button';
 import { CONTACT_COPY } from '#i18n/copy';
 import { cn } from '#lib/cn';
-import { tw } from '#lib/tw';
 
 import './contact-form.css';
+import { tw } from '#lib/tw';
 import { TurnstileWidget } from '#turnstile/turnstile-widget';
-
-import { Button } from '../../../-/ui/actions/button';
 
 import { fieldOf, readField } from './form-state';
 import { swapInPlace } from './scoped-view-transition';

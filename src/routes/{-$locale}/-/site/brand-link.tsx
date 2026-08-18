@@ -3,7 +3,8 @@ import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
 
-import { localeParams } from './links';
+import { localeParams } from '../routed-links';
+
 import { BRAND_CLASS } from './site-header';
 
 interface BrandLinkProps {

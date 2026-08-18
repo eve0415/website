@@ -1,10 +1,9 @@
-import type { Hue } from '../../-/ui/surfaces/card';
+import type { Hue } from '#components/card';
 import type { FC } from 'react';
 
+import { Card } from '#components/card';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
-
-import { Card } from '../../-/ui/surfaces/card';
 
 const VALUE = {
   cyan: tw('text-(--accent-cyan)'),

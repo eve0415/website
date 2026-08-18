@@ -1,4 +1,4 @@
-import type { Hue } from './card';
+import type { Hue } from '#components/card';
 import type { FC, ReactNode } from 'react';
 
 import { cn } from '#lib/cn';

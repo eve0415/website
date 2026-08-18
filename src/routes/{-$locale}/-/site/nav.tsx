@@ -6,7 +6,8 @@ import { Link } from '@tanstack/react-router';
 import { SITE_COPY } from '#i18n/copy';
 import { localePath } from '#i18n/locale';
 
-import { localeParams } from './links';
+import { localeParams } from '../routed-links';
+
 import { NAV_LINK_CLASS } from './site-header';
 
 /**

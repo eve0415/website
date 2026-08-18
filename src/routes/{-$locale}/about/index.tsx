@@ -1,11 +1,11 @@
 import { Link, createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 
+import { Card } from '#components/card';
+import { PageHeader } from '#components/page-header';
 import { ABOUT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 
-import { CometNavLink, localeParams } from '../-/site/links';
-import { PageHeader } from '../-/ui/content/page-header';
-import { Card } from '../-/ui/surfaces/card';
+import { CometNavLink, localeParams } from '../-/routed-links';
 
 import { LabCard } from './-/lab-card';
 

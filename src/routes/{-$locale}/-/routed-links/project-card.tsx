@@ -1,11 +1,10 @@
-import type { Hue } from './card';
+import type { Hue } from '#components/card';
 import type { ComponentPropsWithoutRef, FC } from 'react';
 
+import { Card } from '#components/card';
+import { Tag } from '#components/tag';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
-
-import { Card } from './card';
-import { Tag } from './tag';
 
 const STAT = {
   cyan: tw('text-(--accent-cyan)'),
