@@ -117,11 +117,11 @@
   --weight-bold: 700;
 
   /* 間 — layout, spacing & radius */
-  /* Page shells grow with the viewport instead of stopping dead at a fixed
-     width, so very wide displays get more content rather than more margin. */
   /* The full-bleed chrome — header, footer, hero — keeps its background edge
      to edge but stops its content here. */
   --page-max-wide: 1680px;
+  /* The page shells grow with the viewport rather than stopping dead at a fixed
+     width, so a wide display gets more content instead of more margin. */
   --page-max: clamp(1060px, 66vw, 1280px);
   --page-max-article: clamp(860px, 54vw, 1020px);
   --page-max-narrow: clamp(720px, 46vw, 880px);
@@ -275,7 +275,9 @@
 
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: var(--header-h);
+  /* The header renders at its own height times the ultra-wide zoom, but this
+     sits on the unzoomed html, so it has to reserve the rendered height. */
+  scroll-padding-top: calc(var(--header-h) * var(--z, 1));
   /* The cloud layers overhang the viewport on purpose; without this they add a
      horizontal scrollbar. `clip` rather than `hidden` so `position: sticky`
      keeps working on the header. */
