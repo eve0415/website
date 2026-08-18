@@ -1,4 +1,4 @@
-import type { RunProps } from './run';
+import type { Phase, RunProps } from './run';
 import type { FC } from 'react';
 
 import { OVERLAY } from './run';
@@ -6,7 +6,7 @@ import { OVERLAY } from './run';
 const WIPE_ANIMATION = {
   in: 'wipeIn .43s cubic-bezier(.7,.05,.3,1) both',
   out: 'wipeOut .47s cubic-bezier(.6,0,.3,1) both',
-};
+} satisfies Record<Phase, string>;
 
 export const CometWipe: FC<RunProps> = ({ run, onSettled }) => (
   <div aria-hidden='true' className={OVERLAY}>

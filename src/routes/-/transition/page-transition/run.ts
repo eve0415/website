@@ -32,7 +32,7 @@ export const projectSlug = (pathname: string | undefined): string | null => (pat
 
 export const hueFor = (slug: string | null): SlatHue => (slug === null ? CYAN : (PROJECT_HUES.get(slug) ?? CYAN));
 
-type Phase = 'in' | 'out';
+export type Phase = 'in' | 'out';
 
 export interface Run {
   /** Bumped per navigation, so a run that starts during one restarts the animations. */

@@ -1,4 +1,4 @@
-import type { RunProps } from './run';
+import type { Phase, RunProps } from './run';
 import type { FC } from 'react';
 
 import { OVERLAY } from './run';
@@ -6,7 +6,7 @@ import { OVERLAY } from './run';
 const SLAT_KEYFRAMES = {
   up: { in: 'slatUpIn', out: 'slatUpOut' },
   down: { in: 'slatDownIn', out: 'slatDownOut' },
-};
+} satisfies Record<'up' | 'down', Record<Phase, string>>;
 
 const SLAT_ORDER = [0, 1, 2, 3, 4];
 const LAST_SLAT = SLAT_ORDER.length - 1;
