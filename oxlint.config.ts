@@ -143,8 +143,13 @@ export default defineConfig({
     'tailwindcss/enforce-consistent-important-position': 'error',
     'tailwindcss/enforce-negative-arbitrary-values': 'error',
     'tailwindcss/enforce-consistent-variable-syntax': 'error',
+    'tailwindcss/enforce-physical': 'error',
     'tailwindcss/consistent-variant-order': 'error',
     'tailwindcss/no-unnecessary-arbitrary-value': 'error',
+
+    // enforce-physical's exact inverse; with both on, every inline-axis utility
+    // is an error under one of them. This site is ja/en, so LTR-only.
+    'tailwindcss/enforce-logical': 'off',
 
     // oxfmt owns class order and wrapping via sortTailwindcss; two sorters would
     // fix each other's output on every run.
