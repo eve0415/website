@@ -5,6 +5,7 @@ import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-r
 
 import { CELLA_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
+import { tw } from '#routes/-/tw';
 
 import { PageHeader } from '../-/ui/content/page-header';
 import { Tag } from '../-/ui/surfaces/tag';
@@ -20,9 +21,9 @@ const TAGS = ['Rust', 'CLI'] as const;
 const BREW = 'brew install eve0415/tap/cella';
 
 const BREW_SEGMENTS = [
-  { key: 'cmd', text: 'brew', color: 'text-(--accent-cyan)' },
-  { key: 'verb', text: ' install', color: 'text-(--ink-ice)' },
-  { key: 'pkg', text: ' eve0415/tap/cella', color: 'text-(--ink-title)' },
+  { key: 'cmd', text: 'brew', color: tw('text-(--accent-cyan)') },
+  { key: 'verb', text: ' install', color: tw('text-(--ink-ice)') },
+  { key: 'pkg', text: ' eve0415/tap/cella', color: tw('text-(--ink-title)') },
 ] as const satisfies CommandSegment[];
 
 const Cella = () => {

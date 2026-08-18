@@ -1,14 +1,18 @@
 import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../cn';
 
-const BASE =
-  'flex items-center justify-between gap-[12px] rounded-[var(--radius-row)] border border-[var(--line-row)] bg-[var(--surface-row)] px-[20px] py-[17px] font-sans text-[var(--ink-title)] no-underline';
+const BASE = tw(
+  'flex items-center justify-between gap-[12px] rounded-(--radius-row) border border-(--line-row) bg-(--surface-row) px-[20px] py-[17px] font-sans text-(--ink-title) no-underline',
+);
 
-const ANCHOR =
-  'transition-[border-color,background,transform] duration-150 ease-[ease] hover:transform-[translateY(-2px)] hover:border-[var(--accent-cyan)] hover:bg-[rgba(4,254,255,0.08)]';
+const ANCHOR = tw(
+  'transition-[border-color,background,transform] duration-150 ease-[ease] hover:transform-[translateY(-2px)] hover:border-(--accent-cyan) hover:bg-[rgba(4,254,255,0.08)]',
+);
 
-const VALUE = 'text-(length:--text-ui) text-[var(--ink-ice)]';
+const VALUE = tw('text-(length:--text-ui) text-(--ink-ice)');
 
 interface LinkRowBaseProps {
   label?: string;

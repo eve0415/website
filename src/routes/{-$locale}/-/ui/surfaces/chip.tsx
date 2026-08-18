@@ -1,12 +1,13 @@
 import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../cn';
 
-const BASE =
-  'inline-flex items-center rounded-[999px] border border-[var(--line-chip)] px-[15px] py-[7px] font-sans text-[length:var(--text-small)] text-[#e4dfff]';
+const BASE = tw('inline-flex items-center rounded-[999px] border border-(--line-chip) px-[15px] py-[7px] font-sans text-(length:--text-small) text-[#e4dfff]');
 
 /** The design lights the border and the label together on hover. */
-const ANCHOR = 'no-underline transition-[border-color,color] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:text-(--accent-cyan)';
+const ANCHOR = tw('no-underline transition-[border-color,color] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:text-(--accent-cyan)');
 
 interface ChipBaseProps {
   children?: ReactNode;

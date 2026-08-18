@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 
 import { OASTS_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
+import { tw } from '#routes/-/tw';
 
 import { cn } from '../-/cn';
 import { PageHeader } from '../-/ui/content/page-header';
@@ -27,14 +28,15 @@ const PACKAGE_MANAGERS = ['pnpm', 'npm', 'bun', 'yarn'] as const;
 
 type PackageManager = (typeof PACKAGE_MANAGERS)[number];
 
-const TAB =
-  'min-h-[42px] cursor-pointer rounded-t-[9px] border border-b-0 p-[10px_16px_11px] font-mono text-(length:--text-caption) transition-[color,background] duration-150 ease-[ease] hover:text-(--ink-ice) -mb-px';
+const TAB = tw(
+  '-mb-px min-h-[42px] cursor-pointer rounded-t-[9px] border border-b-0 p-[10px_16px_11px] font-mono text-(length:--text-caption) transition-[color,background] duration-150 ease-[ease] hover:text-(--ink-ice)',
+);
 
 const segmentsFor = (pm: PackageManager): readonly CommandSegment[] => [
-  { key: 'pm', text: pm, color: 'text-(--accent-cyan)' },
-  { key: 'verb', text: pm === 'npm' ? ' install' : ' add', color: 'text-(--ink-ice)' },
-  { key: 'flag', text: ' -D', color: 'text-(--star-lilac)' },
-  { key: 'pkg', text: ' @oasts/cli', color: 'text-(--ink-title)' },
+  { key: 'pm', text: pm, color: tw('text-(--accent-cyan)') },
+  { key: 'verb', text: pm === 'npm' ? ' install' : ' add', color: tw('text-(--ink-ice)') },
+  { key: 'flag', text: ' -D', color: tw('text-(--star-lilac)') },
+  { key: 'pkg', text: ' @oasts/cli', color: tw('text-(--ink-title)') },
 ];
 
 /** Truncates the command to its first `count` characters, segment by segment. */

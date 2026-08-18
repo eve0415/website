@@ -7,6 +7,7 @@ export default defineConfig({
   settings: {
     tailwindcss: {
       entryPoint: 'src/routes/__root.css',
+      attributes: ['caretClassName'],
       callees: ['tw'],
     },
   },

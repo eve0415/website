@@ -1,11 +1,13 @@
 import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 
-import { cn } from '../../cn';
+import { tw } from '#routes/-/tw';
 
 import './comet-link.css';
+import { cn } from '../../cn';
 
-const ROOT =
-  'group relative inline-flex min-h-[44px] cursor-pointer items-center gap-[10px] font-sans text-(length:--text-ui) font-bold tracking-[0.06em] text-[var(--link)] no-underline hover:text-[var(--link-hover)]';
+const ROOT = tw(
+  'group relative inline-flex min-h-[44px] cursor-pointer items-center gap-[10px] font-sans text-(length:--text-ui) font-bold tracking-[0.06em] text-(--link) no-underline hover:text-(--link-hover)',
+);
 
 interface CometLinkBaseProps {
   children?: ReactNode;

@@ -1,8 +1,9 @@
 import type { CSSProperties, FC } from 'react';
 
-import { cn } from '../../cn';
+import { tw } from '#routes/-/tw';
 
 import './shooting-star.css';
+import { cn } from '../../cn';
 
 type ShootingStarDirection = 'left' | 'right';
 
@@ -16,26 +17,26 @@ type ShootingStarArc = 'sweep' | 'steep' | 'long';
 const VARIANT = {
   sweepLeft: {
     animation: 'evShootL',
-    head: 'size-[7px] shadow-[var(--glow-star)]',
-    tail: 'h-[2px] -ml-[3px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.6),transparent)]',
+    head: tw('size-[7px] shadow-(--glow-star)'),
+    tail: tw('ml-[-3px] h-[2px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.6),transparent)]'),
     headFirst: true,
   },
   sweepRight: {
     animation: 'evShootR',
-    head: 'size-[7px] shadow-[var(--glow-star)]',
-    tail: 'h-[2px] -mr-[3px] bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.55),#04feff)]',
+    head: tw('size-[7px] shadow-(--glow-star)'),
+    tail: tw('mr-[-3px] h-[2px] bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.55),#04feff)]'),
     headFirst: false,
   },
   steep: {
     animation: 'evShootB',
-    head: 'size-[6px] shadow-[var(--glow-comet-head)]',
-    tail: 'h-[2px] -ml-[3px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.55),transparent)]',
+    head: tw('size-[6px] shadow-(--glow-comet-head)'),
+    tail: tw('ml-[-3px] h-[2px] bg-[linear-gradient(90deg,#04feff,rgba(0,221,168,.55),transparent)]'),
     headFirst: true,
   },
   long: {
     animation: 'evShootD',
-    head: 'size-[6px] shadow-[0_0_9px_2px_rgba(159,232,255,.7)]',
-    tail: 'h-[1.5px] -ml-[3px] bg-[linear-gradient(90deg,#9fe8ff,rgba(0,221,168,.4),transparent)]',
+    head: tw('size-[6px] shadow-[0_0_9px_2px_rgba(159,232,255,.7)]'),
+    tail: tw('ml-[-3px] h-[1.5px] bg-[linear-gradient(90deg,#9fe8ff,rgba(0,221,168,.4),transparent)]'),
     headFirst: true,
   },
 };

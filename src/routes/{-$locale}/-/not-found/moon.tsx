@@ -1,5 +1,7 @@
 import type { FC, RefObject } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 /** Craters, as a fraction of the moon's own box. */
 const CRATERS = [
   {
@@ -28,7 +30,7 @@ const CRATERS = [
   },
 ] as const;
 
-const ORBIT_DEPTH = 'animate-[evOrbitDepth_9s_linear_infinite]';
+const ORBIT_DEPTH = tw('animate-[evOrbitDepth_9s_linear_infinite]');
 
 interface MoonProps {
   /** The searchlight sweep; the page animates it imperatively when you search. */

@@ -2,21 +2,23 @@ import type { FC, MouseEvent, ReactNode } from 'react';
 
 import { Fragment } from 'react';
 
-import { cn } from '../cn';
+import { tw } from '#routes/-/tw';
 
 import './site-header.css';
+import { cn } from '../cn';
 
-const ROOT = 'ev-hdr sticky top-0 z-10 border-b border-b-[var(--line-header)] bg-[var(--surface-header)] p-(--header-pad) font-sans backdrop-blur-[10px]';
+const ROOT = tw('ev-hdr sticky top-0 z-10 border-b border-b-(--line-header) bg-(--surface-header) p-(--header-pad) font-sans backdrop-blur-[10px]');
 
 /** The bar stays full-bleed; only its contents stop at the shell width. */
-const INNER = 'mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-[12px]';
+const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-[12px]');
 
 /** Exported so a caller supplying its own `brandElement` can style it identically. */
-export const BRAND_CLASS = 'flex min-h-[44px] items-center gap-[10px] text-[1rem] font-bold text-[#eae6ff] no-underline';
+export const BRAND_CLASS = tw('flex min-h-[44px] items-center gap-[10px] text-[1rem] font-bold text-[#eae6ff] no-underline');
 
 /** Exported so a caller supplying its own `element` can style it identically. */
-export const NAV_LINK_CLASS =
-  'inline-flex min-h-[44px] cursor-pointer items-center border-b-2 border-b-transparent font-[inherit] text-[length:var(--text-nav)] text-[#eae6ff] no-underline hover:text-[var(--accent-cyan)] aria-[current=page]:border-b-[var(--accent-cyan)] aria-[current=page]:text-[var(--accent-cyan)]';
+export const NAV_LINK_CLASS = tw(
+  'inline-flex min-h-[44px] cursor-pointer items-center border-b-2 border-b-transparent font-[inherit] text-(length:--text-nav) text-[#eae6ff] no-underline hover:text-(--accent-cyan) aria-[current=page]:border-b-(--accent-cyan) aria-[current=page]:text-(--accent-cyan)',
+);
 
 export interface SiteHeaderNavItem {
   key: string;

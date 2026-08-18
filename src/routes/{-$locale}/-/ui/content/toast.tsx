@@ -1,9 +1,12 @@
 import type { CSSProperties, ComponentPropsWithoutRef, FC, ReactNode, Ref } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../cn';
 
-const BASE =
-  'inline-block rounded-[999px] border border-[var(--line-accent)] bg-[var(--surface-toast)] px-[22px] py-[12px] font-sans text-[length:var(--text-nav)] text-[#d8f9ff] shadow-[var(--glow-toast)]';
+const BASE = tw(
+  'inline-block rounded-[999px] border border-(--line-accent) bg-(--surface-toast) px-[22px] py-[12px] font-sans text-(length:--text-nav) text-[#d8f9ff] shadow-(--glow-toast)',
+);
 
 interface ToastProps extends Omit<ComponentPropsWithoutRef<'div'>, 'style' | 'children'> {
   style?: CSSProperties;

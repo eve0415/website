@@ -1,28 +1,30 @@
 import type { Hue } from './card';
 import type { ComponentPropsWithoutRef, FC } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../cn';
 
 import { Card } from './card';
 import { Tag } from './tag';
 
 const STAT = {
-  cyan: 'text-[var(--accent-cyan)]',
-  mint: 'text-[var(--accent-mint)]',
-  sky: 'text-[var(--hue-sky)]',
-  violet: 'text-[var(--hue-violet)]',
-  rose: 'text-[var(--hue-rose)]',
+  cyan: tw('text-(--accent-cyan)'),
+  mint: tw('text-(--accent-mint)'),
+  sky: tw('text-(--hue-sky)'),
+  violet: tw('text-(--hue-violet)'),
+  rose: tw('text-(--hue-rose)'),
 } satisfies Record<Hue, string>;
 
 const LAYOUT = {
-  featured: 'flex flex-wrap items-center justify-between gap-[24px] rounded-[var(--radius-card-lg)] border-[var(--line-accent-dashed)] p-[var(--pad-card-lg)]',
-  plain: 'grid content-start gap-[10px]',
+  featured: tw('flex flex-wrap items-center justify-between gap-[24px] rounded-(--radius-card-lg) border-(--line-accent-dashed) p-(--pad-card-lg)'),
+  plain: tw('grid content-start gap-[10px]'),
 };
 
-const TITLE_ROW = 'flex flex-wrap items-center gap-[10px]';
-const DESCRIPTION = 'text-[length:var(--text-body)] leading-[1.75] text-[var(--ink-muted)]';
+const TITLE_ROW = tw('flex flex-wrap items-center gap-[10px]');
+const DESCRIPTION = tw('text-(length:--text-body) leading-[1.75] text-(--ink-muted)');
 /** Reads as a link cue, so it keeps the ice hue whatever the card's hue is. */
-const CTA = 'text-(length:--text-small) font-bold text-[var(--hue-cyan)]';
+const CTA = tw('text-(length:--text-small) font-bold text-(--hue-cyan)');
 
 interface ProjectCardBaseProps {
   name?: string;

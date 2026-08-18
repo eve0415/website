@@ -41,6 +41,10 @@ A colocated `.css` file is for what utilities cannot express — `@keyframes`, `
 
 Class order is oxfmt's job. Don't hand-sort.
 
+**A class list only gets linted and sorted where the tools are told to look**: `className`, a `cn()` argument, or a `tw()` argument.
+A list hoisted into a constant, an object value or an array is invisible to both unless it is wrapped in `tw()` (`src/routes/-/tw.ts`), which is a no-op at runtime and exists only to be that marker.
+`cn` combines and overrides; `tw` marks. A class-valued JSX prop not named `className` needs adding to `attributes` in both configs.
+
 ## Layout
 
 **Every directory under `src/routes/` has at most one `-/` child, and everything in that directory that is not a route lives in it.** The router's codegen skips any entry whose name starts with `-`, so `-/` is what keeps non-route files from becoming routes; naming it after its parent (`-about/`, `-links/`) only restates the folder it already sits in.

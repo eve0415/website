@@ -1,5 +1,7 @@
 import type { FC, ReactNode } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../cn';
 
 interface PageHeaderProps {
@@ -11,7 +13,7 @@ interface PageHeaderProps {
   className?: string;
 }
 
-const TITLE = 'text-(length:--text-h1) leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic]';
+const TITLE = tw('text-(length:--text-h1) leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic]');
 
 export const PageHeader: FC<PageHeaderProps> = ({ kicker, title, lede, tags, className }) => (
   <div className={cn('grid gap-[8px] font-sans', className)}>

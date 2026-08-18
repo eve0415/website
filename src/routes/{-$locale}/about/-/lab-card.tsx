@@ -4,20 +4,22 @@ import type { FC } from 'react';
 import { useSyncExternalStore } from 'react';
 
 import { LAB_COPY } from '#i18n/copy';
+import { tw } from '#routes/-/tw';
 
 import { cn } from '../../-/cn';
 import { Card } from '../../-/ui/surfaces/card';
 
-import { LAB_PROBES, readSupport, readSupportOnServer, subscribeToSupport } from './lab-probes';
 import './lab-card.css';
+import { LAB_PROBES, readSupport, readSupportOnServer, subscribeToSupport } from './lab-probes';
 
-const BADGE =
-  'inline-flex min-w-[76px] items-center justify-center justify-self-end rounded-[999px] border px-[10px] py-[3px] text-[0.71875rem] tracking-[0.1em]';
+const BADGE = tw(
+  'inline-flex min-w-[76px] items-center justify-center justify-self-end rounded-[999px] border px-[10px] py-[3px] text-[0.71875rem] tracking-[0.1em]',
+);
 
-const BADGE_SUPPORTED = 'border-[rgba(0,221,168,.45)] text-(--hue-mint)';
+const BADGE_SUPPORTED = tw('border-[rgba(0,221,168,.45)] text-(--hue-mint)');
 
 /** Also the "not probed yet" treatment: neutral, so it reads as no claim either way. */
-const BADGE_MUTED = 'border-[rgba(160,150,255,.26)] text-[#8d85c8]';
+const BADGE_MUTED = tw('border-[rgba(160,150,255,.26)] text-[#8d85c8]');
 
 interface LabCardProps {
   locale: Locale;

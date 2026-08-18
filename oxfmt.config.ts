@@ -8,6 +8,7 @@ export default defineConfig({
   printWidth: 160,
   sortTailwindcss: {
     stylesheet: 'src/routes/__root.css',
+    attributes: ['caretClassName'],
     functions: ['cn', 'tw'],
   },
   sortImports: {

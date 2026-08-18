@@ -2,6 +2,7 @@ import type { Locale } from '#i18n/locale';
 import type { FC } from 'react';
 
 import { HOME_COPY } from '#i18n/copy';
+import { tw } from '#routes/-/tw';
 
 import { CatArt } from '../site/cat-art';
 import { CloudLayer } from '../site/cloud-layer';
@@ -10,9 +11,9 @@ import { puffs } from '../site/puffs';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, GLOW_A, GLOW_B, GLOW_W, glow } from '../site/sky-scene';
 import { ShootingStar } from '../ui/ambient/shooting-star';
 import { skyCss } from '../ui/ambient/sky-background/palette';
-import { StarField } from '../ui/ambient/star-field';
 
 import './hero.css';
+import { StarField } from '../ui/ambient/star-field';
 
 const SKY = skyCss(0);
 
@@ -20,11 +21,11 @@ const HERO_STAR_SEED = 4_150_415;
 
 /* Each layer of the cloud sea fades out at a different depth so the sea reads
    as thick rather than as three flat sheets. */
-const MASK_HERO = '[mask-image:linear-gradient(180deg,#000_0%,#000_42%,rgba(0,0,0,.6)_64%,rgba(0,0,0,.2)_82%,transparent_96%)]';
-const MASK_BACK = '[mask-image:linear-gradient(180deg,#000_44%,rgba(0,0,0,.55)_64%,rgba(0,0,0,.22)_80%,transparent_97%)]';
-const MASK_FRONT = '[mask-image:linear-gradient(180deg,#000_48%,rgba(0,0,0,.6)_68%,rgba(0,0,0,.25)_83%,transparent_98%)]';
+const MASK_HERO = tw('mask-[linear-gradient(180deg,#000_0%,#000_42%,rgba(0,0,0,.6)_64%,rgba(0,0,0,.2)_82%,transparent_96%)]');
+const MASK_BACK = tw('mask-[linear-gradient(180deg,#000_44%,rgba(0,0,0,.55)_64%,rgba(0,0,0,.22)_80%,transparent_97%)]');
+const MASK_FRONT = tw('mask-[linear-gradient(180deg,#000_48%,rgba(0,0,0,.6)_68%,rgba(0,0,0,.25)_83%,transparent_98%)]');
 
-const VIGNETTE = 'bg-[linear-gradient(180deg,rgba(5,2,28,.3)_0%,rgba(5,2,28,0)_24%,rgba(5,2,28,0)_58%,rgba(5,2,28,.30)_82%,rgba(5,2,28,0)_100%)]';
+const VIGNETTE = tw('bg-[linear-gradient(180deg,rgba(5,2,28,.3)_0%,rgba(5,2,28,0)_24%,rgba(5,2,28,0)_58%,rgba(5,2,28,.30)_82%,rgba(5,2,28,0)_100%)]');
 
 /** The lights inside the cloud sea, front to back as the design layers them. */
 const HERO_GLOWS = [
@@ -59,8 +60,9 @@ const CLOUDS_LOW = puffs(4_040_415, 11, -175, -55, 220, 360);
  * pins itself to the shell edge, so it tracks the content instead of drifting
  * out to the corner of a very wide display.
  */
-const CAT_BOX =
-  'absolute right-[-9vw] bottom-[40%] z-1 w-[clamp(200px,58vw,330px)] [@media(min-aspect-ratio:1.02)]:right-[max(3vw/var(--z,1),50vw/var(--z,1)_-_810px)] [@media(min-aspect-ratio:1.02)]:bottom-[5%] [@media(min-aspect-ratio:1.02)]:w-[clamp(260px,36vw/var(--z,1),600px)]';
+const CAT_BOX = tw(
+  'absolute right-[-9vw] bottom-[40%] z-1 w-[clamp(200px,58vw,330px)] [@media(min-aspect-ratio:1.02)]:right-[max(3vw/var(--z,1),50vw/var(--z,1)_-_810px)] [@media(min-aspect-ratio:1.02)]:bottom-[5%] [@media(min-aspect-ratio:1.02)]:w-[clamp(260px,36vw/var(--z,1),600px)]',
+);
 
 const CAT_SIZES = '(min-aspect-ratio: 1.02) clamp(260px, 36vw, 600px), clamp(200px, 58vw, 330px)';
 

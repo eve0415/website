@@ -7,11 +7,11 @@ import type { FC } from 'react';
 import { useActionState, useEffect, useId, useRef, useState, useSyncExternalStore } from 'react';
 
 import { CONTACT_COPY } from '#i18n/copy';
+import { tw } from '#routes/-/tw';
 import { TurnstileWidget } from '#turnstile/turnstile-widget';
 
-import { cn } from '../../../-/cn';
-
 import './contact-form.css';
+import { cn } from '../../../-/cn';
 import { Button } from '../../../-/ui/actions/button';
 
 import { fieldOf, readField } from './form-state';
@@ -20,7 +20,7 @@ import { sendContact } from './send-contact';
 import { isNarrowSlot, notNarrowWhenPrerendered, sizeDecidedOnce } from './turnstile-size';
 import { MESSAGE_MAX, checkContact } from './validation';
 
-const LABEL = 'grid gap-[7px] text-[0.84375rem] text-(--ink-ice)';
+const LABEL = tw('grid gap-[7px] text-[0.84375rem] text-(--ink-ice)');
 
 /**
  * The resting border is `rgba(160,150,255,.55)` where the design has `.28`.
@@ -30,8 +30,9 @@ const LABEL = 'grid gap-[7px] text-[0.84375rem] text-(--ink-ice)';
  * the lightest of the three sky stops. The focus treatment is the design's own,
  * untouched: it swaps to `#04feff` at 15.74:1.
  */
-const FIELD =
-  'w-full min-h-[44px] rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-(length:--text-body) leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-none';
+const FIELD = tw(
+  'min-h-[44px] w-full rounded-[12px] border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-[16px] py-[11px] font-[inherit] text-(length:--text-body) leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-none',
+);
 
 interface ContactFormProps {
   locale: Locale;

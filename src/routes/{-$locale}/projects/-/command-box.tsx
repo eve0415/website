@@ -2,19 +2,22 @@ import type { FC, ReactNode } from 'react';
 
 import { startTransition, useEffect, useState } from 'react';
 
-import { cn } from '../../-/cn';
+import { tw } from '#routes/-/tw';
 
 import './command-box.css';
+import { cn } from '../../-/cn';
 
-const FRAME =
-  'animate-[fadeUp_0.6s_ease_0.2s_backwards] overflow-hidden rounded-[12px] border border-[rgba(160,150,255,.3)] bg-[rgba(3,1,17,.88)] shadow-[0_12px_40px_rgba(2,1,14,.45)]';
+const FRAME = tw(
+  'animate-[fadeUp_0.6s_ease_0.2s_backwards] overflow-hidden rounded-[12px] border border-[rgba(160,150,255,.3)] bg-[rgba(3,1,17,.88)] shadow-[0_12px_40px_rgba(2,1,14,.45)]',
+);
 
-const BAR = 'flex gap-[12px] border-b border-b-[rgba(160,150,255,.2)] bg-[rgba(13,8,54,.72)]';
+const BAR = tw('flex gap-[12px] border-b border-b-[rgba(160,150,255,.2)] bg-[rgba(13,8,54,.72)]');
 
-const BUTTON =
-  'min-h-[44px] cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-[20px] py-[8px] font-mono text-[0.84375rem] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]';
+const BUTTON = tw(
+  'min-h-[44px] cursor-pointer rounded-[9px] border border-[rgba(4,254,255,.45)] bg-[rgba(4,254,255,0.05)] px-[20px] py-[8px] font-mono text-[0.84375rem] transition-[background,color,border-color] duration-150 ease-[ease] hover:border-[rgba(4,254,255,.85)] hover:bg-[rgba(4,254,255,.14)] active:transform-[scale(0.97)]',
+);
 
-const DOTS = ['bg-[rgba(247,105,151,.8)]', 'bg-[rgba(255,217,236,.65)]', 'bg-[rgba(0,221,168,.8)]'] as const;
+const DOTS = [tw('bg-[rgba(247,105,151,.8)]'), tw('bg-[rgba(255,217,236,.65)]'), tw('bg-[rgba(0,221,168,.8)]')] as const;
 
 /**
  * Fire-and-forget: the clipboard can refuse (permission, insecure context) and

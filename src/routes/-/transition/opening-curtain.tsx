@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import { useEffect, useState, useSyncExternalStore } from 'react';
 
 import './page-transition/page-transition.css';
+import { tw } from '#routes/-/tw';
 
 /** Delay 2.15s + 0.8s of travel, then the small margin the comp leaves. */
 const CURTAIN_MS = 3050;
@@ -26,8 +27,8 @@ const playsOnServer = () => false;
  * animation — `visibility` cannot do the job, because Chrome holds a discrete
  * `to { visibility: hidden }` at `visible` even with the fill applied.
  */
-const HALF = 'pointer-events-auto absolute inset-x-0 overflow-hidden bg-[#00000a]';
-const STAR = 'absolute rounded-full';
+const HALF = tw('pointer-events-auto absolute inset-x-0 overflow-hidden bg-[#00000a]');
+const STAR = tw('absolute rounded-full');
 
 /**
  * The comp's opening curtain: two halves parting from the centre while a comet

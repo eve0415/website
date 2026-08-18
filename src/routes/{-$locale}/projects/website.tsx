@@ -6,6 +6,7 @@ import { Fragment } from 'react';
 
 import { HISTORY_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
+import { tw } from '#routes/-/tw';
 
 import { cn } from '../-/cn';
 import { PageHeader } from '../-/ui/content/page-header';
@@ -15,11 +16,11 @@ import { Chip } from '../-/ui/surfaces/chip';
 import { BackLink } from './-/back-link';
 import { LinksSection } from './-/links-section';
 
-const DOT = 'mt-[5px] size-[12px] flex-none rounded-[50%] bg-[linear-gradient(135deg,#04feff,#00dda8)] shadow-[0_0_12px_2px_rgba(4,254,255,.55)]';
+const DOT = tw('mt-[5px] size-[12px] flex-none rounded-[50%] bg-[linear-gradient(135deg,#04feff,#00dda8)] shadow-[0_0_12px_2px_rgba(4,254,255,.55)]');
 
-const RAIL = 'w-[2px] flex-1 rounded-[1px] bg-[linear-gradient(180deg,rgba(4,254,255,.45),rgba(160,150,255,.15))]';
+const RAIL = tw('w-[2px] flex-1 rounded-[1px] bg-[linear-gradient(180deg,rgba(4,254,255,.45),rgba(160,150,255,.15))]');
 
-const CHIP = 'px-[12px] py-[3px] text-(length:--text-tag)';
+const CHIP = tw('px-[12px] py-[3px] text-(length:--text-tag)');
 
 interface Generation {
   date: string;

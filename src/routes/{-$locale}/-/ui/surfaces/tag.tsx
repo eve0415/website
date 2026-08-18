@@ -1,16 +1,18 @@
 import type { Hue } from './card';
 import type { FC, ReactNode } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../cn';
 
-const BASE = 'inline-flex items-center rounded-[999px] border px-[10px] py-[2px] font-sans text-[length:var(--text-tag)]';
+const BASE = tw('inline-flex items-center rounded-[999px] border px-[10px] py-[2px] font-sans text-(length:--text-tag)');
 
 const HUES = {
-  cyan: 'border-[var(--hue-cyan-line)] text-[var(--hue-cyan)]',
-  mint: 'border-[var(--hue-mint-line)] text-[var(--hue-mint)]',
-  sky: 'border-[var(--hue-sky-line)] text-[var(--hue-sky)]',
-  violet: 'border-[var(--hue-violet-line)] text-[var(--hue-violet)]',
-  rose: 'border-[var(--hue-rose-line)] text-[var(--hue-rose)]',
+  cyan: tw('border-(--hue-cyan-line) text-(--hue-cyan)'),
+  mint: tw('border-(--hue-mint-line) text-(--hue-mint)'),
+  sky: tw('border-(--hue-sky-line) text-(--hue-sky)'),
+  violet: tw('border-(--hue-violet-line) text-(--hue-violet)'),
+  rose: tw('border-(--hue-rose-line) text-(--hue-rose)'),
 } satisfies Record<Hue, string>;
 
 interface TagProps {

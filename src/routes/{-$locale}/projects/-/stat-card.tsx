@@ -1,15 +1,17 @@
 import type { Hue } from '../../-/ui/surfaces/card';
 import type { FC } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../-/cn';
 import { Card } from '../../-/ui/surfaces/card';
 
 const VALUE = {
-  cyan: 'text-(--accent-cyan)',
-  mint: 'text-(--accent-mint)',
-  sky: 'text-(--hue-sky)',
-  violet: 'text-(--hue-violet)',
-  rose: 'text-(--hue-rose)',
+  cyan: tw('text-(--accent-cyan)'),
+  mint: tw('text-(--accent-mint)'),
+  sky: tw('text-(--hue-sky)'),
+  violet: tw('text-(--hue-violet)'),
+  rose: tw('text-(--hue-rose)'),
 } satisfies Record<Hue, string>;
 
 interface StatCardProps {

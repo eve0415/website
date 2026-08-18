@@ -2,16 +2,18 @@ import type { FC } from 'react';
 
 import { startTransition, useEffect, useRef, useState } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../-/cn';
 import { SweepButton } from '../../-/ui/actions/sweep-button';
-import { Toast } from '../../-/ui/content/toast';
 
 import './discord-copy.css';
+import { Toast } from '../../-/ui/content/toast';
 
-const BUTTON = 'ev-cp-discord border-[rgba(4,254,255,0.55)] px-[18px] py-[8px] text-(length:--text-small) font-normal text-(--hue-cyan)';
+const BUTTON = tw('ev-cp-discord border-[rgba(4,254,255,0.55)] px-[18px] py-[8px] text-(length:--text-small) font-normal text-(--hue-cyan)');
 
 /** The two labels ride the same grid cell and slide past each other. */
-const LABEL = 'col-start-1 row-start-1 [transition:opacity_0.3s_ease,transform_0.45s_var(--ease-comet)]';
+const LABEL = tw('col-start-1 row-start-1 [transition:opacity_0.3s_ease,transform_0.45s_var(--ease-comet)]');
 
 /**
  * Fire-and-forget, as the terminal panels do it: the clipboard can refuse

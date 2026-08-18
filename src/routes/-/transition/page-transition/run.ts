@@ -1,3 +1,5 @@
+import { tw } from '#routes/-/tw';
+
 export const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 /** The tint a project's slat curtain carries, from the comp's `HUES` map. */
@@ -58,7 +60,7 @@ export interface Run {
  */
 export const advance = (run: Run): Run => (run.phase === 'in' && run.covered && run.committed ? { ...run, phase: 'out', covered: false } : run);
 
-export const OVERLAY = 'pointer-events-none fixed inset-0 z-40 overflow-hidden';
+export const OVERLAY = tw('pointer-events-none fixed inset-0 z-40 overflow-hidden');
 
 export interface RunProps {
   run: Run;

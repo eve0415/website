@@ -1,5 +1,7 @@
 import type { FC } from 'react';
 
+import { tw } from '#routes/-/tw';
+
 import { cn } from '../../-/cn';
 import { Card } from '../../-/ui/surfaces/card';
 import { Chip } from '../../-/ui/surfaces/chip';
@@ -11,11 +13,11 @@ import { Chip } from '../../-/ui/surfaces/chip';
 export type SkillInk = 'ice' | 'mint' | 'sky' | 'violet' | 'rose';
 
 const INK = {
-  ice: 'text-(--ink-ice)',
-  mint: 'text-(--hue-mint)',
-  sky: 'text-(--hue-sky)',
-  violet: 'text-(--hue-violet)',
-  rose: 'text-(--hue-rose)',
+  ice: tw('text-(--ink-ice)'),
+  mint: tw('text-(--hue-mint)'),
+  sky: tw('text-(--hue-sky)'),
+  violet: tw('text-(--hue-violet)'),
+  rose: tw('text-(--hue-rose)'),
 } satisfies Record<SkillInk, string>;
 
 export interface SkillItem {
