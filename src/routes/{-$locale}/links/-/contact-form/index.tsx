@@ -12,12 +12,12 @@ import { cn } from '#lib/cn';
 
 import './contact-form.css';
 import { tw } from '#lib/tw';
-import { TurnstileWidget } from '#turnstile/turnstile-widget';
 
 import { fieldOf, readField } from './form-state';
 import { swapInPlace } from './scoped-view-transition';
 import { sendContact } from './send-contact';
-import { isNarrowSlot, notNarrowWhenPrerendered, sizeDecidedOnce } from './turnstile-size';
+import { isNarrowSlot, notNarrowWhenPrerendered, sizeDecidedOnce } from './turnstile/size';
+import { TurnstileWidget } from './turnstile/widget';
 import { MESSAGE_MAX, checkContact } from './validation';
 
 const LABEL = tw('grid gap-[7px] text-[0.84375rem] text-(--ink-ice)');

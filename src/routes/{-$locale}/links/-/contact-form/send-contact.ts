@@ -1,14 +1,13 @@
-import type { TurnstileRejection } from '#turnstile/verify';
 import type { ContactRateLimiter } from './rate-limiter';
+import type { TurnstileRejection } from './turnstile/verify';
 import type { ContactFailure, ContactResult } from './validation';
 
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest, getRequestUrl } from '@tanstack/react-start/server';
 import { env } from 'cloudflare:workers';
 
-import { verifyTurnstileToken } from '#turnstile/verify';
-
 import { rateLimitKey } from './rate-limit-key';
+import { verifyTurnstileToken } from './turnstile/verify';
 import { EMAIL_MAX, NAME_MAX, checkContact, parseContactInput } from './validation';
 
 /**

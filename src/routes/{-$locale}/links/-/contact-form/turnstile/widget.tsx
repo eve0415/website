@@ -3,7 +3,7 @@ import type { FC, Ref } from 'react';
 
 import { Turnstile } from '@marsidev/react-turnstile';
 
-import { TURNSTILE_ACTION, TURNSTILE_SITE_KEY } from '#turnstile/constants';
+import { TURNSTILE_ACTION, TURNSTILE_SITE_KEY } from './constants';
 
 interface TurnstileWidgetProps {
   /** Needed to drive `execute()` and to reset the widget between submissions. */

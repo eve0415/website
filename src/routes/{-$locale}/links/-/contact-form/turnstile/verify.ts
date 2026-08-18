@@ -1,6 +1,6 @@
 import { env } from 'cloudflare:workers';
 
-import { TURNSTILE_ACTION } from '#turnstile/constants';
+import { TURNSTILE_ACTION } from './constants';
 
 const SITEVERIFY_ENDPOINT = 'https://challenges.cloudflare.com/turnstile/v0/siteverify';
 
