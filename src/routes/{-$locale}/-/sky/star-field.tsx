@@ -38,7 +38,7 @@ export const StarField: FC<StarFieldProps> = ({ count = 40, topMax = 100, seed =
    * default (`{ count = 40 }`, parameter or `const`, with or without types)
    * with a `Todo`-category error, and `panicThreshold: 'critical_errors'` makes
    * that a silent skip. So this is the only memoization the star field has, and
-   * without it every layout render rebuilds all 36–62 star objects.
+   * without it every layout render rebuilds all 10–62 star objects.
    */
   const stars = useMemo(() => {
     const random = seededRandom(seed);
