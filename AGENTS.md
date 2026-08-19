@@ -11,7 +11,7 @@ pnpm build   # must end with "Prerendered 20 pages"
 
 Run them as two separate commands and check each exit code. **Never pipe `pnpm lint` into `tail`/`head` before checking its result** — a pipe masks the exit code, and that has hidden real violations here more than once.
 
-There are no tests and no CI by design. The gate above is the whole gate. Run it before claiming anything is done, and say what it printed.
+There are still no tests. CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than fix mode, spelled out as full commands rather than through the scripts above — `pnpm exec oxlint`, `pnpm exec oxfmt --check`, `pnpm exec vite build` — so it never rewrites files, and a formatting-only diff fails it instead of being silently fixed. Run the local gate before claiming anything is done, and say what it printed.
 
 ## Type safety
 
@@ -28,6 +28,8 @@ Reading off `unknown` or a wide value is `typeof` + `in` + equality narrowing. A
 ## Linting
 
 oxlint runs every category at `error`, plus three plugin sets: `@tanstack/eslint-plugin-router`, `oxlint-tailwindcss`, and a local `anti-slop` plugin that additionally rejects `Reflect.get`, broad `object`-typed parameters, type assertions without a safety comment, and dictionary/index-signature types.
+
+`typeAware` and `typeCheck` are on, so oxlint reports raw TypeScript diagnostics (`typescript(TS2339)`, `typescript(TS6133)`) across the same files `tsconfig.json` includes. There is deliberately no separate `tsc` step — it caught nothing oxlint missed. (`src/routeTree.gen.ts` is exempt from both: it carries `@ts-nocheck`.)
 
 If a rule fires wrongly, fix it in `oxlint.config.ts` by configuring the rule — never with an inline disable, and never by renaming an identifier to dodge a matcher.
 
@@ -69,5 +71,5 @@ Inside `-/`, nest by what the thing is, as deep as it needs. A component with ch
 
 - Conventional commits, small and one concern each. Commit the lock file alongside any dependency change.
 - Dependencies are exact-pinned. Use `pnpm add -E`.
-- Secrets live in `.dev.vars` (gitignored) and are typed by `pnpm generate` (`wrangler types`). Never print, log, or commit a secret value.
+- Secrets live in `.dev.vars` (gitignored) and are typed by `pnpm generate` (`wrangler types`). `.dev.vars.example` is the same keys with no values, committed so CI — which has no `.dev.vars` — can type `Env` from it via `--env-file`. **A new secret goes in both**: leave it out of the example and everything passes locally while CI fails on an untyped `env` read. Never print, log, or commit a secret value.
 - Japanese copy is です・ます調, personal and lightly playful, no emoji and no `!`. Both locales are authored, never machine-translated at runtime; copy lives in `src/i18n/copy.ts`.
