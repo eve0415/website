@@ -8,8 +8,8 @@ import { tw } from '#lib/tw';
 import { SkillChips } from './skill-chips';
 
 /**
- * Each group heading gets its own colour in the design. The first is ice rather
- * than the cyan of the project hues, so this is its own scale.
+ * Each group heading gets its own colour in the design — its own scale, not the
+ * project hues: the cyan of those belongs to the AI card that opens the grid.
  */
 export type SkillInk = 'ice' | 'mint' | 'sky' | 'violet' | 'rose';
 

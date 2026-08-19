@@ -469,7 +469,7 @@ interface SkillsCopy {
   note: string;
 }
 
-/** The できること page. Chip labels are product names, bar the one whose Japanese carries a qualifier its English does not need. */
+/** The できること page. Chip labels are product names, bar the two whose Japanese carries a qualifier its English does not need. */
 export const SKILLS_COPY = {
   ja: {
     title: 'できること',
@@ -485,7 +485,7 @@ export const SKILLS_COPY = {
     groupBe: 'バックエンド・データベース',
     groupInfra: 'インフラ・運用',
     groupTest: 'テスト・ツールチェイン',
-    chipBrew: 'Homebrew (tap運用)',
+    chipBrew: 'Homebrew(tap運用)',
     note: '最新技術を追いかけるのが大好きです。気になったものはとりあえず試して、良かったものは本番にも持ち込みます。学びたいものはまだ尽きません。',
   },
   en: {

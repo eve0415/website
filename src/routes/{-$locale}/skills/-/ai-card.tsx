@@ -18,7 +18,7 @@ import { SkillChips } from './skill-chips';
 export const AiCard: FC<{ locale: Locale }> = ({ locale }) => {
   const copy = SKILLS_COPY[locale];
 
-  const agents: SkillItem[] = [
+  const agents = [
     { label: 'Claude Code', href: 'https://claude.com/product/claude-code', daily: true },
     { label: 'Claude Design', href: 'https://claude.com/product/design' },
     { label: 'Codex', href: 'https://openai.com/codex/' },
@@ -26,7 +26,7 @@ export const AiCard: FC<{ locale: Locale }> = ({ locale }) => {
     { label: 'GitHub Copilot', href: 'https://github.com/features/copilot' },
     { label: 'ChatGPT', href: 'https://chatgpt.com/' },
     { label: copy.chipMcp, href: 'https://modelcontextprotocol.io/' },
-  ];
+  ] as const satisfies SkillItem[];
 
   return (
     <Card className='col-span-full grid animate-[fadeUp_0.6s_ease_0.08s_backwards] content-start gap-3.5 border-(--line-accent-dashed) p-(--pad-card-lg)'>
