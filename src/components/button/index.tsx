@@ -15,7 +15,7 @@ const VARIANT = {
     'bg-(image:--grad-comet) text-(--ink-on-accent) shadow-(--glow-cta) transition-[transform,box-shadow] duration-150 ease-[ease] hover:transform-[translateY(-2px)] hover:shadow-(--glow-cta-hover)',
   ),
   glass: tw(
-    'border border-(--line-white) bg-(--surface-glass) text-(--sky-ink-title) backdrop-blur-[4px] transition-[border-color,background] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:bg-[rgba(4,254,255,0.12)]',
+    'border border-(--line-white) bg-(--surface-glass) text-(--glass-ink) backdrop-blur-[4px] transition-[border-color,background] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:bg-[rgba(4,254,255,0.12)]',
   ),
   ghost: tw(
     'border border-(--line-accent) bg-(--ghost-surface) px-4.5 py-2 text-(length:--text-small) text-(--ghost-ink) transition-[background] duration-150 ease-[ease] hover:bg-[rgba(4,254,255,0.1)]',

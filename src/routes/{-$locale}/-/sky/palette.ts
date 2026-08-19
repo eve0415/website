@@ -95,7 +95,6 @@ export interface SkyCss {
    * it: dark ink clears AA over the clouds and the header glass, pale ink
    * clears it on the open sky, and neither clears both.
    */
-  paleTitle: string;
   paleIce: string;
   paleBody: string;
   paleMuted: string;
@@ -420,9 +419,11 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     inkTitleRgb: inkT.join(','),
     /* Deeper than the design's own [8,58,92] / [18,48,80], which land at 3.16
        and 4.18 against the cloud sea they are read on. Same navy, far enough
-       down it to clear AA. */
+       down it to clear AA. The sub ends up darker than the title, which looks
+       like an inverted hierarchy and is not: at 17.5px it owes 4.5:1 where the
+       74px title owes 3:1, so the smaller text has to carry more contrast. */
     inkKicker: rgb(mix(p.inkK, [2, 24, 40], day)),
-    inkSub: rgb(mix(p.inkS, [4, 18, 32], day)),
+    inkSub: rgb(mix(p.inkS, [6, 22, 38], day)),
     inkNav: rgb(mix([234, 230, 255], [18, 51, 80], day)),
     inkFaint: rgb(mix([164, 157, 216], [6, 26, 46], day)),
     inkShadow: rgba(mix([3, 1, 20], [250, 250, 255], day), Number((0.6 - 0.25 * day).toFixed(2))),
@@ -431,13 +432,12 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     glassBg: rgba(mix([5, 2, 28], [255, 255, 255], day), 0.32),
     /* Likewise deeper than the design's [10,74,140] — 3.74 on its own header,
        and the active language pill tints that header darker still. */
-    accent: rgb(mix([4, 254, 255], [5, 48, 95], day)),
-    paleTitle: rgb(mix([252, 247, 253], [255, 255, 255], day)),
+    accent: rgb(mix([4, 254, 255], [3, 38, 76], day)),
     paleIce: rgb(mix([159, 232, 255], [246, 252, 255], day)),
-    paleBody: rgb(mix([233, 228, 255], [255, 255, 255], day)),
-    paleMuted: rgb(mix([207, 201, 242], [252, 251, 255], day)),
+    paleBody: rgb(mix([233, 228, 255], [252, 250, 255], day)),
+    paleMuted: rgb(mix([207, 201, 242], [248, 246, 255], day)),
     paleFaint: rgb(mix([164, 157, 216], [240, 237, 255], day)),
-    paleCyan: rgb(mix([4, 254, 255], [213, 250, 255], day)),
+    paleCyan: rgb(mix([4, 254, 255], [230, 251, 255], day)),
     ghostSurface: rgba(mix([5, 2, 28], [255, 255, 255], day), Number((0.32 * day).toFixed(3))),
     ghostInk: rgb(mix([143, 233, 255], inkT, day)),
     /* The design fades the link to #ebf6ff by day, which lands at 4.22:1 on its
@@ -478,7 +478,6 @@ export const skyVars = (sky: SkyCss) => ({
   '--sky-link': sky.link,
   '--sky-ghost-surface': sky.ghostSurface,
   '--sky-ghost-ink': sky.ghostInk,
-  '--sky-pale-title': sky.paleTitle,
   '--sky-pale-ice': sky.paleIce,
   '--sky-pale-body': sky.paleBody,
   '--sky-pale-muted': sky.paleMuted,

@@ -197,10 +197,13 @@
   --link: var(--sky-link);
 }
 
-/* The ghost button, off the sky: exactly what the design draws. */
+/* The two pill variants that paint their own fill, off the sky: exactly what the
+   design draws. Both fills brighten with the day, so their ink darkens with it —
+   but only where the pill is actually on the sky, hence the overrides below. */
 :root {
   --ghost-surface: transparent;
   --ghost-ink: var(--hue-cyan);
+  --glass-ink: var(--ink-title);
 }
 
 /* Text sitting straight on the sky follows the clock. Which way it goes depends
@@ -217,13 +220,15 @@
   --link-hover: var(--sky-accent);
   --ghost-surface: var(--sky-ghost-surface);
   --ghost-ink: var(--sky-ghost-ink);
+  --glass-ink: var(--sky-ink-title);
 }
 
-/* On the open sky — page headers, article copy, the footer, the 404 board.
-   The ink stays pale here, so the shadow under it stays dark all day. */
+/* On the open sky — page headers, article copy, the 404 board. The ink stays
+   pale here, so the shadow under it stays dark all day. `--ink-title` is absent
+   on purpose: the design's own #fcf7fd already clears on this band, and moving
+   it to white would flatten it into the body copy. */
 .ev-on-sky {
   --ink-shadow: rgba(3, 1, 20, 0.6);
-  --ink-title: var(--sky-pale-title);
   --ink-body: var(--sky-pale-body);
   --ink-muted: var(--sky-pale-muted);
   --ink-ice: var(--sky-pale-ice);
@@ -240,10 +245,16 @@
   --ink-faint: var(--sky-ink-faint);
 }
 
-/* The way back, for a panel nested inside either. */
+/* The way back, for a panel nested inside either. It has to name every token
+   the two classes above touch — one left out is one that keeps a daylight value
+   on a surface that is still deep indigo. */
 .ev-on-panel {
   --ghost-surface: transparent;
   --ghost-ink: var(--hue-cyan);
+  --glass-ink: #fcf7fd;
+  --line-white: rgba(252, 247, 253, 0.4);
+  --surface-glass: rgba(5, 2, 28, 0.32);
+  --link: #9fe8ff;
   --ink-title: #fcf7fd;
   --ink-body: #e9e4ff;
   --ink-muted: #cfc9f2;
