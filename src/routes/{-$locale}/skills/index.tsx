@@ -78,17 +78,19 @@ const Skills = () => {
 
       <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-4.5'>
         <AiCard locale={locale} />
-        {/* The first row is on screen before any scrolling, and a view() range
-            only advances once the visitor scrolls — left on ev-reveal these
-            three sit at partial opacity for as long as the page is still. */}
+        {/* A view() range only advances once the visitor scrolls, and on a tall
+            display this whole page fits with no scroll left to give — so every
+            card here would sit at partial opacity forever. The board stages on
+            load instead; the scroll-driven reveal stays where a page is long
+            enough to guarantee the movement. */}
         <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} dailyLabel={copy.dailyLabel} className='animate-[fadeUp_0.6s_ease_0.16s_backwards]' />
         <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} dailyLabel={copy.dailyLabel} className='animate-[fadeUp_0.6s_ease_0.24s_backwards]' />
         <SkillGroup ink='sky' heading={copy.groupBe} items={BACKEND} dailyLabel={copy.dailyLabel} className='animate-[fadeUp_0.6s_ease_0.32s_backwards]' />
-        <SkillGroup ink='violet' heading={copy.groupInfra} items={INFRA} dailyLabel={copy.dailyLabel} className='ev-reveal' />
-        <SkillGroup ink='rose' heading={copy.groupTest} items={toolchain} dailyLabel={copy.dailyLabel} className='ev-reveal' />
+        <SkillGroup ink='violet' heading={copy.groupInfra} items={INFRA} dailyLabel={copy.dailyLabel} className='animate-[fadeUp_0.6s_ease_0.4s_backwards]' />
+        <SkillGroup ink='rose' heading={copy.groupTest} items={toolchain} dailyLabel={copy.dailyLabel} className='animate-[fadeUp_0.6s_ease_0.48s_backwards]' />
       </div>
 
-      <Card variant='dashed' className='ev-reveal p-[20px_22px]'>
+      <Card variant='dashed' className='animate-[fadeUp_0.6s_ease_0.56s_backwards] p-[20px_22px]'>
         <p className='text-(length:--text-body) leading-[1.8] text-(--ink-muted)'>{copy.note}</p>
       </Card>
     </div>
