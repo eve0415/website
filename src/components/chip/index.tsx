@@ -13,8 +13,8 @@ type ChipVariant = 'plain' | 'daily';
 const BASE = tw('inline-flex items-center rounded-[999px] border px-[15px] py-[7px] font-sans text-(length:--text-small)');
 
 const VARIANT = {
-  plain: tw('border-(--line-chip) text-[#e4dfff]'),
-  daily: tw('border-[rgba(4,254,255,.6)] bg-[rgba(4,254,255,.07)] text-[#ecfdff] shadow-[0_0_16px_rgba(4,254,255,.12)]'),
+  plain: tw('border-(--line-chip) text-(--ink-chip)'),
+  daily: tw('border-(--line-chip-daily) bg-(--surface-chip-daily) text-(--ink-chip-daily) shadow-(--glow-chip-daily)'),
 } satisfies Record<ChipVariant, string>;
 
 /** The design lights the border and the label together on hover. */
