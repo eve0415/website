@@ -31,6 +31,15 @@ interface StarFieldProps {
 }
 
 export const StarField: FC<StarFieldProps> = ({ count = 40, topMax = 100, seed = DEFAULT_SEED, className, style }) => {
+  /**
+   * Not redundant with React Compiler, which is the usual reason to delete a
+   * `useMemo` here — this component is one the compiler cannot compile at all.
+   * `babel-plugin-react-compiler@1.0.0` fails HIR lowering on any destructuring
+   * default (`{ count = 40 }`, parameter or `const`, with or without types)
+   * with a `Todo`-category error, and `panicThreshold: 'critical_errors'` makes
+   * that a silent skip. So this is the only memoization the star field has, and
+   * without it every layout render rebuilds all 36–62 star objects.
+   */
   const stars = useMemo(() => {
     const random = seededRandom(seed);
     const generated: Star[] = [];
