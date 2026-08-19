@@ -625,7 +625,7 @@ export const ABOUT_COPY = {
     p2: 'お仕事の依頼お待ちしてます。',
     seeContact: '連絡先を見る',
     siteHead: 'このサイトについて',
-    siteBefore: 'アイコンとヘッダーアートは AI 生成です。サイト本体は手作りです。2022年からの変遷は',
+    siteBefore: 'アイコンとヘッダーアートは AI 生成です。サイト本体のデザインは Claude Design で組み立てました。2022年からの変遷は',
     siteLink: '歴史のページ',
     siteAfter: 'にまとめています。',
     altAvatar: 'eve0415 のアイコン。オッドアイの黒猫のイラスト(AI生成)',
@@ -638,7 +638,7 @@ export const ABOUT_COPY = {
     siteHead: 'About this site',
     // The trailing space is the gap before the inline link and belongs to the
     // string — JSX would collapse it if it were written as markup.
-    siteBefore: 'The avatar and header art are AI-generated. The site itself is handmade. The full story since 2022 is on the ',
+    siteBefore: 'The avatar and header art are AI-generated. The site itself was designed in Claude Design. The full story since 2022 is on the ',
     siteLink: 'lore page',
     siteAfter: '.',
     altAvatar: "eve0415's avatar — an odd-eyed black cat illustration (AI-generated)",
