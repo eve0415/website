@@ -5,7 +5,9 @@ import { Fragment } from 'react';
 import './site-header.css';
 import { tw } from '#lib/tw';
 
-const ROOT = tw('ev-hdr ev-on-sky sticky top-0 z-10 border-b border-b-(--line-header) bg-(--surface-header) p-(--header-pad) font-sans backdrop-blur-[10px]');
+const ROOT = tw(
+  'ev-hdr ev-on-clouds sticky top-0 z-10 border-b border-b-(--line-header) bg-(--surface-header) p-(--header-pad) font-sans backdrop-blur-[10px]',
+);
 
 /** The bar stays full-bleed; only its contents stop at the shell width. */
 const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-3');

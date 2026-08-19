@@ -32,7 +32,7 @@ const LocaleLayout = () => {
         <LanguageSwitch locale={locale} />
       </SiteHeader>
 
-      <main className='flex-1'>
+      <main className='ev-on-sky flex-1'>
         <Outlet />
       </main>
 

@@ -8,7 +8,9 @@ export type Hue = 'cyan' | 'mint' | 'sky' | 'violet' | 'rose';
 
 type CardVariant = 'solid' | 'soft' | 'dashed';
 
-const BASE = tw('block rounded-(--radius-card) border border-(--line-panel) bg-(--surface-panel) p-(--pad-card) font-sans text-inherit no-underline');
+const BASE = tw(
+  'ev-on-panel block rounded-(--radius-card) border border-(--line-panel) bg-(--surface-panel) p-(--pad-card) font-sans text-inherit no-underline',
+);
 
 const VARIANT = {
   solid: '',

@@ -133,7 +133,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
       </div>
       <ShootingStar tail={160} duration={12} delay={4} className='pointer-events-none top-[9%] right-[5%]' style={{ opacity: 'var(--sky-star-alpha)' }} />
 
-      <div className='ev-on-sky relative z-2 mx-auto w-full max-w-(--page-max-wide) px-[clamp(22px,6vw,72px)] pb-[clamp(56px,11vh,110px)]'>
+      <div className='ev-on-clouds relative z-2 mx-auto w-full max-w-(--page-max-wide) px-[clamp(22px,6vw,72px)] pb-[clamp(56px,11vh,110px)]'>
         <div className='grid max-w-170 justify-items-start gap-4'>
           <Greeting
             locale={locale}

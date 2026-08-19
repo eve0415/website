@@ -90,6 +90,19 @@ export interface SkyCss {
   accent: string;
   link: string;
   /**
+   * The same inks for text on the plain sky rather than over the cloud sea.
+   * That band is roughly half the brightness, and the direction reverses with
+   * it: dark ink clears AA over the clouds and the header glass, pale ink
+   * clears it on the open sky, and neither clears both.
+   */
+  paleTitle: string;
+  paleIce: string;
+  paleBody: string;
+  paleMuted: string;
+  paleFaint: string;
+  /** The neon, kept as an accent on the open sky by paling rather than darkening. */
+  paleCyan: string;
+  /**
    * The ghost button's two moving parts. A pill with no fill cannot clear AA on
    * the noon sky at any tint — the sky's own luminance sits in the middle of the
    * range — so on its way into daylight it picks up the glass fill and the dark
@@ -405,15 +418,26 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     glowMidC: rgba(p.nb, 0.5),
     inkTitle: rgb(inkT),
     inkTitleRgb: inkT.join(','),
-    inkKicker: rgb(mix(p.inkK, [8, 58, 92], day)),
-    inkSub: rgb(mix(p.inkS, [18, 48, 80], day)),
+    /* Deeper than the design's own [8,58,92] / [18,48,80], which land at 3.16
+       and 4.18 against the cloud sea they are read on. Same navy, far enough
+       down it to clear AA. */
+    inkKicker: rgb(mix(p.inkK, [2, 24, 40], day)),
+    inkSub: rgb(mix(p.inkS, [4, 18, 32], day)),
     inkNav: rgb(mix([234, 230, 255], [18, 51, 80], day)),
-    inkFaint: rgb(mix([164, 157, 216], [24, 52, 88], day)),
+    inkFaint: rgb(mix([164, 157, 216], [6, 26, 46], day)),
     inkShadow: rgba(mix([3, 1, 20], [250, 250, 255], day), Number((0.6 - 0.25 * day).toFixed(2))),
     headerBg: rgba(mix([5, 2, 28], [240, 246, 252], day), 0.55),
     headerLine: rgba(mix([160, 150, 255], [30, 60, 100], day), 0.18),
     glassBg: rgba(mix([5, 2, 28], [255, 255, 255], day), 0.32),
-    accent: rgb(mix([4, 254, 255], [10, 74, 140], day)),
+    /* Likewise deeper than the design's [10,74,140] — 3.74 on its own header,
+       and the active language pill tints that header darker still. */
+    accent: rgb(mix([4, 254, 255], [5, 48, 95], day)),
+    paleTitle: rgb(mix([252, 247, 253], [255, 255, 255], day)),
+    paleIce: rgb(mix([159, 232, 255], [246, 252, 255], day)),
+    paleBody: rgb(mix([233, 228, 255], [255, 255, 255], day)),
+    paleMuted: rgb(mix([207, 201, 242], [252, 251, 255], day)),
+    paleFaint: rgb(mix([164, 157, 216], [240, 237, 255], day)),
+    paleCyan: rgb(mix([4, 254, 255], [213, 250, 255], day)),
     ghostSurface: rgba(mix([5, 2, 28], [255, 255, 255], day), Number((0.32 * day).toFixed(3))),
     ghostInk: rgb(mix([143, 233, 255], inkT, day)),
     /* The design fades the link to #ebf6ff by day, which lands at 4.22:1 on its
@@ -454,6 +478,12 @@ export const skyVars = (sky: SkyCss) => ({
   '--sky-link': sky.link,
   '--sky-ghost-surface': sky.ghostSurface,
   '--sky-ghost-ink': sky.ghostInk,
+  '--sky-pale-title': sky.paleTitle,
+  '--sky-pale-ice': sky.paleIce,
+  '--sky-pale-body': sky.paleBody,
+  '--sky-pale-muted': sky.paleMuted,
+  '--sky-pale-faint': sky.paleFaint,
+  '--sky-pale-cyan': sky.paleCyan,
 });
 
 /** The same properties as one rule, for a stylesheet the document prerenders. */

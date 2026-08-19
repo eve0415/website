@@ -4,7 +4,7 @@ import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
 const BASE = tw(
-  'flex items-center justify-between gap-3 rounded-(--radius-row) border border-(--line-row) bg-(--surface-row) px-5 py-[17px] font-sans text-(--ink-title) no-underline',
+  'ev-on-panel flex items-center justify-between gap-3 rounded-(--radius-row) border border-(--line-row) bg-(--surface-row) px-5 py-[17px] font-sans text-(--ink-title) no-underline',
 );
 
 const ANCHOR = tw(

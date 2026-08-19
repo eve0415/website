@@ -8,7 +8,7 @@ import './command-box.css';
 import { tw } from '#lib/tw';
 
 const FRAME = tw(
-  'animate-[fadeUp_0.6s_ease_0.2s_backwards] overflow-hidden rounded-xl border border-[rgba(160,150,255,.3)] bg-[rgba(3,1,17,.88)] shadow-[0_12px_40px_rgba(2,1,14,.45)]',
+  'ev-on-panel animate-[fadeUp_0.6s_ease_0.2s_backwards] overflow-hidden rounded-xl border border-[rgba(160,150,255,.3)] bg-[rgba(3,1,17,.88)] shadow-[0_12px_40px_rgba(2,1,14,.45)]',
 );
 
 const BAR = tw('flex gap-3 border-b border-b-[rgba(160,150,255,.2)] bg-[rgba(13,8,54,.72)]');

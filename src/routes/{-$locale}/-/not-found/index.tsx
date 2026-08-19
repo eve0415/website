@@ -220,7 +220,7 @@ export const NotFound = () => {
 
           <p className='animate-[fadeUp_0.6s_ease_0.15s_backwards] text-(length:--text-caption) tracking-[0.26em] text-(--ink-ice)'>
             NOT FOUND · HTTP{' '}
-            <span ref={codeRef} className='inline-block min-w-[3ch] text-left font-bold text-(--accent-cyan)'>
+            <span ref={codeRef} className='inline-block min-w-[3ch] text-left font-bold text-(--sky-pale-cyan)'>
               404
             </span>
           </p>
