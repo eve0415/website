@@ -52,6 +52,15 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     pending: copy.errPending,
   } satisfies Record<FormError, string>;
 
+  /**
+   * Controlled on purpose, and not redundant with the `formData` the action
+   * reads. React requests the form reset *before* running the action rather
+   * than on success — `startHostTransition` in react-dom — so uncontrolled
+   * fields here would be emptied by every rejected submission, including the
+   * "still checking" one the challenge produces. The other way out is echoing
+   * the values back through the action's state as `defaultValue`; this form
+   * already needs them in state for `sendAnother`.
+   */
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [message, setMessage] = useState('');
