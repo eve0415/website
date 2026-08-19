@@ -81,9 +81,12 @@ const Skills = () => {
 
       <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-4.5'>
         <AiCard locale={locale} />
-        <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='ev-reveal' />
-        <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} className='ev-reveal' />
-        <SkillGroup ink='sky' heading={copy.groupBe} items={BACKEND} className='ev-reveal' />
+        {/* The first row is on screen before any scrolling, and a view() range
+            only advances once the visitor scrolls — left on ev-reveal these
+            three sit at partial opacity for as long as the page is still. */}
+        <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='animate-[fadeUp_0.6s_ease_0.16s_backwards]' />
+        <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} className='animate-[fadeUp_0.6s_ease_0.24s_backwards]' />
+        <SkillGroup ink='sky' heading={copy.groupBe} items={BACKEND} className='animate-[fadeUp_0.6s_ease_0.32s_backwards]' />
         <SkillGroup ink='violet' heading={copy.groupInfra} items={INFRA} className='ev-reveal' />
         <SkillGroup ink='rose' heading={copy.groupTest} items={toolchain} className='ev-reveal' />
       </div>
