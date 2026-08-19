@@ -3,12 +3,25 @@ import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
-const BASE = tw('inline-flex items-center rounded-[999px] border border-(--line-chip) px-[15px] py-[7px] font-sans text-(length:--text-small) text-[#e4dfff]');
+/**
+ * `daily` is the design's "bright outline" — the skills page legend reads it as
+ * a tool that is in hand most days, so it is a claim about the item, not a size
+ * or a colour the caller picks.
+ */
+type ChipVariant = 'plain' | 'daily';
+
+const BASE = tw('inline-flex items-center rounded-[999px] border px-[15px] py-[7px] font-sans text-(length:--text-small)');
+
+const VARIANT = {
+  plain: tw('border-(--line-chip) text-[#e4dfff]'),
+  daily: tw('border-[rgba(4,254,255,.6)] bg-[rgba(4,254,255,.07)] text-[#ecfdff] shadow-[0_0_16px_rgba(4,254,255,.12)]'),
+} satisfies Record<ChipVariant, string>;
 
 /** The design lights the border and the label together on hover. */
 const ANCHOR = tw('no-underline transition-[border-color,color] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:text-(--accent-cyan)');
 
 interface ChipBaseProps {
+  variant?: ChipVariant;
   children?: ReactNode;
 }
 
@@ -23,18 +36,18 @@ interface ChipSpanProps extends ChipBaseProps, Omit<ComponentPropsWithoutRef<'sp
 type ChipProps = ChipAnchorProps | ChipSpanProps;
 
 export const Chip: FC<ChipProps> = props => {
-  const { className, children, ...rest } = props;
+  const { variant = 'plain', className, children, ...rest } = props;
 
   if (rest.href === undefined) {
     return (
-      <span className={cn(BASE, className)} {...rest}>
+      <span className={cn(BASE, VARIANT[variant], className)} {...rest}>
         {children}
       </span>
     );
   }
 
   return (
-    <a className={cn(BASE, ANCHOR, className)} {...rest}>
+    <a className={cn(BASE, VARIANT[variant], ANCHOR, className)} {...rest}>
       {children}
     </a>
   );
