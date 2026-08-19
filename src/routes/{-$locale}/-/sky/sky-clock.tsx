@@ -10,6 +10,13 @@ const TWEEN_MS = 1100;
 
 const easeInOutQuad = (k: number) => (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2);
 
+/**
+ * Matches the blanket rule in `__root.css`, which flattens every CSS transition
+ * on the page. The crossfade is a JS loop, so that rule cannot reach it and it
+ * has to ask for itself.
+ */
+const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
 const localClock = () => {
   const now = new Date();
   return now.getHours() + now.getMinutes() / 60;
@@ -52,6 +59,15 @@ export const SkyClock = () => {
 
       dayOn = skyIsDay(target, dayOn);
       const dayTo = dayOn ? 1 : 0;
+
+      if (prefersReducedMotion()) {
+        cancelAnimationFrame(frame);
+        clock = target;
+        day = dayTo;
+        paint(clock, day);
+        return;
+      }
+
       const from = clock;
       const dayFrom = day;
       const distance = shortestWay(from, target);
