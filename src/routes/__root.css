@@ -516,6 +516,12 @@
     transition-duration: 0.01ms !important;
   }
 
+  /* A view() timeline runs on scroll progress, not on time, so collapsing the
+     duration above leaves it animating. Only dropping the animation stops it. */
+  .ev-reveal {
+    animation-name: none !important;
+  }
+
   /* `::view-transition-*` is outside the document tree, so the `*` above never
      reaches it — without these the rules further up would still animate. */
   ::view-transition-group(*),
