@@ -269,42 +269,48 @@
 }
 
 /* ---------------------------------------------------------------------------
-   Base layer — ported from tokens/base.css. Follows the Tailwind import so
-   these declarations win over preflight at equal specificity.
+   Base layer — ported from tokens/base.css. It is `@layer base` rather than
+   unlayered because unlayered CSS beats every layered rule whatever its
+   specificity: a bare `a { color }` here outranks the `text-*` utility on any
+   anchor, which is how the hero's primary button ended up ice blue on its own
+   cyan gradient. Inside the layer these still follow preflight in source order,
+   so they keep winning over it.
    --------------------------------------------------------------------------- */
 
-html {
-  scroll-behavior: smooth;
-  /* The header renders at its own height times the ultra-wide zoom, but this
-     sits on the unzoomed html, so it has to reserve the rendered height. */
-  scroll-padding-top: calc(var(--header-h) * var(--z, 1));
-  /* The cloud layers overhang the viewport on purpose; without this they add a
-     horizontal scrollbar. `clip` rather than `hidden` so `position: sticky`
-     keeps working on the header. */
-  overflow-x: clip;
-  scrollbar-color: rgba(126, 116, 220, 0.55) transparent;
-}
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* The header renders at its own height times the ultra-wide zoom, but this
+       sits on the unzoomed html, so it has to reserve the rendered height. */
+    scroll-padding-top: calc(var(--header-h) * var(--z, 1));
+    /* The cloud layers overhang the viewport on purpose; without this they add a
+       horizontal scrollbar. `clip` rather than `hidden` so `position: sticky`
+       keeps working on the header. */
+    overflow-x: clip;
+    scrollbar-color: rgba(126, 116, 220, 0.55) transparent;
+  }
 
-body {
-  zoom: var(--z, 1);
-  background: var(--grad-sky);
-  font-family: var(--font-sans);
-  color: var(--ink-muted);
-  font-size: var(--text-body);
-  line-height: var(--leading-body);
-}
+  body {
+    zoom: var(--z, 1);
+    background: var(--grad-sky);
+    font-family: var(--font-sans);
+    color: var(--ink-muted);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+  }
 
-a {
-  color: var(--link);
-}
+  a {
+    color: var(--link);
+  }
 
-a:hover {
-  color: var(--link-hover);
-}
+  a:hover {
+    color: var(--link-hover);
+  }
 
-::selection {
-  background: rgba(4, 254, 255, 0.35);
-  color: #fcf7fd;
+  ::selection {
+    background: rgba(4, 254, 255, 0.35);
+    color: #fcf7fd;
+  }
 }
 
 /* ambient */
