@@ -9,11 +9,12 @@ export interface SkillItem {
   daily?: boolean;
 }
 
-/** ev-stg staggers the chips in by sibling-index(), with no JavaScript. */
 /**
  * The bright outline is a colour-only cue, so every daily chip also says the
  * thing the outline means, for a reader who cannot see it. Same trade the
  * about page's inline link makes for WCAG 1.4.1.
+ *
+ * ev-stg staggers the chips in by sibling-index(), with no JavaScript.
  */
 export const SkillChips: FC<{ items: readonly SkillItem[]; dailyLabel: string }> = ({ items, dailyLabel }) => (
   <div className='ev-stg flex flex-wrap gap-2'>
