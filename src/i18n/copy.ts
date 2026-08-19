@@ -676,10 +676,11 @@ interface LabCopy {
    */
   stateUnknown: string;
   /**
-   * What the row means. Ten of the sixteen describe something this site really
-   * does; the other six are features it watches rather than uses, and their
-   * notes say so outright — the badge is a fact about the visitor's browser, so
-   * a note that claimed the site used the feature would badge a lie as live.
+   * What the row means. Twelve of the seventeen describe something this site
+   * really does; the other five are features it watches rather than uses, and
+   * their notes say so outright — the badge is a fact about the visitor's
+   * browser, so a note that claimed the site used the feature would badge a lie
+   * as live.
    */
   notes: Record<LabKey, string>;
 }
@@ -709,7 +710,7 @@ export const LAB_COPY = {
       anchorPositioning: 'コピー完了のトーストが、押したボタンの真上に出ます。',
       detailsContent: 'この一覧の開閉そのものをアニメーションさせています。',
       scrollend: 'まだ繋いでいません。流れ星はスクロールではなく時間で流れています。',
-      durationFormat: 'ここでは使っていません。整形したい時間の値がまだページにありません。',
+      durationFormat: 'フッターの滞在時間の表記に使っています。',
       promiseTry: 'ここでは使っていません。クリップボード書き込みは素の try/catch です。',
     },
   },
@@ -737,7 +738,7 @@ export const LAB_COPY = {
       anchorPositioning: 'The copied toast appears right above the button you pressed.',
       detailsContent: 'This very list animates open and closed with it.',
       scrollend: 'Not wired up — the shooting stars run on a timer, not on scroll.',
-      durationFormat: 'Not used here — no duration on the page to format yet.',
+      durationFormat: 'Formats the dwell time in the footer.',
       promiseTry: 'Not used here — the clipboard writes are a plain try/catch.',
     },
   },
