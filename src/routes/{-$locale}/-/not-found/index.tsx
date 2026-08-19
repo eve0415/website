@@ -13,7 +13,6 @@ import { LanguageSwitch } from '../site/language-switch';
 import { navItems } from '../site/nav';
 import { SiteHeader } from '../site/site-header';
 import { CloudLayer } from '../sky/cloud-layer';
-import { MIDNIGHT, skyCssText } from '../sky/palette';
 import { ShootingStar } from '../sky/shooting-star';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, glow } from '../sky/sky-scene';
 import { StarField } from '../sky/star-field';
@@ -35,13 +34,6 @@ import {
 } from './scene';
 
 const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-/**
- * The 404 is the one page the design does not put on the clock — its own board
- * has no time control and is drawn at midnight — so this pins the scene back to
- * midnight for the subtree, whatever hour the rest of the site is showing.
- */
-const MIDNIGHT_CSS = skyCssText(MIDNIGHT, '.ev-404');
 
 export const NotFound = () => {
   // The 404 hangs off the root route, so this is the only place the locale is
@@ -197,18 +189,19 @@ export const NotFound = () => {
   const item = result === null ? undefined : copy.items[result];
 
   return (
-    <div ref={rootRef} className='ev-404 ev-sky relative flex min-h-[calc(100svh/var(--z,1))] flex-col overflow-clip' style={{ background: 'var(--sky-root)' }}>
-      <style>{MIDNIGHT_CSS}</style>
+    <div ref={rootRef} className='ev-404 relative flex min-h-[calc(100svh/var(--z,1))] flex-col overflow-clip' style={{ background: 'var(--sky-root)' }}>
       <div
         aria-hidden='true'
         className='pointer-events-none absolute inset-0 [translate:calc(var(--mx,0px)*-0.3)_calc(var(--my,0px)*-0.3)] overflow-hidden'
         style={{ background: 'var(--sky-nebula)' }}
       >
-        <div className='absolute inset-0 [translate:calc(var(--mx,0px)*-0.5)_calc(var(--my,0px)*-0.5)]'>
-          <StarField count={62} seed={NOT_FOUND_STAR_SEED} />
+        <div className='absolute inset-0' style={{ opacity: 'var(--sky-star-alpha)' }}>
+          <div className='absolute inset-0 [translate:calc(var(--mx,0px)*-0.5)_calc(var(--my,0px)*-0.5)]'>
+            <StarField count={62} seed={NOT_FOUND_STAR_SEED} />
+          </div>
+          <ShootingStar arc='steep' tail={110} duration={14} delay={3} className='top-[12%] right-[8%]' />
+          <ShootingStar arc='long' tail={200} duration={26} delay={11} className='top-[46%] right-[-4%]' />
         </div>
-        <ShootingStar arc='steep' tail={110} duration={14} delay={3} className='top-[12%] right-[8%]' />
-        <ShootingStar arc='long' tail={200} duration={26} delay={11} className='top-[46%] right-[-4%]' />
         <span ref={sstarRef} aria-hidden='true' className='ev-404-sstar absolute top-0 left-0 opacity-0'>
           <span className='flex items-center'>
             <span className='mr-[-3px] h-0.5 w-37.5 rounded-xs bg-[linear-gradient(90deg,transparent,rgba(0,221,168,.6),#04feff)]' />
@@ -222,7 +215,7 @@ export const NotFound = () => {
       </SiteHeader>
 
       <main className='pointer-events-none relative z-3 grid flex-1 place-items-center px-[clamp(20px,5vw,48px)] pt-[clamp(8px,1.6svh,28px)] pb-[clamp(88px,18svh,250px)]'>
-        <div className='pointer-events-auto grid max-w-190 justify-items-center gap-[clamp(7px,1.4svh,18px)] text-center'>
+        <div className='ev-on-sky pointer-events-auto grid max-w-190 justify-items-center gap-[clamp(7px,1.4svh,18px)] text-center'>
           <title>{copy.docTitle}</title>
 
           <p className='animate-[fadeUp_0.6s_ease_0.15s_backwards] text-(length:--text-caption) tracking-[0.26em] text-(--ink-ice)'>
@@ -255,11 +248,11 @@ export const NotFound = () => {
             </span>
           </div>
 
-          <h1 className='mt-1.5 animate-[fadeUp_0.7s_ease_0.75s_backwards] text-[clamp(1.375rem,min(4.4vw,4.6svh),2.375rem)] leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_24px_rgba(3,1,20,.6)]'>
+          <h1 className='mt-1.5 animate-[fadeUp_0.7s_ease_0.75s_backwards] text-[clamp(1.375rem,min(4.4vw,4.6svh),2.375rem)] leading-[1.2] font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_24px_var(--ink-shadow)]'>
             {copy.title}
           </h1>
 
-          <p className='animate-[fadeUp_0.7s_ease_0.9s_backwards] text-[clamp(0.84375rem,min(1.9vw,2.4svh),1.03125rem)] leading-[1.75] text-(--ink-muted) [text-shadow:0_1px_14px_rgba(3,1,20,.6)]'>
+          <p className='animate-[fadeUp_0.7s_ease_0.9s_backwards] text-[clamp(0.84375rem,min(1.9vw,2.4svh),1.03125rem)] leading-[1.75] text-(--ink-body) [text-shadow:0_1px_14px_var(--ink-shadow)]'>
             {copy.lede1}
             <br />
             {copy.lede2}
@@ -291,17 +284,17 @@ export const NotFound = () => {
               className='pointer-events-none absolute top-[calc(100%+16px)] left-1/2 grid w-[min(92vw,640px)] -translate-x-1/2 content-start justify-items-center gap-2.5'
             >
               {item !== undefined && !searching ? (
-                <p className='ev-404-resline text-(length:--text-ui) leading-[1.7] text-(--ink-ice) [text-shadow:0_1px_12px_rgba(3,1,20,.8)] [view-transition-name:resline]'>
+                <p className='ev-404-resline text-(length:--text-ui) leading-[1.7] text-(--ink-ice) [text-shadow:0_1px_12px_var(--ink-shadow)] [view-transition-name:resline]'>
                   {copy.rescued(item)}
                 </p>
               ) : null}
               {done && !searching ? (
-                <p className='ev-404-resline text-(length:--text-nav) leading-[1.7] text-(--hue-violet) [text-shadow:0_1px_12px_rgba(3,1,20,.8)]'>
+                <p className='ev-404-resline text-(length:--text-nav) leading-[1.7] text-(--hue-violet) [text-shadow:0_1px_12px_var(--ink-shadow)]'>
                   {copy.resultFinal}
                 </p>
               ) : null}
               {foundCount > 0 ? (
-                <div className='flex flex-wrap items-center justify-center gap-2'>
+                <div className='ev-on-panel flex flex-wrap items-center justify-center gap-2'>
                   <span className='rounded-[999px] border border-(--line-panel) bg-(--surface-panel) px-3 py-1 text-[0.78125rem] tracking-[0.14em] text-(--ink-muted)'>
                     {copy.foundLabel}
                   </span>

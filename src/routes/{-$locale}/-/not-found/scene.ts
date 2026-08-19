@@ -11,7 +11,7 @@ export const CLOUDS_FRONT = puffs(7_070_404, 12, -60, 22, 150, 280);
 export const SPARKLE = tw('[clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]');
 
 export const DIGIT = tw(
-  'text-[calc(var(--moon)*1.42)] leading-none font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_4px_34px_rgba(3,1,20,.6),0_0_72px_rgba(142,70,217,.5)]',
+  'text-[calc(var(--moon)*1.42)] leading-none font-bold text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_4px_34px_var(--ink-shadow),0_0_72px_rgba(142,70,217,.5)]',
 );
 
 /* Geometry only. The two bands fade in at different depths, so each supplies

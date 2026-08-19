@@ -191,13 +191,8 @@
    straight onto the sky, so their ink follows the clock into dark navy by day.
    Nothing else does: a glass panel is the same deep indigo at noon as it is at
    midnight, and its contents have to stay light to be read. */
-/* The tokens the sky itself decides. Grouped with `.ev-sky` so a subtree that
-   re-declares the `--sky-*` set gets them re-derived rather than inheriting what
-   `:root` already worked out — `var()` resolves where it is written, so an
-   inherited `--ink-nav` would stay whatever hour the root was on. The 404 is
-   the one place that matters: the design draws it at midnight, always. */
-:root,
-.ev-sky {
+/* The tokens the sky itself decides. */
+:root {
   --surface-header: var(--sky-header-bg);
   --line-header: var(--sky-header-line);
   --ink-nav: var(--sky-ink-nav);
@@ -214,6 +209,18 @@
   --line-white: rgba(var(--sky-ink-title-rgb), 0.4);
   --surface-glass: var(--sky-glass-bg);
   --link-hover: var(--sky-accent);
+}
+
+/* The way back, for a panel nested inside an on-sky region. The panel is the
+   same deep indigo at noon as at midnight, so its contents go back to the night
+   ink the rest of the site's panels use. */
+.ev-on-panel {
+  --ink-title: #fcf7fd;
+  --ink-body: #e9e4ff;
+  --ink-ice: #9fe8ff;
+  --ink-faint: #a49dd8;
+  --ink-shadow: rgba(3, 1, 20, 0.6);
+  --link-hover: #04feff;
 }
 
 @media (min-width: 2100px) {
