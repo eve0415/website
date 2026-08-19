@@ -175,6 +175,9 @@ export const NotFound = () => {
     };
   }, [searching]);
 
+  // meowIdx is not read below. It is a dependency so that re-clicking the cat while the
+  // bubble is still up restarts this timer, instead of the first click's timeout hiding
+  // the new meow early.
   useEffect(() => {
     if (!bubbleOn) return;
     const id = setTimeout(() => {
@@ -183,7 +186,7 @@ export const NotFound = () => {
     return () => {
       clearTimeout(id);
     };
-  }, [bubbleOn, meowIdx]);
+  }, [bubbleOn, meowIdx]); // oxlint-disable-line react/exhaustive-effect-dependencies
 
   const done = foundCount >= copy.items.length;
   const item = result === null ? undefined : copy.items[result];
