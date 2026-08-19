@@ -72,7 +72,7 @@ export const SITE_COPY = {
 /** The three interchangeable lines for one hour bucket. */
 type GreetingSet = readonly [string, string, string];
 
-/** 朝 / 昼 / 夕 / 夜 / 深夜, in the order `greetingBucket` returns. */
+/** 朝 / 昼 / 夕 / 夜 / 深夜, in the order `bucketFor` returns. */
 export type Greetings = readonly [GreetingSet, GreetingSet, GreetingSet, GreetingSet, GreetingSet];
 
 interface HomeCopy {
