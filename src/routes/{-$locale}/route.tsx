@@ -9,6 +9,7 @@ import { LanguageSwitch } from './-/site/language-switch';
 import { navItems } from './-/site/nav';
 import { SiteFooter } from './-/site/site-footer';
 import { SiteHeader } from './-/site/site-header';
+import { ScrollEndStar } from './-/sky/scroll-end-star';
 import { ShootingStar } from './-/sky/shooting-star';
 import { StarField } from './-/sky/star-field';
 
@@ -27,6 +28,8 @@ const LocaleLayout = () => {
           <ShootingStar arc='long' tail={200} duration={23} delay={13} className='top-[52%] right-[-4%]' />
         </div>
       </div>
+
+      <ScrollEndStar />
 
       <SiteHeader navLabel={SITE_COPY[locale].navAria} brandElement={<BrandLink locale={locale} />} items={navItems(locale)}>
         <LanguageSwitch locale={locale} />

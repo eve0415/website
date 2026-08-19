@@ -45,6 +45,12 @@ interface ShootingStarBaseProps {
   tail?: number;
   duration?: number;
   delay?: number;
+  /**
+   * `loop` is the ambient sky, where an arc runs forever on its own timing.
+   * `once` is a star put up in answer to something the reader did, which falls
+   * a single time and is taken away again.
+   */
+  play?: 'loop' | 'once';
   className?: string;
   style?: CSSProperties;
 }
@@ -63,7 +69,7 @@ interface ShootingStarFallProps extends ShootingStarBaseProps {
 type ShootingStarProps = ShootingStarSweepProps | ShootingStarFallProps;
 
 export const ShootingStar: FC<ShootingStarProps> = props => {
-  const { tail = 160, duration = 12, delay = 4, className, style } = props;
+  const { tail = 160, duration = 12, delay = 4, play = 'loop', className, style } = props;
   const variant = props.arc === 'steep' || props.arc === 'long' ? VARIANT[props.arc] : props.direction === 'right' ? VARIANT.sweepRight : VARIANT.sweepLeft;
 
   const head = <span className={cn('flex-none rounded-[50%] bg-(--star-white)', variant.head)} />;
@@ -74,7 +80,7 @@ export const ShootingStar: FC<ShootingStarProps> = props => {
       aria-hidden='true'
       className={cn('absolute', className)}
       style={{
-        animation: `${variant.animation} ${duration}s linear ${delay}s infinite backwards`,
+        animation: `${variant.animation} ${duration}s linear ${delay}s ${play === 'once' ? 'both' : 'infinite backwards'}`,
         ...style,
       }}
     >
