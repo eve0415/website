@@ -10,6 +10,7 @@ import './-/skill-grid.css';
 import { localeHead } from '#i18n/head';
 
 import { AiCard } from './-/ai-card';
+import { DAILY_LEGEND_ID } from './-/skill-chips';
 import { SkillGroup } from './-/skill-group';
 
 const LANGUAGES = [
@@ -73,7 +74,9 @@ const Skills = () => {
     <div className='relative mx-auto grid max-w-(--page-max) gap-7 px-6 pt-12 pb-24'>
       <div className='grid animate-[fadeUp_0.6s_ease_backwards] gap-2 font-sans'>
         <PageHeader kicker='SKILLS' title={copy.title} lede={copy.intro} />
-        <p className='text-(length:--text-caption) text-(--ink-faint)'>{copy.legend}</p>
+        <p id={DAILY_LEGEND_ID} className='text-(length:--text-caption) text-(--ink-faint)'>
+          {copy.legend}
+        </p>
       </div>
 
       <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-4.5'>
