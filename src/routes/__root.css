@@ -327,7 +327,10 @@
 
   body {
     zoom: var(--z, 1);
-    background: var(--grad-sky);
+    /* The clock's own gradient, not the midnight token: this is the canvas the
+       browser paints past the ends of the page, so a fixed one shows a band of
+       night above a daylight page on any overscroll. */
+    background: var(--sky-root);
     font-family: var(--font-sans);
     color: var(--ink-muted);
     font-size: var(--text-body);
