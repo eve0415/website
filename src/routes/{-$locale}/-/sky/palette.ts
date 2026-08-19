@@ -89,6 +89,14 @@ export interface SkyCss {
   glassBg: string;
   accent: string;
   link: string;
+  /**
+   * The ghost button's two moving parts. A pill with no fill cannot clear AA on
+   * the noon sky at any tint — the sky's own luminance sits in the middle of the
+   * range — so on its way into daylight it picks up the glass fill and the dark
+   * on-sky ink. Both are exactly the design's night values at day 0.
+   */
+  ghostSurface: string;
+  ghostInk: string;
 }
 
 /* 24h sky palette — 11 keyframes interpolated (verbatim from eve0415.net v3). */
@@ -406,6 +414,8 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     headerLine: rgba(mix([160, 150, 255], [30, 60, 100], day), 0.18),
     glassBg: rgba(mix([5, 2, 28], [255, 255, 255], day), 0.32),
     accent: rgb(mix([4, 254, 255], [10, 74, 140], day)),
+    ghostSurface: rgba(mix([5, 2, 28], [255, 255, 255], day), Number((0.32 * day).toFixed(3))),
+    ghostInk: rgb(mix([143, 233, 255], inkT, day)),
     /* The design fades the link to #ebf6ff by day, which lands at 4.22:1 on its
        own noon sky — the blue is bright enough that only pure white clears AA
        for small text, so that is where this one goes. */
@@ -442,6 +452,8 @@ export const skyVars = (sky: SkyCss) => ({
   '--sky-glass-bg': sky.glassBg,
   '--sky-accent': sky.accent,
   '--sky-link': sky.link,
+  '--sky-ghost-surface': sky.ghostSurface,
+  '--sky-ghost-ink': sky.ghostInk,
 });
 
 /** The same properties as one rule, for a stylesheet the document prerenders. */

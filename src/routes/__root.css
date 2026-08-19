@@ -200,6 +200,12 @@
   --link: var(--sky-link);
 }
 
+/* The ghost button, off the sky: exactly what the design draws. */
+:root {
+  --ghost-surface: transparent;
+  --ghost-ink: var(--hue-cyan);
+}
+
 .ev-on-sky {
   --ink-title: var(--sky-ink-title);
   --ink-body: var(--sky-ink-sub);
@@ -209,12 +215,16 @@
   --line-white: rgba(var(--sky-ink-title-rgb), 0.4);
   --surface-glass: var(--sky-glass-bg);
   --link-hover: var(--sky-accent);
+  --ghost-surface: var(--sky-ghost-surface);
+  --ghost-ink: var(--sky-ghost-ink);
 }
 
 /* The way back, for a panel nested inside an on-sky region. The panel is the
    same deep indigo at noon as at midnight, so its contents go back to the night
    ink the rest of the site's panels use. */
 .ev-on-panel {
+  --ghost-surface: transparent;
+  --ghost-ink: var(--hue-cyan);
   --ink-title: #fcf7fd;
   --ink-body: #e9e4ff;
   --ink-ice: #9fe8ff;
