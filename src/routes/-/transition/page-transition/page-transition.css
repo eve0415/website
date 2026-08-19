@@ -99,3 +99,50 @@
     opacity: 0;
   }
 }
+
+/* ---- door wipe, between the same page in the two locales ---- */
+@keyframes doorInL {
+  from {
+    transform: translateX(-101%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes doorInR {
+  from {
+    transform: translateX(101%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+
+@keyframes doorOutL {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-101%);
+  }
+}
+
+@keyframes doorOutR {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(101%);
+  }
+}
+
+@keyframes doorKira {
+  from,
+  to {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1) rotate(95deg);
+  }
+}

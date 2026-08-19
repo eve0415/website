@@ -34,13 +34,26 @@ export const projectSlug = (pathname: string | undefined): string | null => (pat
 
 export const hueFor = (slug: string | null): SlatHue => (slug === null ? CYAN : (PROJECT_HUES.get(slug) ?? CYAN));
 
+/** `/en/projects/cella` and `/projects/cella` are one page in two locales. */
+const localeless = (pathname: string): string => pathname.replace(/^\/en(?=\/|$)/, '') || '/';
+
+/**
+ * Whether a navigation swaps JA for EN and stays where it is. It has to be
+ * asked before `projectSlug`, whose pattern spans both locales: without it,
+ * switching language on a project page reads as a project navigation and gets
+ * the slats.
+ */
+export const isLocaleSwap = (from: string | undefined, to: string): boolean => from !== undefined && from !== to && localeless(from) === localeless(to);
+
 export type Phase = 'in' | 'out';
+
+/** Which of the three transitions a run plays. */
+export type Kind = 'comet' | 'slats' | 'doors';
 
 export interface Run {
   /** Bumped per navigation, so a run that starts during one restarts the animations. */
   id: number;
-  /** A project detail page is on one end of the navigation, so slats rather than the comet. */
-  slats: boolean;
+  kind: Kind;
   phase: Phase;
   /** Going back: the comet mirrors, and the slats reverse. */
   back: boolean;
