@@ -30,7 +30,6 @@ import {
   MASK_BAND_BACK,
   MASK_BAND_FRONT,
   NOT_FOUND_STAR_SEED,
-  SKY,
   SPARKLE,
 } from './scene';
 
@@ -190,11 +189,11 @@ export const NotFound = () => {
   const item = result === null ? undefined : copy.items[result];
 
   return (
-    <div ref={rootRef} className='ev-404 relative flex min-h-[calc(100svh/var(--z,1))] flex-col overflow-clip' style={{ background: SKY.rootBg }}>
+    <div ref={rootRef} className='ev-404 relative flex min-h-[calc(100svh/var(--z,1))] flex-col overflow-clip' style={{ background: 'var(--sky-root)' }}>
       <div
         aria-hidden='true'
         className='pointer-events-none absolute inset-0 [translate:calc(var(--mx,0px)*-0.3)_calc(var(--my,0px)*-0.3)] overflow-hidden'
-        style={{ background: SKY.nebulaBg }}
+        style={{ background: 'var(--sky-nebula)' }}
       >
         <div className='absolute inset-0 [translate:calc(var(--mx,0px)*-0.5)_calc(var(--my,0px)*-0.5)]'>
           <StarField count={62} seed={NOT_FOUND_STAR_SEED} />

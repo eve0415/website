@@ -48,16 +48,47 @@ interface PaletteStop extends SkyPalette {
   t: number;
 }
 
-/** Ready-to-use CSS strings for a clock value. */
+/**
+ * Ready-to-use CSS strings for a clock value.
+ *
+ * The `ink*` and chrome fields carry the day mix as well as the clock: the sky
+ * turns blue between roughly 7時 and 18時, and everything sitting straight on
+ * it has to turn dark to stay legible. Glass panels and their contents do not
+ * appear here — they stay night-coloured all day, which is what keeps their
+ * light text readable over a bright sky.
+ */
 export interface SkyCss {
   rootBg: string;
   heroBg: string;
   nebulaBg: string;
   starAlpha: number;
+  footerGlow: string;
+  /** The cloud sea, lit front to back. */
+  cloudBack: string;
+  cloudMid: string;
+  cloudFront: string;
+  catGlow: string;
+  /** Lights inside the cloud sea: nebula, cloud shade, white core. */
+  glowA: string;
+  glowB: string;
+  glowW: string;
+  /** The dimmer set that bridges the hero into the page below it. */
+  glowMidA: string;
+  glowMidB: string;
+  glowMidC: string;
   inkTitle: string;
+  /** Title ink as a bare `r,g,b` triplet, for tinting a border or a shadow. */
+  inkTitleRgb: string;
   inkKicker: string;
   inkSub: string;
-  footerGlow: string;
+  inkNav: string;
+  inkFaint: string;
+  inkShadow: string;
+  headerBg: string;
+  headerLine: string;
+  glassBg: string;
+  accent: string;
+  link: string;
 }
 
 /* 24h sky palette — 11 keyframes interpolated (verbatim from eve0415.net v3). */
@@ -306,10 +337,37 @@ export const skyPalette = (clock: number): SkyPalette => {
 
 const gradient = (parts: readonly (readonly [Rgb, number])[]) => `linear-gradient(180deg, ${parts.map(([color, pos]) => `${rgb(color)} ${pos}%`).join(', ')})`;
 
-/** Ready-to-use CSS strings for a clock value (backgrounds + ink colors). */
-export const skyCss = (clock: number): SkyCss => {
+const channel = (v: number) => {
+  const x = v / 255;
+  return x <= 0.04045 ? x / 12.92 : ((x + 0.055) / 1.055) ** 2.4;
+};
+
+const luminance = (c: Rgb) => 0.2126 * channel(c[0]) + 0.7152 * channel(c[1]) + 0.0722 * channel(c[2]);
+
+/**
+ * Whether the clock reads as daytime, from how bright the middle of the hero
+ * gradient is. The two thresholds are a deliberate deadband: dawn and dusk pass
+ * through the switching brightness slowly, and a single threshold would flip the
+ * whole page's ink back and forth for minutes on end.
+ */
+export const skyIsDay = (clock: number, wasDay?: boolean): boolean => {
   const p = skyPalette(clock);
-  const { day } = p;
+  const level = luminance(mix(p.hero[2], p.hero[3], 0.5));
+  if (wasDay === undefined) return level > 0.275;
+  return wasDay ? level >= 0.262 : level > 0.288;
+};
+
+/**
+ * Ready-to-use CSS strings for a clock value.
+ *
+ * `day` is passed in rather than read off the palette because the two move at
+ * different speeds: the clock is tweened across the change, while the day mix
+ * is its own 0→1 crossfade driven by `skyIsDay`.
+ */
+export const skyCss = (clock: number, day: number): SkyCss => {
+  const p = skyPalette(clock);
+  const inkT = mix(p.inkT, [10, 36, 64], day);
+
   return {
     rootBg: gradient([
       [p.root[0], 0],
@@ -326,9 +384,68 @@ export const skyCss = (clock: number): SkyCss => {
     ]),
     nebulaBg: `radial-gradient(90vw 55vh at 80% 90vh, ${rgba(p.na, 0.2)}, transparent 65%), radial-gradient(80vw 45vh at 6% 125vh, ${rgba(p.nb, 0.42)}, transparent 68%), radial-gradient(100vw 42vh at 50% 12vh, ${rgba(p.nb, 0.32)}, transparent 70%), radial-gradient(120vw 50vh at 50% 100%, ${rgba(p.na, 0.1)}, transparent 70%)`,
     starAlpha: Number(p.star.toFixed(3)),
-    inkTitle: rgb(mix(p.inkT, [10, 36, 64], day)),
+    footerGlow: `radial-gradient(120% 220% at 50% 135%, ${rgba(p.na, 0.16)}, transparent 60%)`,
+    cloudBack: `radial-gradient(circle at 38% 26%, ${rgba(mix(p.cl, p.cs, 0.55), 0.85)}, ${rgba(p.cs, 0.88)} 56%, ${rgba(p.cd, 0.92)} 95%)`,
+    cloudMid: `radial-gradient(circle at 36% 24%, ${rgba(p.cl, 0.92)}, ${rgba(mix(p.cl, p.cs, 0.45), 0.88)} 52%, ${rgba(p.cs, 0.84)} 92%)`,
+    cloudFront: `radial-gradient(circle at 35% 23%, ${rgba(p.cl, 0.96)}, ${rgba(mix(p.cl, p.cs, 0.3), 0.92)} 52%, ${rgba(mix(p.cs, p.cd, 0.3), 0.82)} 92%)`,
+    catGlow: `radial-gradient(closest-side, ${rgba(p.cl, 0.42)}, ${rgba(p.cs, 0.16)} 58%, transparent 76%)`,
+    glowA: rgba(p.na, 0.5),
+    glowB: rgba(p.cs, 0.5),
+    glowW: rgba(p.cl, 0.28),
+    glowMidA: rgba(p.cs, 0.28),
+    glowMidB: rgba(p.na, 0.2),
+    glowMidC: rgba(p.nb, 0.5),
+    inkTitle: rgb(inkT),
+    inkTitleRgb: inkT.join(','),
     inkKicker: rgb(mix(p.inkK, [8, 58, 92], day)),
     inkSub: rgb(mix(p.inkS, [18, 48, 80], day)),
-    footerGlow: `radial-gradient(120% 220% at 50% 135%, ${rgba(p.na, 0.16)}, transparent 60%)`,
+    inkNav: rgb(mix([234, 230, 255], [18, 51, 80], day)),
+    inkFaint: rgb(mix([164, 157, 216], [24, 52, 88], day)),
+    inkShadow: rgba(mix([3, 1, 20], [250, 250, 255], day), Number((0.6 - 0.25 * day).toFixed(2))),
+    headerBg: rgba(mix([5, 2, 28], [240, 246, 252], day), 0.55),
+    headerLine: rgba(mix([160, 150, 255], [30, 60, 100], day), 0.18),
+    glassBg: rgba(mix([5, 2, 28], [255, 255, 255], day), 0.32),
+    accent: rgb(mix([4, 254, 255], [10, 74, 140], day)),
+    link: rgb(mix([159, 232, 255], [235, 246, 255], day)),
   };
 };
+
+/** The custom properties `__root.css` reads the whole scene through. */
+export const skyVars = (sky: SkyCss) => ({
+  '--sky-root': sky.rootBg,
+  '--sky-hero': sky.heroBg,
+  '--sky-nebula': sky.nebulaBg,
+  '--sky-star-alpha': String(sky.starAlpha),
+  '--sky-footer-glow': sky.footerGlow,
+  '--sky-cloud-back': sky.cloudBack,
+  '--sky-cloud-mid': sky.cloudMid,
+  '--sky-cloud-front': sky.cloudFront,
+  '--sky-cat-glow': sky.catGlow,
+  '--sky-glow-a': sky.glowA,
+  '--sky-glow-b': sky.glowB,
+  '--sky-glow-w': sky.glowW,
+  '--sky-glow-mid-a': sky.glowMidA,
+  '--sky-glow-mid-b': sky.glowMidB,
+  '--sky-glow-mid-c': sky.glowMidC,
+  '--sky-ink-title': sky.inkTitle,
+  '--sky-ink-title-rgb': sky.inkTitleRgb,
+  '--sky-ink-kicker': sky.inkKicker,
+  '--sky-ink-sub': sky.inkSub,
+  '--sky-ink-nav': sky.inkNav,
+  '--sky-ink-faint': sky.inkFaint,
+  '--sky-ink-shadow': sky.inkShadow,
+  '--sky-header-bg': sky.headerBg,
+  '--sky-header-line': sky.headerLine,
+  '--sky-glass-bg': sky.glassBg,
+  '--sky-accent': sky.accent,
+  '--sky-link': sky.link,
+});
+
+/** The same properties as one `:root` rule, for the prerendered stylesheet. */
+export const skyCssText = (sky: SkyCss) =>
+  `:root{${Object.entries(skyVars(sky))
+    .map(([name, value]) => `${name}:${value}`)
+    .join(';')}}`;
+
+/** 深夜 0時 — the design's canonical state, and what every page prerenders. */
+export const MIDNIGHT = skyCss(0, 0);

@@ -7,15 +7,12 @@ import { tw } from '#lib/tw';
 import { CatArt } from '../cat-art';
 import { ButtonLink, localeParams } from '../routed-links';
 import { CloudLayer } from '../sky/cloud-layer';
-import { skyCss } from '../sky/palette';
 import { puffs } from '../sky/puffs';
 import { ShootingStar } from '../sky/shooting-star';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, GLOW_A, GLOW_B, GLOW_W, glow } from '../sky/sky-scene';
 
 import './hero.css';
 import { StarField } from '../sky/star-field';
-
-const SKY = skyCss(0);
 
 const HERO_STAR_SEED = 4_150_415;
 
@@ -75,7 +72,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
 
   return (
     <section className='relative mt-[-61px] grid min-h-[calc(100svh/var(--z,1)-61px)] content-end'>
-      <div aria-hidden='true' className={`absolute inset-x-0 top-0 bottom-[-240px] ${MASK_HERO}`} style={{ background: SKY.heroBg }}>
+      <div aria-hidden='true' className={`absolute inset-x-0 top-0 bottom-[-240px] ${MASK_HERO}`} style={{ background: 'var(--sky-hero)' }}>
         <div className='absolute inset-x-0 top-0 bottom-60'>
           {HERO_GLOWS.map(spot => (
             <span
@@ -129,21 +126,21 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
 
       <div aria-hidden='true' className={`absolute inset-0 ${VIGNETTE}`} />
 
-      <div aria-hidden='true' className='pointer-events-none absolute inset-0' style={{ opacity: SKY.starAlpha }}>
+      <div aria-hidden='true' className='pointer-events-none absolute inset-0' style={{ opacity: 'var(--sky-star-alpha)' }}>
         <StarField count={10} topMax={58} seed={HERO_STAR_SEED} />
         <ShootingStar direction='right' tail={130} duration={17} delay={9} className='top-[7%] left-[6%]' />
       </div>
-      <ShootingStar tail={160} duration={12} delay={4} className='pointer-events-none top-[9%] right-[5%]' style={{ opacity: SKY.starAlpha }} />
+      <ShootingStar tail={160} duration={12} delay={4} className='pointer-events-none top-[9%] right-[5%]' style={{ opacity: 'var(--sky-star-alpha)' }} />
 
       <div className='relative z-2 mx-auto w-full max-w-(--page-max-wide) px-[clamp(22px,6vw,72px)] pb-[clamp(56px,11vh,110px)]'>
         <div className='grid max-w-170 justify-items-start gap-4'>
-          <p className='animate-[fadeUp_0.7s_ease_0.2s_backwards] text-(length:--text-small) tracking-[0.22em] text-(--ink-ice) [text-shadow:0_1px_10px_rgba(3,1,20,.6)]'>
+          <p className='animate-[fadeUp_0.7s_ease_0.2s_backwards] text-(length:--text-small) tracking-[0.22em] text-(--ink-ice) [text-shadow:0_1px_10px_var(--ink-shadow)]'>
             {copy.greeting}
           </p>
-          <h1 className='animate-[fadeUp_0.7s_ease_0.35s_backwards] text-(length:--text-hero) leading-[1.05] font-bold tracking-[0.01em] text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_28px_rgba(3,1,20,.6)]'>
+          <h1 className='animate-[fadeUp_0.7s_ease_0.35s_backwards] text-(length:--text-hero) leading-[1.05] font-bold tracking-[0.01em] text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_28px_var(--ink-shadow)]'>
             eve0415
           </h1>
-          <p className='animate-[fadeUp_0.7s_ease_0.5s_backwards] text-[clamp(0.96875rem,2vw,1.09375rem)] leading-[1.85] text-(--ink-body) [text-shadow:0_1px_14px_rgba(3,1,20,.6)]'>
+          <p className='animate-[fadeUp_0.7s_ease_0.5s_backwards] text-[clamp(0.96875rem,2vw,1.09375rem)] leading-[1.85] text-(--ink-body) [text-shadow:0_1px_14px_var(--ink-shadow)]'>
             {copy.heroSub1}
             <br />
             {copy.heroSub2}

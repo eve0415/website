@@ -1,9 +1,6 @@
 import { tw } from '#lib/tw';
 
-import { skyCss } from '../sky/palette';
 import { puffs } from '../sky/puffs';
-
-export const SKY = skyCss(0);
 
 export const NOT_FOUND_STAR_SEED = 4_040_404;
 

@@ -11,9 +11,21 @@ import { OpeningCurtain } from './-/transition/opening-curtain';
 import { PageTransition } from './-/transition/page-transition';
 import rootCss from './__root.css?url';
 import { NotFound } from './{-$locale}/-/not-found';
+import { MIDNIGHT, skyCssText } from './{-$locale}/-/sky/palette';
 
 const SITE_URL = 'https://eve0415.net';
 const SITE_NAME = 'eve0415';
+
+/**
+ * The whole scene, as the custom properties `__root.css` reads its clock-driven
+ * tokens through. Prerendering 深夜 0時 is not a placeholder — it is the
+ * design's canonical state, and the only value a static page can carry, since
+ * reading a clock during render would differ between the prerender and the
+ * browser. `SkyClock` moves it to the visitor's own time after hydration, by
+ * setting the same properties inline on the document element, where they
+ * outrank this rule.
+ */
+const SKY_MIDNIGHT_CSS = skyCssText(MIDNIGHT);
 
 const RootDocument: FC<PropsWithChildren> = ({ children }) => {
   // Computed in beforeLoad, so this is resolved on the server during SSR rather
@@ -25,6 +37,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
     <html lang={locale}>
       <head>
         <HeadContent />
+        <style>{SKY_MIDNIGHT_CSS}</style>
       </head>
       <body>
         {children}

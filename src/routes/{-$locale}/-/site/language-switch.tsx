@@ -19,8 +19,8 @@ const PILL = tw(
 );
 
 const STATE = {
-  on: tw('bg-[rgba(4,254,255,0.13)] text-(--accent-cyan)'),
-  off: tw('text-(--ink-faint) hover:text-(--accent-cyan)'),
+  on: tw('bg-[color-mix(in_srgb,var(--accent)_13%,transparent)] text-(--accent)'),
+  off: tw('text-(--ink-faint) hover:text-(--accent)'),
 };
 
 interface LanguageSwitchProps {

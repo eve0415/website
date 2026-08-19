@@ -9,16 +9,8 @@ import { LanguageSwitch } from './-/site/language-switch';
 import { navItems } from './-/site/nav';
 import { SiteFooter } from './-/site/site-footer';
 import { SiteHeader } from './-/site/site-header';
-import { skyCss } from './-/sky/palette';
 import { ShootingStar } from './-/sky/shooting-star';
 import { StarField } from './-/sky/star-field';
-
-/**
- * Midnight — the design's canonical sky and the one `__root.css` ships tokens
- * for. Deriving it from the clock would differ between the prerender and the
- * browser and blow up hydration, so it is a constant.
- */
-const SKY = skyCss(0);
 
 /** Any constant; it only has to make the two fields differ from each other. */
 const ROOT_STAR_SEED = 20_220_415;
@@ -27,9 +19,9 @@ const LocaleLayout = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
 
   return (
-    <div className='relative flex min-h-[calc(100svh/var(--z,1))] flex-col' style={{ background: SKY.rootBg }}>
-      <div aria-hidden='true' className='pointer-events-none absolute inset-0 overflow-hidden' style={{ background: SKY.nebulaBg }}>
-        <div className='absolute inset-0' style={{ opacity: SKY.starAlpha }}>
+    <div className='relative flex min-h-[calc(100svh/var(--z,1))] flex-col' style={{ background: 'var(--sky-root)' }}>
+      <div aria-hidden='true' className='pointer-events-none absolute inset-0 overflow-hidden' style={{ background: 'var(--sky-nebula)' }}>
+        <div className='absolute inset-0' style={{ opacity: 'var(--sky-star-alpha)' }}>
           <StarField count={36} seed={ROOT_STAR_SEED} />
           <ShootingStar arc='steep' tail={110} duration={13.5} delay={2.5} className='top-[14%] right-[10%]' />
           <ShootingStar arc='long' tail={200} duration={23} delay={13} className='top-[52%] right-[-4%]' />

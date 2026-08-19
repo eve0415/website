@@ -35,32 +35,39 @@
   --surface-panel-soft: rgba(13, 8, 54, 0.45);
   --surface-row: rgba(13, 8, 54, 0.5);
   --surface-toast: #0d0836;
-  --surface-glass: rgba(5, 2, 28, 0.32);
-  --surface-header: rgba(5, 2, 28, 0.55);
+  --surface-glass: var(--sky-glass-bg);
+  --surface-header: var(--sky-header-bg);
 
   /* 線 */
   --line-panel: rgba(160, 150, 255, 0.22);
   --line-row: rgba(160, 150, 255, 0.25);
   --line-chip: rgba(210, 205, 255, 0.35);
-  --line-white: rgba(252, 247, 253, 0.4);
-  --line-header: rgba(160, 150, 255, 0.18);
+  --line-white: rgba(var(--sky-ink-title-rgb), 0.4);
+  --line-header: var(--sky-header-line);
   --line-accent: rgba(4, 254, 255, 0.5);
   --line-accent-dashed: rgba(4, 254, 255, 0.35);
 
-  /* 文字 */
-  --ink-title: #fcf7fd;
-  --ink-body: #e9e4ff;
+  /* 文字 — everything that sits straight on the sky reads off the clock, so it
+     turns dark navy through the daylight hours. `--ink-muted` does not: it is
+     the text inside the glass panels, which stay night-coloured all day. */
+  --ink-title: var(--sky-ink-title);
+  --ink-body: var(--sky-ink-sub);
   --ink-muted: #cfc9f2;
-  --ink-ice: #9fe8ff;
-  --ink-faint: #a49dd8;
+  --ink-ice: var(--sky-ink-kicker);
+  --ink-nav: var(--sky-ink-nav);
+  --ink-faint: var(--sky-ink-faint);
+  --ink-shadow: var(--sky-ink-shadow);
   --ink-on-accent: #00031d;
 
-  /* アクセント (彗星) */
+  /* アクセント (彗星) — the cyan/mint pair is the brand and never moves. What
+     does move is `--accent`, the same hue used as ink *on* the sky: it darkens
+     into the blue by day, where the neon would wash out. */
   --accent-cyan: #04feff;
   --accent-mint: #00dda8;
   --grad-comet: linear-gradient(90deg, #04feff, #00dda8);
-  --link: #9fe8ff;
-  --link-hover: #04feff;
+  --accent: var(--sky-accent);
+  --link: var(--sky-link);
+  --link-hover: var(--sky-accent);
 
   /* 星 */
   --star-white: #fcf7fd;
