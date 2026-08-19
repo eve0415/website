@@ -43,9 +43,12 @@ export const DoorWipe: FC<RunProps> = ({ run, onSettled }) => {
       </div>
 
       {/* The seam sparkle marks the moment the halves meet, so it plays on the
-          way in and has nothing to say on the way out. */}
+          way in and has nothing to say on the way out. The comp delays it .34s
+          against a hold it times itself; here the halves meet at .49s and the
+          page is released the instant they do, so the delay is the one that
+          puts the peak on the seam rather than the one the comp writes. */}
       {run.phase === 'in' ? (
-        <span className='absolute top-1/2 left-1/2 mt-[-9px] ml-[-9px] size-4.5 transform-[scale(0)] animate-[doorKira_.5s_ease-in-out_.34s_both] bg-(--star-white) drop-shadow-[0_0_8px_rgba(4,254,255,.95)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]' />
+        <span className='absolute top-1/2 left-1/2 mt-[-9px] ml-[-9px] size-4.5 transform-[scale(0)] animate-[doorKira_.5s_ease-in-out_.24s_both] bg-(--star-white) drop-shadow-[0_0_8px_rgba(4,254,255,.95)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]' />
       ) : null}
     </div>
   );
