@@ -1,5 +1,5 @@
 import { rootRouteId, useRouteContext } from '@tanstack/react-router';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useEffectEvent, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 
 import { Button } from '#components/button';
@@ -109,6 +109,34 @@ export const NotFound = () => {
     };
   }, []);
 
+  /**
+   * What the sweep does when its 2s are up. An Effect Event, not effect body:
+   * it reads `foundCount` and the item count, and neither is a reason to start
+   * the sweep over — in the deps they would restart the timer and re-fire the
+   * beam, star, and cat animations mid-search.
+   */
+  const onSweepSettled = useEffectEvent(() => {
+    const last = foundCount + 1 >= copy.items.length;
+    const apply = () => {
+      setSearching(false);
+      setFoundCount(foundCount + 1);
+      setResult(foundCount);
+      if (last) {
+        setMeowIdx(2);
+        setBubbleOn(true);
+      }
+    };
+    // Without flushSync the state update lands after the transition has
+    // already captured the old frame, and the chips pop in instead of growing.
+    if ('startViewTransition' in document && !prefersReducedMotion()) {
+      document.startViewTransition(() => {
+        flushSync(apply);
+      });
+    } else {
+      apply();
+    }
+  });
+
   // One search sweep: the beam turns, a star arcs across the sky, the cat
   // shakes, and after ~2s the cat comes back with something that is not a page.
   useEffect(() => {
@@ -140,31 +168,13 @@ export const NotFound = () => {
     }
 
     const id = setTimeout(() => {
-      const last = foundCount + 1 >= copy.items.length;
-      const apply = () => {
-        setSearching(false);
-        setFoundCount(foundCount + 1);
-        setResult(foundCount);
-        if (last) {
-          setMeowIdx(2);
-          setBubbleOn(true);
-        }
-      };
-      // Without flushSync the state update lands after the transition has
-      // already captured the old frame, and the chips pop in instead of growing.
-      if ('startViewTransition' in document && !prefersReducedMotion()) {
-        document.startViewTransition(() => {
-          flushSync(apply);
-        });
-      } else {
-        apply();
-      }
+      onSweepSettled();
     }, 2050);
 
     return () => {
       clearTimeout(id);
     };
-  }, [searching, foundCount, copy.items.length]);
+  }, [searching]);
 
   useEffect(() => {
     if (!bubbleOn) return;
