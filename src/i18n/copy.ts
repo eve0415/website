@@ -455,32 +455,24 @@ interface SkillsCopy {
   intro: string;
   groupLang: string;
   groupFe: string;
+  groupBe: string;
   groupInfra: string;
   groupTest: string;
-  groupOften: string;
-  chipWeb: string;
-  chipCli: string;
-  chipMc: string;
-  chipBot: string;
-  chipMac: string;
+  chipBrew: string;
   note: string;
 }
 
-/** The できること page. Only the last group's items are copy; the rest are product names. */
+/** The できること page. Chip labels are product names, bar the one whose Japanese carries a qualifier its English does not need. */
 export const SKILLS_COPY = {
   ja: {
     title: 'できること',
     intro: '広く浅く。深さについてはご相談ください。',
     groupLang: '言語',
     groupFe: 'フロントエンド',
-    groupInfra: 'インフラ',
+    groupBe: 'バックエンド・データベース',
+    groupInfra: 'インフラ・運用',
     groupTest: 'テスト・ツールチェイン',
-    groupOften: 'よく作るもの',
-    chipWeb: 'Web アプリ',
-    chipCli: 'CLI ツール',
-    chipMc: 'Minecraft Mod・プラグイン',
-    chipBot: 'Discord Bot',
-    chipMac: 'macOS アプリ',
+    chipBrew: 'Homebrew (tap運用)',
     note: '最新技術を追いかけるのが大好きです。気になったものはとりあえず試して、良かったものは本番にも持ち込みます。学びたいものはまだ尽きません。',
   },
   en: {
@@ -488,14 +480,10 @@ export const SKILLS_COPY = {
     intro: 'A mile wide, an inch deep. Depth negotiable.',
     groupLang: 'Languages',
     groupFe: 'Frontend',
-    groupInfra: 'Infra',
+    groupBe: 'Backend & databases',
+    groupInfra: 'Infra & ops',
     groupTest: 'Testing & toolchain',
-    groupOften: 'What I usually build',
-    chipWeb: 'Web apps',
-    chipCli: 'CLI tools',
-    chipMc: 'Minecraft mods & plugins',
-    chipBot: 'Discord bots',
-    chipMac: 'macOS apps',
+    chipBrew: 'Homebrew',
     note: 'Chasing new tech is basically my hobby. Anything interesting gets a test drive, and the keepers make it to production. The to-learn list only gets longer.',
   },
 } satisfies Record<Locale, SkillsCopy>;

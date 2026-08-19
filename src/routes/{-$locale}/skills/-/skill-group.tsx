@@ -21,8 +21,7 @@ const INK = {
 
 export interface SkillItem {
   label: string;
-  /** Absent for the "what I usually build" group, whose chips are not products. */
-  href?: string;
+  href: string;
 }
 
 interface SkillGroupProps {
@@ -37,15 +36,11 @@ export const SkillGroup: FC<SkillGroupProps> = ({ ink, heading, items, className
     <h2 className={cn('text-(length:--text-panel-title) font-bold', INK[ink])}>{heading}</h2>
     {/* ev-stg staggers the chips in by sibling-index(), with no JavaScript. */}
     <div className='ev-stg flex flex-wrap gap-2'>
-      {items.map(item =>
-        item.href === undefined ? (
-          <Chip key={item.label}>{item.label}</Chip>
-        ) : (
-          <Chip key={item.label} href={item.href} target='_blank' rel='noopener'>
-            {item.label}
-          </Chip>
-        ),
-      )}
+      {items.map(item => (
+        <Chip key={item.label} href={item.href} target='_blank' rel='noopener'>
+          {item.label}
+        </Chip>
+      ))}
     </div>
   </Card>
 );

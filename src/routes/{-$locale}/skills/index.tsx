@@ -21,40 +21,50 @@ const LANGUAGES = [
 
 const FRONTEND = [
   { label: 'React', href: 'https://react.dev/' },
+  { label: 'React Compiler', href: 'https://react.dev/learn/react-compiler' },
   { label: 'TanStack Start / Router', href: 'https://tanstack.com/' },
+  { label: 'TanStack Query / Form', href: 'https://tanstack.com/query/latest' },
   { label: 'Tailwind CSS', href: 'https://tailwindcss.com/' },
+  { label: 'shadcn/ui', href: 'https://ui.shadcn.com/' },
+  { label: 'zod', href: 'https://zod.dev/' },
   { label: 'Vite', href: 'https://vite.dev/' },
   { label: 'Storybook', href: 'https://storybook.js.org/' },
 ] as const satisfies SkillItem[];
 
-const INFRA = [
+const BACKEND = [
+  { label: 'Node.js', href: 'https://nodejs.org/' },
   { label: 'Cloudflare Workers', href: 'https://workers.cloudflare.com/' },
-  { label: 'Workers KV / D1', href: 'https://developers.cloudflare.com/kv/' },
+  { label: 'SQLite (D1)', href: 'https://developers.cloudflare.com/d1/' },
+  { label: 'drizzle ORM', href: 'https://orm.drizzle.team/' },
+  { label: 'PostgreSQL', href: 'https://www.postgresql.org/' },
+  { label: 'Minecraft Forge', href: 'https://files.minecraftforge.net/' },
+  { label: 'Paper', href: 'https://papermc.io/' },
+] as const satisfies SkillItem[];
+
+const INFRA = [
   { label: 'Docker', href: 'https://www.docker.com/' },
   { label: 'Kubernetes', href: 'https://kubernetes.io/' },
   { label: 'GitHub Actions', href: 'https://github.com/features/actions' },
-] as const satisfies SkillItem[];
-
-/** The only group with six items rather than five. */
-const TOOLCHAIN = [
-  { label: 'Vitest', href: 'https://vitest.dev/' },
-  { label: 'Playwright', href: 'https://playwright.dev/' },
-  { label: 'MSW', href: 'https://mswjs.io/' },
-  { label: 'oxlint / oxfmt', href: 'https://oxc.rs/' },
-  { label: 'pnpm', href: 'https://pnpm.io/' },
-  { label: 'napi-rs', href: 'https://napi.rs/' },
+  { label: 'OpenTelemetry', href: 'https://opentelemetry.io/' },
+  { label: 'Linux', href: 'https://www.kernel.org/' },
+  { label: 'macOS', href: 'https://www.apple.com/macos/' },
 ] as const satisfies SkillItem[];
 
 const Skills = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
   const copy = SKILLS_COPY[locale];
 
-  const often = [
-    { label: copy.chipWeb },
-    { label: copy.chipCli },
-    { label: copy.chipMc },
-    { label: copy.chipBot },
-    { label: copy.chipMac },
+  const toolchain = [
+    { label: 'Vitest', href: 'https://vitest.dev/' },
+    { label: 'Playwright', href: 'https://playwright.dev/' },
+    { label: 'MSW', href: 'https://mswjs.io/' },
+    { label: 'oxlint / oxfmt', href: 'https://oxc.rs/' },
+    { label: 'pnpm', href: 'https://pnpm.io/' },
+    { label: 'napi-rs', href: 'https://napi.rs/' },
+    { label: 'Git', href: 'https://git-scm.com/' },
+    { label: 'devcontainer', href: 'https://containers.dev/' },
+    { label: 'OrbStack', href: 'https://orbstack.dev/' },
+    { label: copy.chipBrew, href: 'https://brew.sh/' },
   ] as const satisfies SkillItem[];
 
   return (
@@ -64,9 +74,9 @@ const Skills = () => {
       <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-4.5'>
         <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='animate-[fadeUp_0.6s_ease_0.08s_backwards]' />
         <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} className='ev-reveal' />
-        <SkillGroup ink='sky' heading={copy.groupInfra} items={INFRA} className='ev-reveal' />
-        <SkillGroup ink='violet' heading={copy.groupTest} items={TOOLCHAIN} className='ev-reveal' />
-        <SkillGroup ink='rose' heading={copy.groupOften} items={often} className='ev-reveal' />
+        <SkillGroup ink='sky' heading={copy.groupBe} items={BACKEND} className='ev-reveal' />
+        <SkillGroup ink='violet' heading={copy.groupInfra} items={INFRA} className='ev-reveal' />
+        <SkillGroup ink='rose' heading={copy.groupTest} items={toolchain} className='ev-reveal' />
       </div>
 
       <Card variant='dashed' className='ev-reveal p-[20px_22px]'>
