@@ -20,6 +20,7 @@ const BADGE_MUTED = tw('border-[rgba(160,150,255,.26)] text-[#8d85c8]');
 
 interface LabCardProps {
   locale: Locale;
+  className?: string;
 }
 
 /**
@@ -35,12 +36,12 @@ interface LabCardProps {
  * the alternative is either dropping a count the design calls for or asserting
  * one the server cannot know.
  */
-export const LabCard: FC<LabCardProps> = ({ locale }) => {
+export const LabCard: FC<LabCardProps> = ({ locale, className }) => {
   const copy = LAB_COPY[locale];
   const supported = useSyncExternalStore(subscribeToSupport, readSupport, readSupportOnServer);
 
   return (
-    <Card variant='dashed' className='ev-reveal grid gap-4'>
+    <Card variant='dashed' className={cn('grid gap-4', className)}>
       <div className='grid gap-[7px]'>
         <p className='text-(length:--text-caption) tracking-(--tracking-kicker) text-(--ink-ice)'>LAB</p>
         <h2 className='text-[1.125rem] font-bold text-(--ink-title)'>{copy.title}</h2>

@@ -488,9 +488,12 @@
   }
 }
 
-/* Scroll-driven entrance shared by every panel on every page: no utility
-   carries `animation-timeline`. Browsers without view() timelines ignore the
-   timeline and run the animation once, which is the design's own fallback. */
+/* Scroll-driven entrance for the panels that start below the fold — the skills
+   grid and the project pages. The short pages stagger on load instead, because
+   a reveal keyed to scrolling never fires on a page that does not scroll. No
+   utility carries `animation-timeline`. Browsers without view() timelines
+   ignore the timeline and run the animation once, which is the design's own
+   fallback. */
 .ev-reveal {
   animation: fadeUp 0.6s linear both;
   animation-timeline: view();

@@ -34,7 +34,7 @@ const About = () => {
         </div>
       </div>
 
-      <Card variant='soft' className='ev-reveal grid gap-2.5 border-(--line-row) p-[20px_22px]'>
+      <Card variant='soft' className='grid animate-[fadeUp_0.6s_ease_0.16s_backwards] gap-2.5 border-(--line-row) p-[20px_22px]'>
         <h2 className='text-[1rem] font-bold text-(--ink-ice)'>{copy.siteHead}</h2>
         <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>
           {copy.siteBefore}
@@ -49,7 +49,7 @@ const About = () => {
         </p>
       </Card>
 
-      <LabCard locale={locale} />
+      <LabCard locale={locale} className='animate-[fadeUp_0.6s_ease_0.24s_backwards]' />
     </div>
   );
 };

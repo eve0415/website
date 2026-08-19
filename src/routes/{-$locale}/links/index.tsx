@@ -28,16 +28,23 @@ const Links = () => {
           value='github.com/eve0415'
           className='animate-[fadeUp_0.6s_ease_0.08s_backwards]'
         />
-        <LinkRow href='https://x.com/eveevekun' target='_blank' rel='noopener' label={copy.xLabel} value='@eveevekun' className='ev-reveal' />
+        <LinkRow
+          href='https://x.com/eveevekun'
+          target='_blank'
+          rel='noopener'
+          label={copy.xLabel}
+          value='@eveevekun'
+          className='animate-[fadeUp_0.6s_ease_0.16s_backwards]'
+        />
         <LinkRow
           label='Discord'
           value={DISCORD_HANDLE}
-          className='ev-reveal'
+          className='animate-[fadeUp_0.6s_ease_0.24s_backwards]'
           action={<DiscordCopy handle={DISCORD_HANDLE} copyLabel={copy.discordCopy} copiedLabel={copy.discordCopied} toastLabel={copy.toastCopied} />}
         />
       </div>
 
-      <Card className='ev-reveal grid gap-4 p-[26px_24px]'>
+      <Card className='grid animate-[fadeUp_0.6s_ease_0.32s_backwards] gap-4 p-[26px_24px]'>
         <div className='grid gap-1.5'>
           <h2 className='text-[1.125rem] font-bold text-(--ink-title)'>{copy.formHead}</h2>
           <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>{copy.formIntro}</p>
@@ -45,7 +52,7 @@ const Links = () => {
         <ContactForm locale={locale} />
       </Card>
 
-      <Card variant='soft' className='ev-reveal grid gap-3 border-[rgba(0,221,168,0.35)] p-5.5'>
+      <Card variant='soft' className='grid animate-[fadeUp_0.6s_ease_0.4s_backwards] gap-3 border-[rgba(0,221,168,0.35)] p-5.5'>
         <h2 className='text-[1.125rem] font-bold text-(--hue-mint)'>{copy.workHead}</h2>
         <p className='text-(length:--text-body) leading-[1.8] text-(--ink-muted)'>{copy.workBody}</p>
       </Card>

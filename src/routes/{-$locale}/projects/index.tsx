@@ -41,7 +41,7 @@ const Works = () => {
           description={copy.cellaDesc}
           stat={alphaNow}
           cta={copy.details}
-          className='ev-reveal'
+          className='animate-[fadeUp_0.6s_ease_0.16s_backwards]'
         />
         <ProjectCardLink
           to='/{-$locale}/projects/oasts'
@@ -51,7 +51,7 @@ const Works = () => {
           hue='sky'
           description={copy.oastsDesc}
           cta={copy.details}
-          className='ev-reveal'
+          className='animate-[fadeUp_0.6s_ease_0.24s_backwards]'
         />
         <ProjectCardLink
           to='/{-$locale}/projects/dotclaude'
@@ -61,7 +61,7 @@ const Works = () => {
           hue='violet'
           description={copy.dcDesc}
           cta={copy.details}
-          className='ev-reveal'
+          className='animate-[fadeUp_0.6s_ease_0.32s_backwards]'
         />
         <ProjectCardLink
           to='/{-$locale}/projects/website'
@@ -71,11 +71,11 @@ const Works = () => {
           hue='rose'
           description={copy.siteDesc}
           cta={copy.seeHistory}
-          className='ev-reveal'
+          className='animate-[fadeUp_0.6s_ease_0.4s_backwards]'
         />
       </div>
 
-      <SweepButton href='https://github.com/eve0415' target='_blank' rel='noopener' className='ev-reveal justify-self-start'>
+      <SweepButton href='https://github.com/eve0415' target='_blank' rel='noopener' className='animate-[fadeUp_0.6s_ease_0.48s_backwards] justify-self-start'>
         {copy.ghAll}
       </SweepButton>
     </div>
