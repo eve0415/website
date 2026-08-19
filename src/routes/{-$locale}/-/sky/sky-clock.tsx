@@ -8,6 +8,15 @@ const RESYNC_MS = 30_000;
 /** The crossfade from one clock reading to the next. */
 const TWEEN_MS = 1100;
 
+/**
+ * Below this much of a jump, the sky is repainted in one step instead of
+ * crossfaded. The crossfade is there for the arrival — the page prerenders
+ * midnight and can land up to twelve hours away — and for waking from sleep.
+ * A resync only ever moves the clock by a minute, which is invisible either
+ * way and not worth a second of rebuilding every gradient on the page.
+ */
+const SNAP_HOURS = 0.25;
+
 const easeInOutQuad = (k: number) => (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2);
 
 /**
@@ -60,7 +69,11 @@ export const SkyClock = () => {
       dayOn = skyIsDay(target, dayOn);
       const dayTo = dayOn ? 1 : 0;
 
-      if (prefersReducedMotion()) {
+      const from = clock;
+      const dayFrom = day;
+      const distance = shortestWay(from, target);
+
+      if (prefersReducedMotion() || (Math.abs(distance) < SNAP_HOURS && dayTo === dayFrom)) {
         cancelAnimationFrame(frame);
         clock = target;
         day = dayTo;
@@ -68,9 +81,6 @@ export const SkyClock = () => {
         return;
       }
 
-      const from = clock;
-      const dayFrom = day;
-      const distance = shortestWay(from, target);
       const start = performance.now();
 
       const step = (now: number) => {
