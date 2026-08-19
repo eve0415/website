@@ -72,4 +72,5 @@ Inside `-/`, nest by what the thing is, as deep as it needs. A component with ch
 - Conventional commits, small and one concern each. Commit the lock file alongside any dependency change.
 - Dependencies are exact-pinned. Use `pnpm add -E`.
 - Secrets live in `.dev.vars` (gitignored) and are typed by `pnpm generate` (`wrangler types`). `.dev.vars.example` is the same keys with no values, committed so CI — which has no `.dev.vars` — can type `Env` from it via `--env-file`. **A new secret goes in both**: leave it out of the example and everything passes locally while CI fails on an untyped `env` read. Never print, log, or commit a secret value.
+- Dependencies update weekly through `.github/workflows/update.yaml` (`pnpm/update`), which runs the full gate before it opens a PR.
 - Japanese copy is です・ます調, personal and lightly playful, no emoji and no `!`. Both locales are authored, never machine-translated at runtime; copy lives in `src/i18n/copy.ts`.
