@@ -40,7 +40,7 @@ export const AiCard: FC<{ locale: Locale }> = ({ locale }) => {
         </Link>
         {copy.aiAfter}
       </p>
-      <SkillChips items={agents} />
+      <SkillChips items={agents} dailyLabel={copy.dailyLabel} />
     </Card>
   );
 };

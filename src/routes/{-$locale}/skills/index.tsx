@@ -10,7 +10,6 @@ import './-/skill-grid.css';
 import { localeHead } from '#i18n/head';
 
 import { AiCard } from './-/ai-card';
-import { DAILY_LEGEND_ID } from './-/skill-chips';
 import { SkillGroup } from './-/skill-group';
 
 const LANGUAGES = [
@@ -74,9 +73,7 @@ const Skills = () => {
     <div className='relative mx-auto grid max-w-(--page-max) gap-7 px-6 pt-12 pb-24'>
       <div className='grid animate-[fadeUp_0.6s_ease_backwards] gap-2 font-sans'>
         <PageHeader kicker='SKILLS' title={copy.title} lede={copy.intro} />
-        <p id={DAILY_LEGEND_ID} className='text-(length:--text-caption) text-(--ink-faint)'>
-          {copy.legend}
-        </p>
+        <p className='text-(length:--text-caption) text-(--ink-faint)'>{copy.legend}</p>
       </div>
 
       <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-4.5'>
@@ -84,11 +81,11 @@ const Skills = () => {
         {/* The first row is on screen before any scrolling, and a view() range
             only advances once the visitor scrolls — left on ev-reveal these
             three sit at partial opacity for as long as the page is still. */}
-        <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='animate-[fadeUp_0.6s_ease_0.16s_backwards]' />
-        <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} className='animate-[fadeUp_0.6s_ease_0.24s_backwards]' />
-        <SkillGroup ink='sky' heading={copy.groupBe} items={BACKEND} className='animate-[fadeUp_0.6s_ease_0.32s_backwards]' />
-        <SkillGroup ink='violet' heading={copy.groupInfra} items={INFRA} className='ev-reveal' />
-        <SkillGroup ink='rose' heading={copy.groupTest} items={toolchain} className='ev-reveal' />
+        <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} dailyLabel={copy.dailyLabel} className='animate-[fadeUp_0.6s_ease_0.16s_backwards]' />
+        <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} dailyLabel={copy.dailyLabel} className='animate-[fadeUp_0.6s_ease_0.24s_backwards]' />
+        <SkillGroup ink='sky' heading={copy.groupBe} items={BACKEND} dailyLabel={copy.dailyLabel} className='animate-[fadeUp_0.6s_ease_0.32s_backwards]' />
+        <SkillGroup ink='violet' heading={copy.groupInfra} items={INFRA} dailyLabel={copy.dailyLabel} className='ev-reveal' />
+        <SkillGroup ink='rose' heading={copy.groupTest} items={toolchain} dailyLabel={copy.dailyLabel} className='ev-reveal' />
       </div>
 
       <Card variant='dashed' className='ev-reveal p-[20px_22px]'>

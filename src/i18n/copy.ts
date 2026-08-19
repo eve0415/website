@@ -454,6 +454,8 @@ interface SkillsCopy {
   title: string;
   intro: string;
   legend: string;
+  /** The same fact the legend states, for a reader who cannot see the outline. */
+  dailyLabel: string;
   aiHead: string;
   aiBefore: string;
   aiAfter: string;
@@ -473,6 +475,7 @@ export const SKILLS_COPY = {
     title: 'できること',
     intro: '広く浅く。深さについてはご相談ください。',
     legend: '明るい枠 = よく使っているもの',
+    dailyLabel: 'よく使っているもの',
     aiHead: 'AIエージェント',
     aiBefore: 'AI エージェントと並走するのがいまの作り方。',
     aiAfter: ' もそのために作りました。',
@@ -489,6 +492,7 @@ export const SKILLS_COPY = {
     title: 'Skills',
     intro: 'A mile wide, an inch deep. Depth negotiable.',
     legend: 'Bright outline = daily drivers',
+    dailyLabel: 'daily driver',
     aiHead: 'AI agents',
     aiBefore: 'Working alongside AI agents is how I build now. ',
     aiAfter: ' exists for exactly that.',

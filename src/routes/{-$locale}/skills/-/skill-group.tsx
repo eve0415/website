@@ -25,12 +25,13 @@ interface SkillGroupProps {
   ink: SkillInk;
   heading: string;
   items: readonly SkillItem[];
+  dailyLabel: string;
   className?: string;
 }
 
-export const SkillGroup: FC<SkillGroupProps> = ({ ink, heading, items, className }) => (
+export const SkillGroup: FC<SkillGroupProps> = ({ ink, heading, items, dailyLabel, className }) => (
   <Card className={cn('grid content-start gap-3.5', className)}>
     <h2 className={cn('text-(length:--text-panel-title) font-bold', INK[ink])}>{heading}</h2>
-    <SkillChips items={items} />
+    <SkillChips items={items} dailyLabel={dailyLabel} />
   </Card>
 );
