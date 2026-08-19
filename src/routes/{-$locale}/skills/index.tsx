@@ -28,6 +28,7 @@ const FRONTEND = [
   { label: 'Tailwind CSS', href: 'https://tailwindcss.com/' },
   { label: 'shadcn/ui', href: 'https://ui.shadcn.com/' },
   { label: 'zod', href: 'https://zod.dev/' },
+  { label: 'valibot', href: 'https://valibot.dev/' },
   { label: 'Vite', href: 'https://vite.dev/' },
   { label: 'Storybook', href: 'https://storybook.js.org/' },
 ] as const satisfies SkillItem[];
