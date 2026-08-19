@@ -1,4 +1,4 @@
-import { Outlet, createFileRoute, rootRouteId, useRouteContext, useRouterState } from '@tanstack/react-router';
+import { Outlet, createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 
 import { SITE_COPY } from '#i18n/copy';
 import { parseLocaleParam } from '#i18n/locale';
@@ -6,7 +6,7 @@ import { parseLocaleParam } from '#i18n/locale';
 import { BrandLink } from './-/site/brand-link';
 import { DwellTime } from './-/site/dwell-time';
 import { LanguageSwitch } from './-/site/language-switch';
-import { activeNavKey, navItems } from './-/site/nav';
+import { navItems } from './-/site/nav';
 import { SiteFooter } from './-/site/site-footer';
 import { SiteHeader } from './-/site/site-header';
 import { skyCss } from './-/sky/palette';
@@ -25,7 +25,6 @@ const ROOT_STAR_SEED = 20_220_415;
 
 const LocaleLayout = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
-  const pathname = useRouterState({ select: state => state.location.pathname });
 
   return (
     <div className='relative flex min-h-[calc(100svh/var(--z,1))] flex-col' style={{ background: SKY.rootBg }}>
@@ -37,12 +36,7 @@ const LocaleLayout = () => {
         </div>
       </div>
 
-      <SiteHeader
-        navLabel={SITE_COPY[locale].navAria}
-        brandElement={<BrandLink locale={locale} />}
-        items={navItems(locale)}
-        active={activeNavKey(locale, pathname)}
-      >
+      <SiteHeader navLabel={SITE_COPY[locale].navAria} brandElement={<BrandLink locale={locale} />} items={navItems(locale)}>
         <LanguageSwitch locale={locale} />
       </SiteHeader>
 

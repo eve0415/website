@@ -209,7 +209,7 @@ export const NotFound = () => {
         </span>
       </div>
 
-      <SiteHeader navLabel={SITE_COPY[locale].navAria} brandElement={<BrandLink locale={locale} />} items={navItems(locale).slice(1)} active='404'>
+      <SiteHeader navLabel={SITE_COPY[locale].navAria} brandElement={<BrandLink locale={locale} />} items={navItems(locale).slice(1)}>
         <LanguageSwitch locale={locale} />
       </SiteHeader>
 
