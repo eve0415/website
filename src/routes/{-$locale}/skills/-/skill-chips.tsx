@@ -13,7 +13,7 @@ export interface SkillItem {
 export const SkillChips: FC<{ items: readonly SkillItem[] }> = ({ items }) => (
   <div className='ev-stg flex flex-wrap gap-2'>
     {items.map(item => (
-      <Chip key={item.label} variant={item.daily === true ? 'daily' : 'plain'} href={item.href} target='_blank' rel='noopener'>
+      <Chip key={item.label} variant={item.daily === true ? 'daily' : 'plain'} href={item.href} target='_blank' rel='noopener noreferrer nofollow'>
         {item.label}
       </Chip>
     ))}
