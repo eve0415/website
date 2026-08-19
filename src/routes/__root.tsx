@@ -12,6 +12,7 @@ import { PageTransition } from './-/transition/page-transition';
 import rootCss from './__root.css?url';
 import { NotFound } from './{-$locale}/-/not-found';
 import { MIDNIGHT, skyCssText } from './{-$locale}/-/sky/palette';
+import { SkyClock } from './{-$locale}/-/sky/sky-clock';
 
 const SITE_URL = 'https://eve0415.net';
 const SITE_NAME = 'eve0415';
@@ -42,6 +43,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
       <body>
         {children}
 
+        <SkyClock />
         <PageTransition />
         <OpeningCurtain skipLabel={SITE_COPY[locale].skip} />
 
