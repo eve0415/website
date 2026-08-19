@@ -7,7 +7,7 @@ import { SITE_COPY } from '#i18n/copy';
 
 import { localeParams } from '../routed-links';
 
-import { NAV_LINK_CLASS } from './site-header';
+import { NAV_LINK_CLASS } from './header-classes';
 
 /** Every item is a registered route, so the whole nav navigates client-side. */
 export const navItems = (locale: Locale): readonly SiteHeaderNavItem[] => [

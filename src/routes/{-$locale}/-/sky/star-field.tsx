@@ -5,30 +5,12 @@ import { useMemo } from 'react';
 import { cn } from '#lib/cn';
 
 import './star-field.css';
+import { seededRandom } from './seeded-random';
 
 const COLORS = ['#fcf7fd', '#fcf7fd', '#fcf7fd', '#9fe8ff', '#9fe8ff', '#c9a6ff', '#ffd9ec'] as const satisfies string[];
 
 /** Any constant works — it only has to be the same one on the server and in the browser. */
 const DEFAULT_SEED = 20_150_415;
-
-const MODULUS = 2_147_483_647;
-
-/**
- * The original scattered stars with `Math.random()`, which renders a different
- * field on the server than on the client and so cannot survive hydration. This
- * is a Lehmer generator (MINSTD): pure, seedable, and — unlike mulberry32 —
- * free of the bitwise operators this repo's lint config rejects. `state *
- * 16807` peaks around 3.6e13, well inside the exactly-representable integer
- * range, so server and client agree bit for bit.
- */
-export const seededRandom = (seed: number) => {
-  let state = Math.trunc(seed) % MODULUS;
-  if (state <= 0) state += MODULUS - 1;
-  return () => {
-    state = (state * 16_807) % MODULUS;
-    return (state - 1) / (MODULUS - 1);
-  };
-};
 
 interface Star {
   key: string;

@@ -5,7 +5,7 @@ import { Link } from '@tanstack/react-router';
 
 import { localeParams } from '../routed-links';
 
-import { BRAND_CLASS } from './site-header';
+import { BRAND_CLASS } from './header-classes';
 
 interface BrandLinkProps {
   locale: Locale;

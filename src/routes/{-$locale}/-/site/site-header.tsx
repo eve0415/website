@@ -10,20 +10,12 @@ const ROOT = tw('ev-hdr sticky top-0 z-10 border-b border-b-(--line-header) bg-(
 /** The bar stays full-bleed; only its contents stop at the shell width. */
 const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-3');
 
-/** Exported so the caller's `brandElement` is styled identically. */
-export const BRAND_CLASS = tw('flex min-h-(--hit-target) items-center gap-2.5 text-[1rem] font-bold text-[#eae6ff] no-underline');
-
-/** Exported so each item's `element` is styled identically. */
-export const NAV_LINK_CLASS = tw(
-  'inline-flex min-h-(--hit-target) cursor-pointer items-center border-b-2 border-b-transparent font-[inherit] text-(length:--text-nav) text-[#eae6ff] no-underline hover:text-(--accent-cyan) aria-[current=page]:border-b-(--accent-cyan) aria-[current=page]:text-(--accent-cyan)',
-);
-
 export interface SiteHeaderNavItem {
   key: string;
   /**
    * The rendered link — how a router link gets in without this component
-   * learning about routing. Style it with `NAV_LINK_CLASS`; it owns its own
-   * `aria-current`, which is why `active` below only decides the 404's case.
+   * learning about routing. Style it with `NAV_LINK_CLASS` from
+   * `./header-classes`; it sets its own `aria-current`.
    */
   element: ReactNode;
 }

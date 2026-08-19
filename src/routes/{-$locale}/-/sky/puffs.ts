@@ -1,4 +1,4 @@
-import { seededRandom } from './star-field';
+import { seededRandom } from './seeded-random';
 
 export interface Puff {
   key: string;
