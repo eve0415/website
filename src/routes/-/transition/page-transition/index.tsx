@@ -20,12 +20,13 @@ import { SlatCurtain } from './slat-curtain';
  * navigating — a `Link`, the back button, `router.navigate` — plays it, and a
  * full load or a reload plays nothing, because no navigation event fires.
  *
- * The doors are the exception, and they have to be. A wipe that travels across
- * the page reads fine over content that has already changed, but doors exist to
- * hide the swap, and the router commits the moment it is asked — so the reader
- * would watch the page turn English and *then* be covered up. `useBlocker` is
- * what buys the missing beat: the language navigation is held until the halves
- * have met, and released from `onSettled`. Nothing is ever really blocked.
+ * A transition covers the page *before* the page changes. The router commits
+ * the moment it is asked, so left alone it hands over the new page and then
+ * plays an animation over the top of it — the reader watches the swap and is
+ * then covered up for it. `useBlocker` is what buys the missing beat: every
+ * navigation is held until the cover animation has finished, and released from
+ * `onSettled`. It is only ever really blocked when a second one arrives while
+ * the first is still closing — see `settle`.
  *
  * Deliberately not `viewTransition` on the navigation: the view-transition
  * pseudo tree paints in the top layer and takes no child content, so neither
@@ -38,89 +39,73 @@ export const PageTransition: FC = () => {
   const router = useRouter();
   const [run, setRun] = useState<Run | null>(null);
   const nextId = useRef(0);
-  // Set while a language navigation is waiting on the doors, and called once.
-  const release = useRef<(() => void) | null>(null);
+  // Answers the blocker holding a navigation: `true` drops it, `false` lets it
+  // through. Set while the cover is playing, and called once.
+  const release = useRef<((dropped: boolean) => void) | null>(null);
 
-  const proceed = () => {
+  /**
+   * Only the cover finishing releases a held navigation. Anything else that
+   * takes the overlay off screen drops it instead — releasing it there would
+   * put its destination on top of wherever the reader has since gone, because
+   * a held navigation is a task waiting to run, not one already half done.
+   */
+  const settle = (dropped: boolean) => {
     const held = release.current;
     release.current = null;
-    held?.();
+    held?.(dropped);
   };
 
   useBlocker({
     enableBeforeUnload: false,
-    shouldBlockFn: async ({ current, next }) => {
-      if (prefersReducedMotion() || !isLocaleSwap(current.pathname, next.pathname)) return false;
+    shouldBlockFn: async ({ current, next, action }) => {
+      // A hash or search change is not a page change, and a reader who asked
+      // for less motion gets the navigation with nothing over it.
+      if (current.pathname === next.pathname || prefersReducedMotion()) return false;
 
-      // Whatever was waiting goes through now: a second swap must not strand
-      // the first navigation behind a promise nothing will resolve.
-      proceed();
+      // The comp refuses a second move while one is wiping, and so does this:
+      // the screen would snap back open to close a second time over a page
+      // that is already on its way.
+      if (release.current !== null) return true;
 
-      await new Promise<void>(resolve => {
+      // `action` is what the history stack was asked to do, which is the one
+      // thing a location pair cannot tell you.
+      const back = action === 'BACK';
+      const from = projectSlug(current.pathname);
+      const to = projectSlug(next.pathname);
+
+      return await new Promise<boolean>(resolve => {
         release.current = resolve;
         nextId.current += 1;
-        // The doors read neither a direction nor a project hue.
-        setRun({ id: nextId.current, kind: 'doors', phase: 'in', back: false, up: false, hue: hueFor(null), covered: false, committed: false });
+        setRun({
+          id: nextId.current,
+          // Asked before the project slugs, whose pattern spans both locales:
+          // a language swap on a project page is not a project navigation.
+          kind: isLocaleSwap(current.pathname, next.pathname) ? 'doors' : from !== null || to !== null ? 'slats' : 'comet',
+          phase: 'in',
+          back,
+          up: back ? to === null : to !== null,
+          hue: hueFor(to ?? from),
+          covered: false,
+          committed: false,
+        });
       });
-
-      return false;
     },
   });
 
-  useEffect(() => {
-    // The `types` callback the router hands to `startViewTransition` carries no
-    // history action, and neither does a navigation event, so forward and back
-    // are told apart by where the entry sits in the history stack.
-    let previousIndex = router.history.location.state.__TSR_index;
-
-    const stopNavigate = router.subscribe('onBeforeNavigate', event => {
-      const nextIndex = event.toLocation.state.__TSR_index;
-      const back = nextIndex < previousIndex;
-      previousIndex = nextIndex;
-
-      // A hash or search change is not a page change, and a reader who asked
-      // for less motion gets the navigation with nothing over it.
-      if (!event.pathChanged || prefersReducedMotion()) {
-        setRun(null);
-        return;
-      }
-
-      // A language swap arrives here with its doors already closing, put up by
-      // the blocker one beat ago. Starting a second run would reopen them.
-      if (isLocaleSwap(event.fromLocation?.pathname, event.toLocation.pathname)) return;
-
-      const from = projectSlug(event.fromLocation?.pathname);
-      const to = projectSlug(event.toLocation.pathname);
-
-      nextId.current += 1;
-      setRun({
-        id: nextId.current,
-        kind: from !== null || to !== null ? 'slats' : 'comet',
-        phase: 'in',
-        back,
-        up: back ? to === null : to !== null,
-        hue: hueFor(to ?? from),
-        covered: false,
-        committed: false,
-      });
-    });
-
-    const stopResolve = router.subscribe('onResolved', () => {
-      setRun(current => (current === null ? null : advance({ ...current, committed: true })));
-    });
-
-    return () => {
-      stopNavigate();
-      stopResolve();
-    };
-  }, [router]);
+  useEffect(
+    () =>
+      router.subscribe('onResolved', () => {
+        setRun(current => (current === null ? null : advance({ ...current, committed: true })));
+      }),
+    [router],
+  );
 
   if (run === null) return null;
 
   const onSettled = () => {
     setRun(current => (current === null || current.phase === 'out' ? null : advance({ ...current, covered: true })));
     // Covered is the one moment the page underneath is free to change.
-    proceed();
+    if (run.phase === 'in') settle(false);
   };
 
   if (run.kind === 'doors') return <DoorWipe key={run.id} run={run} onSettled={onSettled} />;
