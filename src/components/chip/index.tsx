@@ -17,8 +17,14 @@ const VARIANT = {
   daily: tw('border-(--line-chip-daily) bg-(--surface-chip-daily) text-(--ink-chip-daily) shadow-(--glow-chip-daily)'),
 } satisfies Record<ChipVariant, string>;
 
-/** The design lights the border and the label together on hover. */
-const ANCHOR = tw('no-underline transition-[border-color,color] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:text-(--accent-cyan)');
+/**
+ * The design lights the border and the label together on hover. Keyboard focus
+ * gets the same lighting plus a ring, because the UA default here is a near
+ * black hairline at 1.02:1 against the sky.
+ */
+const ANCHOR = tw(
+  'no-underline transition-[border-color,color] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:text-(--accent-cyan) focus-visible:border-(--accent-cyan) focus-visible:text-(--accent-cyan) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--accent-cyan)',
+);
 
 interface ChipBaseProps {
   variant?: ChipVariant;
