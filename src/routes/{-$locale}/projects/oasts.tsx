@@ -18,11 +18,6 @@ import { StatCard } from './-/stat-card';
 
 const TAGS = ['Rust', 'TypeScript'] as const;
 
-const LINKS = [
-  { label: 'GitHub', value: 'github.com/eve0415/oasts ↗', href: 'https://github.com/eve0415/oasts' },
-  { label: 'npm', value: '@oasts/cli ↗', href: 'https://www.npmjs.com/package/@oasts/cli' },
-] as const satisfies ProjectLink[];
-
 const PACKAGE_MANAGERS = ['pnpm', 'npm', 'bun', 'yarn'] as const;
 
 type PackageManager = (typeof PACKAGE_MANAGERS)[number];
@@ -57,6 +52,12 @@ const Oasts = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });
   const copy = OASTS_COPY[locale];
   const chrome = PROJECT_COPY[locale];
+
+  const links = [
+    { label: copy.docs, value: 'oasts.eve0415.workers.dev ↗', href: 'https://oasts.eve0415.workers.dev/' },
+    { label: 'GitHub', value: 'github.com/eve0415/oasts ↗', href: 'https://github.com/eve0415/oasts' },
+    { label: 'npm', value: '@oasts/cli ↗', href: 'https://www.npmjs.com/package/@oasts/cli' },
+  ] as const satisfies ProjectLink[];
 
   const [pm, setPm] = useState<PackageManager>('pnpm');
   /**
@@ -148,7 +149,7 @@ const Oasts = () => {
         caretClassName='text-(--accent-cyan)'
       />
 
-      <LinksSection ink='sky' heading={chrome.linksHead} links={LINKS} />
+      <LinksSection ink='sky' heading={chrome.linksHead} links={links} />
     </div>
   );
 };

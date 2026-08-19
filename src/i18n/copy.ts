@@ -345,6 +345,7 @@ interface OastsCopy {
   stat2Label: string;
   stat3Label: string;
   pmAria: string;
+  docs: string;
 }
 
 export const OASTS_COPY = {
@@ -356,6 +357,7 @@ export const OASTS_COPY = {
     stat2Label: '同じ入力からバイト単位で同じ出力(--check で CI ゲート)',
     stat3Label: '生成クライアントの実行時依存',
     pmAria: 'パッケージマネージャーを選ぶ',
+    docs: 'ドキュメント',
   },
   en: {
     lede: 'A compiler that turns OpenAPI 3.0/3.1 into TypeScript types and a dependency-free typed fetch client. Responses come back as one discriminated union — 2xx, mystery statuses, dead connections, decode failures, all of it — so a single switch handles every case. Throws in zod schemas, MSW handlers, and TanStack Query descriptors for free.',
@@ -365,6 +367,7 @@ export const OASTS_COPY = {
     stat2Label: 'Same input, same bytes, every time (--check gates CI)',
     stat3Label: 'Runtime deps in the generated client',
     pmAria: 'Choose a package manager',
+    docs: 'Docs',
   },
 } satisfies Record<Locale, OastsCopy>;
 
