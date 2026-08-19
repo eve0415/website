@@ -4,7 +4,7 @@ import type { ContactFailure } from './validation';
 export type FormError = ContactFailure | 'pending';
 
 /** The three controls a failure can be pinned to; the rest are about the submission. */
-type FieldName = 'name' | 'email' | 'message';
+export type FieldName = 'name' | 'email' | 'message';
 
 /**
  * The failure, plus which attempt produced it. A live region announces a

@@ -8,31 +8,15 @@ import { useActionState, useEffect, useId, useRef, useState, useSyncExternalStor
 
 import { Button } from '#components/button';
 import { CONTACT_COPY } from '#i18n/copy';
-import { cn } from '#lib/cn';
 
 import './contact-form.css';
-import { tw } from '#lib/tw';
-
+import { ContactFields } from './fields';
 import { fieldOf, readField } from './form-state';
 import { swapInPlace } from './scoped-view-transition';
 import { sendContact } from './send-contact';
 import { isNarrowSlot, notNarrowWhenPrerendered, sizeDecidedOnce } from './turnstile/size';
 import { TurnstileWidget } from './turnstile/widget';
-import { MESSAGE_MAX, checkContact } from './validation';
-
-const LABEL = tw('grid gap-[7px] text-[0.84375rem] text-(--ink-ice)');
-
-/**
- * The resting border is `rgba(160,150,255,.55)` where the design has `.28`.
- * At `.28` it composites to 1.58:1 against the field, and this border is the
- * only thing marking where the control is — WCAG 1.4.11 wants 3:1. `.55` is
- * the lowest alpha of the same hue that reaches it, measuring 3.05:1 against
- * the lightest of the three sky stops. The focus treatment is the design's own,
- * untouched: it swaps to `#04feff` at 15.74:1.
- */
-const FIELD = tw(
-  'min-h-(--hit-target) w-full rounded-xl border border-[rgba(160,150,255,0.55)] bg-[rgba(3,1,17,0.55)] px-4 py-[11px] font-[inherit] text-(length:--text-body) leading-[1.6] text-(--ink-title) transition-[border-color,box-shadow] duration-150 ease-[ease] placeholder:text-(--ink-faint) focus:border-(--accent-cyan) focus:shadow-[0_0_0_3px_rgba(4,254,255,0.14)] focus:outline-hidden',
-);
+import { checkContact } from './validation';
 
 interface ContactFormProps {
   locale: Locale;
@@ -52,18 +36,6 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     pending: copy.errPending,
   } satisfies Record<FormError, string>;
 
-  /**
-   * Controlled on purpose, and not redundant with the `formData` the action
-   * reads. React requests the form reset *before* running the action rather
-   * than on success — `startHostTransition` in react-dom — so uncontrolled
-   * fields here would be emptied by every rejected submission, including the
-   * "still checking" one the challenge produces. The other way out is echoing
-   * the values back through the action's state as `defaultValue`; this form
-   * already needs them in state for `sendAnother`.
-   */
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [message, setMessage] = useState('');
   const [token, setToken] = useState<string | null>(null);
   const [sent, setSent] = useState(false);
   const [lockHeight, setLockHeight] = useState<number | undefined>();
@@ -174,12 +146,11 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
   }, null);
 
   const sendAnother = () => {
+    // The draft is not cleared here: ContactFields owns it and unmounts with
+    // the form, so the new one mounts empty.
     swapInPlace(boxRef.current, () => {
       setSent(false);
       setLockHeight(undefined);
-      setName('');
-      setEmail('');
-      setMessage('');
     });
   };
 
@@ -231,65 +202,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
         // native checks anyway. `required` still belongs on the controls: it is
         // what announces them as required, and it is not what validates them.
         <form action={submit} noValidate className='grid gap-4'>
-          <div className='grid grid-cols-[repeat(auto-fit,minmax(220px,1fr))] gap-3.5'>
-            <label className={LABEL}>
-              {copy.fName}
-              <input
-                type='text'
-                name='name'
-                required
-                autoComplete='name'
-                maxLength={80}
-                value={name}
-                placeholder={copy.phName}
-                aria-invalid={invalidField === 'name' ? true : undefined}
-                aria-describedby={invalidField === 'name' ? errorId : undefined}
-                className={FIELD}
-                onFocus={startChallenge}
-                onChange={event => {
-                  setName(event.target.value);
-                }}
-              />
-            </label>
-            <label className={LABEL}>
-              {copy.fEmail}
-              <input
-                type='email'
-                name='email'
-                required
-                autoComplete='email'
-                maxLength={254}
-                value={email}
-                placeholder={copy.phEmail}
-                aria-invalid={invalidField === 'email' ? true : undefined}
-                aria-describedby={invalidField === 'email' ? errorId : undefined}
-                className={FIELD}
-                onFocus={startChallenge}
-                onChange={event => {
-                  setEmail(event.target.value);
-                }}
-              />
-            </label>
-          </div>
-
-          <label className={LABEL}>
-            {copy.fMessage}
-            <textarea
-              name='message'
-              required
-              rows={5}
-              maxLength={MESSAGE_MAX}
-              value={message}
-              placeholder={copy.phMsg}
-              aria-invalid={invalidField === 'message' ? true : undefined}
-              aria-describedby={invalidField === 'message' ? errorId : undefined}
-              className={cn(FIELD, 'field-sizing-content min-h-32.5 resize-y leading-[1.7]')}
-              onFocus={startChallenge}
-              onChange={event => {
-                setMessage(event.target.value);
-              }}
-            />
-          </label>
+          <ContactFields locale={locale} invalidField={invalidField} errorId={errorId} onFocusField={startChallenge} />
 
           {/* No minimum on the slot: the widget's own floor is the thing that has
               to fit, and forcing 300px here is what pushed the card past a 320px
