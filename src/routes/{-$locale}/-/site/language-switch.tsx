@@ -33,7 +33,7 @@ const PILL = tw(
 const Kira: FC = () => (
   <span
     aria-hidden='true'
-    className='absolute top-[-4px] right-[-4px] size-[11px] transform-[scale(0)] animate-[evKiraPop_.55s_ease-in-out_.12s_both] bg-(--star-white) drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]'
+    className='absolute top-[-4px] right-[-4px] size-[11px] transform-[scale(0)] animate-[evLangKira_.55s_ease-in-out_.12s_both] bg-(--star-white) drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]'
   />
 );
 
