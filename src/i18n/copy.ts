@@ -69,8 +69,14 @@ export const SITE_COPY = {
   },
 } satisfies Record<Locale, SiteCopy>;
 
+/** The three interchangeable lines for one hour bucket. */
+type GreetingSet = readonly [string, string, string];
+
+/** 朝 / 昼 / 夕 / 夜 / 深夜, in the order `greetingBucket` returns. */
+export type Greetings = readonly [GreetingSet, GreetingSet, GreetingSet, GreetingSet, GreetingSet];
+
 interface HomeCopy {
-  greeting: string;
+  greetings: Greetings;
   heroSub1: string;
   heroSub2: string;
   ctaProjects: string;
@@ -85,14 +91,20 @@ interface HomeCopy {
 }
 
 /**
- * The greeting is one of fifteen lines in the design, picked by hour and then
- * at random. The sky renders at midnight and the page is prerendered, so the
- * hour bucket is fixed and the random pick has to be too — this is the first
- * line of the midnight set.
+ * The greeting is one of fifteen lines, picked by the hour and then at random.
+ * Prerendering can do neither, so every page ships the first line of the 深夜
+ * set — the design's canonical state, matching the midnight sky — and `Greeting`
+ * swaps it for the visitor's own hour once it is running.
  */
 export const HOME_COPY = {
   ja: {
-    greeting: 'こんばんは。夜更かし仲間ですね。',
+    greetings: [
+      ['おはようございます。早起き、尊敬します。', 'おはようございます。私はたぶんまだ寝ています。', 'おはようございます。朝の空は新鮮です。'],
+      ['こんにちは。明るい時間にようこそ。', 'こんにちは。休憩中でしょうか。', 'こんにちは。珍しい時間にお会いしますね。'],
+      ['こんばんは。そろそろ夜が始まります。', 'こんばんは。おつかれさまです。', 'こんばんは。いい時間になってきました。'],
+      ['こんばんは。ここからが本番です。', 'こんばんは。夜はまだ長いです。', 'こんばんは。ゆっくりしていってください。'],
+      ['こんばんは。夜更かし仲間ですね。', 'こんばんは。お互い、まだ起きていますね。', 'こんばんは。静かでいい時間です。'],
+    ],
     heroSub1: '広く浅く技術を嗜むプロダクトエンジニア。',
     heroSub2: '新しい技術はとりあえず試す派です。',
     ctaProjects: '作ったものを見る',
@@ -106,7 +118,13 @@ export const HOME_COPY = {
     altCat: 'オッドアイの黒猫のイラスト(AI生成)',
   },
   en: {
-    greeting: 'Good evening. Fellow night owl, I see.',
+    greetings: [
+      ['Good morning. Respect for being up this early.', "Good morning. I'm probably still asleep.", 'Good morning. The morning sky is a rare sight for me.'],
+      ['Hello. You caught me in daylight.', 'Hello. A rare daytime visit.', 'Hello. Welcome, while the sun is still up.'],
+      ['Good evening. The night is just getting started.', 'Good evening. Hope the day went easy on you.', 'Good evening. Getting to the good hours.'],
+      ['Good evening. Now the real hours begin.', 'Good evening. The night is still young.', 'Good evening. Make yourself at home.'],
+      ['Good evening. Fellow night owl, I see.', 'Good evening. Still up, both of us.', 'Good evening. Quiet hours are the best hours.'],
+    ],
     heroSub1: 'Product engineer who dabbles in a bit of everything.',
     heroSub2: "If it's new, I've probably already tried it.",
     ctaProjects: "See what I've built",

@@ -10,9 +10,10 @@ import { CloudLayer } from '../sky/cloud-layer';
 import { puffs } from '../sky/puffs';
 import { ShootingStar } from '../sky/shooting-star';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, GLOW_A, GLOW_B, GLOW_W, glow } from '../sky/sky-scene';
+import { StarField } from '../sky/star-field';
 
 import './hero.css';
-import { StarField } from '../sky/star-field';
+import { Greeting } from './greeting';
 
 const HERO_STAR_SEED = 4_150_415;
 
@@ -134,9 +135,10 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
 
       <div className='relative z-2 mx-auto w-full max-w-(--page-max-wide) px-[clamp(22px,6vw,72px)] pb-[clamp(56px,11vh,110px)]'>
         <div className='grid max-w-170 justify-items-start gap-4'>
-          <p className='animate-[fadeUp_0.7s_ease_0.2s_backwards] text-(length:--text-small) tracking-[0.22em] text-(--ink-ice) [text-shadow:0_1px_10px_var(--ink-shadow)]'>
-            {copy.greeting}
-          </p>
+          <Greeting
+            locale={locale}
+            className='animate-[fadeUp_0.7s_ease_0.2s_backwards] text-(length:--text-small) tracking-[0.22em] text-(--ink-ice) [text-shadow:0_1px_10px_var(--ink-shadow)]'
+          />
           <h1 className='animate-[fadeUp_0.7s_ease_0.35s_backwards] text-(length:--text-hero) leading-[1.05] font-bold tracking-[0.01em] text-(--ink-title) [text-box:trim-both_cap_alphabetic] [text-shadow:0_2px_28px_var(--ink-shadow)]'>
             eve0415
           </h1>
