@@ -12,15 +12,15 @@ import { localeHead } from '#i18n/head';
 import { SkillGroup } from './-/skill-group';
 
 const LANGUAGES = [
-  { label: 'TypeScript', href: 'https://www.typescriptlang.org/' },
-  { label: 'Rust', href: 'https://www.rust-lang.org/' },
+  { label: 'TypeScript', href: 'https://www.typescriptlang.org/', daily: true },
+  { label: 'Rust', href: 'https://www.rust-lang.org/', daily: true },
   { label: 'Java', href: 'https://openjdk.org/' },
   { label: 'Kotlin', href: 'https://kotlinlang.org/' },
   { label: 'Swift', href: 'https://www.swift.org/' },
 ] as const satisfies SkillItem[];
 
 const FRONTEND = [
-  { label: 'React', href: 'https://react.dev/' },
+  { label: 'React', href: 'https://react.dev/', daily: true },
   { label: 'React Compiler', href: 'https://react.dev/learn/react-compiler' },
   { label: 'TanStack Start / Router', href: 'https://tanstack.com/' },
   { label: 'TanStack Query / Form', href: 'https://tanstack.com/query/latest' },
@@ -33,7 +33,7 @@ const FRONTEND = [
 
 const BACKEND = [
   { label: 'Node.js', href: 'https://nodejs.org/' },
-  { label: 'Cloudflare Workers', href: 'https://workers.cloudflare.com/' },
+  { label: 'Cloudflare Workers', href: 'https://workers.cloudflare.com/', daily: true },
   { label: 'SQLite (D1)', href: 'https://developers.cloudflare.com/d1/' },
   { label: 'drizzle ORM', href: 'https://orm.drizzle.team/' },
   { label: 'PostgreSQL', href: 'https://www.postgresql.org/' },
@@ -42,7 +42,7 @@ const BACKEND = [
 ] as const satisfies SkillItem[];
 
 const INFRA = [
-  { label: 'Docker', href: 'https://www.docker.com/' },
+  { label: 'Docker', href: 'https://www.docker.com/', daily: true },
   { label: 'Kubernetes', href: 'https://kubernetes.io/' },
   { label: 'GitHub Actions', href: 'https://github.com/features/actions' },
   { label: 'OpenTelemetry', href: 'https://opentelemetry.io/' },
@@ -69,7 +69,10 @@ const Skills = () => {
 
   return (
     <div className='relative mx-auto grid max-w-(--page-max) gap-7 px-6 pt-12 pb-24'>
-      <PageHeader kicker='SKILLS' title={copy.title} lede={copy.intro} className='animate-[fadeUp_0.6s_ease_backwards]' />
+      <div className='grid animate-[fadeUp_0.6s_ease_backwards] gap-2 font-sans'>
+        <PageHeader kicker='SKILLS' title={copy.title} lede={copy.intro} />
+        <p className='text-(length:--text-caption) text-(--ink-faint)'>{copy.legend}</p>
+      </div>
 
       <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-4.5'>
         <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='animate-[fadeUp_0.6s_ease_0.08s_backwards]' />

@@ -453,6 +453,7 @@ export const HISTORY_COPY = {
 interface SkillsCopy {
   title: string;
   intro: string;
+  legend: string;
   groupLang: string;
   groupFe: string;
   groupBe: string;
@@ -467,6 +468,7 @@ export const SKILLS_COPY = {
   ja: {
     title: 'できること',
     intro: '広く浅く。深さについてはご相談ください。',
+    legend: '明るい枠 = よく使っているもの',
     groupLang: '言語',
     groupFe: 'フロントエンド',
     groupBe: 'バックエンド・データベース',
@@ -478,6 +480,7 @@ export const SKILLS_COPY = {
   en: {
     title: 'Skills',
     intro: 'A mile wide, an inch deep. Depth negotiable.',
+    legend: 'Bright outline = daily drivers',
     groupLang: 'Languages',
     groupFe: 'Frontend',
     groupBe: 'Backend & databases',
