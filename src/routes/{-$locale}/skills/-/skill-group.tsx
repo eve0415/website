@@ -1,9 +1,11 @@
+import type { SkillItem } from './skill-chips';
 import type { FC } from 'react';
 
 import { Card } from '#components/card';
-import { Chip } from '#components/chip';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
+
+import { SkillChips } from './skill-chips';
 
 /**
  * Each group heading gets its own colour in the design. The first is ice rather
@@ -19,13 +21,6 @@ const INK = {
   rose: tw('text-(--hue-rose)'),
 } satisfies Record<SkillInk, string>;
 
-export interface SkillItem {
-  label: string;
-  href: string;
-  /** Bright outline, which the page's legend reads as "in hand most days". */
-  daily?: boolean;
-}
-
 interface SkillGroupProps {
   ink: SkillInk;
   heading: string;
@@ -36,13 +31,6 @@ interface SkillGroupProps {
 export const SkillGroup: FC<SkillGroupProps> = ({ ink, heading, items, className }) => (
   <Card className={cn('grid content-start gap-3.5', className)}>
     <h2 className={cn('text-(length:--text-panel-title) font-bold', INK[ink])}>{heading}</h2>
-    {/* ev-stg staggers the chips in by sibling-index(), with no JavaScript. */}
-    <div className='ev-stg flex flex-wrap gap-2'>
-      {items.map(item => (
-        <Chip key={item.label} variant={item.daily === true ? 'daily' : 'plain'} href={item.href} target='_blank' rel='noopener'>
-          {item.label}
-        </Chip>
-      ))}
-    </div>
+    <SkillChips items={items} />
   </Card>
 );

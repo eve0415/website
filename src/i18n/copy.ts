@@ -454,6 +454,10 @@ interface SkillsCopy {
   title: string;
   intro: string;
   legend: string;
+  aiHead: string;
+  aiBefore: string;
+  aiAfter: string;
+  chipMcp: string;
   groupLang: string;
   groupFe: string;
   groupBe: string;
@@ -469,6 +473,10 @@ export const SKILLS_COPY = {
     title: 'できること',
     intro: '広く浅く。深さについてはご相談ください。',
     legend: '明るい枠 = よく使っているもの',
+    aiHead: 'AIエージェント',
+    aiBefore: 'AI エージェントと並走するのがいまの作り方。',
+    aiAfter: ' もそのために作りました。',
+    chipMcp: 'MCP(ツール連携)',
     groupLang: '言語',
     groupFe: 'フロントエンド',
     groupBe: 'バックエンド・データベース',
@@ -481,6 +489,10 @@ export const SKILLS_COPY = {
     title: 'Skills',
     intro: 'A mile wide, an inch deep. Depth negotiable.',
     legend: 'Bright outline = daily drivers',
+    aiHead: 'AI agents',
+    aiBefore: 'Working alongside AI agents is how I build now. ',
+    aiAfter: ' exists for exactly that.',
+    chipMcp: 'MCP',
     groupLang: 'Languages',
     groupFe: 'Frontend',
     groupBe: 'Backend & databases',

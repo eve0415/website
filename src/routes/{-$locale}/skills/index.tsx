@@ -1,4 +1,4 @@
-import type { SkillItem } from './-/skill-group';
+import type { SkillItem } from './-/skill-chips';
 
 import { createFileRoute, rootRouteId, useRouteContext } from '@tanstack/react-router';
 
@@ -9,6 +9,7 @@ import { SKILLS_COPY } from '#i18n/copy';
 import './-/skill-grid.css';
 import { localeHead } from '#i18n/head';
 
+import { AiCard } from './-/ai-card';
 import { SkillGroup } from './-/skill-group';
 
 const LANGUAGES = [
@@ -75,7 +76,8 @@ const Skills = () => {
       </div>
 
       <div className='ev-skill-grid grid grid-cols-[repeat(auto-fit,minmax(min(var(--card-min-skills),100%),1fr))] gap-4.5'>
-        <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='animate-[fadeUp_0.6s_ease_0.08s_backwards]' />
+        <AiCard locale={locale} />
+        <SkillGroup ink='ice' heading={copy.groupLang} items={LANGUAGES} className='ev-reveal' />
         <SkillGroup ink='mint' heading={copy.groupFe} items={FRONTEND} className='ev-reveal' />
         <SkillGroup ink='sky' heading={copy.groupBe} items={BACKEND} className='ev-reveal' />
         <SkillGroup ink='violet' heading={copy.groupInfra} items={INFRA} className='ev-reveal' />
