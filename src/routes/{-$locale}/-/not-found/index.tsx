@@ -13,6 +13,7 @@ import { LanguageSwitch } from '../site/language-switch';
 import { navItems } from '../site/nav';
 import { SiteHeader } from '../site/site-header';
 import { CloudLayer } from '../sky/cloud-layer';
+import { MIDNIGHT, skyCssText } from '../sky/palette';
 import { ShootingStar } from '../sky/shooting-star';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, glow } from '../sky/sky-scene';
 import { StarField } from '../sky/star-field';
@@ -34,6 +35,13 @@ import {
 } from './scene';
 
 const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+/**
+ * The 404 is the one page the design does not put on the clock — its own board
+ * has no time control and is drawn at midnight — so this pins the scene back to
+ * midnight for the subtree, whatever hour the rest of the site is showing.
+ */
+const MIDNIGHT_CSS = skyCssText(MIDNIGHT, '.ev-404');
 
 export const NotFound = () => {
   // The 404 hangs off the root route, so this is the only place the locale is
@@ -189,7 +197,8 @@ export const NotFound = () => {
   const item = result === null ? undefined : copy.items[result];
 
   return (
-    <div ref={rootRef} className='ev-404 relative flex min-h-[calc(100svh/var(--z,1))] flex-col overflow-clip' style={{ background: 'var(--sky-root)' }}>
+    <div ref={rootRef} className='ev-404 ev-sky relative flex min-h-[calc(100svh/var(--z,1))] flex-col overflow-clip' style={{ background: 'var(--sky-root)' }}>
+      <style>{MIDNIGHT_CSS}</style>
       <div
         aria-hidden='true'
         className='pointer-events-none absolute inset-0 [translate:calc(var(--mx,0px)*-0.3)_calc(var(--my,0px)*-0.3)] overflow-hidden'

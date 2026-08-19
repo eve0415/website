@@ -35,28 +35,25 @@
   --surface-panel-soft: rgba(13, 8, 54, 0.45);
   --surface-row: rgba(13, 8, 54, 0.5);
   --surface-toast: #0d0836;
-  --surface-glass: var(--sky-glass-bg);
-  --surface-header: var(--sky-header-bg);
+  --surface-glass: rgba(5, 2, 28, 0.32);
 
   /* 線 */
   --line-panel: rgba(160, 150, 255, 0.22);
   --line-row: rgba(160, 150, 255, 0.25);
   --line-chip: rgba(210, 205, 255, 0.35);
-  --line-white: rgba(var(--sky-ink-title-rgb), 0.4);
-  --line-header: var(--sky-header-line);
+  --line-white: rgba(252, 247, 253, 0.4);
   --line-accent: rgba(4, 254, 255, 0.5);
   --line-accent-dashed: rgba(4, 254, 255, 0.35);
 
-  /* 文字 — everything that sits straight on the sky reads off the clock, so it
-     turns dark navy through the daylight hours. `--ink-muted` does not: it is
-     the text inside the glass panels, which stay night-coloured all day. */
-  --ink-title: var(--sky-ink-title);
-  --ink-body: var(--sky-ink-sub);
+  /* 文字 — night values, and they stay night values wherever the ink lands on
+     a glass panel, which is nearly everywhere. The three regions that sit
+     straight on the sky reset them from the clock; see `.ev-on-sky` below. */
+  --ink-title: #fcf7fd;
+  --ink-body: #e9e4ff;
   --ink-muted: #cfc9f2;
-  --ink-ice: var(--sky-ink-kicker);
-  --ink-nav: var(--sky-ink-nav);
-  --ink-faint: var(--sky-ink-faint);
-  --ink-shadow: var(--sky-ink-shadow);
+  --ink-ice: #9fe8ff;
+  --ink-faint: #a49dd8;
+  --ink-shadow: rgba(3, 1, 20, 0.6);
   --ink-on-accent: #00031d;
 
   /* アクセント (彗星) — the cyan/mint pair is the brand and never moves. What
@@ -65,9 +62,11 @@
   --accent-cyan: #04feff;
   --accent-mint: #00dda8;
   --grad-comet: linear-gradient(90deg, #04feff, #00dda8);
-  --accent: var(--sky-accent);
-  --link: var(--sky-link);
-  --link-hover: var(--sky-accent);
+  /* The design hovers every link to `--accent`, which by day is a dark blue
+     that all but disappears against the panels most of this site's links sit
+     on. Hover stays the neon instead, and the chrome that *is* on the sky asks
+     for `--accent` by name. */
+  --link-hover: #04feff;
 
   /* 星 */
   --star-white: #fcf7fd;
@@ -186,6 +185,35 @@
      steps instead. Anything sized in viewport units divides by this, since
      those units are measured before the zoom applies. */
   --z: 1;
+}
+
+/* The header, the hero and the footer are the three places the design puts text
+   straight onto the sky, so their ink follows the clock into dark navy by day.
+   Nothing else does: a glass panel is the same deep indigo at noon as it is at
+   midnight, and its contents have to stay light to be read. */
+/* The tokens the sky itself decides. Grouped with `.ev-sky` so a subtree that
+   re-declares the `--sky-*` set gets them re-derived rather than inheriting what
+   `:root` already worked out — `var()` resolves where it is written, so an
+   inherited `--ink-nav` would stay whatever hour the root was on. The 404 is
+   the one place that matters: the design draws it at midnight, always. */
+:root,
+.ev-sky {
+  --surface-header: var(--sky-header-bg);
+  --line-header: var(--sky-header-line);
+  --ink-nav: var(--sky-ink-nav);
+  --accent: var(--sky-accent);
+  --link: var(--sky-link);
+}
+
+.ev-on-sky {
+  --ink-title: var(--sky-ink-title);
+  --ink-body: var(--sky-ink-sub);
+  --ink-ice: var(--sky-ink-kicker);
+  --ink-faint: var(--sky-ink-faint);
+  --ink-shadow: var(--sky-ink-shadow);
+  --line-white: rgba(var(--sky-ink-title-rgb), 0.4);
+  --surface-glass: var(--sky-glass-bg);
+  --link-hover: var(--sky-accent);
 }
 
 @media (min-width: 2100px) {
