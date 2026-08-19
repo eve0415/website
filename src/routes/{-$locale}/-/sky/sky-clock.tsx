@@ -59,7 +59,11 @@ export const SkyClock = () => {
   useEffect(() => {
     let clock = 0;
     let day = 0;
-    let dayOn = false;
+    /* Left undefined so the first reading picks day or night on its own
+       brightness rather than through the hysteresis' night branch — a page
+       opened inside the switching band would otherwise start on the wrong one
+       and hold it. */
+    let dayOn: boolean | undefined;
     let frame = 0;
 
     const sync = () => {
