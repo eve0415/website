@@ -3,6 +3,7 @@ import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
 
+import './language-switch.css';
 import { SITE_COPY } from '#i18n/copy';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
@@ -15,7 +16,25 @@ import { tw } from '#lib/tw';
 const GROUP = tw('inline-flex min-h-(--header-row) items-center rounded-[999px] border border-(--line-header) p-0.5');
 
 const PILL = tw(
-  'inline-flex min-h-10 min-w-11.5 items-center justify-center rounded-[999px] px-[13px] py-1.5 font-sans text-[0.78125rem] font-bold tracking-[0.08em] no-underline transition-[color,background] duration-150 ease-[ease] active:transform-[scale(0.94)]',
+  'relative inline-flex min-h-10 min-w-11.5 items-center justify-center rounded-[999px] px-[13px] py-1.5 font-sans text-[0.78125rem] font-bold tracking-[0.08em] no-underline transition-[color,background] duration-150 ease-[ease] active:transform-[scale(0.94)]',
+);
+
+/**
+ * The sparkle the comp pops on the language you have just chosen. It is a
+ * mount, not a state machine: only the active pill carries one, so switching
+ * mounts a fresh span on the other pill and the animation runs off that. The
+ * door wipe releases the navigation at the moment its halves meet, so the pill
+ * changes hands behind them and the sparkle is revealed as they part.
+ *
+ * On the first load of a document it plays too, under an opening curtain that
+ * has another two seconds to run — and for a reader who asked for less motion
+ * the blanket rule in `__root.css` collapses it to nothing.
+ */
+const Kira: FC = () => (
+  <span
+    aria-hidden='true'
+    className='absolute top-[-4px] right-[-4px] size-[11px] transform-[scale(0)] animate-[evKiraPop_.55s_ease-in-out_.12s_both] bg-(--star-white) drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]'
+  />
 );
 
 const STATE = {
@@ -60,9 +79,11 @@ export const LanguageSwitch: FC<LanguageSwitchProps> = ({ locale, className }) =
   <nav aria-label={SITE_COPY[locale].langAria} className={cn(GROUP, className)}>
     <Link to='.' params={{ locale: undefined }} activeOptions={{ exact: true }} hrefLang='ja' className={cn(PILL, locale === 'ja' ? STATE.on : STATE.off)}>
       JA
+      {locale === 'ja' ? <Kira /> : null}
     </Link>
     <Link to='.' params={{ locale: 'en' }} activeOptions={{ exact: true }} hrefLang='en' className={cn(PILL, locale === 'en' ? STATE.on : STATE.off)}>
       EN
+      {locale === 'en' ? <Kira /> : null}
     </Link>
   </nav>
 );

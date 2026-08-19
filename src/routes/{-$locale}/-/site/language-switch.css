@@ -1,0 +1,12 @@
+/* The comp's sparkle, on the pill that has just become the active language.
+   Same shape as the one `comet-link.css` plays, and the two are independent:
+   neither component knows the other exists. */
+@keyframes evKiraPop {
+  from,
+  to {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1) rotate(95deg);
+  }
+}
