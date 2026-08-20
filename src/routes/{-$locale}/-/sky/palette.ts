@@ -399,6 +399,15 @@ const PAGE_CEILING = 0.12;
  */
 const PAGE_DIM = 0.04;
 
+/**
+ * The cloud band's own luminance at the two ends of the daylight it carries:
+ * 17時半, where `day` hands back over, and 13時. Its ink is dark, so it has to
+ * deepen as the band falls — the opposite of the page band's, and the reason
+ * one `day` flag cannot drive both.
+ */
+const CLOUD_DUSK = 0.15;
+const CLOUD_NOON = 0.26;
+
 /** 0 below `lo`, 1 above `hi`, linear between — one scalar read off another. */
 const ramp = (value: number, lo: number, hi: number) => Math.min(1, Math.max(0, (value - lo) / (hi - lo)));
 
@@ -441,12 +450,17 @@ export const skyIsDay = (clock: number, wasDay?: boolean): boolean => {
  */
 export const skyCss = (clock: number, day: number): SkyCss => {
   const p = skyPalette(clock);
-  const inkT = mix(p.inkT, [10, 36, 64], day);
-  /* How much daylight the open sky behind the page is actually carrying, which
-     is not what `day` says: it saturates at 1 from 8時半 to 17時半 while the band
-     itself runs from 0.14 to 0.23 and back. Held at the ceiling, so full lift is
-     the brightest backdrop the pale ink ever has to clear. */
+  /* How much daylight each band is actually carrying, which is not what `day`
+     says: it saturates at 1 from 8時半 to 17時半 while the page band runs 0.14 to
+     0.23 and back and the cloud band 0.17 to 0.26. The page band is held at the
+     ceiling, so full lift there is the brightest backdrop its pale ink ever has
+     to clear; `deep` reads the other way, since dark ink on a dimming band has
+     to go down with it. `day` still owns the crossfade — these only choose which
+     value it lands on, so the deadband it carries is untouched. */
   const page = ramp(luminance(p.root[2]), PAGE_DIM, PAGE_CEILING);
+  const cloud = ramp(luminance(mix(p.hero[1], p.hero[2], 0.5)), CLOUD_DUSK, CLOUD_NOON);
+  const deep = (dusk: Rgb, noon: Rgb) => mix(dusk, noon, cloud);
+  const inkT = mix(p.inkT, deep([4, 20, 36], [10, 36, 64]), day);
 
   return {
     rootBg: gradient([
@@ -479,20 +493,23 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     inkTitleRgb: inkT.join(','),
     /* Deeper than the design's own [8,58,92] / [18,48,80], which land at 3.16
        and 4.18 against the cloud sea they are read on. Same navy, far enough
-       down it to clear AA. The sub ends up darker than the title, which looks
-       like an inverted hierarchy and is not: at 17.5px it owes 4.5:1 where the
-       74px title owes 3:1, so the smaller text has to carry more contrast. */
-    inkKicker: rgb(mix(p.inkK, [2, 24, 40], day)),
-    inkSub: rgb(mix(p.inkS, [6, 22, 38], day)),
-    inkNav: rgb(mix([234, 230, 255], [18, 51, 80], day)),
-    inkFaint: rgb(mix([164, 157, 216], [6, 26, 46], day)),
+       down it to clear AA, and deeper again at dusk: the hero copy's own
+       backdrop measured 0.23 at 13時 and 0.16 at 17時半, and a fixed navy that
+       clears the first misses the second by a full point. The sub ends up darker
+       than the title, which looks like an inverted hierarchy and is not: at
+       17.5px it owes 4.5:1 where the 74px title owes 3:1, so the smaller text
+       has to carry more contrast. */
+    inkKicker: rgb(mix(p.inkK, deep([0, 10, 20], [1, 16, 28]), day)),
+    inkSub: rgb(mix(p.inkS, deep([2, 12, 22], [4, 18, 32]), day)),
+    inkNav: rgb(mix([234, 230, 255], deep([3, 16, 30], [6, 26, 46]), day)),
+    inkFaint: rgb(mix([164, 157, 216], deep([4, 20, 36], [9, 32, 56]), day)),
     inkShadow: rgba(mix([3, 1, 20], [250, 250, 255], day), Number((0.6 - 0.25 * day).toFixed(2))),
     headerBg: rgba(mix([5, 2, 28], [240, 246, 252], day), 0.55),
     headerLine: rgba(mix([160, 150, 255], [30, 60, 100], day), 0.18),
     glassBg: rgba(mix([5, 2, 28], [255, 255, 255], day), 0.32),
     /* Likewise deeper than the design's [10,74,140] — 3.74 on its own header,
        and the active language pill tints that header darker still. */
-    accent: rgb(mix([4, 254, 255], [3, 38, 76], day)),
+    accent: rgb(mix([4, 254, 255], deep([2, 26, 52], [3, 38, 76]), day)),
     paleTitle: rgb(mix(p.inkT, [255, 255, 255], page)),
     paleIce: rgb(mix([159, 232, 255], [246, 252, 255], page)),
     paleBody: rgb(mix([233, 228, 255], [252, 250, 255], page)),
