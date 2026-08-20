@@ -268,6 +268,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
             {mounted ? (
               <TurnstileWidget
                 ref={widgetRef}
+                locale={locale}
                 size={narrow ? 'compact' : 'flexible'}
                 onWidgetLoad={handleWidgetLoad}
                 onSuccess={setToken}

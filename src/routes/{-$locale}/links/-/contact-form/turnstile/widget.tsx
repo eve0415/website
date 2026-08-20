@@ -1,3 +1,4 @@
+import type { Locale } from '#i18n/locale';
 import type { TurnstileInstance } from '@marsidev/react-turnstile';
 import type { FC, Ref } from 'react';
 
@@ -8,6 +9,13 @@ import { TURNSTILE_ACTION, TURNSTILE_SITE_KEY } from './constants';
 interface TurnstileWidgetProps {
   /** Needed to drive `execute()` and to reset the widget between submissions. */
   ref: Ref<TurnstileInstance | undefined>;
+  /**
+   * The page's locale, not the browser's. Turnstile defaults to `auto`, which
+   * reads the browser — so the Japanese page was handing a visitor an English
+   * challenge. Both members are ISO 639-1 codes Turnstile supports, so the
+   * locale goes straight through.
+   */
+  locale: Locale;
   /**
    * Only the two sizes that can fill this site's slot. `flexible` has a 300px
    * floor of its own, so anything narrower than that has to ask for `compact`
@@ -36,7 +44,7 @@ interface TurnstileWidgetProps {
  * 300px, which is wider than the slot has at a 320px viewport, so the narrow case
  * asks for `compact` instead.
  */
-export const TurnstileWidget: FC<TurnstileWidgetProps> = ({ ref, size, onWidgetLoad, onSuccess, onExpire, onError }) => (
+export const TurnstileWidget: FC<TurnstileWidgetProps> = ({ ref, locale, size, onWidgetLoad, onSuccess, onExpire, onError }) => (
   <Turnstile
     ref={ref}
     onWidgetLoad={onWidgetLoad}
@@ -46,6 +54,7 @@ export const TurnstileWidget: FC<TurnstileWidgetProps> = ({ ref, size, onWidgetL
       appearance: 'interaction-only',
       execution: 'execute',
       theme: 'dark',
+      language: locale,
       size,
     }}
     onSuccess={onSuccess}
