@@ -40,8 +40,10 @@ const LocaleLayout = () => {
         <LanguageSwitch locale={locale} />
       </SiteHeader>
 
-      {/* `#main` is the header's bypass-link target. */}
-      <main id='main' className='ev-on-sky flex-1'>
+      {/* `#main` is the header's bypass-link target. `tabIndex={-1}` is what
+          moves a screen reader's virtual cursor with the skip link: Chromium
+          moves the sequential-focus start point on its own, VoiceOver does not. */}
+      <main id='main' tabIndex={-1} className='ev-on-sky flex-1'>
         <Outlet />
       </main>
 
