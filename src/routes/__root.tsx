@@ -5,6 +5,7 @@ import { HeadContent, Outlet, Scripts, createRootRoute, rootRouteId, useRouteCon
 import { TanStackRouterDevtoolsPanel } from '@tanstack/react-router-devtools';
 
 import { SITE_COPY } from '#i18n/copy';
+import { SITE_URL } from '#i18n/head';
 import { localeFromPathname } from '#i18n/locale';
 
 import { OpeningCurtain } from './-/transition/opening-curtain';
@@ -14,7 +15,6 @@ import { NotFound } from './{-$locale}/-/not-found';
 import { MIDNIGHT, skyCssText } from './{-$locale}/-/sky/palette';
 import { SkyClock } from './{-$locale}/-/sky/sky-clock';
 
-const SITE_URL = 'https://eve0415.net';
 const SITE_NAME = 'eve0415';
 
 /**

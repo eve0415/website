@@ -10,7 +10,7 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
-const SITE_URL = 'https://eve0415.net';
+import { SITE_URL } from '#i18n/head';
 
 /**
  * Every route, as its Japanese path with the leading `/` and no trailing one.
