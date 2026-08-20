@@ -110,8 +110,11 @@
   /* The tallest thing on the header row, and so the row's height: the language
      switch — two 40px pills in a pill group with 2px padding and a 1px border. */
   --header-row: 46px;
-  /* The sticky bar's whole height, hairline included. `scroll-padding-top` is
-     set from this, so focusing something never scrolls it under the header. */
+  /* The sticky bar at one row, hairline included, and the value `scroll-padding-top`
+     is set from. Only true at >=768px: below that the nav wraps to two and three
+     rows, and a large root font grows it at any width. SiteHeader measures the
+     real bar and overwrites this on the element, so what is written here is the
+     prerendered starting value rather than the whole story. */
   --header-h: calc(2 * var(--header-pad-y) + var(--header-row) + 1px);
   --card-min-skills: 300px;
   --pad-card: 22px;
