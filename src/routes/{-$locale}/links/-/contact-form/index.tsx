@@ -34,6 +34,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     'rate-limited': copy.errRate,
     'send-failed': copy.errSend,
     network: copy.errNetwork,
+    interactive: copy.errInteractive,
     pending: copy.errPending,
   } satisfies Record<FormError, string>;
 
@@ -70,6 +71,12 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
    * re-arm a widget that is still mounted and still ready.
    */
   const widgetReady = useRef(false);
+  /**
+   * Whether the challenge has put a checkbox on screen. It decides which of the
+   * two "no token yet" messages the visitor gets: waiting is the right advice
+   * for a silent check and the wrong advice for one that is asking them something.
+   */
+  const widgetInteractive = useRef(false);
   /** The challenge is deferred, so it has to be asked for exactly once — once it *can* be asked for. */
   const challengeStarted = useRef(false);
   /**
@@ -117,6 +124,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
   };
 
   const rearm = () => {
+    widgetInteractive.current = false;
     setToken(null);
     challengeStarted.current = false;
     challengeWanted.current = false;
@@ -145,7 +153,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     // asking again is more useful to the visitor than a rejection.
     if (token === null) {
       startChallenge();
-      return { code: 'pending', seq };
+      return { code: widgetInteractive.current ? 'interactive' : 'pending', seq };
     }
 
     const box = boxRef.current;
@@ -185,6 +193,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     // `execute()` on a widget that cannot run it, latches `challengeStarted`,
     // and the form never leaves "still checking".
     widgetReady.current = false;
+    widgetInteractive.current = false;
 
     // The draft is not cleared here: ContactFields owns it and unmounts with
     // the form, so the new one mounts empty.
@@ -271,6 +280,9 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
                 locale={locale}
                 size={narrow ? 'compact' : 'flexible'}
                 onWidgetLoad={handleWidgetLoad}
+                onBeforeInteractive={() => {
+                  widgetInteractive.current = true;
+                }}
                 onSuccess={setToken}
                 onExpire={rearm}
                 onError={rearm}

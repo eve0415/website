@@ -543,6 +543,7 @@ interface ContactCopy {
   errRate: string;
   errSend: string;
   errNetwork: string;
+  errInteractive: string;
   errPending: string;
   sentHead: string;
   sentBody: string;
@@ -578,6 +579,7 @@ export const CONTACT_COPY = {
     errRate: '短い時間に送りすぎです。しばらく置いてからお試しください。',
     errSend: '送信できませんでした。時間をおいてもう一度お試しください。',
     errNetwork: '通信が途切れたようです。接続を確かめてもう一度お試しください。',
+    errInteractive: '上のチェックにお答えください。',
     errPending: '確認がまだ終わっていません。少しだけ待ってからもう一度どうぞ。',
     sentHead: '送信しました。ありがとうございます。',
     sentBody: 'だいたい夜に返信します。少しだけお待ちください。',
@@ -610,6 +612,7 @@ export const CONTACT_COPY = {
     errRate: "That's a lot of messages in a short while. Give it a bit and try again.",
     errSend: "Couldn't get that sent. Try again in a little while.",
     errNetwork: 'That never reached us. Check your connection and try again.',
+    errInteractive: 'Tick the checkbox above to carry on.',
     errPending: "Still checking you're human. Give it a second, then try again.",
     sentHead: 'Sent. Appreciate it.',
     sentBody: 'Replies usually happen after dark. Hang tight.',

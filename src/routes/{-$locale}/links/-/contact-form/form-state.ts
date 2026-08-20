@@ -6,7 +6,7 @@ import type { ContactFailure } from './validation';
  * `pending` and `network` are the two the server never returns: one is the
  * challenge not having finished, the other is the request never having arrived.
  */
-export type FormError = ContactFailure | 'network' | 'pending';
+export type FormError = ContactFailure | 'interactive' | 'network' | 'pending';
 
 /** The three controls a failure can be pinned to; the rest are about the submission. */
 export type FieldName = 'name' | 'email' | 'message';
@@ -40,6 +40,7 @@ const FIELD_OF = {
   'rate-limited': undefined,
   'send-failed': undefined,
   network: undefined,
+  interactive: undefined,
   pending: undefined,
 } satisfies Record<FormError, FieldName | undefined>;
 

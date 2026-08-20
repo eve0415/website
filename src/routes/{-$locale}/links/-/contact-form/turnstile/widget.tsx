@@ -29,6 +29,13 @@ interface TurnstileWidgetProps {
    * again on `reset()`, so it is a latch rather than a repeating event.
    */
   onWidgetLoad: () => void;
+  /**
+   * Fires when the challenge stops being silent and puts a checkbox on screen.
+   * `appearance: 'interaction-only'` means that is the only moment the widget is
+   * visible at all, so it is also the only moment "wait a little" is the wrong
+   * thing to tell someone.
+   */
+  onBeforeInteractive: () => void;
   onSuccess: (token: string) => void;
   onExpire: () => void;
   onError: () => void;
@@ -44,10 +51,11 @@ interface TurnstileWidgetProps {
  * 300px, which is wider than the slot has at a 320px viewport, so the narrow case
  * asks for `compact` instead.
  */
-export const TurnstileWidget: FC<TurnstileWidgetProps> = ({ ref, locale, size, onWidgetLoad, onSuccess, onExpire, onError }) => (
+export const TurnstileWidget: FC<TurnstileWidgetProps> = ({ ref, locale, size, onWidgetLoad, onBeforeInteractive, onSuccess, onExpire, onError }) => (
   <Turnstile
     ref={ref}
     onWidgetLoad={onWidgetLoad}
+    onBeforeInteractive={onBeforeInteractive}
     siteKey={TURNSTILE_SITE_KEY}
     options={{
       action: TURNSTILE_ACTION,
