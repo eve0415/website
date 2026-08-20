@@ -108,7 +108,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
           className='absolute right-[4%] bottom-[4%] left-[6%] h-[36%] animate-[glowPulse_5s_ease-in-out_infinite_alternate] rounded-[50%] blur-[22px]'
           style={{ background: CAT_GLOW }}
         />
-        <CatArt alt={copy.altCat} sizes={CAT_SIZES} className='animate-[evCatFloat_7.5s_ease-in-out_infinite_alternate]' />
+        <CatArt alt={copy.altCat} sizes={CAT_SIZES} fetchPriority='high' className='animate-[evCatFloat_7.5s_ease-in-out_infinite_alternate]' />
         {CAT_CLOUDS.map(puff => (
           <span
             key={puff.key}
