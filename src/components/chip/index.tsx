@@ -18,12 +18,13 @@ const VARIANT = {
 } satisfies Record<ChipVariant, string>;
 
 /**
- * The design lights the border and the label together on hover. Keyboard focus
- * gets the same lighting plus a ring, because the UA default here is a near
- * black hairline at 1.02:1 against the sky.
+ * The design lights the border and the label together on hover, and keyboard
+ * focus gets the same lighting. The ring itself is no longer here: the UA
+ * default measures 1.02:1 against this sky, so `__root.css` now carries one
+ * `:focus-visible` rule for every focusable rather than this component alone.
  */
 const ANCHOR = tw(
-  'no-underline transition-[border-color,color] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:text-(--accent-cyan) focus-visible:border-(--accent-cyan) focus-visible:text-(--accent-cyan) focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-(--accent-cyan)',
+  'no-underline transition-[border-color,color] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:text-(--accent-cyan) focus-visible:border-(--accent-cyan) focus-visible:text-(--accent-cyan)',
 );
 
 interface ChipBaseProps {

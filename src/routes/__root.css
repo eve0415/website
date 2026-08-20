@@ -344,6 +344,17 @@
     color: var(--link-hover);
   }
 
+  /* The UA default focus ring measures 1.02:1 against this sky, which is why
+     Chip carried its own. That measurement holds for every focusable on the
+     same palette, so the ring belongs here once rather than per component.
+     Inside `base` on purpose: a control that needs a different treatment
+     overrides it with a utility, which is how the contact form's inputs keep
+     their `focus:outline-hidden` plus border-and-glow. */
+  :focus-visible {
+    outline: 2px solid var(--accent-cyan);
+    outline-offset: 2px;
+  }
+
   ::selection {
     background: rgba(4, 254, 255, 0.35);
     color: #fcf7fd;
