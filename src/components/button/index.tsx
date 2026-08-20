@@ -7,7 +7,7 @@ type ButtonVariant = 'primary' | 'glass' | 'ghost';
 type ButtonSize = 'md' | 'sm';
 
 const BASE = tw(
-  'inline-flex min-h-(--hit-target) cursor-pointer items-center gap-2.5 rounded-[999px] px-6.5 py-[13px] font-sans text-[1rem] font-bold no-underline active:transform-[scale(0.97)]',
+  'inline-flex min-h-(--hit-target) cursor-pointer items-center gap-2.5 rounded-[999px] px-6.5 py-[13px] font-sans text-[1rem] font-bold no-underline active:transform-[scale(0.97)] disabled:cursor-default',
 );
 
 const VARIANT = {
