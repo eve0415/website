@@ -36,6 +36,12 @@ const buildCsp = (dev: boolean): string => {
     // The sky, the stars and the cat art are positioned with inline `style`
     // attributes, which no hash or nonce can cover.
     "style-src 'self' 'unsafe-inline'",
+    // `data:` on both because Vite inlines any asset under `assetsInlineLimit`
+    // (4 KB by default) as a data URI. Nothing is small enough today, so
+    // dropping these would break the first icon or font that is — silently, at
+    // runtime, with a green build.
+    "img-src 'self' data:",
+    "font-src 'self' data:",
     `connect-src 'self' ${dev ? 'ws: wss: ' : ''}https://challenges.cloudflare.com https://cloudflareinsights.com`,
     'frame-src https://challenges.cloudflare.com',
     "object-src 'none'",
