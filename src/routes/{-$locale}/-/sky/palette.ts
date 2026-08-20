@@ -491,5 +491,12 @@ export const skyCssText = (sky: SkyCss, selector = ':root') =>
     .map(([name, value]) => `${name}:${value}`)
     .join(';')}}`;
 
-/** 深夜 0時 — the design's canonical state, and what every page prerenders. */
+/**
+ * 深夜 0時 — the design's canonical state, and what every page prerenders.
+ *
+ * This is the single source of truth for the midnight sky. `__root.css` used to
+ * carry a second copy as literal `--sky-*`/`--hero-*`/`--cloud-*` tokens; they
+ * held the same values but nothing read them, so they were deleted rather than
+ * left to drift.
+ */
 export const MIDNIGHT = skyCss(0, 0);

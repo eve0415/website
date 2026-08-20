@@ -2,34 +2,15 @@
 
 /* ---------------------------------------------------------------------------
    Design tokens — ported from the design system's tokens/*.css.
-   Canonical state is midnight on the 24h sky clock. tokens/fonts.css is
-   deliberately not ported — it pulls Noto Sans JP from Google Fonts and this
-   site self-hosts it (see the @font-face rules below).
+   The sky's own colours are not here: `-/sky/palette.ts` is the single source
+   of truth for them, and `__root.tsx` injects the current clock state as
+   `--sky-*` at runtime. What remains below is everything that does not move
+   with the clock. tokens/fonts.css is deliberately not ported — it pulls Noto
+   Sans JP from Google Fonts and this site self-hosts it (see the @font-face
+   rules below).
    --------------------------------------------------------------------------- */
 
 :root {
-  /* 空 — page background gradient stops (0% / 55% / 100%) */
-  --sky-deep: #05021c;
-  --sky-mid: #0a0530;
-  --sky-high: #100a3f;
-  --grad-sky: linear-gradient(180deg, #05021c 0%, #0a0530 55%, #100a3f 100%);
-
-  /* ヒーロー空 — stops 0/32/60/78/90/100% (bottom = 雲海の光) */
-  --hero-1: #01010e;
-  --hero-2: #0a0533;
-  --hero-3: #1c1060;
-  --hero-4: #3a1d7a;
-  --hero-5: #6a2f95;
-  --hero-6: #8e46d9;
-  --grad-hero: linear-gradient(180deg, #01010e 0%, #0a0533 32%, #1c1060 60%, #3a1d7a 78%, #6a2f95 90%, #8e46d9 100%);
-
-  /* 雲 */
-  --cloud-light: #eee0ff;
-  --cloud-shade: #8a46c8;
-  --cloud-deep: #2a1670;
-  --nebula-a: #8e46d9;
-  --nebula-b: #27198d;
-
   /* 面 */
   --surface-panel: rgba(13, 8, 54, 0.62);
   --surface-panel-soft: rgba(13, 8, 54, 0.45);
@@ -96,11 +77,6 @@
   --hue-rose-line: rgba(247, 105, 151, 0.55);
   --hue-rose-glow: rgba(247, 105, 151, 0.2);
 
-  /* semantic aliases */
-  --text-heading: var(--ink-title);
-  --text-body-color: var(--ink-muted);
-  --surface-card: var(--surface-panel);
-
   /* 字 — Noto Sans JP only, weights 400/700. No serif, no italic.
      Sizes are rem against the 16px root so the OS/browser text-size preference
      scales them. Nothing may override the :root font-size. */
@@ -116,16 +92,9 @@
   --text-small: 0.875rem;
   --text-caption: 0.8125rem;
   --text-tag: 0.75rem;
-  --leading-display: 1.05;
-  --leading-heading: 1.1;
   --leading-body: 1.75;
-  --leading-lede: 1.8;
-  --leading-loose: 1.9;
   --tracking-kicker: 0.26em;
   --tracking-hero-kicker: 0.22em;
-  --tracking-cta: 0.06em;
-  --weight-body: 400;
-  --weight-bold: 700;
 
   /* 間 — layout, spacing & radius */
   /* The full-bleed chrome — header, footer, hero — keeps its background edge
@@ -136,9 +105,6 @@
   --page-max: clamp(1060px, 66vw, 1280px);
   --page-max-article: clamp(860px, 54vw, 1020px);
   --page-max-narrow: clamp(720px, 46vw, 880px);
-  --page-pad-x: 24px;
-  --page-pad-top: 48px;
-  --page-pad-bottom: 96px;
   --header-pad-y: 8px;
   --header-pad: var(--header-pad-y) clamp(20px, 4vw, 40px);
   /* The tallest thing on the header row, and so the row's height: the language
@@ -147,44 +113,24 @@
   /* The sticky bar's whole height, hairline included. `scroll-padding-top` is
      set from this, so focusing something never scrolls it under the header. */
   --header-h: calc(2 * var(--header-pad-y) + var(--header-row) + 1px);
-  --gap-section: 28px;
-  --gap-grid: 18px;
-  --gap-stack: 12px;
-  --gap-inline: 10px;
-  --gap-chips: 8px;
-  --card-min: 280px;
   --card-min-skills: 300px;
   --pad-card: 22px;
   --pad-card-lg: 26px;
-  --pad-row: 17px 20px;
-  --pad-btn: 13px 26px;
-  --pad-btn-sm: 8px 18px;
   --radius-row: 14px;
   --radius-card: 16px;
   --radius-card-lg: 18px;
-  --radius-pill: 999px;
   --hit-target: 44px;
 
   /* 動 — motion, glow & shadow */
   --ease-comet: cubic-bezier(0.7, 0.01, 0.23, 1);
   --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
-  --dur-micro: 0.15s;
-  --dur-reveal: 0.5s;
-  --dur-fade-up: 0.6s;
-  --dur-wipe: 0.45s;
   --glow-cta: 0 4px 24px rgba(4, 254, 255, 0.35);
   --glow-cta-hover: 0 8px 32px rgba(4, 254, 255, 0.5);
-  --glow-card-hover: 0 10px 36px rgba(4, 176, 236, 0.25);
   --glow-toast: 0 8px 32px rgba(4, 254, 255, 0.25);
   --glow-chip-daily: 0 0 16px rgba(4, 254, 255, 0.12);
   --glow-star: 0 0 12px 3px rgba(4, 254, 255, 0.85);
   --glow-comet-head: 0 0 10px 3px rgba(4, 254, 255, 0.8);
-  --shadow-art: drop-shadow(0 20px 34px rgba(3, 1, 20, 0.55));
   --lift-hover: translateY(-3px);
-  --press: scale(0.97);
-  --corner-smooth: squircle;
-  --blur-header: blur(10px);
-  --blur-glass: blur(4px);
 
   /* 拡 — ultra-wide scaling. Past roughly 2100px the layout has stopped
      growing and the page just gains margin, so the whole thing zooms up in
