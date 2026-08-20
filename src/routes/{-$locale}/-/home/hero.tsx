@@ -51,19 +51,30 @@ const CLOUDS_FRONT = puffs(3_030_415, 12, -95, -15, 150, 270);
 const CLOUDS_LOW = puffs(4_040_415, 11, -175, -55, 220, 360);
 
 /**
- * The cat sits at the right edge on a wide screen and slides off it, larger and
- * higher, once the viewport turns portrait. The design switches on the same
- * threshold from a measured aspect ratio; here the media query is the measure.
+ * The cat sits at the right edge on a wide screen and slides off it once the
+ * viewport turns portrait. The design switches on the same threshold from a
+ * measured aspect ratio; here the media query is the measure.
+ *
+ * Portrait takes it out of position and gives it a row of its own above the
+ * copy. A phone's copy column is the whole screen, so nothing the cat carries
+ * can sit beside the text: its black body painted across the daytime greeting
+ * and the pale puffs across the night title, and no ink clears both, because
+ * the pale paint that ruins the title at midnight is what carries the
+ * near-black greeting at noon. Only separating them serves both clocks. The
+ * bottom margin is for the drop shadow, which reaches lower than the box.
+ *
+ * Portrait size answers to the viewport height as well as its width, so that
+ * the cat, that margin and the copy still fit one screen of a short phone.
  *
  * On a wide screen it also divides its vw sizing by the ultra-wide zoom and
  * pins itself to the shell edge, so it tracks the content instead of drifting
  * out to the corner of a very wide display.
  */
 const CAT_BOX = tw(
-  'absolute right-[-9vw] bottom-[40%] z-1 w-[clamp(200px,58vw,330px)] [@media(min-aspect-ratio:1.02)]:right-[max(3vw/var(--z,1),50vw/var(--z,1)_-_810px)] [@media(min-aspect-ratio:1.02)]:bottom-[5%] [@media(min-aspect-ratio:1.02)]:w-[clamp(260px,36vw/var(--z,1),600px)]',
+  'relative z-1 mr-[-9vw] mb-10 w-[clamp(200px,min(58vw,26svh),330px)] justify-self-end [@media(min-aspect-ratio:1.02)]:absolute [@media(min-aspect-ratio:1.02)]:right-[max(3vw/var(--z,1),50vw/var(--z,1)_-_810px)] [@media(min-aspect-ratio:1.02)]:bottom-[5%] [@media(min-aspect-ratio:1.02)]:m-0 [@media(min-aspect-ratio:1.02)]:w-[clamp(260px,36vw/var(--z,1),600px)]',
 );
 
-const CAT_SIZES = '(min-aspect-ratio: 1.02) clamp(260px, 36vw, 600px), clamp(200px, 58vw, 330px)';
+const CAT_SIZES = '(min-aspect-ratio: 1.02) clamp(260px, 36vw, 600px), clamp(200px, min(58vw, 26svh), 330px)';
 
 interface HeroProps {
   locale: Locale;
