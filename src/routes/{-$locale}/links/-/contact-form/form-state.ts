@@ -16,12 +16,28 @@ export interface FormFailure {
   seq: number;
 }
 
-/** Which control the visitor has to go back to, where the failure names one. */
-export const fieldOf = (code: FormError): FieldName | undefined => {
-  if (code === 'name' || code === 'email' || code === 'message') return code;
-  if (code === 'too-long') return 'message';
-  return undefined;
-};
+/**
+ * Which control the visitor has to go back to, where the failure names one.
+ *
+ * A lookup rather than a chain of conditions so the table is exhaustive: adding
+ * a member to `FormError` without deciding where it points is then a compile
+ * error rather than a silent `undefined`, which is the same guarantee the error
+ * copy in `index.tsx` already gets from `satisfies Record<FormError, string>`.
+ */
+const FIELD_OF = {
+  name: 'name',
+  email: 'email',
+  message: 'message',
+  // The only length the visitor can actually exceed through the form: the name
+  // and email controls carry `maxLength`, the textarea reports its own count.
+  'too-long': 'message',
+  challenge: undefined,
+  'rate-limited': undefined,
+  'send-failed': undefined,
+  pending: undefined,
+} satisfies Record<FormError, FieldName | undefined>;
+
+export const fieldOf = (code: FormError): FieldName | undefined => FIELD_OF[code];
 
 export const readField = (formData: FormData, key: string): string => {
   const value = formData.get(key);

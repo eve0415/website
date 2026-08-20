@@ -8,7 +8,7 @@ import { CONTACT_COPY } from '#i18n/copy';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
-import { MESSAGE_MAX } from './validation';
+import { EMAIL_MAX, MESSAGE_MAX, NAME_MAX } from './validation';
 
 const LABEL = tw('grid gap-[7px] text-[0.84375rem] text-(--ink-ice)');
 
@@ -70,7 +70,7 @@ export const ContactFields: FC<ContactFieldsProps> = ({ locale, invalidField, er
             name='name'
             required
             autoComplete='name'
-            maxLength={80}
+            maxLength={NAME_MAX}
             value={name}
             placeholder={copy.phName}
             className={FIELD}
@@ -88,7 +88,7 @@ export const ContactFields: FC<ContactFieldsProps> = ({ locale, invalidField, er
             name='email'
             required
             autoComplete='email'
-            maxLength={254}
+            maxLength={EMAIL_MAX}
             value={email}
             placeholder={copy.phEmail}
             className={FIELD}

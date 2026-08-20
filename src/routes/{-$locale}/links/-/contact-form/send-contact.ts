@@ -53,8 +53,18 @@ const reserveSlot = async (limiter: DurableObjectStub<ContactRateLimiter>): Prom
  * fault rather than the visitor's, so they read as "try again" instead of
  * accusing them of failing a challenge they never saw.
  */
-const failureFor = (rejection: TurnstileRejection): ContactFailure =>
-  rejection === 'unreachable' || rejection === 'misconfigured' ? 'send-failed' : 'challenge';
+const FAILURE_FOR = {
+  'malformed-token': 'challenge',
+  'invalid-token': 'challenge',
+  'replayed-token': 'challenge',
+  'stale-token': 'challenge',
+  'action-mismatch': 'challenge',
+  'hostname-mismatch': 'challenge',
+  unreachable: 'send-failed',
+  misconfigured: 'send-failed',
+} satisfies Record<TurnstileRejection, ContactFailure>;
+
+const failureFor = (rejection: TurnstileRejection): ContactFailure => FAILURE_FOR[rejection];
 
 interface Delivery {
   name: string;
