@@ -21,12 +21,6 @@ const SNAP_HOURS = 0.25;
 
 const easeInOutQuad = (k: number) => (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2);
 
-/**
- * Matches the blanket rule in `__root.css`, which flattens every CSS transition
- * on the page. The crossfade is a JS loop, so that rule cannot reach it and it
- * has to ask for itself.
- */
-
 const localClock = () => {
   const now = new Date();
   return now.getHours() + now.getMinutes() / 60;
@@ -78,6 +72,11 @@ export const SkyClock = () => {
       const dayFrom = day;
       const distance = shortestWay(from, target);
 
+      /**
+       * Matches the blanket rule in `__root.css`, which flattens every CSS
+       * transition on the page. The crossfade is a JS loop, so that rule cannot
+       * reach it and it has to ask for itself.
+       */
       if (prefersReducedMotion() || (Math.abs(distance) < SNAP_HOURS && dayTo === dayFrom)) {
         cancelAnimationFrame(frame);
         clock = target;
