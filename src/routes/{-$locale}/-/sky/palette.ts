@@ -93,6 +93,13 @@ export interface SkyCss {
   headerLine: string;
   glassBg: string;
   accent: string;
+  /**
+   * The ring `:focus-visible` draws, for the band that turns bright by day.
+   * The neon owns the night and is 1.8:1 against the header glass at noon, so
+   * it hands over to the same navy the ink does — a ring owes 3:1 to whatever
+   * it replaced (WCAG 1.4.11), which on that band is the glass or the hero sky.
+   */
+  focusRing: string;
   link: string;
   /**
    * The same inks for text on the plain sky rather than over the cloud sea.
@@ -510,6 +517,10 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     /* Likewise deeper than the design's [10,74,140] — 3.74 on its own header,
        and the active language pill tints that header darker still. */
     accent: rgb(mix([4, 254, 255], deep([2, 26, 52], [3, 38, 76]), day)),
+    /* Deeper than `accent`, because the ring is read against the dimmest thing
+       on its band rather than the header glass: the hero CTA's own backdrop at
+       17時半 is 0.16, where the accent navy lands at 2.97. */
+    focusRing: rgb(mix([4, 254, 255], deep([1, 20, 40], [2, 30, 60]), day)),
     paleTitle: rgb(mix(p.inkT, [255, 255, 255], page)),
     paleIce: rgb(mix([159, 232, 255], [246, 252, 255], page)),
     paleBody: rgb(mix([233, 228, 255], [252, 250, 255], page)),
@@ -557,6 +568,7 @@ export const skyVars = (sky: SkyCss) => ({
   '--sky-header-line': sky.headerLine,
   '--sky-glass-bg': sky.glassBg,
   '--sky-accent': sky.accent,
+  '--sky-focus-ring': sky.focusRing,
   '--sky-link': sky.link,
   '--sky-ghost-surface': sky.ghostSurface,
   '--sky-ghost-ink': sky.ghostInk,

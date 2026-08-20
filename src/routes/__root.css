@@ -47,6 +47,10 @@
      into the blue by day, where the neon would wash out. */
   --accent-cyan: #04feff;
   --accent-mint: #00dda8;
+  /* The ring `:focus-visible` draws. The neon everywhere that stays deep indigo
+     all day, which is every panel and every surface off the sky; the sky's own
+     two bands say otherwise below. */
+  --focus-ring: var(--accent-cyan);
   --grad-comet: linear-gradient(90deg, #04feff, #00dda8);
   /* The design hovers every link to `--accent`, which by day is a dark blue
      that all but disappears against the panels most of this site's links sit
@@ -216,6 +220,7 @@
 .ev-on-clouds {
   --ink-shadow: var(--sky-ink-shadow);
   --link-hover: var(--sky-accent);
+  --focus-ring: var(--sky-focus-ring);
   --ink-title: var(--sky-ink-title);
   --ink-body: var(--sky-ink-sub);
   --ink-ice: var(--sky-ink-kicker);
@@ -257,6 +262,7 @@
   --ink-faint: #a49dd8;
   --ink-shadow: rgba(3, 1, 20, 0.6);
   --link-hover: #04feff;
+  --focus-ring: var(--accent-cyan);
 }
 
 @media (min-width: 2100px) {
@@ -388,14 +394,17 @@
     color: var(--link-hover);
   }
 
-  /* The UA default focus ring measures 1.02:1 against this sky, which is why
-     Chip carried its own. That measurement holds for every focusable on the
-     same palette, so the ring belongs here once rather than per component.
+  /* The UA default focus ring measures 1.02:1 against the midnight sky, which is
+     why Chip carried its own. That measurement is a night one and does not hold
+     through the day: the neon replacing it is 1.8:1 against the header glass and
+     the hero clouds at 13時, so the colour is a token the sky bands set rather
+     than the fixed neon — dark on the band that turns bright, neon on the two
+     that do not. The ring still belongs here once rather than per component.
      Inside `base` on purpose: a control that needs a different treatment
      overrides it with a utility, which is how the contact form's inputs keep
      their `focus:outline-hidden` plus border-and-glow. */
   :focus-visible {
-    outline: 2px solid var(--accent-cyan);
+    outline: 2px solid var(--focus-ring);
     outline-offset: 2px;
   }
 
