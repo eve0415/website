@@ -60,20 +60,30 @@
   --star-lilac: #c9a6ff;
   --star-pink: #ffd9ec;
 
-  /* プロジェクト色相 — タグ文字 / タグ枠 / カード hover グロー */
-  --hue-cyan: #8fe9ff;
+  /* プロジェクト色相 — タグ文字 / タグ枠 / カード hover グロー.
+     `-ink` is the authored colour and `--hue-*` is the one components read. The
+     two part only on the open sky, where the clock washes the ink toward white
+     as the band brightens: these five are also bare 12px tag text and 16px panel
+     headings out there, and the darkest of them clears 3.5:1 on the noon band
+     unpaled. A card pins them back, since a panel is deep indigo all day. */
+  --hue-cyan-ink: #8fe9ff;
+  --hue-cyan: var(--hue-cyan-ink);
   --hue-cyan-line: rgba(4, 254, 255, 0.5);
   --hue-cyan-glow: rgba(4, 176, 236, 0.25);
-  --hue-mint: #6ff2cc;
+  --hue-mint-ink: #6ff2cc;
+  --hue-mint: var(--hue-mint-ink);
   --hue-mint-line: rgba(0, 221, 168, 0.5);
   --hue-mint-glow: rgba(0, 221, 168, 0.2);
-  --hue-sky: #7dd2ff;
+  --hue-sky-ink: #7dd2ff;
+  --hue-sky: var(--hue-sky-ink);
   --hue-sky-line: rgba(4, 176, 236, 0.55);
   --hue-sky-glow: rgba(4, 176, 236, 0.22);
-  --hue-violet: #e2a9ff;
+  --hue-violet-ink: #e2a9ff;
+  --hue-violet: var(--hue-violet-ink);
   --hue-violet-line: rgba(196, 73, 208, 0.6);
   --hue-violet-glow: rgba(142, 70, 217, 0.25);
-  --hue-rose: #ffb3cd;
+  --hue-rose-ink: #ffb3cd;
+  --hue-rose: var(--hue-rose-ink);
   --hue-rose-line: rgba(247, 105, 151, 0.55);
   --hue-rose-glow: rgba(247, 105, 151, 0.2);
 
@@ -164,37 +174,48 @@
 
 /* Text sitting straight on the sky follows the clock. Which way it goes depends
    on what is behind it, and the two answers are opposite: over the cloud sea and
-   under the header glass the background lifts to roughly 0.23–0.39 luminance,
-   where dark ink clears AA and white cannot; on the open sky it sits near 0.15,
-   where pale ink clears it and black cannot. Hence two classes, not one.
+   under the header glass the background lifts to 0.23–0.47 luminance, where dark
+   ink clears AA and white cannot; the open sky is held at or under 0.12, where
+   pale ink clears it and black cannot. Hence two classes, not one.
+   Held, because the two are not free to meet: small text at 4.5:1 wants a
+   backdrop under 0.18 for pale ink or over 0.18 for dark, and one band cannot be
+   both when it runs from 0.09 at dusk to 0.27 at noon (`palette.ts`).
    A glass panel is the same deep indigo at noon as at midnight, so anything
    inside one takes `.ev-on-panel` and goes back to the night ink. */
 .ev-on-sky,
 .ev-on-clouds {
   --line-white: rgba(var(--sky-ink-title-rgb), 0.4);
   --surface-glass: var(--sky-glass-bg);
-  --link-hover: var(--sky-accent);
   --ghost-surface: var(--sky-ghost-surface);
   --ghost-ink: var(--sky-ghost-ink);
   --glass-ink: var(--sky-ink-title);
 }
 
 /* On the open sky — page headers, article copy, the 404 board. The ink stays
-   pale here, so the shadow under it stays dark all day. `--ink-title` is absent
-   on purpose: the design's own #fcf7fd already clears on this band, and moving
-   it to white would flatten it into the body copy. */
+   pale here, so the shadow under it stays dark all day, and hover pales with it:
+   `--sky-accent` is the ink for the *other* band and lands at 2.5:1 out here.
+   Every ink the band carries is on the clock, `--ink-title` and the project hues
+   included — what was left off it was left reading one assumed backdrop. */
 .ev-on-sky {
   --ink-shadow: rgba(3, 1, 20, 0.6);
+  --link-hover: var(--sky-pale-cyan);
+  --ink-title: var(--sky-pale-title);
   --ink-body: var(--sky-pale-body);
   --ink-muted: var(--sky-pale-muted);
   --ink-ice: var(--sky-pale-ice);
   --ink-faint: var(--sky-pale-faint);
+  --hue-cyan: color-mix(in srgb, var(--hue-cyan-ink), #fff var(--sky-wash));
+  --hue-mint: color-mix(in srgb, var(--hue-mint-ink), #fff var(--sky-wash));
+  --hue-sky: color-mix(in srgb, var(--hue-sky-ink), #fff var(--sky-wash));
+  --hue-violet: color-mix(in srgb, var(--hue-violet-ink), #fff var(--sky-wash));
+  --hue-rose: color-mix(in srgb, var(--hue-rose-ink), #fff var(--sky-wash));
 }
 
 /* Over the cloud sea and the header glass — the hero and the site chrome. The
    ink darkens through the day, so its shadow lightens to stay a halo. */
 .ev-on-clouds {
   --ink-shadow: var(--sky-ink-shadow);
+  --link-hover: var(--sky-accent);
   --ink-title: var(--sky-ink-title);
   --ink-body: var(--sky-ink-sub);
   --ink-ice: var(--sky-ink-kicker);
@@ -218,6 +239,11 @@
   --surface-panel: #0c0734;
   --surface-panel-soft: #0b0633;
   --surface-row: #0c0733;
+  --hue-cyan: var(--hue-cyan-ink);
+  --hue-mint: var(--hue-mint-ink);
+  --hue-sky: var(--hue-sky-ink);
+  --hue-violet: var(--hue-violet-ink);
+  --hue-rose: var(--hue-rose-ink);
   --ghost-surface: transparent;
   --ghost-ink: var(--hue-cyan);
   --glass-ink: #fcf7fd;
