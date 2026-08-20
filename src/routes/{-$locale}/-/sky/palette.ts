@@ -69,8 +69,9 @@ export interface SkyCss {
   starAlpha: number;
   /**
    * The hero vignette's alpha. It darkens the top and bottom of the hero, which
-   * is depth at night behind pale ink and lost contrast by day behind dark ink —
-   * so it follows the cloud band down to nothing at noon.
+   * is depth at night behind pale ink and lost contrast behind dark ink — so it
+   * follows the cloud band down to nothing at noon. The cloud band, not `day`:
+   * `day` saturates from 8時半 to 17時半, and the band is what the sub is read on.
    */
   vignette: number;
   footerGlow: string;
