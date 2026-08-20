@@ -707,7 +707,7 @@ export const LAB_COPY = {
     title: '新しい Web の機能と、このサイトでの使い方',
     intro:
       '実験場なので、出たばかりの Web の機能をなるべく早く入れています。ここで実際に使っているものと、まだ様子見のものを、お使いのブラウザの対応状況と並べておきます。',
-    toggle: (supported, total) => (supported === undefined ? '実験の一覧を見る' : `実験の一覧を見る（お使いのブラウザは ${supported}/${total} 対応）`),
+    toggle: (supported, total) => (supported === undefined ? '実験の一覧を見る' : `実験の一覧を見る(お使いのブラウザは ${supported}/${total} 対応)`),
     stateSupported: '対応',
     stateUnsupported: '未対応',
     stateUnknown: '確認中',
