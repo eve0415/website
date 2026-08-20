@@ -505,9 +505,12 @@ export const skyCss = (clock: number, day: number): SkyCss => {
        clears the first misses the second by a full point. The sub ends up darker
        than the title, which looks like an inverted hierarchy and is not: at
        17.5px it owes 4.5:1 where the 74px title owes 3:1, so the smaller text
-       has to carry more contrast. */
+       has to carry more contrast — and the sub is the one sitting in the hero's
+       own vignette, which by day subtracts 0.10 of luminance from the sky behind
+       it. This ink is as deep as that band asks for; the rest of that gap is the
+       scrim's, not the ink's. */
     inkKicker: rgb(mix(p.inkK, deep([0, 10, 20], [1, 16, 28]), day)),
-    inkSub: rgb(mix(p.inkS, deep([2, 12, 22], [4, 18, 32]), day)),
+    inkSub: rgb(mix(p.inkS, deep([0, 6, 12], [1, 10, 20]), day)),
     inkNav: rgb(mix([234, 230, 255], deep([3, 16, 30], [6, 26, 46]), day)),
     inkFaint: rgb(mix([164, 157, 216], deep([4, 20, 36], [9, 32, 56]), day)),
     inkShadow: rgba(mix([3, 1, 20], [250, 250, 255], day), Number((0.6 - 0.25 * day).toFixed(2))),
