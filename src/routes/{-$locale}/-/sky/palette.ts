@@ -67,6 +67,12 @@ export interface SkyCss {
   heroBg: string;
   nebulaBg: string;
   starAlpha: number;
+  /**
+   * The hero vignette's alpha. It darkens the top and bottom of the hero, which
+   * is depth at night behind pale ink and lost contrast by day behind dark ink —
+   * so it follows the cloud band down to nothing at noon.
+   */
+  vignette: number;
   footerGlow: string;
   /** The cloud sea, lit front to back. */
   cloudBack: string;
@@ -497,6 +503,7 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     ]),
     nebulaBg: `radial-gradient(90vw 55vh at 80% 90vh, ${rgba(held(p.na, 0.2, band), 0.2)}, transparent 65%), radial-gradient(80vw 45vh at 6% 125vh, ${rgba(held(p.nb, 0.42, band), 0.42)}, transparent 68%), radial-gradient(100vw 42vh at 50% 12vh, ${rgba(held(p.nb, 0.32, band), 0.32)}, transparent 70%), radial-gradient(120vw 50vh at 50% 100%, ${rgba(held(p.na, 0.1, band), 0.1)}, transparent 70%)`,
     starAlpha: Number(p.star.toFixed(3)),
+    vignette: Number((0.3 * (1 - cloud)).toFixed(3)),
     footerGlow: `radial-gradient(120% 220% at 50% 135%, ${rgba(held(p.na, 0.16, band), 0.16)}, transparent 60%)`,
     cloudBack: `radial-gradient(circle at 38% 26%, ${rgba(mix(p.cl, p.cs, 0.55), 0.85)}, ${rgba(p.cs, 0.88)} 56%, ${rgba(p.cd, 0.92)} 95%)`,
     cloudMid: `radial-gradient(circle at 36% 24%, ${rgba(p.cl, 0.92)}, ${rgba(mix(p.cl, p.cs, 0.45), 0.88)} 52%, ${rgba(p.cs, 0.84)} 92%)`,
@@ -561,6 +568,7 @@ export const skyVars = (sky: SkyCss) => ({
   '--sky-hero': sky.heroBg,
   '--sky-nebula': sky.nebulaBg,
   '--sky-star-alpha': String(sky.starAlpha),
+  '--sky-vignette': String(sky.vignette),
   '--sky-footer-glow': sky.footerGlow,
   '--sky-cloud-back': sky.cloudBack,
   '--sky-cloud-mid': sky.cloudMid,

@@ -24,7 +24,11 @@ const MASK_HERO = tw('mask-[linear-gradient(180deg,#000_0%,#000_42%,rgba(0,0,0,.
 const MASK_BACK = tw('mask-[linear-gradient(180deg,#000_44%,rgba(0,0,0,.55)_64%,rgba(0,0,0,.22)_80%,transparent_97%)]');
 const MASK_FRONT = tw('mask-[linear-gradient(180deg,#000_48%,rgba(0,0,0,.6)_68%,rgba(0,0,0,.25)_83%,transparent_98%)]');
 
-const VIGNETTE = tw('bg-[linear-gradient(180deg,rgba(5,2,28,.3)_0%,rgba(5,2,28,0)_24%,rgba(5,2,28,0)_58%,rgba(5,2,28,.30)_82%,rgba(5,2,28,0)_100%)]');
+/* The alpha is the clock's, not a constant: this darkens the band the hero sub
+   is read on, which is depth at night and 1.75 of lost contrast at noon. */
+const VIGNETTE = tw(
+  'bg-[linear-gradient(180deg,rgba(5,2,28,var(--sky-vignette))_0%,rgba(5,2,28,0)_24%,rgba(5,2,28,0)_58%,rgba(5,2,28,var(--sky-vignette))_82%,rgba(5,2,28,0)_100%)]',
+);
 
 /** The lights inside the cloud sea, front to back as the design layers them. */
 const HERO_GLOWS = [
