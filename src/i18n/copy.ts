@@ -28,6 +28,8 @@ interface SiteCopy {
   navAbout: string;
   /** Dismisses the opening curtain. */
   skip: string;
+  /** The bypass link: eight identical chrome stops sit in front of `<main>`. */
+  skipToContent: string;
   /** Footer dwell line, read as `${dwellPrefix} ${duration}`. */
   dwellPrefix: string;
   /**
@@ -50,6 +52,7 @@ export const SITE_COPY = {
     navLinks: 'つながる',
     navAbout: 'About',
     skip: 'スキップ',
+    skipToContent: '本文へスキップ',
     dwellPrefix: 'ここに来てから',
     dwellHours: '時間',
     dwellMinutes: '分',
@@ -63,6 +66,7 @@ export const SITE_COPY = {
     navLinks: 'Contact',
     navAbout: 'About',
     skip: 'Skip',
+    skipToContent: 'Skip to content',
     dwellPrefix: 'Here for',
     dwellHours: 'hr',
     dwellMinutes: 'min',

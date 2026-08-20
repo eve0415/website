@@ -31,11 +31,17 @@ const LocaleLayout = () => {
 
       <ScrollEndStar />
 
-      <SiteHeader navLabel={SITE_COPY[locale].navAria} brandElement={<BrandLink locale={locale} />} items={navItems(locale)}>
+      <SiteHeader
+        navLabel={SITE_COPY[locale].navAria}
+        skipLabel={SITE_COPY[locale].skipToContent}
+        brandElement={<BrandLink locale={locale} />}
+        items={navItems(locale)}
+      >
         <LanguageSwitch locale={locale} />
       </SiteHeader>
 
-      <main className='ev-on-sky flex-1'>
+      {/* `#main` is the header's bypass-link target. */}
+      <main id='main' className='ev-on-sky flex-1'>
         <Outlet />
       </main>
 

@@ -213,11 +213,19 @@ export const NotFound = () => {
         </span>
       </div>
 
-      <SiteHeader navLabel={SITE_COPY[locale].navAria} brandElement={<BrandLink locale={locale} />} items={navItems(locale).slice(1)}>
+      <SiteHeader
+        navLabel={SITE_COPY[locale].navAria}
+        skipLabel={SITE_COPY[locale].skipToContent}
+        brandElement={<BrandLink locale={locale} />}
+        items={navItems(locale).slice(1)}
+      >
         <LanguageSwitch locale={locale} />
       </SiteHeader>
 
-      <main className='pointer-events-none relative z-3 grid flex-1 place-items-center px-[clamp(20px,5vw,48px)] pt-[clamp(8px,1.6svh,28px)] pb-[clamp(88px,18svh,250px)]'>
+      <main
+        id='main'
+        className='pointer-events-none relative z-3 grid flex-1 place-items-center px-[clamp(20px,5vw,48px)] pt-[clamp(8px,1.6svh,28px)] pb-[clamp(88px,18svh,250px)]'
+      >
         <div className='ev-on-sky pointer-events-auto grid max-w-190 justify-items-center gap-[clamp(7px,1.4svh,18px)] text-center'>
           <title>{copy.docTitle}</title>
 

@@ -12,6 +12,10 @@ const ROOT = tw(
 /** The bar stays full-bleed; only its contents stop at the shell width. */
 const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-3');
 
+const SKIP = tw(
+  'absolute top-2 left-2 z-20 -translate-y-[calc(100%+1rem)] rounded-xl border border-(--accent-cyan) bg-(--surface-toast) px-4 py-2 font-sans text-(length:--text-ui) text-(--ink-title) no-underline transition-transform duration-150 ease-(--ease-comet) focus-visible:translate-y-0',
+);
+
 export interface SiteHeaderNavItem {
   key: string;
   /**
@@ -29,6 +33,12 @@ interface SiteHeaderProps {
    * would ship silently in the wrong one — which is exactly what it used to do.
    */
   navLabel: string;
+  /**
+   * The bypass link's label, in the reader's language for the same reason
+   * `navLabel` is. Its target is `#main`, which the `{-$locale}` layout owns —
+   * the two have to be changed together.
+   */
+  skipLabel: string;
   /** The brand link, styled with `BRAND_CLASS`. Routing stays at the call site. */
   brandElement: ReactNode;
   items: readonly SiteHeaderNavItem[];
@@ -36,8 +46,16 @@ interface SiteHeaderProps {
   children?: ReactNode;
 }
 
-export const SiteHeader: FC<SiteHeaderProps> = ({ navLabel, brandElement, items, children }) => (
+export const SiteHeader: FC<SiteHeaderProps> = ({ navLabel, skipLabel, brandElement, items, children }) => (
   <header className={ROOT}>
+    {/* Eight identical tab stops — brand, five nav items, two language pills —
+        sit in front of `<main>` on all twenty pages, and the bar is sticky so
+        they never scroll away. Parked above the viewport rather than in
+        `sr-only`: that utility sets `position: static` when it is undone, which
+        then fights the `absolute` needed to place it. */}
+    <a href='#main' className={SKIP}>
+      {skipLabel}
+    </a>
     <div className={INNER}>
       {brandElement}
       <nav aria-label={navLabel} className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
