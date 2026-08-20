@@ -196,13 +196,14 @@
 }
 
 /* On the open sky — page headers, article copy, the 404 board. The ink stays
-   pale here, so the shadow under it stays dark all day, and hover pales with it:
-   `--sky-accent` is the ink for the *other* band and lands at 2.5:1 out here.
+   pale here, so the shadow under it stays dark all day, and hover keeps `:root`'s
+   neon rather than taking the other band's `--sky-accent`, which lands at 2.4:1
+   out here. A pale hover would clear that and still be the wrong answer: the link
+   is already white by day, so paling it further is a hover you cannot see.
    Every ink the band carries is on the clock, `--ink-title` and the project hues
    included — what was left off it was left reading one assumed backdrop. */
 .ev-on-sky {
   --ink-shadow: rgba(3, 1, 20, 0.6);
-  --link-hover: var(--sky-pale-cyan);
   --ink-title: var(--sky-pale-title);
   --ink-body: var(--sky-pale-body);
   --ink-muted: var(--sky-pale-muted);
