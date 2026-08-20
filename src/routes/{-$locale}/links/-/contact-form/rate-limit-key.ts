@@ -1,6 +1,7 @@
 /**
- * Turns a client address into the key the contact form's KV counter is bucketed
- * by. Lives beside `send-contact.ts` because that is its only caller.
+ * Turns a client address into the key the contact form's rate-limiter Durable
+ * Object is bucketed by. Lives beside `send-contact.ts` because that is its
+ * only caller.
  *
  * The whole point is the IPv6 case. A routed /64 is the normal allocation for a
  * VPS or a home connection, so a sender who keys off the full /128 gets a fresh

@@ -32,13 +32,19 @@ interface StarFieldProps {
 
 export const StarField: FC<StarFieldProps> = ({ count = 40, topMax = 100, seed = DEFAULT_SEED, className, style }) => {
   /**
-   * Not redundant with React Compiler, which is the usual reason to delete a
-   * `useMemo` here — this component is one the compiler cannot compile at all.
-   * `babel-plugin-react-compiler@1.0.0` fails HIR lowering on any destructuring
-   * default (`{ count = 40 }`, parameter or `const`, with or without types)
-   * with a `Todo`-category error, and `panicThreshold: 'critical_errors'` makes
-   * that a silent skip. So this is the only memoization the star field has, and
-   * without it every layout render rebuilds all 10–62 star objects.
+   * Not redundant with React Compiler, because the compiler silently skips this
+   * component. The cause is the *pairing*, not the plugin: driven by
+   * `@babel/core@8`, `babel-plugin-react-compiler@1.0.0` raises a
+   * `Todo`-category error on any destructuring default (`{ count = 40 }`,
+   * parameter or in-body `const`), and `panicThreshold: 'critical_errors'`
+   * turns that into a skip with no warning. Verified by running the pinned
+   * preset over both shapes: `{ n = 4 }` skips, `{ n }` compiles.
+   *
+   * So this is the only memoization the star field has, and without it every
+   * layout render rebuilds all 10–62 star objects. Seven other components hit
+   * the same skip without compensating for it.
+   *
+   * Delete this `useMemo` once the Babel pin moves and the shape compiles.
    */
   const stars = useMemo(() => {
     const random = seededRandom(seed);
