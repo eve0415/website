@@ -74,15 +74,28 @@ interface LanguageSwitchProps {
  * twenty real pages are unaffected: each pill's href already is the current URL.
  * The pills still colour by locale, which is the language you are reading, not
  * the page you are on.
+ *
+ * The visible "JA"/"EN" is hidden from assistive tech and the accessible name
+ * is the language's own endonym, carrying a matching `lang` so it is voiced
+ * with that language's phonetics rather than the page's. `hrefLang` describes
+ * the destination and does not affect pronunciation. The endonyms are literals
+ * rather than `SITE_COPY` entries on purpose: a language names itself the same
+ * way whichever page you are reading, so translating them would be the bug.
  */
 export const LanguageSwitch: FC<LanguageSwitchProps> = ({ locale, className }) => (
   <nav aria-label={SITE_COPY[locale].langAria} className={cn(GROUP, className)}>
     <Link to='.' params={{ locale: undefined }} activeOptions={{ exact: true }} hrefLang='ja' className={cn(PILL, locale === 'ja' ? STATE.on : STATE.off)}>
-      JA
+      <span aria-hidden='true'>JA</span>
+      <span className='sr-only' lang='ja'>
+        日本語
+      </span>
       {locale === 'ja' ? <Kira /> : null}
     </Link>
     <Link to='.' params={{ locale: 'en' }} activeOptions={{ exact: true }} hrefLang='en' className={cn(PILL, locale === 'en' ? STATE.on : STATE.off)}>
-      EN
+      <span aria-hidden='true'>EN</span>
+      <span className='sr-only' lang='en'>
+        English
+      </span>
       {locale === 'en' ? <Kira /> : null}
     </Link>
   </nav>
