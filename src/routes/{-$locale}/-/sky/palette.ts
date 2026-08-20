@@ -370,6 +370,35 @@ const channel = (v: number) => {
 const luminance = (c: Rgb) => 0.2126 * channel(c[0]) + 0.7152 * channel(c[1]) + 0.0722 * channel(c[2]);
 
 /**
+ * The brightest the open sky behind the page is allowed to get.
+ *
+ * `.ev-on-sky` carries pale ink, and pale ink owing 4.5:1 runs out at a backdrop
+ * of 0.183 even at pure white — the 12px project-hue tags it also carries run out
+ * at 0.12. The page gradient reached 0.231 at 13時 and the glows over it 0.27, so
+ * the ink was being asked for a brightness it does not have. The band is held
+ * here instead, which is also what keeps one polarity for the whole 24h: dark ink
+ * on the page needs 0.175 or brighter, and dusk drops it to 0.09 whatever we do.
+ */
+const PAGE_CEILING = 0.12;
+
+/**
+ * `c` walked down its own hue until it sits at or below `PAGE_CEILING`.
+ *
+ * Scaling the channels is only approximately a power law — the sRGB toe bends it
+ * and the rounding bends it again, by up to 14% on a desaturated colour — so the
+ * step repeats against the real luminance rather than trusting one estimate, and
+ * floors so that every pass is a step down.
+ */
+const held = (c: Rgb): Rgb => {
+  let out = c;
+  for (let i = 0; i < 4 && luminance(out) > PAGE_CEILING; i++) {
+    const k = (PAGE_CEILING / luminance(out)) ** (1 / 2.4);
+    out = [Math.floor(out[0] * k), Math.floor(out[1] * k), Math.floor(out[2] * k)];
+  }
+  return out;
+};
+
+/**
  * Whether the clock reads as daytime, from how bright the middle of the hero
  * gradient is. The two thresholds are a deliberate deadband: dawn and dusk pass
  * through the switching brightness slowly, and a single threshold would flip the
@@ -395,9 +424,9 @@ export const skyCss = (clock: number, day: number): SkyCss => {
 
   return {
     rootBg: gradient([
-      [p.root[0], 0],
-      [p.root[1], 55],
-      [p.root[2], 100],
+      [held(p.root[0]), 0],
+      [held(p.root[1]), 55],
+      [held(p.root[2]), 100],
     ]),
     heroBg: gradient([
       [p.hero[0], 0],
@@ -407,9 +436,9 @@ export const skyCss = (clock: number, day: number): SkyCss => {
       [p.hero[4], 90],
       [p.hero[5], 100],
     ]),
-    nebulaBg: `radial-gradient(90vw 55vh at 80% 90vh, ${rgba(p.na, 0.2)}, transparent 65%), radial-gradient(80vw 45vh at 6% 125vh, ${rgba(p.nb, 0.42)}, transparent 68%), radial-gradient(100vw 42vh at 50% 12vh, ${rgba(p.nb, 0.32)}, transparent 70%), radial-gradient(120vw 50vh at 50% 100%, ${rgba(p.na, 0.1)}, transparent 70%)`,
+    nebulaBg: `radial-gradient(90vw 55vh at 80% 90vh, ${rgba(held(p.na), 0.2)}, transparent 65%), radial-gradient(80vw 45vh at 6% 125vh, ${rgba(held(p.nb), 0.42)}, transparent 68%), radial-gradient(100vw 42vh at 50% 12vh, ${rgba(held(p.nb), 0.32)}, transparent 70%), radial-gradient(120vw 50vh at 50% 100%, ${rgba(held(p.na), 0.1)}, transparent 70%)`,
     starAlpha: Number(p.star.toFixed(3)),
-    footerGlow: `radial-gradient(120% 220% at 50% 135%, ${rgba(p.na, 0.16)}, transparent 60%)`,
+    footerGlow: `radial-gradient(120% 220% at 50% 135%, ${rgba(held(p.na), 0.16)}, transparent 60%)`,
     cloudBack: `radial-gradient(circle at 38% 26%, ${rgba(mix(p.cl, p.cs, 0.55), 0.85)}, ${rgba(p.cs, 0.88)} 56%, ${rgba(p.cd, 0.92)} 95%)`,
     cloudMid: `radial-gradient(circle at 36% 24%, ${rgba(p.cl, 0.92)}, ${rgba(mix(p.cl, p.cs, 0.45), 0.88)} 52%, ${rgba(p.cs, 0.84)} 92%)`,
     cloudFront: `radial-gradient(circle at 35% 23%, ${rgba(p.cl, 0.96)}, ${rgba(mix(p.cl, p.cs, 0.3), 0.92)} 52%, ${rgba(mix(p.cs, p.cd, 0.3), 0.82)} 92%)`,
@@ -417,9 +446,9 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     glowA: rgba(p.na, 0.5),
     glowB: rgba(p.cs, 0.5),
     glowW: rgba(p.cl, 0.28),
-    glowMidA: rgba(p.cs, 0.28),
-    glowMidB: rgba(p.na, 0.2),
-    glowMidC: rgba(p.nb, 0.5),
+    glowMidA: rgba(held(p.cs), 0.28),
+    glowMidB: rgba(held(p.na), 0.2),
+    glowMidC: rgba(held(p.nb), 0.5),
     inkTitle: rgb(inkT),
     inkTitleRgb: inkT.join(','),
     /* Deeper than the design's own [8,58,92] / [18,48,80], which land at 3.16
