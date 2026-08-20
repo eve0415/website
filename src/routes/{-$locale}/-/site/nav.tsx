@@ -8,49 +8,26 @@ import { localeParams } from '#i18n/locale';
 
 import { NAV_LINK_CLASS } from './header-classes';
 
+/**
+ * Without `exact` every path matches `/`, so home would read as the current page
+ * everywhere. 作ったもの deliberately keeps the prefix match: the design marks it
+ * current on the project pages too.
+ */
+const ITEMS = [
+  { key: 'home', to: '/{-$locale}', copy: 'navHome', exact: true },
+  { key: 'projects', to: '/{-$locale}/projects', copy: 'navProjects', exact: false },
+  { key: 'skills', to: '/{-$locale}/skills', copy: 'navSkills', exact: false },
+  { key: 'links', to: '/{-$locale}/links', copy: 'navLinks', exact: false },
+  { key: 'about', to: '/{-$locale}/about', copy: 'navAbout', exact: false },
+] as const;
+
 /** Every item is a registered route, so the whole nav navigates client-side. */
-export const navItems = (locale: Locale): readonly SiteHeaderNavItem[] => [
-  {
-    key: 'home',
-    // Without `exact` every path matches `/`, so home would read as the current
-    // page everywhere. 作ったもの deliberately keeps the prefix match: the
-    // design marks it current on the project pages too.
+export const navItems = (locale: Locale): readonly SiteHeaderNavItem[] =>
+  ITEMS.map(item => ({
+    key: item.key,
     element: (
-      <Link to='/{-$locale}' params={localeParams(locale)} className={NAV_LINK_CLASS} activeOptions={{ exact: true }}>
-        {SITE_COPY[locale].navHome}
+      <Link to={item.to} params={localeParams(locale)} className={NAV_LINK_CLASS} activeOptions={{ exact: item.exact }}>
+        {SITE_COPY[locale][item.copy]}
       </Link>
     ),
-  },
-  {
-    key: 'projects',
-    element: (
-      <Link to='/{-$locale}/projects' params={localeParams(locale)} className={NAV_LINK_CLASS}>
-        {SITE_COPY[locale].navProjects}
-      </Link>
-    ),
-  },
-  {
-    key: 'skills',
-    element: (
-      <Link to='/{-$locale}/skills' params={localeParams(locale)} className={NAV_LINK_CLASS}>
-        {SITE_COPY[locale].navSkills}
-      </Link>
-    ),
-  },
-  {
-    key: 'links',
-    element: (
-      <Link to='/{-$locale}/links' params={localeParams(locale)} className={NAV_LINK_CLASS}>
-        {SITE_COPY[locale].navLinks}
-      </Link>
-    ),
-  },
-  {
-    key: 'about',
-    element: (
-      <Link to='/{-$locale}/about' params={localeParams(locale)} className={NAV_LINK_CLASS}>
-        {SITE_COPY[locale].navAbout}
-      </Link>
-    ),
-  },
-];
+  }));
