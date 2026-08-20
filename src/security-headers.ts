@@ -29,7 +29,7 @@
  * Nothing here may import from `@tanstack/react-start` or read `import.meta.env`
  * — `vite.config.ts` loads this module at config time, before either exists.
  */
-export const buildCsp = (dev: boolean): string => {
+const buildCsp = (dev: boolean): string => {
   const directives = [
     "default-src 'self'",
     `script-src 'self' 'unsafe-inline' ${dev ? "'unsafe-eval' " : ''}https://challenges.cloudflare.com https://static.cloudflareinsights.com`,

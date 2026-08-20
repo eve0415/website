@@ -28,7 +28,7 @@ interface RawStop {
 }
 
 /** A sky keyframe with every hex resolved to an rgb triplet. */
-export interface SkyPalette {
+interface SkyPalette {
   hero: HeroRgb;
   root: RootRgb;
   cl: Rgb;
@@ -321,7 +321,7 @@ const LAST = toStop({ ...RAW[0], t: 24 });
 const PAL: readonly PaletteStop[] = [FIRST, ...RAW.slice(1).map(stop => toStop(stop)), LAST];
 
 /** Interpolated palette at a 0–24h clock value. Returns rgb triplets + star/day scalars. */
-export const skyPalette = (clock: number): SkyPalette => {
+const skyPalette = (clock: number): SkyPalette => {
   const c = (((Number.isFinite(clock) ? clock : 0) % 24) + 24) % 24;
   let a = FIRST;
   let b = LAST;
