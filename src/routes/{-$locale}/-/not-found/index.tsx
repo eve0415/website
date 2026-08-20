@@ -50,9 +50,13 @@ export const NotFound = () => {
   const [searching, setSearching] = useState(false);
   const [foundCount, setFoundCount] = useState(0);
   const [result, setResult] = useState<number | null>(null);
-  const [bubbleOn, setBubbleOn] = useState(false);
+  /**
+   * One state, not two: the timer below has to restart when the cat is clicked
+   * again while the bubble is already up, and `on` alone does not change on that
+   * click. A fresh object does, and the effect reads what it depends on.
+   */
+  const [bubble, setBubble] = useState({ idx: -1, on: false });
   // -1 so the first click lands on the first line, as the design has it.
-  const [meowIdx, setMeowIdx] = useState(-1);
 
   // Pointer parallax. The whole depth stack reads `--mx`/`--my` off the root,
   // so one element's inline style drives every layer.
@@ -120,10 +124,7 @@ export const NotFound = () => {
       setSearching(false);
       setFoundCount(foundCount + 1);
       setResult(foundCount);
-      if (last) {
-        setMeowIdx(2);
-        setBubbleOn(true);
-      }
+      if (last) setBubble({ idx: 2, on: true });
     };
     // Without flushSync the state update lands after the transition has
     // already captured the old frame, and the chips pop in instead of growing.
@@ -175,18 +176,18 @@ export const NotFound = () => {
     };
   }, [searching]);
 
-  // meowIdx is not read below. It is a dependency so that re-clicking the cat while the
-  // bubble is still up restarts this timer, instead of the first click's timeout hiding
-  // the new meow early.
+  // Depending on the whole object is what makes a re-click restart the timer:
+  // a new meow is a new object, so the previous click's timeout is cleared
+  // instead of hiding the new one early.
   useEffect(() => {
-    if (!bubbleOn) return;
+    if (!bubble.on) return;
     const id = setTimeout(() => {
-      setBubbleOn(false);
+      setBubble(shown => ({ ...shown, on: false }));
     }, 2600);
     return () => {
       clearTimeout(id);
     };
-  }, [bubbleOn, meowIdx]); // oxlint-disable-line react/exhaustive-effect-dependencies
+  }, [bubble]);
 
   const done = foundCount >= copy.items.length;
   const item = result === null ? undefined : copy.items[result];
@@ -289,7 +290,7 @@ export const NotFound = () => {
                 if (searching || done) return;
                 setSearching(true);
                 setResult(null);
-                setBubbleOn(false);
+                setBubble(shown => ({ ...shown, on: false }));
               }}
             >
               {searching ? copy.btnSearching : done ? copy.btnDone : copy.btnSearch}
@@ -359,9 +360,9 @@ export const NotFound = () => {
             className='absolute right-[2%] bottom-[4%] left-[4%] h-[38%] animate-[glowPulse_5s_ease-in-out_infinite_alternate] rounded-[50%] blur-[20px]'
             style={{ background: CAT_GLOW }}
           />
-          {bubbleOn ? (
+          {bubble.on ? (
             <span className='ev-404-bubble absolute bottom-[calc(100%+14px)] left-1/2 z-2 -translate-x-1/2 rounded-[999px] border border-(--line-accent) bg-(--surface-toast) px-4 py-[11px] text-[0.84375rem] leading-none whitespace-nowrap text-[#d8f9ff] shadow-(--glow-toast)'>
-              {copy.meows[meowIdx] ?? copy.meows[0]}
+              {copy.meows[bubble.idx] ?? copy.meows[0]}
               <span
                 aria-hidden='true'
                 className='absolute bottom-[-5px] left-1/2 size-[9px] -translate-x-1/2 rotate-45 border-r border-b border-(--line-accent) bg-(--surface-toast)'
@@ -374,8 +375,7 @@ export const NotFound = () => {
             aria-label={copy.catAria}
             className='pointer-events-auto relative m-0 block w-full cursor-pointer border-none bg-none p-0'
             onClick={() => {
-              setMeowIdx((meowIdx + 1) % 3);
-              setBubbleOn(true);
+              setBubble(shown => ({ idx: (shown.idx + 1) % 3, on: true }));
             }}
           >
             <CatArt alt={copy.altCat} sizes={CAT_SIZES} className='animate-[evCatFloat_3.4s_ease-in-out_infinite_alternate]' />
