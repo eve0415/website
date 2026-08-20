@@ -74,9 +74,25 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
    * "still checking" until the page was reloaded.
    */
   const challengeWanted = useRef(false);
+  /**
+   * Whether the widget has been asked for yet. `/links` is a page most visitors
+   * read without ever writing anything, and mounting the widget costs them a
+   * third-party script fetch, parse and iframe for a form they never use — so it
+   * waits for the first sign of intent instead.
+   *
+   * There is no reserved slot to go with this, because there is nothing to
+   * reserve: `appearance: 'interaction-only'` means the widget takes no visible
+   * space unless a challenge is actually required, and when one is, it appears
+   * at exactly the same moment it always did — when `execute()` runs.
+   */
+  const [mounted, setMounted] = useState(false);
 
   const startChallenge = () => {
     if (challengeStarted.current) return;
+
+    // Ask for the widget on the way past. Harmless once it is already up: React
+    // bails out of a state update that does not change the value.
+    setMounted(true);
 
     const widget = widgetRef.current;
     if (!widgetReady.current || widget === null || widget === undefined) {
@@ -226,14 +242,16 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
               to fit, and forcing 300px here is what pushed the card past a 320px
               viewport that only has 222px to give it. */}
           <div className='max-w-full'>
-            <TurnstileWidget
-              ref={widgetRef}
-              size={narrow ? 'compact' : 'flexible'}
-              onWidgetLoad={handleWidgetLoad}
-              onSuccess={setToken}
-              onExpire={rearm}
-              onError={rearm}
-            />
+            {mounted ? (
+              <TurnstileWidget
+                ref={widgetRef}
+                size={narrow ? 'compact' : 'flexible'}
+                onWidgetLoad={handleWidgetLoad}
+                onSuccess={setToken}
+                onExpire={rearm}
+                onError={rearm}
+              />
+            ) : null}
           </div>
 
           <div className='flex flex-wrap items-center gap-4'>
