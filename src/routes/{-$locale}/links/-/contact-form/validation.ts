@@ -46,9 +46,15 @@ export type ContactResult = { ok: true } | { ok: false; reason: ContactFailure }
  */
 export const checkContact = (input: ContactInput): ContactFailure | undefined => {
   if (input.name.trim().length === 0) return 'name';
-  if (!EMAIL_PATTERN.test(input.email)) return 'email';
+  // The ceiling is tested before the pattern, not with the other length checks
+  // below: the two halves either side of `\.` are the same negated class and
+  // both admit `.`, so a long non-matching address backtracks quadratically —
+  // 0.4ms at 500 chars, 226ms at 32k. `checkContact` is the first thing
+  // `sendContact` runs, ahead of the challenge and the rate limiter, so that
+  // cost is unauthenticated. Bounding the length first makes it unreachable.
+  if (input.email.length > EMAIL_MAX || !EMAIL_PATTERN.test(input.email)) return 'email';
   if (input.message.trim().length === 0) return 'message';
-  if (input.name.length > NAME_MAX || input.email.length > EMAIL_MAX || input.message.length > MESSAGE_MAX) return 'too-long';
+  if (input.name.length > NAME_MAX || input.message.length > MESSAGE_MAX) return 'too-long';
   return undefined;
 };
 
