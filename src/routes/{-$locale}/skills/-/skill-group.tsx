@@ -1,28 +1,14 @@
+import type { HeadingInk } from '#components/card';
 import type { SkillItem } from './skill-chips';
 import type { FC } from 'react';
 
-import { Card } from '#components/card';
+import { Card, HEADING_INK } from '#components/card';
 import { cn } from '#lib/cn';
-import { tw } from '#lib/tw';
 
 import { SkillChips } from './skill-chips';
 
-/**
- * Each group heading gets its own colour in the design — its own scale, not the
- * project hues: the cyan of those belongs to the AI card that opens the grid.
- */
-export type SkillInk = 'ice' | 'mint' | 'sky' | 'violet' | 'rose';
-
-const INK = {
-  ice: tw('text-(--ink-ice)'),
-  mint: tw('text-(--hue-mint)'),
-  sky: tw('text-(--hue-sky)'),
-  violet: tw('text-(--hue-violet)'),
-  rose: tw('text-(--hue-rose)'),
-} satisfies Record<SkillInk, string>;
-
 interface SkillGroupProps {
-  ink: SkillInk;
+  ink: HeadingInk;
   heading: string;
   items: readonly SkillItem[];
   dailyLabel: string;
@@ -31,7 +17,7 @@ interface SkillGroupProps {
 
 export const SkillGroup: FC<SkillGroupProps> = ({ ink, heading, items, dailyLabel, className }) => (
   <Card className={cn('grid content-start gap-3.5', className)}>
-    <h2 className={cn('text-(length:--text-panel-title) font-bold', INK[ink])}>{heading}</h2>
+    <h2 className={cn('text-(length:--text-panel-title) font-bold', HEADING_INK[ink])}>{heading}</h2>
     <SkillChips items={items} dailyLabel={dailyLabel} />
   </Card>
 );

@@ -1,4 +1,4 @@
-import type { PanelInk } from './panel';
+import type { HeadingInk } from '#components/card';
 import type { FC } from 'react';
 
 import { LinkRow } from '#components/link-row';
@@ -13,7 +13,7 @@ export interface ProjectLink {
 }
 
 interface LinksSectionProps {
-  ink: PanelInk;
+  ink: HeadingInk;
   heading: string;
   links: readonly ProjectLink[];
 }

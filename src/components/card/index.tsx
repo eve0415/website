@@ -6,6 +6,22 @@ import { tw } from '#lib/tw';
 /** Project accent hue, shared by Card, Tag and ProjectCard. */
 export type Hue = 'cyan' | 'mint' | 'sky' | 'violet' | 'rose';
 
+/**
+ * Heading ink, deliberately not the project hues: the cyan of those belongs to
+ * the cards themselves. Unlike `Hue`, whose consumers each map it to their own
+ * classes, this one scale had been transcribed identically in two places — so
+ * the map travels with the type.
+ */
+export type HeadingInk = 'ice' | 'mint' | 'sky' | 'violet' | 'rose';
+
+export const HEADING_INK = {
+  ice: tw('text-(--ink-ice)'),
+  mint: tw('text-(--hue-mint)'),
+  sky: tw('text-(--hue-sky)'),
+  violet: tw('text-(--hue-violet)'),
+  rose: tw('text-(--hue-rose)'),
+} satisfies Record<HeadingInk, string>;
+
 type CardVariant = 'solid' | 'soft' | 'dashed';
 
 const BASE = tw(
