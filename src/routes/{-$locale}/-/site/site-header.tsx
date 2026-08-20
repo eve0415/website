@@ -12,8 +12,11 @@ const ROOT = tw(
 /** The bar stays full-bleed; only its contents stop at the shell width. */
 const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-3');
 
+/* `ev-on-panel` because the pill paints its own opaque #0d0836 and is only
+   *inside* the header's band, not on it: taking the band's ink put dark navy on
+   deep indigo — 1.2:1 by day, and this is the keyboard visitor's first move. */
 const SKIP = tw(
-  'absolute top-2 left-2 z-20 -translate-y-[calc(100%+1rem)] rounded-xl border border-(--accent-cyan) bg-(--surface-toast) px-4 py-2 font-sans text-(length:--text-ui) text-(--ink-title) no-underline transition-transform duration-150 ease-(--ease-comet) focus-visible:translate-y-0',
+  'ev-on-panel absolute top-2 left-2 z-20 -translate-y-[calc(100%+1rem)] rounded-xl border border-(--accent-cyan) bg-(--surface-toast) px-4 py-2 font-sans text-(length:--text-ui) text-(--ink-title) no-underline transition-transform duration-150 ease-(--ease-comet) focus-visible:translate-y-0',
 );
 
 export interface SiteHeaderNavItem {
