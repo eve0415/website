@@ -3,6 +3,7 @@ import type { FC } from 'react';
 import { useEffect, useRef, useState, useSyncExternalStore } from 'react';
 
 import './page-transition/page-transition.css';
+import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
 import { tw } from '#lib/tw';
 
 /** Delay 2.15s + 0.8s of travel, then the small margin the comp leaves. */
@@ -16,7 +17,7 @@ const CURTAIN_MS = 3050;
 const subscribeToHydration = () => () => {
   // Hydration happens once and never comes undone; nothing to unsubscribe from.
 };
-const playsOnClient = () => !globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const playsOnClient = () => !prefersReducedMotion();
 const playsOnServer = () => false;
 
 /**

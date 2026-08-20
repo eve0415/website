@@ -5,6 +5,7 @@ import { flushSync } from 'react-dom';
 import { Button } from '#components/button';
 import { NOT_FOUND_COPY, SITE_COPY } from '#i18n/copy';
 import { cn } from '#lib/cn';
+import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
 
 import { CatArt } from '../cat-art';
 import { ButtonLink, localeParams } from '../routed-links';
@@ -17,8 +18,8 @@ import { ShootingStar } from '../sky/shooting-star';
 import { CAT_GLOW, CLOUD_BACK, CLOUD_FRONT, CLOUD_MID, glow } from '../sky/sky-scene';
 import { StarField } from '../sky/star-field';
 
-import { Moon } from './moon';
 import './not-found.css';
+import { Moon } from './moon';
 import {
   CAT_CLOUDS,
   CAT_SIZES,
@@ -32,8 +33,6 @@ import {
   NOT_FOUND_STAR_SEED,
   SPARKLE,
 } from './scene';
-
-const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 export const NotFound = () => {
   // The 404 hangs off the root route, so this is the only place the locale is

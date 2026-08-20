@@ -5,9 +5,11 @@ import { useBlocker, useRouter } from '@tanstack/react-router';
 import { useEffect, useRef, useState } from 'react';
 
 import './page-transition.css';
+import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
+
 import { CometWipe } from './comet-wipe';
 import { DoorWipe } from './door-wipe';
-import { advance, hueFor, isLocaleSwap, prefersReducedMotion, projectSlug } from './run';
+import { advance, hueFor, isLocaleSwap, projectSlug } from './run';
 import { SlatCurtain } from './slat-curtain';
 
 /**

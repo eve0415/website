@@ -2,6 +2,8 @@ import type { FC } from 'react';
 
 import { useEffect, useState } from 'react';
 
+import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
+
 import { ShootingStar } from './shooting-star';
 
 /** Below this the page has barely moved, and a reward for it would be noise. */
@@ -42,7 +44,7 @@ export const ScrollEndStar: FC = () => {
 
     const onScrollEnd = () => {
       // A reader who asked for less motion gets the scroll and nothing else.
-      if (globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+      if (prefersReducedMotion()) return;
 
       const now = Date.now();
       if (globalThis.scrollY < MIN_SCROLL || now - previous < COOLDOWN_MS) return;

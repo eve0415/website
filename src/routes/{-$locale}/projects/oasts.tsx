@@ -9,6 +9,7 @@ import { Tag } from '#components/tag';
 import { OASTS_COPY, PROJECT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
 import { cn } from '#lib/cn';
+import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
 import { tw } from '#lib/tw';
 
 import { BackLink } from './-/back-link';
@@ -45,8 +46,6 @@ const cut = (segments: readonly CommandSegment[], count: number | null): readonl
   }
   return shown;
 };
-
-const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const Oasts = () => {
   const locale = useRouteContext({ from: rootRouteId, select: context => context.locale });

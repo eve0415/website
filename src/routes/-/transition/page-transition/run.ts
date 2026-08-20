@@ -1,7 +1,5 @@
 import { tw } from '#lib/tw';
 
-export const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
-
 /** The tint a project's slat curtain carries, from the comp's `HUES` map. */
 interface SlatHue {
   /** The lit leading edge of every slat. */

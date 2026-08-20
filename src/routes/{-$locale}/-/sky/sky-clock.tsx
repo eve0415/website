@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 
+import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
+
 import { MIDNIGHT, skyCss, skyIsDay, skyVars } from './palette';
 
 /** How often the clock is re-read once the page is running. */
@@ -24,7 +26,6 @@ const easeInOutQuad = (k: number) => (k < 0.5 ? 2 * k * k : 1 - (-2 * k + 2) ** 
  * on the page. The crossfade is a JS loop, so that rule cannot reach it and it
  * has to ask for itself.
  */
-const prefersReducedMotion = () => globalThis.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 const localClock = () => {
   const now = new Date();
