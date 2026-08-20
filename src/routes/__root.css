@@ -486,12 +486,15 @@
     transition-duration: 0.01ms !important;
   }
 
-  /* A view() timeline runs on scroll progress, not on time, so collapsing the
-     duration above leaves it animating. Only dropping the animation stops it.
-     Every entrance built this way belongs here: `.ev-reveal` below and
-     `.ev-hl` in -/home/highlights.css are the same construction. */
+  /* A scroll-progress timeline — `view()` or `scroll()` — runs on distance, not
+     on time, so collapsing the duration above leaves it animating. Only dropping
+     the animation stops it. Every rule carrying `animation-timeline` belongs
+     here; grep that property to find the ones that do. */
   .ev-reveal,
-  .ev-hl {
+  .ev-hl,
+  .ev-prg,
+  .ev-prg-b,
+  .ev-prg-h {
     animation-name: none !important;
   }
 
