@@ -74,6 +74,16 @@ export interface SkyCss {
    * `day` saturates from 8時半 to 17時半, and the band is what the sub is read on.
    */
   vignette: number;
+  /**
+   * The wash the hero copy is read on.
+   *
+   * The copy ink flips with the clock, near-black by day and pale at night, so
+   * a scrim under it has to flip too or it walks the band into the ink instead
+   * of away from it. Colour and alpha both come from here. By day it hands back
+   * a share of what the vignette took, since that is where most of the gap it
+   * fills came from; at night it is a whisper of the same indigo, the other way.
+   */
+  scrim: string;
   footerGlow: string;
   /** The cloud sea, lit front to back. */
   cloudBack: string;
@@ -423,6 +433,36 @@ const PAGE_DIM = 0.04;
 const CLOUD_DUSK = 0.15;
 const CLOUD_NOON = 0.26;
 
+/**
+ * The two halves of the hero copy scrim, as alphas.
+ *
+ * The daylight half is read off the vignette rather than off its own ramp: the
+ * band the vignette darkens is the same band the near-black ink is read on, and
+ * at dusk it takes 1.3 of contrast the greeting does not have. Sized in the
+ * vignette's units, one number keeps the two in step at every clock between.
+ * Not all of it: the copy clears 4.5:1 well before the vignette is undone, and
+ * every point past that is scrim somebody can see.
+ *
+ * `SCRIM_DAY` is the part that is not the vignette. At 13時 the vignette is
+ * already down to 0.015 and the copy is still 0.08 short on a 320px screen,
+ * because a short hero puts it over a brighter run of sky; that is what this
+ * covers, and at 2% of white it is under the rounding of the gradient it sits
+ * on.
+ */
+const SCRIM_DAY = 0.02;
+const SCRIM_GIVEBACK = 0.68;
+
+/**
+ * The night half, which is the same indigo going the other way.
+ *
+ * The night band is nearly dark enough for pale ink on its own. What it is not
+ * dark enough for is the brightest puff of the back cloud layer, which crosses
+ * the sub on a short viewport and only there: 4.38 at 375x667 against 5.58 at
+ * 1280x800. This is sized on that puff, to the same headroom over 4.5:1 that
+ * the daylight half carries.
+ */
+const SCRIM_NIGHT = 0.06;
+
 /** 0 below `lo`, 1 above `hi`, linear between — one scalar read off another. */
 const ramp = (value: number, lo: number, hi: number) => Math.min(1, Math.max(0, (value - lo) / (hi - lo)));
 
@@ -485,6 +525,8 @@ export const skyCss = (clock: number, day: number): SkyCss => {
      because it is the opaque one. */
   const band = luminance(held(p.root[2]));
   const cloud = ramp(luminance(mix(p.hero[1], p.hero[2], 0.5)), CLOUD_DUSK, CLOUD_NOON);
+  /* The vignette alpha, hoisted because the scrim is sized in it. */
+  const vignette = 0.3 * (1 - cloud);
   const deep = (dusk: Rgb, noon: Rgb) => mix(dusk, noon, cloud);
   const inkT = mix(p.inkT, deep([4, 20, 36], [10, 36, 64]), day);
 
@@ -504,7 +546,8 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     ]),
     nebulaBg: `radial-gradient(90vw 55vh at 80% 90vh, ${rgba(held(p.na, 0.2, band), 0.2)}, transparent 65%), radial-gradient(80vw 45vh at 6% 125vh, ${rgba(held(p.nb, 0.42, band), 0.42)}, transparent 68%), radial-gradient(100vw 42vh at 50% 12vh, ${rgba(held(p.nb, 0.32, band), 0.32)}, transparent 70%), radial-gradient(120vw 50vh at 50% 100%, ${rgba(held(p.na, 0.1, band), 0.1)}, transparent 70%)`,
     starAlpha: Number(p.star.toFixed(3)),
-    vignette: Number((0.3 * (1 - cloud)).toFixed(3)),
+    vignette: Number(vignette.toFixed(3)),
+    scrim: rgba(mix([5, 2, 28], [255, 255, 255], day), Number((SCRIM_NIGHT + (SCRIM_DAY + SCRIM_GIVEBACK * vignette - SCRIM_NIGHT) * day).toFixed(3))),
     footerGlow: `radial-gradient(120% 220% at 50% 135%, ${rgba(held(p.na, 0.16, band), 0.16)}, transparent 60%)`,
     cloudBack: `radial-gradient(circle at 38% 26%, ${rgba(mix(p.cl, p.cs, 0.55), 0.85)}, ${rgba(p.cs, 0.88)} 56%, ${rgba(p.cd, 0.92)} 95%)`,
     cloudMid: `radial-gradient(circle at 36% 24%, ${rgba(p.cl, 0.92)}, ${rgba(mix(p.cl, p.cs, 0.45), 0.88)} 52%, ${rgba(p.cs, 0.84)} 92%)`,
@@ -570,6 +613,7 @@ export const skyVars = (sky: SkyCss) => ({
   '--sky-nebula': sky.nebulaBg,
   '--sky-star-alpha': String(sky.starAlpha),
   '--sky-vignette': String(sky.vignette),
+  '--sky-scrim': sky.scrim,
   '--sky-footer-glow': sky.footerGlow,
   '--sky-cloud-back': sky.cloudBack,
   '--sky-cloud-mid': sky.cloudMid,

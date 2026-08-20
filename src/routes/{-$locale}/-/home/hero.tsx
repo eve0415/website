@@ -30,6 +30,21 @@ const VIGNETTE = tw(
   'bg-[linear-gradient(180deg,rgba(5,2,28,var(--sky-vignette))_0%,rgba(5,2,28,0)_24%,rgba(5,2,28,0)_58%,rgba(5,2,28,var(--sky-vignette))_82%,rgba(5,2,28,0)_100%)]',
 );
 
+/* The copy scrim. The vignette above darkens this band for depth at night while
+   the ink darkens with the day, so the two ends of the clock want opposite
+   things of the sky behind the copy. `--sky-scrim` carries the colour as well
+   as the alpha, so this only has to place it.
+
+   Only the plateau is the copy: it runs the width of the column and stops 56px
+   above the buttons, and everything outside it is fade. The fades are long on
+   purpose, half the viewport to each side and 200px up. At the alpha dusk asks
+   for, a 44px feather still reads as a pale card behind the text; at this
+   length the same wash reads as the sky brightening toward the horizon, which
+   is what the gradient under it is already doing. */
+const SCRIM = tw(
+  'pointer-events-none absolute inset-x-[-50vw] -top-54 bottom-0 -z-1 bg-[linear-gradient(180deg,transparent_0,var(--sky-scrim)_200px,var(--sky-scrim)_calc(100%-56px),transparent_100%)] mask-[linear-gradient(90deg,transparent_0,#000_50vw,#000_calc(100%-50vw),transparent_100%)]',
+);
+
 /** The lights inside the cloud sea, front to back as the design layers them. */
 const HERO_GLOWS = [
   { key: 'a', left: '4%', right: '40%', bottom: '-60px', height: '200px', color: GLOW_A, fade: 72, blur: 38 },
@@ -150,7 +165,8 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
       <ShootingStar tail={160} duration={12} delay={4} className='pointer-events-none top-[9%] right-[5%]' style={{ opacity: 'var(--sky-star-alpha)' }} />
 
       <div className='ev-on-clouds relative z-2 mx-auto w-full max-w-(--page-max-wide) px-[clamp(22px,6vw,72px)] pb-[clamp(56px,11vh,110px)]'>
-        <div className='grid max-w-170 justify-items-start gap-4'>
+        <div className='relative grid max-w-170 justify-items-start gap-4'>
+          <div aria-hidden='true' className={SCRIM} />
           <Greeting
             locale={locale}
             className='animate-[fadeUp_0.7s_ease_0.2s_backwards] text-(length:--text-small) tracking-[0.22em] text-(--ink-ice) [text-shadow:0_1px_10px_var(--ink-shadow)]'
