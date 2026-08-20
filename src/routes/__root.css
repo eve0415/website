@@ -131,6 +131,8 @@
   --glow-star: 0 0 12px 3px rgba(4, 254, 255, 0.85);
   --glow-comet-head: 0 0 10px 3px rgba(4, 254, 255, 0.8);
   --lift-hover: translateY(-3px);
+  /* The eight-point sparkle, five call sites and counting. */
+  --shape-sparkle: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
 
   /* 拡 — ultra-wide scaling. Past roughly 2100px the layout has stopped
      growing and the page just gains margin, so the whole thing zooms up in

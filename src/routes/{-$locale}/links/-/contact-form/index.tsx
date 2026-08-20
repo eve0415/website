@@ -252,10 +252,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
           className='grid justify-items-start gap-3 p-[6px_0_2px] focus-visible:outline-2 focus-visible:outline-offset-[6px] focus-visible:outline-(--accent-cyan)'
         >
           <div className='flex items-center gap-2.5'>
-            <span
-              aria-hidden='true'
-              className='size-3.5 bg-(--hue-mint) drop-shadow-[0_0_6px_rgba(0,221,168,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)]'
-            />
+            <span aria-hidden='true' className='size-3.5 bg-(--hue-mint) drop-shadow-[0_0_6px_rgba(0,221,168,.9)] [clip-path:var(--shape-sparkle)]' />
             <p className='text-[1.03125rem] font-bold text-(--hue-mint)'>{copy.sentHead}</p>
           </div>
           <p className='text-(length:--text-nav) leading-[1.8] text-(--ink-muted)'>{copy.sentBody}</p>

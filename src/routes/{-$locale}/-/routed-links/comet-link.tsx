@@ -42,7 +42,7 @@ export const CometLink: FC<CometLinkProps> = props => {
           <span className='absolute top-0 right-[-2px] size-[5px] rounded-[50%] bg-(--star-white) shadow-[0_0_10px_3px_rgba(4,254,255,.9)]' />
         </span>
         <span
-          className='absolute right-[-7px] -bottom-px size-[13px] transform-[scale(0)] bg-(--star-white) drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:polygon(50%_0%,61%_39%,100%_50%,61%_61%,50%_100%,39%_61%,0%_50%,39%_39%)] group-hover:[animation:evKiraPop_0.5s_ease-in-out_0.45s_both]'
+          className='absolute right-[-7px] -bottom-px size-[13px] transform-[scale(0)] bg-(--star-white) drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:var(--shape-sparkle)] group-hover:[animation:evKiraPop_0.5s_ease-in-out_0.45s_both]'
           aria-hidden='true'
         />
       </span>
