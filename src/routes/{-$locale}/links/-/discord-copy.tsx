@@ -38,9 +38,14 @@ export const DiscordCopy: FC<DiscordCopyProps> = ({ handle, copyLabel, copiedLab
   /**
    * A count rather than a flag, and `0` is "not copied". A second copy inside
    * the two-second window is a new number, so the timer restarts instead of
-   * inheriting the first one's remainder — and the live region is keyed on it,
-   * so it is a new node each time and the confirmation is announced again. A
-   * boolean stayed `true` through both, and the repeat said nothing.
+   * inheriting the first one's remainder — and the span *inside* the live
+   * region is keyed on it, so a repeat swaps that node and the confirmation is
+   * announced again. A boolean stayed `true` through both, and the repeat said
+   * nothing.
+   *
+   * The key belongs on the span and not on the `<output>`: a live region has to
+   * already be in the document when its content changes, so remounting the
+   * region itself is what stops the announcement rather than repeating it.
    */
   const [copies, setCopies] = useState(0);
   const copied = copies > 0;
@@ -109,8 +114,8 @@ export const DiscordCopy: FC<DiscordCopyProps> = ({ handle, copyLabel, copiedLab
           rather than a child: a live region inside the control it reports on is
           content of that control, and its text is then in the running for the
           button's own name. */}
-      <output key={copies} className='absolute size-px overflow-hidden [clip-path:inset(50%)]'>
-        {copied ? copiedLabel : ''}
+      <output className='absolute size-px overflow-hidden [clip-path:inset(50%)]'>
+        <span key={copies}>{copied ? copiedLabel : ''}</span>
       </output>
 
       {/* A popover, so the toast sits in the top layer. Anchor positioning

@@ -112,15 +112,16 @@ export const CommandBox: FC<CommandBoxProps> = ({ title, tabs, segments, command
             </span>
           </div>
           {/* `<output>` is `role="status"` without saying so, which is what was
-              missing: the confirmation was painted and never announced. */}
-          <output
-            key={copies}
-            className={cn(
-              'block h-[1.1875rem] truncate font-mono text-(length:--text-caption) leading-[1.1875rem] text-(--hue-mint)',
-              copied && 'animate-[fadeIn_0.25s_ease_both]',
-            )}
-          >
-            {copied ? copiedText : ''}
+              missing: the confirmation was painted and never announced.
+              The region itself is never keyed — a live region has to already be
+              in the document when its content changes, so remounting it is the
+              one thing that stops the announcement. The key sits on the inner
+              span instead: the region stays registered, and a repeat inside the
+              window still swaps the node, so identical text announces again. */}
+          <output className='block h-[1.1875rem] truncate font-mono text-(length:--text-caption) leading-[1.1875rem] text-(--hue-mint)'>
+            <span key={copies} className={cn('block', copied && 'animate-[fadeIn_0.25s_ease_both]')}>
+              {copied ? copiedText : ''}
+            </span>
           </output>
         </div>
 
