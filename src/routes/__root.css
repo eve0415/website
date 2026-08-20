@@ -463,8 +463,11 @@
   }
 
   /* A view() timeline runs on scroll progress, not on time, so collapsing the
-     duration above leaves it animating. Only dropping the animation stops it. */
-  .ev-reveal {
+     duration above leaves it animating. Only dropping the animation stops it.
+     Every entrance built this way belongs here: `.ev-reveal` below and
+     `.ev-hl` in -/home/highlights.css are the same construction. */
+  .ev-reveal,
+  .ev-hl {
     animation-name: none !important;
   }
 
