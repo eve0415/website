@@ -56,6 +56,11 @@ interface PaletteStop extends SkyPalette {
  * it has to turn dark to stay legible. Glass panels and their contents do not
  * appear here — they stay night-coloured all day, which is what keeps their
  * light text readable over a bright sky.
+ *
+ * That last sentence is only true because `.ev-on-panel` in `__root.css` pins
+ * the panel *surfaces* opaque as well as the ink. While they were translucent
+ * the sky composited straight through them and the claim was false for eleven
+ * hours a day; the two have to stay in step.
  */
 export interface SkyCss {
   rootBg: string;

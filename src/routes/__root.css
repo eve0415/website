@@ -198,8 +198,21 @@
 
 /* The way back, for a panel nested inside either. It has to name every token
    the two classes above touch — one left out is one that keeps a daylight value
-   on a surface that is still deep indigo. */
+   on a surface that is still deep indigo.
+
+   The surfaces are opaque here rather than the translucent `:root` values. The
+   ink below is pinned to night, but a translucent surface lets the sky through,
+   and `SkyClock` brightens it from #100a3f to #428ac0 between roughly 7時 and
+   18時 — so night ink ended up over a daylight panel. Measured on the LAB
+   card's badge (#8d85c8, 11.5px, so it owes 4.5:1): 5.81:1 at midnight and
+   2.46:1 at noon. These three values are exactly what the old alphas composited
+   to over the midnight page gradient, so nothing changes at night; what changes
+   is that it no longer drifts by the hour. Nothing static caught this because
+   every prerendered page ships MIDNIGHT. */
 .ev-on-panel {
+  --surface-panel: #0c0734;
+  --surface-panel-soft: #0b0633;
+  --surface-row: #0c0733;
   --ghost-surface: transparent;
   --ghost-ink: var(--hue-cyan);
   --glass-ink: #fcf7fd;
