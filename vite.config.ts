@@ -223,5 +223,12 @@ export default defineConfig({
   },
   server: {
     host: true,
+    watch: {
+      // Agent worktrees land under .claude/ while the dev server is running, and
+      // chokidar readlink()s each new entry as it appears. A worktree half
+      // materialised answers EINVAL, which reaches the FSWatcher as an unhandled
+      // 'error' event and takes the whole process down.
+      ignored: ['**/.claude/**'],
+    },
   },
 });
