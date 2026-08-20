@@ -92,10 +92,11 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
    * third-party script fetch, parse and iframe for a form they never use — so it
    * waits for the first sign of intent instead.
    *
-   * There is no reserved slot to go with this, because there is nothing to
-   * reserve: `appearance: 'interaction-only'` means the widget takes no visible
-   * space unless a challenge is actually required, and when one is, it appears
-   * at exactly the same moment it always did — when `execute()` runs.
+   * No slot is reserved for it. On the silent path there is nothing to reserve:
+   * `appearance: 'interaction-only'` means the widget takes no visible space
+   * unless a challenge is actually required. When one is, the form does grow —
+   * by about 72px — but entirely below the caret, and at the same moment it
+   * always did, when `execute()` runs.
    */
   const [mounted, setMounted] = useState(false);
 
