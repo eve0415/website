@@ -451,12 +451,6 @@
 }
 
 /* ---- platform experiments (2026 layer) — all @supports-guarded; absent = graceful ---- */
-@supports at-rule(@function) {
-  @function --comet-glow(--c) {
-    result: 0 0 18px 4px var(--c);
-  }
-}
-
 /* JS-less stagger: put .ev-stg on a flex/grid row of tags or chips */
 @supports (animation-delay: calc(sibling-index() * 1s)) {
   .ev-stg > * {
