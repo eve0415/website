@@ -1,6 +1,6 @@
 import type { Locale } from '#i18n/locale';
 import type { FormError, FormFailure } from './form-state';
-import type { ContactInput } from './validation';
+import type { ContactInput, ContactResult } from './validation';
 import type { TurnstileInstance } from '@marsidev/react-turnstile';
 import type { FC } from 'react';
 
@@ -33,6 +33,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     challenge: copy.errChallenge,
     'rate-limited': copy.errRate,
     'send-failed': copy.errSend,
+    network: copy.errNetwork,
     pending: copy.errPending,
   } satisfies Record<FormError, string>;
 
@@ -148,7 +149,19 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     // back as CSS px, so it has to come back out of the ultra-wide zoom.
     if (box !== null) setLockHeight(Math.round(box.getBoundingClientRect().height / (box.currentCSSZoom || 1)));
 
-    const result = await sendContact({ data: input });
+    // A fetch that never lands rejects rather than resolving, and nothing in
+    // this app catches a render-time throw — no route sets an error component,
+    // so an escaping rejection unmounts the whole page. Every other failure in
+    // this flow is already a typed result; this is the one that was not.
+    let result: ContactResult;
+    try {
+      result = await sendContact({ data: input });
+    } catch {
+      // The token is single-use whether or not the request reached the server.
+      rearm();
+      return { code: 'network', seq };
+    }
+
     if (!result.ok) {
       // The token is single-use whether or not it was accepted.
       rearm();
