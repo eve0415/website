@@ -1,3 +1,4 @@
+import type { RoutePath } from '#i18n/copy';
 import type { PluginObject } from '@babel/core';
 import type { Plugin } from 'vite';
 
@@ -14,22 +15,26 @@ import { SITE_URL } from '#i18n/head';
 import { securityHeaders } from '#security-headers';
 
 /**
- * Every route, as its Japanese path with the leading `/` and no trailing one.
+ * Every route, keyed by the `RoutePath` its copy is written against.
  * `autoStaticPathsDiscovery` and `crawlLinks` are both off, so a route missing
- * from here silently never prerenders — `failOnError` does not catch it.
+ * from here silently never prerenders and `failOnError` does not catch it — the
+ * `satisfies` is what turns that into a compile error instead.
  */
-const ROUTES = [
-  '',
-  '/projects',
-  '/projects/ifpatcher',
-  '/projects/cella',
-  '/projects/oasts',
-  '/projects/dotclaude',
-  '/projects/website',
-  '/skills',
-  '/links',
-  '/about',
-];
+const ROUTE_SET = {
+  '/': true,
+  '/projects': true,
+  '/projects/ifpatcher': true,
+  '/projects/cella': true,
+  '/projects/oasts': true,
+  '/projects/dotclaude': true,
+  '/projects/website': true,
+  '/skills': true,
+  '/links': true,
+  '/about': true,
+} satisfies Record<RoutePath, true>;
+
+/** As the Japanese path: leading `/`, no trailing one, so home is the empty string. */
+const ROUTES = Object.keys(ROUTE_SET).map(path => (path === '/' ? '' : path));
 
 const localeAlternates = (route: string) => [
   { hreflang: 'ja', href: `${SITE_URL}${route}` },
