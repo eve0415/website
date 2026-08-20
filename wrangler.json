@@ -9,6 +9,10 @@
   "upload_source_maps": true,
   "logpush": true,
   "placement": { "mode": "smart" },
+  // Empty, not absent. Omitting `triggers` leaves the Cron Triggers already
+  // deployed in place; only an explicit empty array removes them. `main` ran an
+  // hourly and a weekly job, and the `scheduled` handler they called is gone.
+  "triggers": { "crons": [] },
   "routes": [
     {
       "pattern": "eve0415.net",
