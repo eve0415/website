@@ -99,13 +99,25 @@ export interface SkyCss {
    * That band is roughly half the brightness, and the direction reverses with
    * it: dark ink clears AA over the clouds and the header glass, pale ink
    * clears it on the open sky, and neither clears both.
+   *
+   * These read the page band's own luminance rather than `day`, which saturates
+   * at 1 for eleven hours while the band keeps moving under them — and starts
+   * before it, since the band passes the level the night inks can carry at
+   * around 6時半, two hours before `skyIsDay` turns over.
    */
+  paleTitle: string;
   paleIce: string;
   paleBody: string;
   paleMuted: string;
   paleFaint: string;
   /** The neon, kept as an accent on the open sky by paling rather than darkening. */
   paleCyan: string;
+  /**
+   * How far the project hues are washed toward white, as a `color-mix` amount.
+   * They are authored in `__root.css` and only move here: a 12px tag owes 4.5:1
+   * and the darkest of them cannot reach it on the daylight band unpaled.
+   */
+  wash: string;
   /**
    * The ghost button's two moving parts. A pill with no fill cannot clear AA on
    * the noon sky at any tint — the sky's own luminance sits in the middle of the
@@ -382,6 +394,15 @@ const luminance = (c: Rgb) => 0.2126 * channel(c[0]) + 0.7152 * channel(c[1]) + 
 const PAGE_CEILING = 0.12;
 
 /**
+ * Where the page band starts to matter to the ink on it: the level at which the
+ * night `--ink-faint` stops clearing 4.5:1. Below it the night inks stand.
+ */
+const PAGE_DIM = 0.04;
+
+/** 0 below `lo`, 1 above `hi`, linear between — one scalar read off another. */
+const ramp = (value: number, lo: number, hi: number) => Math.min(1, Math.max(0, (value - lo) / (hi - lo)));
+
+/**
  * `c` walked down its own hue until it sits at or below `PAGE_CEILING`.
  *
  * Scaling the channels is only approximately a power law — the sRGB toe bends it
@@ -421,6 +442,11 @@ export const skyIsDay = (clock: number, wasDay?: boolean): boolean => {
 export const skyCss = (clock: number, day: number): SkyCss => {
   const p = skyPalette(clock);
   const inkT = mix(p.inkT, [10, 36, 64], day);
+  /* How much daylight the open sky behind the page is actually carrying, which
+     is not what `day` says: it saturates at 1 from 8時半 to 17時半 while the band
+     itself runs from 0.14 to 0.23 and back. Held at the ceiling, so full lift is
+     the brightest backdrop the pale ink ever has to clear. */
+  const page = ramp(luminance(p.root[2]), PAGE_DIM, PAGE_CEILING);
 
   return {
     rootBg: gradient([
@@ -467,17 +493,22 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     /* Likewise deeper than the design's [10,74,140] — 3.74 on its own header,
        and the active language pill tints that header darker still. */
     accent: rgb(mix([4, 254, 255], [3, 38, 76], day)),
-    paleIce: rgb(mix([159, 232, 255], [246, 252, 255], day)),
-    paleBody: rgb(mix([233, 228, 255], [252, 250, 255], day)),
-    paleMuted: rgb(mix([207, 201, 242], [248, 246, 255], day)),
-    paleFaint: rgb(mix([164, 157, 216], [240, 237, 255], day)),
-    paleCyan: rgb(mix([4, 254, 255], [230, 251, 255], day)),
+    paleTitle: rgb(mix(p.inkT, [255, 255, 255], page)),
+    paleIce: rgb(mix([159, 232, 255], [246, 252, 255], page)),
+    paleBody: rgb(mix([233, 228, 255], [252, 250, 255], page)),
+    paleMuted: rgb(mix([207, 201, 242], [248, 246, 255], page)),
+    paleFaint: rgb(mix([164, 157, 216], [240, 237, 255], page)),
+    paleCyan: rgb(mix([4, 254, 255], [230, 251, 255], page)),
+    /* Sized on the darkest hue the open sky carries as bare 12px text — violet,
+       which needs half of itself replaced by white to clear the ceiling. One
+       amount for all five so the family pales together rather than splitting. */
+    wash: `${Math.round(50 * page)}%`,
     ghostSurface: rgba(mix([5, 2, 28], [255, 255, 255], day), Number((0.32 * day).toFixed(3))),
     ghostInk: rgb(mix([143, 233, 255], inkT, day)),
     /* The design fades the link to #ebf6ff by day, which lands at 4.22:1 on its
        own noon sky — the blue is bright enough that only pure white clears AA
        for small text, so that is where this one goes. */
-    link: rgb(mix([159, 232, 255], [255, 255, 255], day)),
+    link: rgb(mix([159, 232, 255], [255, 255, 255], page)),
   };
 };
 
@@ -512,11 +543,13 @@ export const skyVars = (sky: SkyCss) => ({
   '--sky-link': sky.link,
   '--sky-ghost-surface': sky.ghostSurface,
   '--sky-ghost-ink': sky.ghostInk,
+  '--sky-pale-title': sky.paleTitle,
   '--sky-pale-ice': sky.paleIce,
   '--sky-pale-body': sky.paleBody,
   '--sky-pale-muted': sky.paleMuted,
   '--sky-pale-faint': sky.paleFaint,
   '--sky-pale-cyan': sky.paleCyan,
+  '--sky-wash': sky.wash,
 });
 
 /** The same properties as one rule, for a stylesheet the document prerenders. */
