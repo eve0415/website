@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef, FC, ReactNode } from 'react';
+import type { ComponentPropsWithRef, FC, ReactNode } from 'react';
 
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
@@ -33,11 +33,11 @@ interface ButtonBaseProps {
   children?: ReactNode;
 }
 
-interface ButtonAnchorProps extends ButtonBaseProps, Omit<ComponentPropsWithoutRef<'a'>, 'href' | 'children'> {
+interface ButtonAnchorProps extends ButtonBaseProps, Omit<ComponentPropsWithRef<'a'>, 'href' | 'children'> {
   href: string;
 }
 
-interface ButtonElementProps extends ButtonBaseProps, Omit<ComponentPropsWithoutRef<'button'>, 'children'> {
+interface ButtonElementProps extends ButtonBaseProps, Omit<ComponentPropsWithRef<'button'>, 'children'> {
   href?: undefined;
 }
 

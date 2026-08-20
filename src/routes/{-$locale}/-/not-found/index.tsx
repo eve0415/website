@@ -276,10 +276,15 @@ export const NotFound = () => {
             <ButtonLink variant='glass' to='/{-$locale}/projects' params={localeParams(locale)}>
               {copy.btnProjects}
             </ButtonLink>
+            {/* `aria-disabled` rather than `disabled`: `done` never goes back to
+                false, so a real `disabled` would take the button out of the tab
+                order permanently — and it is focused at the moment it flips,
+                which drops a keyboard visitor onto `<body>` with no way back.
+                The guard below already does the behavioural half. */}
             <Button
               variant='ghost'
-              disabled={searching || done}
-              className='min-w-46.5 justify-center disabled:pointer-events-none disabled:cursor-default disabled:opacity-45'
+              aria-disabled={searching || done}
+              className='min-w-46.5 justify-center aria-disabled:cursor-default aria-disabled:opacity-45'
               onClick={() => {
                 if (searching || done) return;
                 setSearching(true);

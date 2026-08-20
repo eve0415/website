@@ -51,6 +51,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
 
   const boxRef = useRef<HTMLDivElement>(null);
   const sentRef = useRef<HTMLDivElement>(null);
+  const submitRef = useRef<HTMLButtonElement>(null);
   // Both empties are in the type and neither is written as the initial value:
   // React nulls an object ref on unmount, the package's own ref type is
   // `TurnstileInstance | undefined`, and `no-useless-undefined` rewrites an
@@ -167,6 +168,23 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
     sentRef.current?.focus();
   }, [sent]);
 
+  /**
+   * The mirror of the above, for the path that does not swap the form out.
+   * `disabled` is right while the request is in flight — it is what stops a
+   * second submission — but it also makes the button non-focusable, so the
+   * browser blurs a keyboard visitor to `<body>` and leaves them there when the
+   * attempt fails. `role="alert"` still announces; the caret does not come
+   * back on its own, and walking to it again means the whole page from the top.
+   *
+   * Keyed on the attempt rather than on `failure` being non-null: `seq` changes
+   * even when the same failure repeats, which is the case that would otherwise
+   * restore focus once and never again.
+   */
+  useEffect(() => {
+    if (failure === null) return;
+    submitRef.current?.focus();
+  }, [failure]);
+
   const invalidField = failure === null ? undefined : fieldOf(failure.code);
 
   return (
@@ -219,7 +237,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
           </div>
 
           <div className='flex flex-wrap items-center gap-4'>
-            <Button type='submit' disabled={sending} className='px-7.5 py-3 text-(length:--text-body)'>
+            <Button ref={submitRef} type='submit' disabled={sending} className='px-7.5 py-3 text-(length:--text-body)'>
               {sending ? copy.submitting : copy.submit}
             </Button>
             {/* Keyed on the attempt so an identical failure twice in a row is a
