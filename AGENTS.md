@@ -65,6 +65,7 @@ Inside `-/`, nest by what the thing is, as deep as it needs. A component with ch
 - **Prerendering is not automatic.** `vite.config.ts` sets `autoStaticPathsDiscovery: false` and `crawlLinks: false`, so a new route needs an explicit entry in the `pages` array — in both locales — or it silently never prerenders, and `failOnError` will not catch the omission.
 - **Everything is prerendered then hydrated.** No `Math.random()`, `Date.now()`, `new Date()`, or `window`/`navigator`/`matchMedia` reads during render — they produce hydration mismatches. A seeded PRNG is already used for decorative randomness; reuse it.
 - **The prerendered HTML is one enormous line**, so `grep` treats it as binary. Use `grep -a` when inspecting `dist/client/`.
+- **A new Durable Object migration cannot ship through a branch build.** Cloudflare Workers Builds deploys non-production branches with `wrangler versions upload`, and the API refuses any version whose config carries an unapplied migration (`code: 10211`) — lifecycle changes land only through a non-versioned `wrangler deploy`. So `ContactRateLimiter`'s `v1` has to reach production once before a preview upload of a branch that declares it can succeed, and a Worker that implements a Durable Object stops getting Preview URLs at all.
 - Determine a library's behaviour from its type declarations or its shipped `src/` — never from bundled `dist/*.js`.
 
 ## Conventions
