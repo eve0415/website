@@ -4,8 +4,9 @@ import { Card } from '#components/card';
 import { PageHeader } from '#components/page-header';
 import { ABOUT_COPY } from '#i18n/copy';
 import { localeHead } from '#i18n/head';
+import { localeParams } from '#i18n/locale';
 
-import { CometNavLink, localeParams } from '../-/routed-links';
+import { CometNavLink } from '../-/routed-links';
 
 import { LabCard } from './-/lab-card';
 

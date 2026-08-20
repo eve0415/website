@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router';
 
 import './language-switch.css';
 import { SITE_COPY } from '#i18n/copy';
+import { localeParams } from '#i18n/locale';
 import { cn } from '#lib/cn';
 import { tw } from '#lib/tw';
 
@@ -58,9 +59,11 @@ interface LanguageSwitchProps {
  * with the params below. That is what keeps the switch on the page you are on;
  * a literal `to='/{-$locale}'` sent every visitor home instead.
  *
- * `locale: undefined` has to be written out: `params` is merged onto the
- * current params, so `{}` would leave `en` in place and the Japanese pill would
- * point at the English page.
+ * The segment has to be written out rather than left off: `params` is merged
+ * onto the current params, so `{}` would leave `en` in place and the Japanese
+ * pill would point at the English page. `localeParams` is what writes it, the
+ * same helper every other link uses — these two are the one place the locale is
+ * a fixed destination rather than the one being read.
  *
  * The design marks the active pill with `aria-pressed`, which axe reports as a
  * critical `aria-allowed-attr` violation once these are links rather than
@@ -84,14 +87,14 @@ interface LanguageSwitchProps {
  */
 export const LanguageSwitch: FC<LanguageSwitchProps> = ({ locale, className }) => (
   <nav aria-label={SITE_COPY[locale].langAria} className={cn(GROUP, className)}>
-    <Link to='.' params={{ locale: undefined }} activeOptions={{ exact: true }} hrefLang='ja' className={cn(PILL, locale === 'ja' ? STATE.on : STATE.off)}>
+    <Link to='.' params={localeParams('ja')} activeOptions={{ exact: true }} hrefLang='ja' className={cn(PILL, locale === 'ja' ? STATE.on : STATE.off)}>
       <span aria-hidden='true'>JA</span>
       <span className='sr-only' lang='ja'>
         日本語
       </span>
       {locale === 'ja' ? <Kira /> : null}
     </Link>
-    <Link to='.' params={{ locale: 'en' }} activeOptions={{ exact: true }} hrefLang='en' className={cn(PILL, locale === 'en' ? STATE.on : STATE.off)}>
+    <Link to='.' params={localeParams('en')} activeOptions={{ exact: true }} hrefLang='en' className={cn(PILL, locale === 'en' ? STATE.on : STATE.off)}>
       <span aria-hidden='true'>EN</span>
       <span className='sr-only' lang='en'>
         English

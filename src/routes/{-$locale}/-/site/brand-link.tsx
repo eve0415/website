@@ -3,7 +3,7 @@ import type { FC } from 'react';
 
 import { Link } from '@tanstack/react-router';
 
-import { localeParams } from '../routed-links';
+import { localeParams } from '#i18n/locale';
 
 import { BRAND_CLASS } from './header-classes';
 

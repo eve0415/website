@@ -2,10 +2,11 @@ import type { Locale } from '#i18n/locale';
 import type { FC } from 'react';
 
 import { HOME_COPY } from '#i18n/copy';
+import { localeParams } from '#i18n/locale';
 import { tw } from '#lib/tw';
 
 import { CatArt } from '../cat-art';
-import { ButtonLink, localeParams } from '../routed-links';
+import { ButtonLink } from '../routed-links';
 import { CloudLayer } from '../sky/cloud-layer';
 import { puffs } from '../sky/puffs';
 import { ShootingStar } from '../sky/shooting-star';

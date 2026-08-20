@@ -1,5 +1,3 @@
-import type { Locale } from '#i18n/locale';
-
 import { createLink } from '@tanstack/react-router';
 
 import { Button } from '#components/button';
@@ -16,10 +14,3 @@ import { ProjectCard } from './project-card';
 export const ButtonLink = createLink(Button);
 export const CometNavLink = createLink(CometLink);
 export const ProjectCardLink = createLink(ProjectCard);
-
-/**
- * The `{-$locale}` segment for a link's `params`. Japanese is the unprefixed
- * locale, so its segment is absent rather than `ja`. The literal has to survive
- * inference — widened to `string`, the router rejects it.
- */
-export const localeParams = (locale: Locale) => ({ locale: locale === 'en' ? ('en' as const) : undefined });

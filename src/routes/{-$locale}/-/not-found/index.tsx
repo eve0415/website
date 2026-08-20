@@ -4,11 +4,12 @@ import { flushSync } from 'react-dom';
 
 import { Button } from '#components/button';
 import { NOT_FOUND_COPY, SITE_COPY } from '#i18n/copy';
+import { localeParams } from '#i18n/locale';
 import { cn } from '#lib/cn';
 import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
 
 import { CatArt } from '../cat-art';
-import { ButtonLink, localeParams } from '../routed-links';
+import { ButtonLink } from '../routed-links';
 import { BrandLink } from '../site/brand-link';
 import { LanguageSwitch } from '../site/language-switch';
 import { navItems } from '../site/nav';

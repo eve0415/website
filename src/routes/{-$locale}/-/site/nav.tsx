@@ -4,8 +4,7 @@ import type { SiteHeaderNavItem } from './site-header';
 import { Link } from '@tanstack/react-router';
 
 import { SITE_COPY } from '#i18n/copy';
-
-import { localeParams } from '../routed-links';
+import { localeParams } from '#i18n/locale';
 
 import { NAV_LINK_CLASS } from './header-classes';
 

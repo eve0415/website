@@ -27,3 +27,11 @@ export const localeFromPathname = (pathname: string): Locale => (pathname === '/
 
 /** Builds a path for a locale: Japanese unprefixed, English under `/en`. */
 export const localePath = (locale: Locale, path: string): string => (locale === DEFAULT_LOCALE ? path : `/en${path === '/' ? '' : path}`);
+
+/**
+ * The `{-$locale}` segment for a router link's `params`, the same rule as
+ * `localePath` in the shape `Link` wants: Japanese is the unprefixed locale, so
+ * its segment is absent rather than `ja`. The literal has to survive inference —
+ * widened to `string`, the router rejects it.
+ */
+export const localeParams = (locale: Locale) => ({ locale: locale === 'en' ? ('en' as const) : undefined });

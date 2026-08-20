@@ -4,9 +4,8 @@ import type { FC } from 'react';
 import { Link } from '@tanstack/react-router';
 
 import { PROJECT_COPY } from '#i18n/copy';
+import { localeParams } from '#i18n/locale';
 import { tw } from '#lib/tw';
-
-import { localeParams } from '../../-/routed-links';
 
 const ROOT = tw(
   'inline-flex min-h-(--hit-target) animate-[fadeUp_0.6s_ease_backwards] items-center gap-2 justify-self-start text-(length:--text-nav) font-bold text-(--ink-ice) no-underline transition-colors duration-150 ease-[ease] hover:text-(--accent-cyan)',

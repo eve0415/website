@@ -2,8 +2,9 @@ import type { Locale } from '#i18n/locale';
 import type { FC } from 'react';
 
 import { HOME_COPY } from '#i18n/copy';
+import { localeParams } from '#i18n/locale';
 
-import { CometNavLink, ProjectCardLink, localeParams } from '../routed-links';
+import { CometNavLink, ProjectCardLink } from '../routed-links';
 import { GLOW_MID_A, GLOW_MID_B, GLOW_MID_C, glow } from '../sky/sky-scene';
 
 import { SectionHeading } from './section-heading';

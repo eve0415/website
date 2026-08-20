@@ -6,8 +6,7 @@ import { Link } from '@tanstack/react-router';
 
 import { Card } from '#components/card';
 import { SKILLS_COPY } from '#i18n/copy';
-
-import { localeParams } from '../../-/routed-links';
+import { localeParams } from '#i18n/locale';
 
 import { SkillChips } from './skill-chips';
 
