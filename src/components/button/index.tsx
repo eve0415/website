@@ -12,7 +12,10 @@ const BASE = tw(
 
 const VARIANT = {
   primary: tw(
-    'bg-(image:--grad-comet) text-(--ink-on-accent) shadow-(--glow-cta) transition-[transform,box-shadow] duration-150 ease-[ease] hover:transform-[translateY(-2px)] hover:shadow-(--glow-cta-hover)',
+    /* The glow goes while the ring is up: at midnight the neon ring's bottom arc
+       crossed this cyan halo and measured 1.74:1 against it, where the same ring
+       on the bare sky measures 16. */
+    'bg-(image:--grad-comet) text-(--ink-on-accent) shadow-(--glow-cta) transition-[transform,box-shadow] duration-150 ease-[ease] hover:transform-[translateY(-2px)] hover:shadow-(--glow-cta-hover) focus-visible:shadow-none',
   ),
   glass: tw(
     'border border-(--line-white) bg-(--surface-glass) text-(--glass-ink) backdrop-blur-[4px] transition-[border-color,background] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:bg-[rgba(4,254,255,0.12)]',
