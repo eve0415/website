@@ -12,6 +12,7 @@ import { defineConfig } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
 import { SITE_URL } from '#i18n/head';
+import { DEFAULT_LOCALE, LOCALES, localePath } from '#i18n/locale';
 import { securityHeaders } from '#security-headers';
 
 /**
@@ -33,17 +34,20 @@ const ROUTE_SET = {
   '/about': true,
 } satisfies Record<RoutePath, true>;
 
-/** As the Japanese path: leading `/`, no trailing one, so home is the empty string. */
-const ROUTES = Object.keys(ROUTE_SET).map(path => (path === '/' ? '' : path));
+const ROUTES = Object.keys(ROUTE_SET);
 
+/**
+ * Through `localePath` rather than a second `/en` concatenation: a third locale
+ * makes every `satisfies Record<Locale, …>` in the copy a compile error, and
+ * this would have gone on silently emitting exactly two URLs per route.
+ */
 const localeAlternates = (route: string) => [
-  { hreflang: 'ja', href: `${SITE_URL}${route}` },
-  { hreflang: 'en', href: `${SITE_URL}/en${route}` },
-  { hreflang: 'x-default', href: `${SITE_URL}${route}` },
+  ...LOCALES.map(locale => ({ hreflang: locale, href: `${SITE_URL}${localePath(locale, route)}` })),
+  { hreflang: 'x-default', href: `${SITE_URL}${localePath(DEFAULT_LOCALE, route)}` },
 ];
 
 /** Both locales of a route, Japanese first, as the paths they are served at. */
-const localePaths = (route: string) => [route === '' ? '/' : route, `/en${route}`];
+const localePaths = (route: string) => LOCALES.map(locale => localePath(locale, route));
 
 const PAGES = ROUTES.flatMap(route => localePaths(route).map(path => ({ path })));
 
@@ -69,7 +73,7 @@ const sitemapXml = (): string => {
     const alternates = localeAlternates(route).map(ref => `    <xhtml:link rel="alternate" href="${ref.href}" hreflang="${ref.hreflang}" />`);
 
     return localePaths(route).map(path =>
-      ['  <url>', `    <loc>${SITE_URL}/${path.slice(1)}</loc>`, `    <lastmod>${lastmod}</lastmod>`, ...alternates, '  </url>'].join('\n'),
+      ['  <url>', `    <loc>${SITE_URL}${path}</loc>`, `    <lastmod>${lastmod}</lastmod>`, ...alternates, '  </url>'].join('\n'),
     );
   });
 
