@@ -61,9 +61,13 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
 
   /**
    * `onWidgetLoad` fires once the widget has actually rendered, and the docs are
-   * explicit that a `reset()` does not fire it again — so this stays true for
-   * the rest of the page's life once it is set. Before it, `execute()` has
-   * nothing to execute.
+   * explicit that a `reset()` does not fire it again — so this stays true for as
+   * long as that widget lives. Before it, `execute()` has nothing to execute.
+   *
+   * It describes one instance, not the page: sending unmounts the form and takes
+   * the widget with it, so "send another" mounts a new one and this has to go
+   * back to false. It is cleared there, not in `rearm()` — the two failure paths
+   * re-arm a widget that is still mounted and still ready.
    */
   const widgetReady = useRef(false);
   /** The challenge is deferred, so it has to be asked for exactly once — once it *can* be asked for. */
@@ -176,6 +180,12 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
   }, null);
 
   const sendAnother = () => {
+    // The widget this described went with the form subtree; the one about to
+    // mount has not loaded yet. Left true, the first focus in that window calls
+    // `execute()` on a widget that cannot run it, latches `challengeStarted`,
+    // and the form never leaves "still checking".
+    widgetReady.current = false;
+
     // The draft is not cleared here: ContactFields owns it and unmounts with
     // the form, so the new one mounts empty.
     swapInPlace(boxRef.current, () => {
