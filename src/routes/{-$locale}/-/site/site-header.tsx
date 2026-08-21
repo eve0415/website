@@ -10,7 +10,7 @@ const ROOT = tw(
 );
 
 /** The bar stays full-bleed; only its contents stop at the shell width. */
-const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center gap-3');
+const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center gap-3 [@media(width<720px)]:flex-wrap [@media(width<720px)]:gap-y-0');
 
 /* `ev-on-panel` because the pill paints its own opaque #0d0836 and is only
    *inside* the header's band, not on it: taking the band's ink put dark navy on
@@ -61,10 +61,10 @@ export const SiteHeader: FC<SiteHeaderProps> = ({ navLabel, skipLabel, brandElem
 
   /**
    * `--header-h` in `__root.css` is the one-row height, and `scroll-padding-top`
-   * is set from it — but the bar wraps to two and three rows on a phone, and
-   * grows again at a large root font, so the constant was only ever right at
-   * >=768px. Left alone, the bypass link lands the visitor *under* the header
-   * and a focused control can sit entirely behind it.
+   * is set from it — but the bar takes a second row under 720px, and grows at a
+   * large root font whatever the width, so no constant covers it. Left alone,
+   * the bypass link lands the visitor *under* the header and a focused control
+   * can sit entirely behind it.
    *
    * `borderBoxSize` is already in CSS pixels, so it needs no undoing of the
    * ultra-wide `--z` zoom the way a `getBoundingClientRect()` height would.
@@ -97,7 +97,14 @@ export const SiteHeader: FC<SiteHeaderProps> = ({ navLabel, skipLabel, brandElem
       </a>
       <div className={INNER}>
         {brandElement}
-        <nav aria-label={navLabel} className='ml-auto flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
+        {/* Its own row under 720px, and it scrolls sideways there rather than
+            wrapping: five wrapped items are a third header row, and the design
+            would rather spend a swipe than the vertical space. The bar is
+            sticky, so that space is gone from every screen of every page. */}
+        <nav
+          aria-label={navLabel}
+          className='ml-auto flex min-w-0 items-center gap-[clamp(10px,2vw,22px)] [@media(width<720px)]:order-3 [@media(width<720px)]:ml-0 [@media(width<720px)]:basis-full [@media(width<720px)]:[scrollbar-width:none] [@media(width<720px)]:justify-between [@media(width<720px)]:gap-0.5 [@media(width<720px)]:overflow-x-auto [@media(width<720px)]:[&::-webkit-scrollbar]:hidden'
+        >
           {items.map(item => (
             <Fragment key={item.key}>{item.element}</Fragment>
           ))}

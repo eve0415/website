@@ -125,9 +125,10 @@
      switch — two 40px pills in a pill group with 2px padding and a 1px border. */
   --header-row: 46px;
   /* The sticky bar at one row, hairline included, and the value `scroll-padding-top`
-     is set from. Only true at >=768px: below that the nav wraps to two and three
-     rows, and a large root font grows it at any width. SiteHeader measures the
-     real bar and overwrites this on the element, so what is written here is the
+     is set from. Only true at >=720px: below that the nav takes a row of its own
+     and the query after this block adds it, and a large root font grows the bar
+     at any width, which nothing static can predict. SiteHeader measures the real
+     bar and overwrites this on the element, so what is written here is the
      prerendered starting value rather than the whole story. */
   --header-h: calc(2 * var(--header-pad-y) + var(--header-row) + 1px);
   --card-min-skills: 300px;
@@ -156,6 +157,14 @@
      steps instead. Anything sized in viewport units divides by this, since
      those units are measured before the zoom applies. */
   --z: 1;
+}
+
+/* The phone header: brand and language switch on the first row, the nav on a
+   scrolling row under them. Two rows, so the height owes a nav link as well. */
+@media (width < 720px) {
+  :root {
+    --header-h: calc(2 * var(--header-pad-y) + var(--header-row) + var(--hit-target) + 1px);
+  }
 }
 
 /* The tokens the sky itself decides. */
