@@ -469,11 +469,15 @@ const SCRIM_NIGHT = 0.06;
  *
  * The copy is bottom-aligned in a full-height hero, so what sits behind it is
  * the low end of the hero gradient rather than the middle `skyIsDay` reads off.
- * That band runs 0.05 at 深夜 and 0.30 at 17時40, and it is the 深夜 end that has
- * to come out untouched: `MIDNIGHT` is what every page prerenders.
+ * That band runs 0.05 at 深夜, 0.30 at 17時40 and 0.37 at 17時30, and the shade is
+ * read off most of that range rather than saturating at the bottom of it:
+ * the brighter the sky behind the copy, the more of the cloud has to come down,
+ * and holding the full amount all evening flattens the sea for no contrast the
+ * later clocks need. The 深夜 end has to come out untouched either way —
+ * `MIDNIGHT` is what every page prerenders.
  */
 const HERO_NIGHT = 0.09;
-const HERO_DUSK = 0.17;
+const HERO_DUSK = 0.28;
 
 /**
  * How far the cloud sea falls toward its own deep tone at dusk.
