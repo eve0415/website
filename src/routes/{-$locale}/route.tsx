@@ -5,6 +5,7 @@ import { parseLocaleParam } from '#i18n/locale';
 
 import { BrandLink } from './-/site/brand-link';
 import { DwellTime } from './-/site/dwell-time';
+import { TRAILING_CLASS } from './-/site/header-classes';
 import { LanguageSwitch } from './-/site/language-switch';
 import { navItems } from './-/site/nav';
 import { SiteFooter } from './-/site/site-footer';
@@ -37,7 +38,7 @@ const LocaleLayout = () => {
         brandElement={<BrandLink locale={locale} />}
         items={navItems(locale)}
       >
-        <LanguageSwitch locale={locale} />
+        <LanguageSwitch locale={locale} className={TRAILING_CLASS} />
       </SiteHeader>
 
       {/* `#main` is the header's bypass-link target. `tabIndex={-1}` is what

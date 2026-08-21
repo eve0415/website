@@ -10,7 +10,7 @@ const ROOT = tw(
 );
 
 /** The bar stays full-bleed; only its contents stop at the shell width. */
-const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center justify-between gap-3');
+const INNER = tw('mx-auto flex max-w-(--page-max-wide) items-center gap-3');
 
 /* `ev-on-panel` because the pill paints its own opaque #0d0836 and is only
    *inside* the header's band, not on it: taking the band's ink put dark navy on
@@ -45,7 +45,14 @@ interface SiteHeaderProps {
   /** The brand link, styled with `BRAND_CLASS`. Routing stays at the call site. */
   brandElement: ReactNode;
   items: readonly SiteHeaderNavItem[];
-  /** Trailing slot inside the nav — where the design puts the language switch. */
+  /**
+   * Trailing slot on the header row, after the nav rather than inside it —
+   * where the design puts the language switch. Style it with `TRAILING_CLASS`
+   * from `./header-classes`. It sits outside `<nav>` because it is not
+   * navigation: it is a control group that re-renders the page you are on, and
+   * the one this site passes is a landmark in its own right, which nested it
+   * inside the site nav.
+   */
   children?: ReactNode;
 }
 
@@ -90,12 +97,12 @@ export const SiteHeader: FC<SiteHeaderProps> = ({ navLabel, skipLabel, brandElem
       </a>
       <div className={INNER}>
         {brandElement}
-        <nav aria-label={navLabel} className='flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
+        <nav aria-label={navLabel} className='ml-auto flex flex-wrap items-center justify-end gap-[clamp(10px,2vw,22px)]'>
           {items.map(item => (
             <Fragment key={item.key}>{item.element}</Fragment>
           ))}
-          {children}
         </nav>
+        {children}
       </div>
       <span
         className='ev-hdr-line pointer-events-none absolute inset-x-0 -bottom-px h-0.5 opacity-0 transition-opacity duration-[0.4s] ease-(--ease-comet)'
