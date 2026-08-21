@@ -18,6 +18,12 @@ import { Greeting } from './greeting';
 
 const HERO_STAR_SEED = 4_150_415;
 
+/* The hero starts under the header and fills what is left of the first screen.
+   `--header-h` rather than the design's flat 61px: SiteHeader keeps that token
+   on the real bar, which is two rows under 720px and taller again at a large
+   root font — a constant reopened the gap on exactly those. */
+const SECTION = tw('relative -mt-(--header-h) grid min-h-[calc(100svh/var(--z,1)-var(--header-h))] content-end');
+
 /* Each layer of the cloud sea fades out at a different depth so the sea reads
    as thick rather than as three flat sheets. */
 const MASK_HERO = tw('mask-[linear-gradient(180deg,#000_0%,#000_42%,rgba(0,0,0,.6)_64%,rgba(0,0,0,.2)_82%,transparent_96%)]');
@@ -103,7 +109,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
   const copy = HOME_COPY[locale];
 
   return (
-    <section className='relative mt-[-61px] grid min-h-[calc(100svh/var(--z,1)-61px)] content-end'>
+    <section className={SECTION}>
       <div aria-hidden='true' className={`absolute inset-x-0 top-0 bottom-[-240px] ${MASK_HERO}`} style={{ background: 'var(--sky-hero)' }}>
         <div className='absolute inset-x-0 top-0 bottom-60'>
           {HERO_GLOWS.map(spot => (
