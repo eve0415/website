@@ -15,7 +15,7 @@ export const BRAND_CLASS = tw(
  * switch off from the last nav link by the same distance the links keep from
  * each other, not by the wider gap the row uses for brand-to-nav.
  */
-export const TRAILING_CLASS = tw('ml-[calc(clamp(10px,2vw,22px)-12px)] flex-none [@media(width<720px)]:order-2 [@media(width<720px)]:ml-auto');
+export const TRAILING_CLASS = tw('ml-[calc(clamp(10px,2vw,22px)-12px)] flex-none [@media(width<45em)]:order-2 [@media(width<45em)]:ml-auto');
 
 export const NAV_LINK_CLASS = tw(
   'inline-flex min-h-(--hit-target) flex-none cursor-pointer items-center border-b-2 border-b-transparent font-[inherit] text-(length:--text-nav-link) text-(--ink-nav) no-underline hover:text-(--accent) aria-[current=page]:border-b-(--accent) aria-[current=page]:text-(--accent)',

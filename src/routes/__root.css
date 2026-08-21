@@ -130,7 +130,7 @@
      switch — two 40px pills in a pill group with 2px padding and a 1px border. */
   --header-row: 46px;
   /* The sticky bar at one row, hairline included, and the value `scroll-padding-top`
-     is set from. Only true at >=720px: below that the nav takes a row of its own
+     is set from. Only true at >=45em: below that the nav takes a row of its own
      and the query after this block adds it, and a large root font grows the bar
      at any width, which nothing static can predict. SiteHeader measures the real
      bar and overwrites this on the element, so what is written here is the
@@ -165,8 +165,15 @@
 }
 
 /* The phone header: brand and language switch on the first row, the nav on a
-   scrolling row under them. Two rows, so the height owes a nav link as well. */
-@media (width < 720px) {
+   scrolling row under them. Two rows, so the height owes a nav link as well.
+
+   45em, not the design's flat 720px, and the one query on this site written in
+   em: `em` here resolves against the browser's own default size rather than the
+   page's, so a reader who has turned their text up gets the stacked bar at a
+   proportionally wider viewport — which is where their nav actually stops
+   fitting. Measured at 860px with a 24px root: the single row overran the
+   language switch by 79px. Both readings are 720px at the default 16px. */
+@media (width < 45em) {
   :root {
     --header-h: calc(2 * var(--header-pad-y) + var(--header-row) + var(--hit-target) + 1px);
   }

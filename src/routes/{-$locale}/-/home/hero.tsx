@@ -20,7 +20,7 @@ const HERO_STAR_SEED = 4_150_415;
 
 /* The hero starts under the header and fills what is left of the first screen.
    `--header-h` rather than the design's flat 61px: SiteHeader keeps that token
-   on the real bar, which is two rows under 720px and taller again at a large
+   on the real bar, which is two rows under 45em and taller again at a large
    root font — a constant reopened the gap on exactly those. */
 const SECTION = tw('relative -mt-(--header-h) grid min-h-[calc(100svh/var(--z,1)-var(--header-h))] content-end');
 
