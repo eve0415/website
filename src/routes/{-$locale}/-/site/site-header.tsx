@@ -100,10 +100,15 @@ export const SiteHeader: FC<SiteHeaderProps> = ({ navLabel, skipLabel, brandElem
         {/* Its own row under 45em, and it scrolls sideways there rather than
             wrapping: five wrapped items are a third header row, and the design
             would rather spend a swipe than the vertical space. The bar is
-            sticky, so that space is gone from every screen of every page. */}
+            sticky, so that space is gone from every screen of every page.
+
+            `p-1 -m-1` buys the focus ring its 4px back. `overflow-x` computes
+            `overflow-y: auto` alongside it, and the links fill the row exactly,
+            so the scrollport was clipping the ring down to its two side bars —
+            the padding moves that edge out without moving the row. */}
         <nav
           aria-label={navLabel}
-          className='ml-auto flex min-w-0 items-center gap-[clamp(10px,2vw,22px)] [@media(width<45em)]:order-3 [@media(width<45em)]:ml-0 [@media(width<45em)]:basis-full [@media(width<45em)]:[scrollbar-width:none] [@media(width<45em)]:justify-between [@media(width<45em)]:gap-0.5 [@media(width<45em)]:overflow-x-auto [@media(width<45em)]:[&::-webkit-scrollbar]:hidden'
+          className='ml-auto flex min-w-0 items-center gap-[clamp(10px,2vw,22px)] [@media(width<45em)]:order-3 [@media(width<45em)]:-m-1 [@media(width<45em)]:basis-full [@media(width<45em)]:[scrollbar-width:none] [@media(width<45em)]:justify-between [@media(width<45em)]:gap-0.5 [@media(width<45em)]:overflow-x-auto [@media(width<45em)]:p-1 [@media(width<45em)]:[&::-webkit-scrollbar]:hidden'
         >
           {items.map(item => (
             <Fragment key={item.key}>{item.element}</Fragment>
