@@ -463,6 +463,37 @@ const SCRIM_GIVEBACK = 0.68;
  */
 const SCRIM_NIGHT = 0.06;
 
+/**
+ * The band the hero copy is actually read on, at the two levels that decide
+ * whether the cloud sea has to fall into shadow.
+ *
+ * The copy is bottom-aligned in a full-height hero, so what sits behind it is
+ * the low end of the hero gradient rather than the middle `skyIsDay` reads off.
+ * That band runs 0.05 at 深夜 and 0.30 at 17時40, and it is the 深夜 end that has
+ * to come out untouched: `MIDNIGHT` is what every page prerenders.
+ */
+const HERO_NIGHT = 0.09;
+const HERO_DUSK = 0.17;
+
+/**
+ * How far the cloud sea falls toward its own deep tone at dusk.
+ *
+ * The cloud tones are authored for the light of their hour, and at dusk `cl` is
+ * a near-white cream at 0.80. The back layer's low puffs cross the hero sub and
+ * the front layer's cross the glass CTA, where they measured 0.29 and 0.22 —
+ * against the 0.143 and 0.167 the pale ink they carry can clear. `SCRIM_NIGHT`
+ * already answers for the same puff at 深夜, where the sky behind it is dark
+ * enough that 6% of indigo covers it. At dusk the sky behind it is not, and no
+ * scrim that does cover it stays invisible: 0.24 of it still left the sub at
+ * 3.67 and read as a panel behind the copy.
+ *
+ * So the cloud goes into shadow rather than the copy being washed. `cd` is the
+ * shadow side the design already authors for the same hour, which makes this a
+ * cloud turning away from a sun that has gone down. Walking the tone toward
+ * black reaches the same luminance and reads as mud.
+ */
+const CLOUD_SHADOW = 0.7;
+
 /** 0 below `lo`, 1 above `hi`, linear between — one scalar read off another. */
 const ramp = (value: number, lo: number, hi: number) => Math.min(1, Math.max(0, (value - lo) / (hi - lo)));
 
@@ -528,6 +559,13 @@ export const skyCss = (clock: number, day: number): SkyCss => {
   /* The vignette alpha, hoisted because the scrim is sized in it. */
   const vignette = 0.3 * (1 - cloud);
   const deep = (dusk: Rgb, noon: Rgb) => mix(dusk, noon, cloud);
+  /* The cloud sea's shadow side, on the band the copy is read on rather than on
+     `day`, which saturates while that band keeps falling. `day` only gates it:
+     at noon the clouds are white under near-black ink and have to stay white,
+     and below that the shade follows the band down to nothing well before 深夜. */
+  const shade = CLOUD_SHADOW * (1 - day) * ramp(luminance(mix(p.hero[3], p.hero[4], 0.5)), HERO_NIGHT, HERO_DUSK);
+  const cl = mix(p.cl, p.cd, shade);
+  const cs = mix(p.cs, p.cd, shade);
   const inkT = mix(p.inkT, deep([4, 20, 36], [10, 36, 64]), day);
 
   return {
@@ -549,9 +587,9 @@ export const skyCss = (clock: number, day: number): SkyCss => {
     vignette: Number(vignette.toFixed(3)),
     scrim: rgba(mix([5, 2, 28], [255, 255, 255], day), Number((SCRIM_NIGHT + (SCRIM_DAY + SCRIM_GIVEBACK * vignette - SCRIM_NIGHT) * day).toFixed(3))),
     footerGlow: `radial-gradient(120% 220% at 50% 135%, ${rgba(held(p.na, 0.16, band), 0.16)}, transparent 60%)`,
-    cloudBack: `radial-gradient(circle at 38% 26%, ${rgba(mix(p.cl, p.cs, 0.55), 0.85)}, ${rgba(p.cs, 0.88)} 56%, ${rgba(p.cd, 0.92)} 95%)`,
-    cloudMid: `radial-gradient(circle at 36% 24%, ${rgba(p.cl, 0.92)}, ${rgba(mix(p.cl, p.cs, 0.45), 0.88)} 52%, ${rgba(p.cs, 0.84)} 92%)`,
-    cloudFront: `radial-gradient(circle at 35% 23%, ${rgba(p.cl, 0.96)}, ${rgba(mix(p.cl, p.cs, 0.3), 0.92)} 52%, ${rgba(mix(p.cs, p.cd, 0.3), 0.82)} 92%)`,
+    cloudBack: `radial-gradient(circle at 38% 26%, ${rgba(mix(cl, cs, 0.55), 0.85)}, ${rgba(cs, 0.88)} 56%, ${rgba(p.cd, 0.92)} 95%)`,
+    cloudMid: `radial-gradient(circle at 36% 24%, ${rgba(cl, 0.92)}, ${rgba(mix(cl, cs, 0.45), 0.88)} 52%, ${rgba(cs, 0.84)} 92%)`,
+    cloudFront: `radial-gradient(circle at 35% 23%, ${rgba(cl, 0.96)}, ${rgba(mix(cl, cs, 0.3), 0.92)} 52%, ${rgba(mix(cs, p.cd, 0.3), 0.82)} 92%)`,
     catGlow: `radial-gradient(closest-side, ${rgba(p.cl, 0.42)}, ${rgba(p.cs, 0.16)} 58%, transparent 76%)`,
     glowA: rgba(p.na, 0.5),
     glowB: rgba(p.cs, 0.5),
