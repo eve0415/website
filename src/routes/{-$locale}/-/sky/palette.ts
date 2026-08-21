@@ -491,8 +491,12 @@ const HERO_DUSK = 0.17;
  * shadow side the design already authors for the same hour, which makes this a
  * cloud turning away from a sun that has gone down. Walking the tone toward
  * black reaches the same luminance and reads as mud.
+ *
+ * Sized on 17時30 rather than on 17時40. That is the first minute the flag
+ * reads night, so it is the brightest sky the pale ink is ever asked to carry:
+ * 0.7 of shadow leaves the sub at 4.38 there while clearing every later clock.
  */
-const CLOUD_SHADOW = 0.7;
+const CLOUD_SHADOW = 0.85;
 
 /** 0 below `lo`, 1 above `hi`, linear between — one scalar read off another. */
 const ramp = (value: number, lo: number, hi: number) => Math.min(1, Math.max(0, (value - lo) / (hi - lo)));
