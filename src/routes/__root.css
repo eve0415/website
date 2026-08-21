@@ -120,7 +120,7 @@
   --page-max-article: clamp(860px, 54vw, 1020px);
   --page-max-narrow: clamp(720px, 46vw, 880px);
   --header-pad-y: 8px;
-  --header-pad: var(--header-pad-y) clamp(20px, 4vw, 40px);
+  --header-pad: var(--header-pad-y) clamp(16px, 4vw, 40px);
   /* The tallest thing on the header row, and so the row's height: the language
      switch — two 40px pills in a pill group with 2px padding and a 1px border. */
   --header-row: 46px;
