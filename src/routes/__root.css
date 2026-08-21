@@ -103,6 +103,11 @@
   --text-body: 0.96875rem;
   --text-ui: 0.9375rem;
   --text-nav: 0.90625rem;
+  /* The header's own nav links, which have to fit five Japanese labels across a
+     phone. `--text-nav` down to 408px, then down to 13px by 283px — the vw term
+     is deliberately not divided by `--z`, since the clamp is at its ceiling long
+     before the first zoom step. */
+  --text-nav-link: clamp(0.8125rem, 0.6rem + 1.2vw, 0.90625rem);
   --text-small: 0.875rem;
   --text-caption: 0.8125rem;
   --text-tag: 0.75rem;
