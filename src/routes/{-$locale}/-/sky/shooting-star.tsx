@@ -75,10 +75,14 @@ export const ShootingStar: FC<ShootingStarProps> = props => {
   const head = <span className={cn('flex-none rounded-[50%] bg-(--star-white)', variant.head)} />;
   const trail = <span className={cn('rounded-xs', variant.tail)} style={{ width: tail }} />;
 
+  /* The star is inert here rather than at each call site, which is what the sky
+     wrappers were already doing for the ones parented to them. `ScrollEndStar`
+     is not: it is fixed over the page at z-5 for its three seconds, a third of
+     a phone wide, and the tail won the hit test against the content under it. */
   return (
     <div
       aria-hidden='true'
-      className={cn('absolute', className)}
+      className={cn('pointer-events-none absolute', className)}
       style={{
         animation: `${variant.animation} ${duration}s linear ${delay}s ${play === 'once' ? 'both' : 'infinite backwards'}`,
         ...style,
