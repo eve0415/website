@@ -163,21 +163,32 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
         </div>
       </div>
 
-      <div className={`pointer-events-none ${CAT_BOX}`}>
-        <span
-          aria-hidden='true'
-          className='absolute right-[4%] bottom-[4%] left-[6%] h-[36%] animate-[glowPulse_5s_ease-in-out_infinite_alternate] rounded-[50%] blur-[22px]'
-          style={{ background: CAT_GLOW }}
-        />
-        <CatArt alt={copy.altCat} sizes={CAT_SIZES} fetchPriority='high' className='animate-[evCatFloat_7.5s_ease-in-out_infinite_alternate]' />
-        {CAT_CLOUDS.map(puff => (
+      {/* The box overhangs the gutter and the drop shadow spreads past that
+          again. Both are transparent, but a phone measures them: iOS shrinks a
+          page to fit its widest thing, so the overhang was scaling the whole
+          site down. Clipped here it stays a drawing instead of a layout.
+
+          Landscape takes the section's own box rather than stepping out of the
+          way, because there the cat is absolute: a clip only reaches what it is
+          the containing block for, so the wrapper has to be that block. Same
+          box, same offsets, and the shadow is inside something. */}
+      <div className='grid overflow-hidden [@media(min-aspect-ratio:1.02)]:absolute [@media(min-aspect-ratio:1.02)]:inset-0'>
+        <div className={`pointer-events-none ${CAT_BOX}`}>
           <span
-            key={puff.key}
             aria-hidden='true'
-            className='absolute rounded-[50%]'
-            style={{ left: puff.left, right: puff.right, bottom: puff.bottom, height: puff.height, background: CLOUD_FRONT, filter: `blur(${puff.blur}px)` }}
+            className='absolute right-[4%] bottom-[4%] left-[6%] h-[36%] animate-[glowPulse_5s_ease-in-out_infinite_alternate] rounded-[50%] blur-[22px]'
+            style={{ background: CAT_GLOW }}
           />
-        ))}
+          <CatArt alt={copy.altCat} sizes={CAT_SIZES} fetchPriority='high' className='animate-[evCatFloat_7.5s_ease-in-out_infinite_alternate]' />
+          {CAT_CLOUDS.map(puff => (
+            <span
+              key={puff.key}
+              aria-hidden='true'
+              className='absolute rounded-[50%]'
+              style={{ left: puff.left, right: puff.right, bottom: puff.bottom, height: puff.height, background: CLOUD_FRONT, filter: `blur(${puff.blur}px)` }}
+            />
+          ))}
+        </div>
       </div>
 
       <div aria-hidden='true' className={`pointer-events-none absolute inset-x-0 top-0 bottom-[-240px] z-1 overflow-hidden ${MASK_FRONT}`}>
