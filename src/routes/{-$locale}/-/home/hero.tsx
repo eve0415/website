@@ -58,13 +58,21 @@ const VIGNETTE = tw(
    as the alpha, so this only has to place it.
 
    Only the plateau is the copy: it runs the width of the column and stops 56px
-   above the buttons, and everything outside it is fade. The fades are long on
-   purpose, half the viewport to each side and 200px up. At the alpha dusk asks
-   for, a 44px feather still reads as a pale card behind the text; at this
-   length the same wash reads as the sky brightening toward the horizon, which
-   is what the gradient under it is already doing. */
+   above the buttons, and everything outside it is fade. The fade up is long on
+   purpose, 200px of it: at the alpha dusk asks for, a 44px feather still reads
+   as a pale card behind the text, where at this length the same wash reads as
+   the sky brightening toward the horizon, which is what the gradient under it
+   is already doing.
+
+   Sideways it stops at the gutter, where it used to run half a viewport past
+   each edge and let the root clip the remainder. The remainder was never drawn,
+   but it counted: a phone sizes its layout viewport to fit the widest thing on
+   the page, so half a viewport of invisible scrim laid the site out half again
+   too wide and scaled the whole of it down to fit. Ending at the gutter draws
+   the same wash — the fade lands in the margin either way, and at 6% alpha its
+   edge was never the thing you could see. */
 const SCRIM = tw(
-  'pointer-events-none absolute inset-x-[-50vw] -top-54 bottom-0 -z-1 bg-[linear-gradient(180deg,transparent_0,var(--sky-scrim)_200px,var(--sky-scrim)_calc(100%-56px),transparent_100%)] mask-[linear-gradient(90deg,transparent_0,#000_50vw,#000_calc(100%-50vw),transparent_100%)]',
+  'pointer-events-none absolute -inset-x-(--page-gutter) -top-54 bottom-0 -z-1 bg-[linear-gradient(180deg,transparent_0,var(--sky-scrim)_200px,var(--sky-scrim)_calc(100%-56px),transparent_100%)] mask-[linear-gradient(90deg,transparent_0,#000_var(--page-gutter),#000_calc(100%-var(--page-gutter)),transparent_100%)]',
 );
 
 /** The lights inside the cloud sea, front to back as the design layers them. */
@@ -186,7 +194,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
       </div>
       <ShootingStar tail={160} duration={12} delay={4} className='pointer-events-none top-[9%] right-[5%]' style={{ opacity: 'var(--sky-star-alpha)' }} />
 
-      <div className='ev-on-clouds relative z-2 mx-auto w-full max-w-(--page-max-wide) px-[clamp(22px,6vw,72px)] pb-[clamp(56px,11vh,110px)]'>
+      <div className='ev-on-clouds relative z-2 mx-auto w-full max-w-(--page-max-wide) px-(--page-gutter) pb-[clamp(56px,11vh,110px)]'>
         <div className='relative grid max-w-170 justify-items-start gap-4'>
           <div aria-hidden='true' className={SCRIM} />
           <Greeting
