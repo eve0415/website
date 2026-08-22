@@ -540,6 +540,12 @@
     animation-duration: 0.01ms !important;
     animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+    /* A near-zero duration ends one pass, not an `infinite` one: the sky's drifts
+       keep cycling, now tens of thousands of times a second. They look still only
+       while 0.01ms divides the timeline's tick — the cloud layer already samples
+       two phases and 9px of travel per frame here, and an engine on a coarser
+       tick gives the full 28px. The count is what actually stops them. */
+    animation-iteration-count: 1 !important;
   }
 
   /* A scroll-progress timeline — `view()` or `scroll()` — runs on distance, not
