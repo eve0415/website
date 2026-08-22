@@ -21,8 +21,18 @@ const HERO_STAR_SEED = 4_150_415;
 /* The hero starts under the header and fills what is left of the first screen.
    `--header-h` rather than the design's flat 61px: SiteHeader keeps that token
    on the real bar, which is two rows under 45em and taller again at a large
-   root font — a constant reopened the gap on exactly those. */
-const SECTION = tw('relative -mt-(--header-h) grid min-h-[calc(100svh/var(--z,1)-var(--header-h))] content-end');
+   root font — a constant reopened the gap on exactly those.
+
+   The header's height is taken off the box twice on purpose no longer: the
+   negative margin already lifts the top edge behind the bar, so subtracting it
+   from the height as well ended the section a header short of the fold. It is
+   padding that owes the bar its room, and the difference is what happens when
+   the copy outgrows the screen — a short phone wraps the greeting to two lines
+   and the sub to three, and `content-end` spends the overflow upward. Against a
+   height that stopped short, the cat's row went with it and left the head
+   behind the bar; against padding, the overflow has the header's own room to
+   grow into first. */
+const SECTION = tw('relative -mt-(--header-h) grid min-h-[calc(100svh/var(--z,1))] content-end pt-(--header-h)');
 
 /* Each layer of the cloud sea fades out at a different depth so the sea reads
    as thick rather than as three flat sheets. */
