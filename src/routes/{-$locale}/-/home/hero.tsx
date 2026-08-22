@@ -35,7 +35,13 @@ const HERO_STAR_SEED = 4_150_415;
 const SECTION = tw('relative -mt-(--header-h) grid min-h-[calc(100svh/var(--z,1))] content-end pt-(--header-h)');
 
 /* Each layer of the cloud sea fades out at a different depth so the sea reads
-   as thick rather than as three flat sheets. */
+   as thick rather than as three flat sheets.
+
+   Each also clips, because the puffs inside it overhang the viewport by design
+   and something has to catch them. The root was catching them, which a phone
+   does not honour when it decides how wide to lay the page out — these boxes
+   already reach 240px past the section, so clipping here costs the overshoot
+   nothing and keeps the overhang out of the page's width. */
 const MASK_HERO = tw('mask-[linear-gradient(180deg,#000_0%,#000_42%,rgba(0,0,0,.6)_64%,rgba(0,0,0,.2)_82%,transparent_96%)]');
 const MASK_BACK = tw('mask-[linear-gradient(180deg,#000_44%,rgba(0,0,0,.55)_64%,rgba(0,0,0,.22)_80%,transparent_97%)]');
 const MASK_FRONT = tw('mask-[linear-gradient(180deg,#000_48%,rgba(0,0,0,.6)_68%,rgba(0,0,0,.25)_83%,transparent_98%)]');
@@ -120,7 +126,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
 
   return (
     <section className={SECTION}>
-      <div aria-hidden='true' className={`absolute inset-x-0 top-0 bottom-[-240px] ${MASK_HERO}`} style={{ background: 'var(--sky-hero)' }}>
+      <div aria-hidden='true' className={`absolute inset-x-0 top-0 bottom-[-240px] overflow-hidden ${MASK_HERO}`} style={{ background: 'var(--sky-hero)' }}>
         <div className='absolute inset-x-0 top-0 bottom-60'>
           {HERO_GLOWS.map(spot => (
             <span
@@ -139,7 +145,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
         </div>
       </div>
 
-      <div aria-hidden='true' className={`pointer-events-none absolute inset-x-0 top-0 bottom-[-240px] ${MASK_BACK}`}>
+      <div aria-hidden='true' className={`pointer-events-none absolute inset-x-0 top-0 bottom-[-240px] overflow-hidden ${MASK_BACK}`}>
         <div className='absolute inset-x-0 top-0 bottom-60 animate-[driftX_44s_ease-in-out_infinite_alternate]'>
           <CloudLayer puffs={CLOUDS_BACK} background={CLOUD_BACK} blur={13} />
         </div>
@@ -166,7 +172,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
         ))}
       </div>
 
-      <div aria-hidden='true' className={`pointer-events-none absolute inset-x-0 top-0 bottom-[-240px] z-1 ${MASK_FRONT}`}>
+      <div aria-hidden='true' className={`pointer-events-none absolute inset-x-0 top-0 bottom-[-240px] z-1 overflow-hidden ${MASK_FRONT}`}>
         <div className='absolute inset-x-0 top-0 bottom-60 animate-[driftX_26s_ease-in-out_infinite_alternate]'>
           <CloudLayer puffs={CLOUDS_FRONT} background={CLOUD_FRONT} blur={7} />
         </div>
@@ -174,7 +180,7 @@ export const Hero: FC<HeroProps> = ({ locale }) => {
 
       <div aria-hidden='true' className={`absolute inset-0 ${VIGNETTE}`} />
 
-      <div aria-hidden='true' className='pointer-events-none absolute inset-0' style={{ opacity: 'var(--sky-star-alpha)' }}>
+      <div aria-hidden='true' className='pointer-events-none absolute inset-0 overflow-hidden' style={{ opacity: 'var(--sky-star-alpha)' }}>
         <StarField count={10} topMax={58} seed={HERO_STAR_SEED} />
         <ShootingStar direction='right' tail={130} duration={17} delay={9} className='top-[7%] left-[6%]' />
       </div>
