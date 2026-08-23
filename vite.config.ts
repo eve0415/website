@@ -7,7 +7,7 @@ import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
-import react, { reactCompilerPreset } from '@vitejs/plugin-react';
+import react from '@vitejs/plugin-react';
 import { defineConfig } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
@@ -199,9 +199,8 @@ export default defineConfig({
     devtools({
       eventBusConfig: { enabled: true },
     }),
-    react(),
+    react({ compiler: { panicThreshold: 'critical_errors' } }),
     babel({
-      presets: [reactCompilerPreset({ panicThreshold: 'critical_errors' })],
       plugins: [stripTw],
     }),
     tailwindcss(),
