@@ -4,14 +4,16 @@ import { cn } from '#lib/cn';
 
 import avif480 from './cat-glow-cutout-480x480.avif';
 import webp480 from './cat-glow-cutout-480x480.webp';
+import avif720 from './cat-glow-cutout-720x720.avif';
+import webp720 from './cat-glow-cutout-720x720.webp';
 import avif960 from './cat-glow-cutout-960x960.avif';
 import webp960 from './cat-glow-cutout-960x960.webp';
 import avif1440 from './cat-glow-cutout-1440x1440.avif';
 import webp1440 from './cat-glow-cutout-1440x1440.webp';
 import './cat-art.css';
 
-const AVIF = `${avif480} 480w, ${avif960} 960w, ${avif1440} 1440w`;
-const WEBP = `${webp480} 480w, ${webp960} 960w, ${webp1440} 1440w`;
+const AVIF = `${avif480} 480w, ${avif720} 720w, ${avif960} 960w, ${avif1440} 1440w`;
+const WEBP = `${webp480} 480w, ${webp720} 720w, ${webp960} 960w, ${webp1440} 1440w`;
 
 interface CatArtProps {
   /** Per page: the hero and the 404 describe the same cat doing different things. */
