@@ -211,12 +211,22 @@ export default defineConfig({
     // undefined var() calls with no separator, emitting no warning and no
     // prefers-color-scheme fallback.
     cssTarget: ['chrome125', 'firefox125', 'safari18'],
+    // Declared at the root, then switched off for the client below, because
+    // `vite:react-compiler` reads this one value at `configResolved` and never
+    // looks at the per-environment build options. Setting it on `ssr` alone left
+    // the plugin emitting no source map for the SSR bundle it had just rewritten,
+    // and the maps `upload_source_maps` ships pointed at the wrong lines.
+    sourcemap: true,
   },
   environments: {
+    client: {
+      build: {
+        sourcemap: false,
+      },
+    },
     ssr: {
       build: {
         minify: 'oxc',
-        sourcemap: true,
       },
     },
   },
