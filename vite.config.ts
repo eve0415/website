@@ -6,7 +6,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
-import { defineConfig } from 'vite';
+import { defineConfig, parseSync } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
 
 import { SITE_URL } from '#i18n/head';
@@ -144,6 +144,93 @@ const headers = (): Plugin => ({
   },
 });
 
+/**
+ * Reads a `tw('…')` marker call off a parsed node, as `[start, end]` of the call
+ * and of the string it wraps. Narrowed rather than typed against the AST because
+ * `JSON.stringify` is what walks the tree, and it hands every node over as `unknown`.
+ */
+const twCall = (node: unknown): readonly [number, number, number, number] | null => {
+  if (typeof node !== 'object' || node === null) return null;
+  if (!('type' in node) || node.type !== 'CallExpression') return null;
+  if (!('start' in node) || typeof node.start !== 'number') return null;
+  if (!('end' in node) || typeof node.end !== 'number') return null;
+
+  if (!('callee' in node)) return null;
+  const { callee } = node;
+  if (typeof callee !== 'object' || callee === null) return null;
+  if (!('type' in callee) || callee.type !== 'Identifier') return null;
+  if (!('name' in callee) || callee.name !== 'tw') return null;
+
+  if (!('arguments' in node) || !Array.isArray(node.arguments) || node.arguments.length !== 1) return null;
+  const argument: unknown = node.arguments.at(0);
+  if (typeof argument !== 'object' || argument === null) return null;
+  if (!('type' in argument) || argument.type !== 'Literal') return null;
+  if (!('value' in argument) || typeof argument.value !== 'string') return null;
+  if (!('start' in argument) || typeof argument.start !== 'number') return null;
+  if (!('end' in argument) || typeof argument.end !== 'number') return null;
+
+  return [node.start, node.end, argument.start, argument.end];
+};
+
+/** Spaces, keeping the line breaks, so every later offset stays where it was. */
+const blank = (text: string): string => text.replaceAll(/[^\n]/gu, ' ');
+
+/**
+ * Drops the `tw()` marker calls, leaving the class list they wrap.
+ *
+ * `tw` exists so oxlint and oxfmt can see a class list that lives in a constant
+ * rather than in JSX, and it returns its argument unchanged — but nothing else
+ * removes it. oxc's minifier does not inline across chunk boundaries, so left
+ * alone the identity function ships in the shared chunk and every marked list
+ * becomes a call to it: 0.47 KiB raw and 0.09 KiB gzip of client JS, measured.
+ *
+ * The marker is matched by name within a module that imports it, without scope
+ * analysis: `eslint(no-shadow)` runs at error, so a local binding called `tw`
+ * cannot reach the build to be mistaken for the import.
+ *
+ * Runs after `vite:react-compiler`, which is `enforce: 'pre'`, so what arrives
+ * here is plain JS. The call is overwritten with spaces rather than cut out,
+ * which is why this returns no source map: every byte keeps its offset and every
+ * line its number, so the map the next plugin holds is still correct.
+ */
+const stripTw = (): Plugin => ({
+  name: 'strip-tw',
+  transform: {
+    filter: { code: 'tw(' },
+    handler(code, id) {
+      const { program } = parseSync(id, code);
+
+      const importsTw = program.body.some(
+        node =>
+          node.type === 'ImportDeclaration' &&
+          node.source.value === '#lib/tw' &&
+          node.specifiers.some(specifier => specifier.type === 'ImportSpecifier' && specifier.local.name === 'tw'),
+      );
+      if (!importsTw) return null;
+
+      const calls: (readonly [number, number, number, number])[] = [];
+      JSON.stringify(program, (_key: string, value: unknown) => {
+        const call = twCall(value);
+        if (call) calls.push(call);
+        return value;
+      });
+      if (calls.length === 0) return null;
+
+      let stripped = code;
+      for (const [start, end, argumentStart, argumentEnd] of calls) {
+        stripped =
+          stripped.slice(0, start) +
+          blank(stripped.slice(start, argumentStart)) +
+          stripped.slice(argumentStart, argumentEnd) +
+          blank(stripped.slice(argumentEnd, end)) +
+          stripped.slice(end);
+      }
+
+      return { code: stripped, map: null };
+    },
+  },
+});
+
 export default defineConfig({
   plugins: [
     cloudflare({
@@ -173,6 +260,7 @@ export default defineConfig({
       eventBusConfig: { enabled: true },
     }),
     react({ compiler: { panicThreshold: 'critical_errors' } }),
+    stripTw(),
     tailwindcss(),
     devtoolsJson(),
   ],

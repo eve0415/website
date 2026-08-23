@@ -6,10 +6,11 @@
  * a class list hoisted into a constant is invisible to both. `tw` is the call
  * they are told about, so a hoisted list gets linted and sorted like the JSX.
  *
- * Nothing strips the call: it is an identity function, and the oxc minifier
- * inlines it. Measured against a build that removed the calls in a Babel pass
- * beforehand, keeping them costs 0.48 KiB raw and 0.11 KiB gzip across the whole
- * client bundle, and no `tw(` survives into either the client or the Worker output.
+ * The `stripTw` plugin in `vite.config.ts` removes the call, leaving the bare
+ * string. Being an identity function is not enough on its own: oxc's minifier
+ * does not inline across chunk boundaries, so without that plugin this function
+ * ships in the shared chunk and every marked list becomes a call to it — 0.47 KiB
+ * raw and 0.09 KiB gzip of client JS, measured.
  *
  * Use `cn` instead when classes are actually being combined or overridden.
  */
