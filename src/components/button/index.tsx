@@ -1,0 +1,66 @@
+import type { ComponentPropsWithRef, FC, ReactNode } from 'react';
+
+import { cn } from '#lib/cn';
+import { tw } from '#lib/tw';
+
+type ButtonVariant = 'primary' | 'glass' | 'ghost';
+type ButtonSize = 'md' | 'sm';
+
+const BASE = tw(
+  'inline-flex min-h-(--hit-target) cursor-pointer items-center gap-2.5 rounded-[999px] px-6.5 py-[13px] font-sans text-[1rem] font-bold no-underline active:transform-[scale(0.97)] disabled:cursor-default',
+);
+
+const VARIANT = {
+  primary: tw(
+    /* The glow goes while the ring is up: at midnight the neon ring's bottom arc
+       crossed this cyan halo and measured 1.74:1 against it, where the same ring
+       on the bare sky measures 16. */
+    'bg-(image:--grad-comet) text-(--ink-on-accent) shadow-(--glow-cta) transition-[transform,box-shadow] duration-150 ease-[ease] hover:transform-[translateY(-2px)] hover:shadow-(--glow-cta-hover) focus-visible:shadow-none',
+  ),
+  glass: tw(
+    'border border-(--line-white) bg-(--surface-glass) text-(--glass-ink) backdrop-blur-[4px] transition-[border-color,background] duration-150 ease-[ease] hover:border-(--accent-cyan) hover:bg-[rgba(4,254,255,0.12)]',
+  ),
+  ghost: tw(
+    'border border-(--line-accent) bg-(--ghost-surface) px-4.5 py-2 text-(length:--text-small) text-(--ghost-ink) transition-[background] duration-150 ease-[ease] hover:bg-[rgba(4,254,255,0.1)]',
+  ),
+} satisfies Record<ButtonVariant, string>;
+
+const SIZE = {
+  md: '',
+  sm: tw('px-4.5 py-2 text-(length:--text-small)'),
+} satisfies Record<ButtonSize, string>;
+
+interface ButtonBaseProps {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  children?: ReactNode;
+}
+
+interface ButtonAnchorProps extends ButtonBaseProps, Omit<ComponentPropsWithRef<'a'>, 'href' | 'children'> {
+  href: string;
+}
+
+interface ButtonElementProps extends ButtonBaseProps, Omit<ComponentPropsWithRef<'button'>, 'children'> {
+  href?: undefined;
+}
+
+type ButtonProps = ButtonAnchorProps | ButtonElementProps;
+
+export const Button: FC<ButtonProps> = props => {
+  const { variant = 'primary', size = 'md', className, children, ...rest } = props;
+  const cls = cn(BASE, VARIANT[variant], SIZE[size], className);
+
+  if (rest.href === undefined) {
+    return (
+      <button type='button' className={cls} {...rest}>
+        {children}
+      </button>
+    );
+  }
+
+  return (
+    <a className={cls} {...rest}>
+      {children}
+    </a>
+  );
+};

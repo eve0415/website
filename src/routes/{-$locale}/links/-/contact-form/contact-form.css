@@ -1,0 +1,23 @@
+/* The form→sent swap runs as a view transition scoped to this box, so only
+   these pseudos exist and only they need timing. `::view-transition-*` lives
+   outside the document tree, which is why `__root.css`'s blanket `*` reduced-
+   motion rule cannot reach it — the second block is not redundant. */
+
+.ev-cf-box::view-transition-old(*),
+.ev-cf-box::view-transition-new(*) {
+  animation-duration: 0.32s;
+  animation-timing-function: var(--ease-comet);
+}
+
+.ev-cf-box::view-transition-group(*) {
+  animation-duration: 0.32s;
+  animation-timing-function: var(--ease-comet);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ev-cf-box::view-transition-old(*),
+  .ev-cf-box::view-transition-new(*),
+  .ev-cf-box::view-transition-group(*) {
+    animation: none !important;
+  }
+}

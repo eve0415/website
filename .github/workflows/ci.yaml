@@ -1,0 +1,47 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  check:
+    runs-on: ubuntu-24.04-arm
+
+    permissions:
+      contents: read
+
+    steps:
+      # anti-slop is a submodule, and oxlint fails to start without it.
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Set up pnpm and Node.js
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2.0.2
+        with:
+          cache: true
+
+      # .dev.vars is gitignored, so the secret names come from the committed
+      # example instead — without them the three `env.*` reads have no type.
+      - name: Generate Worker types
+        run: pnpm exec wrangler types --env-file .dev.vars.example
+
+      - name: Lint
+        run: pnpm exec oxlint
+
+      - name: Check formatting
+        run: pnpm exec oxfmt --check
+
+      - name: Build
+        run: pnpm exec vite build

@@ -1,0 +1,91 @@
+/* What stays in plain CSS: a `>` combinator, a custom @function, a scroll-state
+   container query and scroll-driven animations. `.ev-hdr`, `.ev-hdr-line` and
+   `.ev-prg` survive only as the hooks these at-rules need — every other
+   declaration on those elements is a utility class on the element itself. */
+
+.ev-hdr-line > span {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, rgba(4, 254, 255, 0), rgba(4, 254, 255, 0.75) 24%, rgba(0, 221, 168, 0.75) 76%, rgba(0, 221, 168, 0));
+  box-shadow: 0 0 18px 4px rgba(4, 254, 255, 0.32);
+}
+
+@supports at-rule(@function) {
+  @function --ev-comet-glow(--c) {
+    result: 0 0 18px 4px var(--c);
+  }
+
+  .ev-hdr-line > span {
+    box-shadow: --ev-comet-glow(rgba(4, 254, 255, 0.32));
+  }
+}
+
+@supports (container-type: scroll-state) {
+  .ev-hdr {
+    container-type: scroll-state;
+  }
+
+  @container scroll-state(stuck: top) {
+    .ev-hdr-line {
+      opacity: 1;
+    }
+  }
+}
+
+@keyframes evPrgFill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+@keyframes evPrgRun {
+  from {
+    left: 0%;
+  }
+  to {
+    left: 100%;
+  }
+}
+
+@keyframes evPrgWake {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@supports (animation-timeline: scroll(root block)) {
+  .ev-prg {
+    animation: evPrgWake linear both;
+    animation-timeline: scroll(root block);
+    animation-range: 0 90px;
+  }
+
+  .ev-prg-b {
+    position: absolute;
+    inset: 0;
+    transform-origin: left;
+    background: var(--grad-comet, linear-gradient(90deg, #04feff, #00dda8));
+    animation: evPrgFill linear both;
+    animation-timeline: scroll(root block);
+  }
+
+  .ev-prg-h {
+    position: absolute;
+    top: -3px;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    margin-left: -4px;
+    border-radius: 50%;
+    background: #fcf7fd;
+    box-shadow: var(--glow-star, 0 0 12px 3px rgba(4, 254, 255, 0.85));
+    animation: evPrgRun linear both;
+    animation-timeline: scroll(root block);
+  }
+}

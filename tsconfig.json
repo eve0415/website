@@ -1,5 +1,4 @@
 {
-  "references": [{ "path": "./tsconfig.node.json" }, { "path": "./tsconfig.cloudflare.json" }, { "path": "./tsconfig.test.json" }],
   "compilerOptions": {
     "moduleResolution": "Bundler",
     "module": "esnext",
@@ -21,9 +20,7 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
     "skipLibCheck": true,
-    // Nothing consumes tsc output - vite bundles the app. Composite projects
-    // may disable emit as of TS 7, so a type-check run leaves only .tsbuildinfo.
     "noEmit": true
   },
-  "files": []
+  "include": ["src/**/*", "vite.config.ts", "oxlint.config.ts", "oxfmt.config.ts"]
 }

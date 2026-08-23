@@ -9,148 +9,291 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiCspReportRouteImport } from './routes/api/csp-report'
-import { Route as LinkIndexRouteImport } from './routes/link/index'
-import { Route as ProjectsIndexRouteImport } from './routes/projects/index'
-import { Route as SkillsIndexRouteImport } from './routes/skills/index'
-import { Route as SysIndexRouteImport } from './routes/sys/index'
+import { Route as Char123LocaleChar125RouteRouteImport } from './routes/{-$locale}/route'
+import { Route as Char123LocaleChar125IndexRouteImport } from './routes/{-$locale}/index'
+import { Route as Char123LocaleChar125AboutIndexRouteImport } from './routes/{-$locale}/about/index'
+import { Route as Char123LocaleChar125LinksIndexRouteImport } from './routes/{-$locale}/links/index'
+import { Route as Char123LocaleChar125ProjectsIndexRouteImport } from './routes/{-$locale}/projects/index'
+import { Route as Char123LocaleChar125ProjectsCellaRouteImport } from './routes/{-$locale}/projects/cella'
+import { Route as Char123LocaleChar125ProjectsDotclaudeRouteImport } from './routes/{-$locale}/projects/dotclaude'
+import { Route as Char123LocaleChar125ProjectsIfpatcherRouteImport } from './routes/{-$locale}/projects/ifpatcher'
+import { Route as Char123LocaleChar125ProjectsOastsRouteImport } from './routes/{-$locale}/projects/oasts'
+import { Route as Char123LocaleChar125ProjectsWebsiteRouteImport } from './routes/{-$locale}/projects/website'
+import { Route as Char123LocaleChar125SkillsIndexRouteImport } from './routes/{-$locale}/skills/index'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ApiCspReportRoute = ApiCspReportRouteImport.update({
-  id: '/api/csp-report',
-  path: '/api/csp-report',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const LinkIndexRoute = LinkIndexRouteImport.update({
-  id: '/link/',
-  path: '/link/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ProjectsIndexRoute = ProjectsIndexRouteImport.update({
-  id: '/projects/',
-  path: '/projects/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SkillsIndexRoute = SkillsIndexRouteImport.update({
-  id: '/skills/',
-  path: '/skills/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SysIndexRoute = SysIndexRouteImport.update({
-  id: '/sys/',
-  path: '/sys/',
-  getParentRoute: () => rootRouteImport,
-} as any)
+const Char123LocaleChar125RouteRoute =
+  Char123LocaleChar125RouteRouteImport.update({
+    id: '/{-$locale}',
+    path: '/{-$locale}',
+    getParentRoute: () => rootRouteImport,
+  } as any)
+const Char123LocaleChar125IndexRoute =
+  Char123LocaleChar125IndexRouteImport.update({
+    id: '/',
+    path: '/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125AboutIndexRoute =
+  Char123LocaleChar125AboutIndexRouteImport.update({
+    id: '/about/',
+    path: '/about/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125LinksIndexRoute =
+  Char123LocaleChar125LinksIndexRouteImport.update({
+    id: '/links/',
+    path: '/links/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125ProjectsIndexRoute =
+  Char123LocaleChar125ProjectsIndexRouteImport.update({
+    id: '/projects/',
+    path: '/projects/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125ProjectsCellaRoute =
+  Char123LocaleChar125ProjectsCellaRouteImport.update({
+    id: '/projects/cella',
+    path: '/projects/cella',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125ProjectsDotclaudeRoute =
+  Char123LocaleChar125ProjectsDotclaudeRouteImport.update({
+    id: '/projects/dotclaude',
+    path: '/projects/dotclaude',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125ProjectsIfpatcherRoute =
+  Char123LocaleChar125ProjectsIfpatcherRouteImport.update({
+    id: '/projects/ifpatcher',
+    path: '/projects/ifpatcher',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125ProjectsOastsRoute =
+  Char123LocaleChar125ProjectsOastsRouteImport.update({
+    id: '/projects/oasts',
+    path: '/projects/oasts',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125ProjectsWebsiteRoute =
+  Char123LocaleChar125ProjectsWebsiteRouteImport.update({
+    id: '/projects/website',
+    path: '/projects/website',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
+const Char123LocaleChar125SkillsIndexRoute =
+  Char123LocaleChar125SkillsIndexRouteImport.update({
+    id: '/skills/',
+    path: '/skills/',
+    getParentRoute: () => Char123LocaleChar125RouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
-  '/': typeof IndexRoute
-  '/api/csp-report': typeof ApiCspReportRoute
-  '/link/': typeof LinkIndexRoute
-  '/projects/': typeof ProjectsIndexRoute
-  '/skills/': typeof SkillsIndexRoute
-  '/sys/': typeof SysIndexRoute
+  '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
+  '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
+  '/{-$locale}/projects/ifpatcher': typeof Char123LocaleChar125ProjectsIfpatcherRoute
+  '/{-$locale}/projects/oasts': typeof Char123LocaleChar125ProjectsOastsRoute
+  '/{-$locale}/projects/website': typeof Char123LocaleChar125ProjectsWebsiteRoute
+  '/{-$locale}/about/': typeof Char123LocaleChar125AboutIndexRoute
+  '/{-$locale}/links/': typeof Char123LocaleChar125LinksIndexRoute
+  '/{-$locale}/projects/': typeof Char123LocaleChar125ProjectsIndexRoute
+  '/{-$locale}/skills/': typeof Char123LocaleChar125SkillsIndexRoute
 }
 export interface FileRoutesByTo {
-  '/': typeof IndexRoute
-  '/api/csp-report': typeof ApiCspReportRoute
-  '/link': typeof LinkIndexRoute
-  '/projects': typeof ProjectsIndexRoute
-  '/skills': typeof SkillsIndexRoute
-  '/sys': typeof SysIndexRoute
+  '/{-$locale}': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
+  '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
+  '/{-$locale}/projects/ifpatcher': typeof Char123LocaleChar125ProjectsIfpatcherRoute
+  '/{-$locale}/projects/oasts': typeof Char123LocaleChar125ProjectsOastsRoute
+  '/{-$locale}/projects/website': typeof Char123LocaleChar125ProjectsWebsiteRoute
+  '/{-$locale}/about': typeof Char123LocaleChar125AboutIndexRoute
+  '/{-$locale}/links': typeof Char123LocaleChar125LinksIndexRoute
+  '/{-$locale}/projects': typeof Char123LocaleChar125ProjectsIndexRoute
+  '/{-$locale}/skills': typeof Char123LocaleChar125SkillsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
-  '/': typeof IndexRoute
-  '/api/csp-report': typeof ApiCspReportRoute
-  '/link/': typeof LinkIndexRoute
-  '/projects/': typeof ProjectsIndexRoute
-  '/skills/': typeof SkillsIndexRoute
-  '/sys/': typeof SysIndexRoute
+  '/{-$locale}': typeof Char123LocaleChar125RouteRouteWithChildren
+  '/{-$locale}/': typeof Char123LocaleChar125IndexRoute
+  '/{-$locale}/projects/cella': typeof Char123LocaleChar125ProjectsCellaRoute
+  '/{-$locale}/projects/dotclaude': typeof Char123LocaleChar125ProjectsDotclaudeRoute
+  '/{-$locale}/projects/ifpatcher': typeof Char123LocaleChar125ProjectsIfpatcherRoute
+  '/{-$locale}/projects/oasts': typeof Char123LocaleChar125ProjectsOastsRoute
+  '/{-$locale}/projects/website': typeof Char123LocaleChar125ProjectsWebsiteRoute
+  '/{-$locale}/about/': typeof Char123LocaleChar125AboutIndexRoute
+  '/{-$locale}/links/': typeof Char123LocaleChar125LinksIndexRoute
+  '/{-$locale}/projects/': typeof Char123LocaleChar125ProjectsIndexRoute
+  '/{-$locale}/skills/': typeof Char123LocaleChar125SkillsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
-    '/' | '/api/csp-report' | '/link/' | '/projects/' | '/skills/' | '/sys/'
+    | '/{-$locale}'
+    | '/{-$locale}/'
+    | '/{-$locale}/projects/cella'
+    | '/{-$locale}/projects/dotclaude'
+    | '/{-$locale}/projects/ifpatcher'
+    | '/{-$locale}/projects/oasts'
+    | '/{-$locale}/projects/website'
+    | '/{-$locale}/about/'
+    | '/{-$locale}/links/'
+    | '/{-$locale}/projects/'
+    | '/{-$locale}/skills/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/csp-report' | '/link' | '/projects' | '/skills' | '/sys'
+  to:
+    | '/{-$locale}'
+    | '/{-$locale}/projects/cella'
+    | '/{-$locale}/projects/dotclaude'
+    | '/{-$locale}/projects/ifpatcher'
+    | '/{-$locale}/projects/oasts'
+    | '/{-$locale}/projects/website'
+    | '/{-$locale}/about'
+    | '/{-$locale}/links'
+    | '/{-$locale}/projects'
+    | '/{-$locale}/skills'
   id:
     | '__root__'
-    | '/'
-    | '/api/csp-report'
-    | '/link/'
-    | '/projects/'
-    | '/skills/'
-    | '/sys/'
+    | '/{-$locale}'
+    | '/{-$locale}/'
+    | '/{-$locale}/projects/cella'
+    | '/{-$locale}/projects/dotclaude'
+    | '/{-$locale}/projects/ifpatcher'
+    | '/{-$locale}/projects/oasts'
+    | '/{-$locale}/projects/website'
+    | '/{-$locale}/about/'
+    | '/{-$locale}/links/'
+    | '/{-$locale}/projects/'
+    | '/{-$locale}/skills/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute
-  ApiCspReportRoute: typeof ApiCspReportRoute
-  LinkIndexRoute: typeof LinkIndexRoute
-  ProjectsIndexRoute: typeof ProjectsIndexRoute
-  SkillsIndexRoute: typeof SkillsIndexRoute
-  SysIndexRoute: typeof SysIndexRoute
+  Char123LocaleChar125RouteRoute: typeof Char123LocaleChar125RouteRouteWithChildren
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
+    '/{-$locale}': {
+      id: '/{-$locale}'
+      path: '/{-$locale}'
+      fullPath: '/{-$locale}'
+      preLoaderRoute: typeof Char123LocaleChar125RouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/{-$locale}/': {
+      id: '/{-$locale}/'
       path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/{-$locale}/'
+      preLoaderRoute: typeof Char123LocaleChar125IndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/api/csp-report': {
-      id: '/api/csp-report'
-      path: '/api/csp-report'
-      fullPath: '/api/csp-report'
-      preLoaderRoute: typeof ApiCspReportRouteImport
-      parentRoute: typeof rootRouteImport
+    '/{-$locale}/about/': {
+      id: '/{-$locale}/about/'
+      path: '/about'
+      fullPath: '/{-$locale}/about/'
+      preLoaderRoute: typeof Char123LocaleChar125AboutIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/link/': {
-      id: '/link/'
-      path: '/link'
-      fullPath: '/link/'
-      preLoaderRoute: typeof LinkIndexRouteImport
-      parentRoute: typeof rootRouteImport
+    '/{-$locale}/links/': {
+      id: '/{-$locale}/links/'
+      path: '/links'
+      fullPath: '/{-$locale}/links/'
+      preLoaderRoute: typeof Char123LocaleChar125LinksIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/projects/': {
-      id: '/projects/'
+    '/{-$locale}/projects/': {
+      id: '/{-$locale}/projects/'
       path: '/projects'
-      fullPath: '/projects/'
-      preLoaderRoute: typeof ProjectsIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/{-$locale}/projects/'
+      preLoaderRoute: typeof Char123LocaleChar125ProjectsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
     }
-    '/skills/': {
-      id: '/skills/'
+    '/{-$locale}/projects/cella': {
+      id: '/{-$locale}/projects/cella'
+      path: '/projects/cella'
+      fullPath: '/{-$locale}/projects/cella'
+      preLoaderRoute: typeof Char123LocaleChar125ProjectsCellaRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/projects/dotclaude': {
+      id: '/{-$locale}/projects/dotclaude'
+      path: '/projects/dotclaude'
+      fullPath: '/{-$locale}/projects/dotclaude'
+      preLoaderRoute: typeof Char123LocaleChar125ProjectsDotclaudeRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/projects/ifpatcher': {
+      id: '/{-$locale}/projects/ifpatcher'
+      path: '/projects/ifpatcher'
+      fullPath: '/{-$locale}/projects/ifpatcher'
+      preLoaderRoute: typeof Char123LocaleChar125ProjectsIfpatcherRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/projects/oasts': {
+      id: '/{-$locale}/projects/oasts'
+      path: '/projects/oasts'
+      fullPath: '/{-$locale}/projects/oasts'
+      preLoaderRoute: typeof Char123LocaleChar125ProjectsOastsRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/projects/website': {
+      id: '/{-$locale}/projects/website'
+      path: '/projects/website'
+      fullPath: '/{-$locale}/projects/website'
+      preLoaderRoute: typeof Char123LocaleChar125ProjectsWebsiteRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
+    }
+    '/{-$locale}/skills/': {
+      id: '/{-$locale}/skills/'
       path: '/skills'
-      fullPath: '/skills/'
-      preLoaderRoute: typeof SkillsIndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/sys/': {
-      id: '/sys/'
-      path: '/sys'
-      fullPath: '/sys/'
-      preLoaderRoute: typeof SysIndexRouteImport
-      parentRoute: typeof rootRouteImport
+      fullPath: '/{-$locale}/skills/'
+      preLoaderRoute: typeof Char123LocaleChar125SkillsIndexRouteImport
+      parentRoute: typeof Char123LocaleChar125RouteRoute
     }
   }
 }
 
+interface Char123LocaleChar125RouteRouteChildren {
+  Char123LocaleChar125IndexRoute: typeof Char123LocaleChar125IndexRoute
+  Char123LocaleChar125ProjectsCellaRoute: typeof Char123LocaleChar125ProjectsCellaRoute
+  Char123LocaleChar125ProjectsDotclaudeRoute: typeof Char123LocaleChar125ProjectsDotclaudeRoute
+  Char123LocaleChar125ProjectsIfpatcherRoute: typeof Char123LocaleChar125ProjectsIfpatcherRoute
+  Char123LocaleChar125ProjectsOastsRoute: typeof Char123LocaleChar125ProjectsOastsRoute
+  Char123LocaleChar125ProjectsWebsiteRoute: typeof Char123LocaleChar125ProjectsWebsiteRoute
+  Char123LocaleChar125AboutIndexRoute: typeof Char123LocaleChar125AboutIndexRoute
+  Char123LocaleChar125LinksIndexRoute: typeof Char123LocaleChar125LinksIndexRoute
+  Char123LocaleChar125ProjectsIndexRoute: typeof Char123LocaleChar125ProjectsIndexRoute
+  Char123LocaleChar125SkillsIndexRoute: typeof Char123LocaleChar125SkillsIndexRoute
+}
+
+const Char123LocaleChar125RouteRouteChildren: Char123LocaleChar125RouteRouteChildren =
+  {
+    Char123LocaleChar125IndexRoute: Char123LocaleChar125IndexRoute,
+    Char123LocaleChar125ProjectsCellaRoute:
+      Char123LocaleChar125ProjectsCellaRoute,
+    Char123LocaleChar125ProjectsDotclaudeRoute:
+      Char123LocaleChar125ProjectsDotclaudeRoute,
+    Char123LocaleChar125ProjectsIfpatcherRoute:
+      Char123LocaleChar125ProjectsIfpatcherRoute,
+    Char123LocaleChar125ProjectsOastsRoute:
+      Char123LocaleChar125ProjectsOastsRoute,
+    Char123LocaleChar125ProjectsWebsiteRoute:
+      Char123LocaleChar125ProjectsWebsiteRoute,
+    Char123LocaleChar125AboutIndexRoute: Char123LocaleChar125AboutIndexRoute,
+    Char123LocaleChar125LinksIndexRoute: Char123LocaleChar125LinksIndexRoute,
+    Char123LocaleChar125ProjectsIndexRoute:
+      Char123LocaleChar125ProjectsIndexRoute,
+    Char123LocaleChar125SkillsIndexRoute: Char123LocaleChar125SkillsIndexRoute,
+  }
+
+const Char123LocaleChar125RouteRouteWithChildren =
+  Char123LocaleChar125RouteRoute._addFileChildren(
+    Char123LocaleChar125RouteRouteChildren,
+  )
+
 const rootRouteChildren: RootRouteChildren = {
-  IndexRoute: IndexRoute,
-  ApiCspReportRoute: ApiCspReportRoute,
-  LinkIndexRoute: LinkIndexRoute,
-  ProjectsIndexRoute: ProjectsIndexRoute,
-  SkillsIndexRoute: SkillsIndexRoute,
-  SysIndexRoute: SysIndexRoute,
+  Char123LocaleChar125RouteRoute: Char123LocaleChar125RouteRouteWithChildren,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

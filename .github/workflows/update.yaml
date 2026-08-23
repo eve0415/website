@@ -1,0 +1,49 @@
+name: Update dependencies
+
+on:
+  schedule:
+    - cron: '0 21 * * 0' # Monday 06:00 JST
+  workflow_dispatch:
+
+permissions: {}
+
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: false
+
+jobs:
+  update:
+    if: github.repository == 'eve0415/website'
+    runs-on: ubuntu-24.04-arm
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Check out the repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          submodules: recursive
+          persist-credentials: false
+
+      - name: Set up pnpm and Node.js
+        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2.0.2
+
+      - name: Update dependencies and open a pull request
+        uses: pnpm/update@76f98d727df25f56f9bbd38e60ad663fd785d3d4 # v0.0.0
+        with:
+          # pnpm 12 has no stable release yet, so the default (latest release
+          # of the pinned major) has nothing to move onto.
+          update-pnpm: next-12
+          # Only bumps devEngines.runtime, leaving .node-version and engines.node
+          # pinned to the old version.
+          node: false
+          # A PR opened with GITHUB_TOKEN does create a CI run, but one that
+          # sits waiting for a maintainer to approve it. This gates the update
+          # without that click.
+          verify: |
+            pnpm exec wrangler types --env-file .dev.vars.example
+            pnpm exec oxlint
+            pnpm exec oxfmt --check
+            pnpm exec vite build

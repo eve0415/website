@@ -1,24 +1,11 @@
-import handler from '@tanstack/react-start/server-entry';
-import { drizzle } from 'drizzle-orm/d1';
+/**
+ * The server entry exists only so the Worker has somewhere to export a Durable
+ * Object class from: Cloudflare resolves `class_name` against the deployed
+ * script's exports, and the package's own entry naturally has no export for the
+ * contact form's rate limiter. `resolveEntry` picks `src/server.ts` up by name
+ * and it replaces `@tanstack/react-start/server-entry` as the entry, so the
+ * package default is re-exported here unchanged rather than rebuilt.
+ */
+export { ContactRateLimiter } from '#routes/{-$locale}/links/-/contact-form/rate-limiter';
 
-import { refreshGitHubStats } from './routes/sys/-utils/github-stats';
-
-export { SkillsAnalysisWorkflow } from './workflows/skills-analysis';
-
-export default {
-  fetch: async (request, env, _ctx) =>
-    handler.fetch(request, {
-      context: {
-        db: drizzle(env.SKILLS_DB),
-      },
-    }),
-  scheduled(event, env, ctx) {
-    // Hourly: refresh GitHub stats
-    // Cron: "0 * * * *" in wrangler.json
-    if (event.cron === '0 * * * *') ctx.waitUntil(refreshGitHubStats(env));
-
-    // Weekly (Sunday 3:30 AM JST = Saturday 18:30 UTC): trigger skills analysis
-    // Cron: "30 18 * * 6" in wrangler.json
-    if (event.cron === '30 18 * * 6') ctx.waitUntil(env.SKILLS_WORKFLOW.create());
-  },
-} satisfies ExportedHandler<Env>;
+export { default } from '@tanstack/react-start/server-entry';

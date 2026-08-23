@@ -1,493 +1,574 @@
-@import 'tailwindcss';
-@import '@fontsource-variable/jetbrains-mono';
+@import 'tailwindcss' source('../');
 
-/* ============================================
-   eve0415.net Design System
-   ============================================ */
+/* ---------------------------------------------------------------------------
+   Design tokens — ported from the design system's tokens/*.css.
+   The sky's own colours are not here: `-/sky/palette.ts` is the single source
+   of truth for them, and `__root.tsx` injects the current clock state as
+   `--sky-*` at runtime. What remains below is everything that does not move
+   with the clock. tokens/fonts.css is deliberately not ported — it pulls Noto
+   Sans JP from Google Fonts and this site self-hosts it (see the @font-face
+   rules below).
+   --------------------------------------------------------------------------- */
 
-/* Design Tokens - CSS Custom Properties */
-@theme {
-  /* Color System - Dark atmospheric base */
-  --color-background: #0a0a0a;
-  --color-surface: #111111;
-  --color-muted: #1a1a1a;
-  --color-elevated: #222222;
+:root {
+  /* 面 */
+  --surface-panel: rgba(13, 8, 54, 0.62);
+  --surface-panel-soft: rgba(13, 8, 54, 0.45);
+  --surface-row: rgba(13, 8, 54, 0.5);
+  --surface-chip-daily: rgba(4, 254, 255, 0.07);
+  --surface-toast: #0d0836;
+  --surface-glass: rgba(5, 2, 28, 0.32);
 
-  /* Text Colors */
-  --color-foreground: #e5e5e5;
-  --color-muted-foreground: #a3a3a3;
-  --color-subtle-foreground: #8a8a8a;
-  --color-neon-foreground: #00ff88;
+  /* 線 */
+  --line-panel: rgba(160, 150, 255, 0.22);
+  --line-row: rgba(160, 150, 255, 0.25);
+  --line-chip: rgba(210, 205, 255, 0.35);
+  --line-chip-daily: rgba(4, 254, 255, 0.6);
+  --line-white: rgba(252, 247, 253, 0.4);
+  --line-accent: rgba(4, 254, 255, 0.5);
+  --line-accent-dashed: rgba(4, 254, 255, 0.35);
 
-  /* Accent Colors - Terminal/Cyber inspired */
-  --color-neon: #00ff88;
-  --color-cyan: #00d4ff;
-  --color-orange: #ff6b35;
-  --color-glow: #00ff8840;
+  /* 文字 — night values, and they stay night values wherever the ink lands on
+     a glass panel, which is nearly everywhere. The three regions that sit
+     straight on the sky reset them from the clock; see `.ev-on-sky` and
+     `.ev-on-clouds` below. */
+  --ink-title: #fcf7fd;
+  --ink-body: #e9e4ff;
+  --ink-muted: #cfc9f2;
+  --ink-ice: #9fe8ff;
+  --ink-faint: #a49dd8;
+  --ink-chip: #e4dfff;
+  --ink-chip-daily: #ecfdff;
+  --ink-shadow: rgba(3, 1, 20, 0.6);
+  --ink-on-accent: #00031d;
 
-  /* AI Brand Colors */
-  --color-claude: #ff6b35;
-  --color-gemini: #4285f4;
-  --color-gemini-alt: #8ab4f8;
-  --color-codex: #10a37f;
+  /* アクセント (彗星) — the cyan/mint pair is the brand and never moves. What
+     does move is `--accent`, the same hue used as ink *on* the sky: it darkens
+     into the blue by day, where the neon would wash out. */
+  --accent-cyan: #04feff;
+  --accent-mint: #00dda8;
+  /* The ring `:focus-visible` draws. The neon everywhere that stays deep indigo
+     all day, which is every panel and every surface off the sky; the sky's own
+     two bands say otherwise below. */
+  --focus-ring: var(--accent-cyan);
+  --grad-comet: linear-gradient(90deg, #04feff, #00dda8);
+  /* The design hovers every link to `--accent`, which by day is a dark blue
+     that all but disappears against the panels most of this site's links sit
+     on. Hover stays the neon instead, and the chrome that *is* on the sky asks
+     for `--accent` by name. */
+  --link-hover: #04feff;
 
-  /* AI Skills Feature Colors */
-  --color-fuchsia: #d946ef;
-  --color-fuchsia-glow: #d946ef40;
-  --color-fuchsia-bright: #ec4899;
-  --color-violet: #8b5cf6;
+  /* 星 */
+  --star-white: #fcf7fd;
+  --star-ice: #9fe8ff;
+  --star-lilac: #c9a6ff;
+  --star-pink: #ffd9ec;
 
-  /* Border Colors */
-  --color-line: #262626;
-  --color-input: #404040;
-  --color-line-glow: #00ff8860;
+  /* プロジェクト色相 — タグ文字 / タグ枠 / カード hover グロー.
+     `-ink` is the authored colour and `--hue-*` is the one components read. The
+     two part only on the open sky, where the clock washes the ink toward white
+     as the band brightens: these five are also bare 12px tag text and 16px panel
+     headings out there, and the darkest of them clears 3.5:1 on the noon band
+     unpaled. A card pins them back, since a panel is deep indigo all day. */
+  --hue-cyan-ink: #8fe9ff;
+  --hue-cyan: var(--hue-cyan-ink);
+  --hue-cyan-line: rgba(4, 254, 255, 0.5);
+  --hue-cyan-glow: rgba(4, 176, 236, 0.25);
+  --hue-mint-ink: #6ff2cc;
+  --hue-mint: var(--hue-mint-ink);
+  --hue-mint-line: rgba(0, 221, 168, 0.5);
+  --hue-mint-glow: rgba(0, 221, 168, 0.2);
+  --hue-sky-ink: #7dd2ff;
+  --hue-sky: var(--hue-sky-ink);
+  --hue-sky-line: rgba(4, 176, 236, 0.55);
+  --hue-sky-glow: rgba(4, 176, 236, 0.22);
+  --hue-violet-ink: #e2a9ff;
+  --hue-violet: var(--hue-violet-ink);
+  --hue-violet-line: rgba(196, 73, 208, 0.6);
+  --hue-violet-glow: rgba(142, 70, 217, 0.25);
+  --hue-rose-ink: #ffb3cd;
+  --hue-rose: var(--hue-rose-ink);
+  --hue-rose-line: rgba(247, 105, 151, 0.55);
+  --hue-rose-glow: rgba(247, 105, 151, 0.2);
 
-  /* Typography - JetBrains Mono as primary */
-  --font-mono: 'JetBrains Mono Variable', 'JetBrains Mono', ui-monospace, monospace;
+  /* 字 — Noto Sans JP only, weights 400/700. No serif, no italic.
+     Sizes are rem against the 16px root so the OS/browser text-size preference
+     scales them. Nothing may override the :root font-size. */
+  --font-sans: 'Noto Sans JP', sans-serif;
+  --text-hero: clamp(2.625rem, 8vw, 4.625rem);
+  --text-h1: clamp(1.875rem, 5vw, 2.625rem);
+  --text-h2: clamp(1.5rem, 3vw, 1.75rem);
+  --text-card-title: 1.25rem;
+  --text-panel-title: 1.0625rem;
+  --text-body: 0.96875rem;
+  --text-ui: 0.9375rem;
+  --text-nav: 0.90625rem;
+  /* The header's own nav links, which have to fit five Japanese labels across a
+     phone. `--text-nav` down to 408px, then down to 13px by 283px — the vw term
+     is deliberately not divided by `--z`, since the clamp is at its ceiling long
+     before the first zoom step. */
+  --text-nav-link: clamp(0.8125rem, 0.6rem + 1.2vw, 0.90625rem);
+  --text-small: 0.875rem;
+  --text-caption: 0.8125rem;
+  --text-tag: 0.75rem;
+  --leading-body: 1.75;
+  --tracking-kicker: 0.26em;
+  --tracking-hero-kicker: 0.22em;
 
-  /* Font Sizes - Using clamp for fluid typography */
-  --text-xs: clamp(0.625rem, 0.5vw + 0.5rem, 0.75rem);
-  --text-sm: clamp(0.75rem, 0.5vw + 0.625rem, 0.875rem);
-  --text-base: clamp(0.875rem, 0.5vw + 0.75rem, 1rem);
-  --text-lg: clamp(1rem, 0.75vw + 0.875rem, 1.25rem);
-  --text-xl: clamp(1.25rem, 1vw + 1rem, 1.5rem);
-  --text-2xl: clamp(1.5rem, 1.5vw + 1.125rem, 2rem);
-  --text-3xl: clamp(1.875rem, 2vw + 1.25rem, 2.5rem);
-  --text-4xl: clamp(2.25rem, 3vw + 1.5rem, 3.5rem);
-  --text-5xl: clamp(3rem, 4vw + 2rem, 5rem);
+  /* 間 — layout, spacing & radius */
+  /* The full-bleed chrome — header, footer, hero — keeps its background edge
+     to edge but stops its content here. */
+  --page-max-wide: 1680px;
+  /* The page shells grow with the viewport rather than stopping dead at a fixed
+     width, so a wide display gets more content instead of more margin. */
+  --page-max: clamp(1060px, 66vw, 1280px);
+  --page-max-article: clamp(860px, 54vw, 1020px);
+  --page-max-narrow: clamp(720px, 46vw, 880px);
+  /* The hero's own gutter. A token because the copy scrim behind it has to end
+     exactly where it does: a decoration that reaches past the viewport makes a
+     phone lay the page out at the decoration's width and scale it down. */
+  --page-gutter: clamp(22px, 6vw, 72px);
+  --header-pad-y: 8px;
+  --header-pad: var(--header-pad-y) clamp(16px, 4vw, 40px);
+  /* The tallest thing on the header row, and so the row's height: the language
+     switch — two 40px pills in a pill group with 2px padding and a 1px border. */
+  --header-row: 46px;
+  /* The sticky bar at one row, hairline included, and the value `scroll-padding-top`
+     is set from. Only true at >=45em: below that the nav takes a row of its own
+     and the query after this block adds it, and a large root font grows the bar
+     at any width, which nothing static can predict. SiteHeader measures the real
+     bar and overwrites this on the element, so what is written here is the
+     prerendered starting value rather than the whole story. */
+  --header-h: calc(2 * var(--header-pad-y) + var(--header-row) + 1px);
+  --card-min-skills: 300px;
+  --pad-card: 22px;
+  --pad-card-lg: 26px;
+  --radius-row: 14px;
+  --radius-card: 16px;
+  --radius-card-lg: 18px;
+  --hit-target: 44px;
 
-  /* Transitions */
-  --duration-fast: 150ms;
-  --duration-normal: 300ms;
-  --duration-slow: 500ms;
-  --duration-slower: 800ms;
-  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
-  --ease-in-out-expo: cubic-bezier(0.87, 0, 0.13, 1);
-  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  /* 動 — motion, glow & shadow */
+  --ease-comet: cubic-bezier(0.7, 0.01, 0.23, 1);
+  --ease-curtain: cubic-bezier(0.76, 0, 0.24, 1);
+  --glow-cta: 0 4px 24px rgba(4, 254, 255, 0.35);
+  --glow-cta-hover: 0 8px 32px rgba(4, 254, 255, 0.5);
+  --glow-toast: 0 8px 32px rgba(4, 254, 255, 0.25);
+  --glow-chip-daily: 0 0 16px rgba(4, 254, 255, 0.12);
+  --glow-star: 0 0 12px 3px rgba(4, 254, 255, 0.85);
+  --glow-comet-head: 0 0 10px 3px rgba(4, 254, 255, 0.8);
+  --lift-hover: translateY(-3px);
+  /* The eight-point sparkle, five call sites and counting. */
+  --shape-sparkle: polygon(50% 0%, 61% 39%, 100% 50%, 61% 61%, 50% 100%, 39% 61%, 0% 50%, 39% 39%);
 
-  /* Z-Index Scale */
-  --z-base: 0;
-  --z-dropdown: 100;
-  --z-sticky: 200;
-  --z-modal: 300;
-  --z-popover: 400;
-  --z-tooltip: 500;
-  --z-terminal: 900;
-  --z-easter-egg: 1000;
+  /* 拡 — ultra-wide scaling. Past roughly 2100px the layout has stopped
+     growing and the page just gains margin, so the whole thing zooms up in
+     steps instead. Anything sized in viewport units divides by this, since
+     those units are measured before the zoom applies. */
+  --z: 1;
 }
 
-/* Base Styles */
-html {
-  font-family: var(--font-mono);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  scroll-behavior: smooth;
+/* The phone header: brand and language switch on the first row, the nav on a
+   scrolling row under them. Two rows, so the height owes a nav link as well.
+
+   45em, not the design's flat 720px, and the one query on this site written in
+   em: `em` here resolves against the browser's own default size rather than the
+   page's, so a reader who has turned their text up gets the stacked bar at a
+   proportionally wider viewport — which is where their nav actually stops
+   fitting. Measured at 860px with a 24px root: the single row overran the
+   language switch by 79px. Both readings are 720px at the default 16px. */
+@media (width < 45em) {
+  :root {
+    --header-h: calc(2 * var(--header-pad-y) + var(--header-row) + var(--hit-target) + 1px);
+  }
 }
 
-body {
-  min-height: 100dvh;
-  overflow-x: hidden;
+/* The tokens the sky itself decides. */
+:root {
+  --surface-header: var(--sky-header-bg);
+  --line-header: var(--sky-header-line);
+  --ink-nav: var(--sky-ink-nav);
+  --accent: var(--sky-accent);
+  --link: var(--sky-link);
 }
 
-/* Selection styling */
-::selection {
-  background-color: var(--color-neon);
-  color: var(--color-background);
+/* The two pill variants that paint their own fill, off the sky: exactly what the
+   design draws. Both fills brighten with the day, so their ink darkens with it —
+   but only where the pill is actually on the sky, hence the overrides below. */
+:root {
+  --ghost-surface: transparent;
+  --ghost-ink: var(--hue-cyan);
+  --glass-ink: var(--ink-title);
 }
 
-/* Focus visible for accessibility */
-:focus-visible {
-  outline: 2px solid var(--color-neon);
-  outline-offset: 2px;
+/* Text sitting straight on the sky follows the clock. Which way it goes depends
+   on what is behind it, and the two answers are opposite: over the cloud sea and
+   under the header glass the background lifts to 0.23–0.47 luminance, where dark
+   ink clears AA and white cannot; the open sky is held at or under 0.12, where
+   pale ink clears it and black cannot. Hence two classes, not one.
+   Held, because the two are not free to meet: small text at 4.5:1 wants a
+   backdrop under 0.18 for pale ink or over 0.18 for dark, and one band cannot be
+   both when it runs from 0.09 at dusk to 0.27 at noon (`palette.ts`).
+   A glass panel is the same deep indigo at noon as at midnight, so anything
+   inside one takes `.ev-on-panel` and goes back to the night ink. */
+.ev-on-sky,
+.ev-on-clouds {
+  --line-white: rgba(var(--sky-ink-title-rgb), 0.4);
+  --surface-glass: var(--sky-glass-bg);
+  --ghost-surface: var(--sky-ghost-surface);
+  --ghost-ink: var(--sky-ghost-ink);
+  --glass-ink: var(--sky-ink-title);
 }
 
-/* Scrollbar styling - subtle dark theme */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* On the open sky — page headers, article copy, the 404 board. The ink stays
+   pale here, so the shadow under it stays dark all day, and hover keeps `:root`'s
+   neon rather than taking the other band's `--sky-accent`, which lands at 2.4:1
+   out here. A pale hover would clear that and still be the wrong answer: the link
+   is already white by day, so paling it further is a hover you cannot see.
+   Every ink the band carries is on the clock, `--ink-title` and the project hues
+   included — what was left off it was left reading one assumed backdrop. */
+.ev-on-sky {
+  --ink-shadow: rgba(3, 1, 20, 0.6);
+  --ink-title: var(--sky-pale-title);
+  --ink-body: var(--sky-pale-body);
+  --ink-muted: var(--sky-pale-muted);
+  --ink-ice: var(--sky-pale-ice);
+  --ink-faint: var(--sky-pale-faint);
+  --hue-cyan: color-mix(in srgb, var(--hue-cyan-ink), #fff var(--sky-wash));
+  --hue-mint: color-mix(in srgb, var(--hue-mint-ink), #fff var(--sky-wash));
+  --hue-sky: color-mix(in srgb, var(--hue-sky-ink), #fff var(--sky-wash));
+  --hue-violet: color-mix(in srgb, var(--hue-violet-ink), #fff var(--sky-wash));
+  --hue-rose: color-mix(in srgb, var(--hue-rose-ink), #fff var(--sky-wash));
 }
 
-::-webkit-scrollbar-track {
-  background: var(--color-surface);
+/* Over the cloud sea and the header glass — the hero and the site chrome. The
+   ink darkens through the day, so its shadow lightens to stay a halo. */
+.ev-on-clouds {
+  --ink-shadow: var(--sky-ink-shadow);
+  --link-hover: var(--sky-accent);
+  --focus-ring: var(--sky-focus-ring);
+  --ink-title: var(--sky-ink-title);
+  --ink-body: var(--sky-ink-sub);
+  --ink-ice: var(--sky-ink-kicker);
+  --ink-faint: var(--sky-ink-faint);
 }
 
-::-webkit-scrollbar-thumb {
-  background: var(--color-input);
-  border-radius: 4px;
+/* The way back, for a panel nested inside either. It has to name every token
+   the two classes above touch — one left out is one that keeps a daylight value
+   on a surface that is still deep indigo.
+
+   The surfaces are opaque here rather than the translucent `:root` values. The
+   ink below is pinned to night, but a translucent surface lets the sky through,
+   and `SkyClock` brightens it from #100a3f to #428ac0 between roughly 7時 and
+   18時 — so night ink ended up over a daylight panel. Measured on the LAB
+   card's badge (#8d85c8, 11.5px, so it owes 4.5:1): 5.81:1 at midnight and
+   2.46:1 at noon. These three values are exactly what the old alphas composited
+   to over the midnight page gradient, so nothing changes at night; what changes
+   is that it no longer drifts by the hour. Nothing static caught this because
+   every prerendered page ships MIDNIGHT. */
+.ev-on-panel {
+  --surface-panel: #0c0734;
+  --surface-panel-soft: #0b0633;
+  --surface-row: #0c0733;
+  --hue-cyan: var(--hue-cyan-ink);
+  --hue-mint: var(--hue-mint-ink);
+  --hue-sky: var(--hue-sky-ink);
+  --hue-violet: var(--hue-violet-ink);
+  --hue-rose: var(--hue-rose-ink);
+  --ghost-surface: transparent;
+  --ghost-ink: var(--hue-cyan);
+  --glass-ink: #fcf7fd;
+  --line-white: rgba(252, 247, 253, 0.4);
+  --surface-glass: rgba(5, 2, 28, 0.32);
+  --link: #9fe8ff;
+  --ink-title: #fcf7fd;
+  --ink-body: #e9e4ff;
+  --ink-muted: #cfc9f2;
+  --ink-ice: #9fe8ff;
+  --ink-faint: #a49dd8;
+  --ink-shadow: rgba(3, 1, 20, 0.6);
+  --link-hover: #04feff;
+  --focus-ring: var(--accent-cyan);
 }
 
-::-webkit-scrollbar-thumb:hover {
-  background: var(--color-subtle-foreground);
+@media (min-width: 2100px) {
+  :root {
+    --z: 1.15;
+  }
 }
 
-/* ============================================
-   Animation Keyframes
-   ============================================ */
+@media (min-width: 2800px) {
+  :root {
+    --z: 1.4;
+  }
+}
 
-/* Terminal cursor blink */
-@keyframes blink {
+@media (min-width: 3600px) {
+  :root {
+    --z: 1.7;
+  }
+}
+
+@media (min-width: 5100px) {
+  :root {
+    --z: 2.3;
+  }
+}
+
+@media (min-width: 6800px) {
+  :root {
+    --z: 3;
+  }
+}
+
+/* Noto Sans JP 400/700, self-hosted from @fontsource/noto-sans-jp.
+   Fontsource's own stylesheets are not imported: they carry no local() sources
+   and pair every .woff2 with a .woff no supported browser will request.
+
+   The latin rules follow the japanese ones so they win for the ranges they
+   declare; the japanese rules carry no unicode-range and cover everything else. */
+
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    local('Noto Sans JP Regular'),
+    local('NotoSansJP-Regular'),
+    url('@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src:
+    local('Noto Sans JP Regular'),
+    local('NotoSansJP-Regular'),
+    url('@fontsource/noto-sans-jp/files/noto-sans-jp-latin-400-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('Noto Sans JP Bold'),
+    local('NotoSansJP-Bold'),
+    url('@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-700-normal.woff2') format('woff2');
+}
+
+@font-face {
+  font-family: 'Noto Sans JP';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src:
+    local('Noto Sans JP Bold'),
+    local('NotoSansJP-Bold'),
+    url('@fontsource/noto-sans-jp/files/noto-sans-jp-latin-700-normal.woff2') format('woff2');
+  unicode-range:
+    U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215,
+    U+FEFF, U+FFFD;
+}
+
+/* ---------------------------------------------------------------------------
+   Base layer — ported from tokens/base.css. It is `@layer base` rather than
+   unlayered because unlayered CSS beats every layered rule whatever its
+   specificity: a bare `a { color }` here outranks the `text-*` utility on any
+   anchor, which is how the hero's primary button ended up ice blue on its own
+   cyan gradient. Inside the layer these still follow preflight in source order,
+   so they keep winning over it.
+   --------------------------------------------------------------------------- */
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+    /* The header renders at its own height times the ultra-wide zoom, but this
+       sits on the unzoomed html, so it has to reserve the rendered height. */
+    scroll-padding-top: calc(var(--header-h) * var(--z, 1));
+    /* The cloud layers overhang the viewport on purpose; without this they add a
+       horizontal scrollbar. `clip` rather than `hidden` so `position: sticky`
+       keeps working on the header. */
+    overflow-x: clip;
+    scrollbar-color: rgba(126, 116, 220, 0.55) transparent;
+  }
+
+  body {
+    zoom: var(--z, 1);
+    /* The clock's own gradient, not the midnight token: this is the canvas the
+       browser paints past the ends of the page, so a fixed one shows a band of
+       night above a daylight page on any overscroll. */
+    background: var(--sky-root);
+    font-family: var(--font-sans);
+    color: var(--ink-muted);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+  }
+
+  a {
+    color: var(--link);
+  }
+
+  a:hover {
+    color: var(--link-hover);
+  }
+
+  /* The UA default focus ring measures 1.02:1 against the midnight sky, which is
+     why Chip carried its own. That measurement is a night one and does not hold
+     through the day: the neon replacing it is 1.8:1 against the header glass and
+     the hero clouds at 13時, so the colour is a token the sky bands set rather
+     than the fixed neon — dark on the band that turns bright, neon on the two
+     that do not. The ring still belongs here once rather than per component.
+     Inside `base` on purpose: a control that needs a different treatment
+     overrides it with a utility, which is how the contact form's inputs keep
+     their `focus:outline-hidden` plus border-and-glow. */
+  :focus-visible {
+    outline: 2px solid var(--focus-ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: rgba(4, 254, 255, 0.35);
+    color: #fcf7fd;
+  }
+}
+
+/* ambient */
+@keyframes twinkle {
   0%,
+  100% {
+    opacity: 0.15;
+  }
   50% {
     opacity: 1;
   }
-  51%,
-  100% {
-    opacity: 0;
-  }
 }
 
-/* Subtle glow pulse */
-@keyframes glow-pulse {
+@keyframes floaty {
   0%,
   100% {
-    filter: drop-shadow(0 0 4px var(--color-glow));
-  }
-  50% {
-    filter: drop-shadow(0 0 12px var(--color-glow));
-  }
-}
-
-/* Path draw animation for SVG */
-@keyframes draw-path {
-  from {
-    stroke-dashoffset: var(--path-length, 1000);
-  }
-  to {
-    stroke-dashoffset: 0;
-  }
-}
-
-/* Fade in with scale */
-@keyframes fade-in-scale {
-  from {
-    opacity: 0;
-    transform: scale(0.95);
-  }
-  to {
-    opacity: 1;
-    transform: scale(1);
-  }
-}
-
-/* Fade in up */
-@keyframes fade-in-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  to {
-    opacity: 1;
     transform: translateY(0);
   }
-}
-
-/* Glitch effect */
-@keyframes glitch {
-  0%,
-  100% {
-    transform: translate(0);
-  }
-  20% {
-    transform: translate(-2px, 2px);
-  }
-  40% {
-    transform: translate(2px, -2px);
-  }
-  60% {
-    transform: translate(-1px, -1px);
-  }
-  80% {
-    transform: translate(1px, 1px);
-  }
-}
-
-/* Subtle float */
-@keyframes float {
-  0%,
-  100% {
-    transform: translateY(0);
-  }
   50% {
-    transform: translateY(-8px);
+    transform: translateY(-7px);
   }
 }
 
-/* Scan line effect */
-@keyframes scanline {
-  0% {
-    transform: translateY(-100%);
+@keyframes glowPulse {
+  from {
+    opacity: 0.65;
   }
-  100% {
-    transform: translateY(100vh);
-  }
-}
-
-/* TV static / dissolve effect for BSOD trigger.
-   Brightness decreases monotonically into the CRT power-off. The original
-   swung brightness 0.1<->5 about 7 times in 1.5s (~4.7 flashes/sec) over a
-   near-full viewport - a photosensitivity hazard (WCAG 2.3.1, max 3/sec).
-   The skew/scale/blur jitter keeps the "static" character without flashing. */
-@keyframes tv-static {
-  0% {
-    filter: none;
-    transform: scale(1);
-  }
-  10% {
-    filter: brightness(1.1) contrast(2) saturate(0);
-    transform: scale(1.02) skewX(-0.5deg);
-  }
-  20% {
-    filter: brightness(1) contrast(3) saturate(0);
-    transform: scale(0.98) skewX(1deg);
-  }
-  30% {
-    filter: brightness(0.95) contrast(1.5) saturate(0) blur(1px);
-    transform: scale(1.01) skewX(-1.5deg);
-  }
-  40% {
-    filter: brightness(0.85) contrast(2) saturate(0) blur(2px);
-    transform: scale(0.99) skewX(0.5deg);
-  }
-  50% {
-    filter: brightness(0.7) contrast(1.5) saturate(0) blur(1px);
-    transform: scale(1.03) skewX(-2deg);
-  }
-  60% {
-    filter: brightness(0.55) contrast(2) saturate(0) blur(3px);
-    transform: scale(0.97) skewX(2deg);
-  }
-  70% {
-    filter: brightness(0.35) contrast(1.5) saturate(0);
-    transform: scale(1) skewX(0);
-  }
-  80%,
-  100% {
-    filter: brightness(0) contrast(0);
-    transform: scale(1, 0.01);
+  to {
+    opacity: 1;
   }
 }
 
-/* Screen off effect (CRT turn off) */
-@keyframes screen-off {
-  0% {
-    transform: scale(1, 1);
-    filter: brightness(1);
+@keyframes driftX {
+  from {
+    transform: translateX(-14px);
   }
-  50% {
-    transform: scale(1.05, 0.6);
-    filter: brightness(1.5);
-  }
-  100% {
-    transform: scale(0, 0);
-    filter: brightness(0);
+  to {
+    transform: translateX(14px);
   }
 }
 
-/* Error cascade animation for corruption phase */
-@keyframes error-cascade-in {
+/* entrances */
+@keyframes fadeIn {
   from {
     opacity: 0;
-    transform: translateY(-4px);
   }
   to {
     opacity: 1;
-    transform: translateY(0);
   }
 }
 
-/* Shake animation for panic state */
-@keyframes shake {
-  0%,
-  100% {
-    transform: translateX(0) rotate(0deg);
-  }
-  10%,
-  30%,
-  50%,
-  70%,
-  90% {
-    transform: translateX(-4px) rotate(-2deg);
-  }
-  20%,
-  40%,
-  60%,
-  80% {
-    transform: translateX(4px) rotate(2deg);
-  }
-}
-
-/* ============================================
-   Utility Classes
-   ============================================ */
-
-/* Animation utilities */
-.animate-blink {
-  animation: blink 1s step-end infinite;
-}
-
-.animate-glow-pulse {
-  animation: glow-pulse 2s ease-in-out infinite;
-}
-
-.animate-fade-in-scale {
-  animation: fade-in-scale var(--duration-normal) var(--ease-out-expo) forwards;
-}
-
-.animate-fade-in-up {
-  animation: fade-in-up var(--duration-normal) var(--ease-out-expo) forwards;
-}
-
-.animate-glitch {
-  animation: glitch 0.3s ease-in-out;
-}
-
-.animate-float {
-  animation: float 3s ease-in-out infinite;
-}
-
-.animate-tv-static {
-  animation: tv-static 1.5s ease-in forwards;
-}
-
-.animate-screen-off {
-  animation: screen-off 0.3s ease-in forwards;
-}
-
-/* Text gradient utility */
-.text-gradient {
-  background: linear-gradient(135deg, var(--color-neon), var(--color-cyan));
-  background-clip: text;
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-}
-
-/* Glow effects */
-.glow-accent {
-  filter: drop-shadow(0 0 8px var(--color-glow));
-}
-
-.glow-text {
-  text-shadow:
-    0 0 20px var(--color-glow),
-    0 0 40px var(--color-glow);
-}
-
-/* ============================================
-   AI Skills Visualization Animations
-   ============================================ */
-
-/* Shimmer border effect for AI content */
-@keyframes shimmer {
-  0% {
-    background-position: 200% 0;
-  }
-  100% {
-    background-position: -200% 0;
-  }
-}
-
-/* Heartbeat pulse for live indicator */
-@keyframes heartbeat {
-  0%,
-  100% {
-    opacity: 1;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 0.5;
-    transform: scale(1.1);
-  }
-}
-
-/* Materialize crosshair */
-@keyframes crosshair-pulse {
-  0%,
-  100% {
-    opacity: 0.8;
-    transform: scale(1);
-  }
-  50% {
-    opacity: 1;
-    transform: scale(1.05);
-  }
-}
-
-/* Wireframe spin */
-@keyframes wireframe-spin {
+@keyframes fadeUp {
   from {
-    transform: rotate(0deg);
     opacity: 0;
+    transform: translateY(16px);
   }
   to {
-    transform: rotate(360deg);
     opacity: 1;
+    transform: none;
   }
 }
 
-/* Node flash on materialize */
-@keyframes node-flash {
-  0% {
-    filter: brightness(3) saturate(1.5);
-    transform: scale(1.3);
-  }
-  100% {
-    filter: brightness(1) saturate(1);
-    transform: scale(1);
-  }
+/* Document-scope view transition timing, so every `document.startViewTransition`
+   on the site runs on the comet easing instead of the UA's own curve. The
+   contact form's box-scoped rules carry a class and outrank these, which is how
+   it keeps its shorter 0.32s. */
+::view-transition-group(*) {
+  animation-duration: 0.5s;
+  animation-timing-function: var(--ease-comet);
 }
 
-/* Typewriter cursor blink */
-@keyframes typewriter-cursor {
-  0%,
-  50% {
-    border-color: var(--color-fuchsia);
-  }
-  51%,
-  100% {
-    border-color: transparent;
-  }
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 0.45s;
 }
 
-/* Connection line draw */
-@keyframes connection-draw {
-  from {
-    stroke-dashoffset: 100;
-  }
-  to {
-    stroke-dashoffset: 0;
+/* ---- platform experiments (2026 layer) — all @supports-guarded; absent = graceful ---- */
+/* JS-less stagger: put .ev-stg on a flex/grid row of tags or chips */
+@supports (animation-delay: calc(sibling-index() * 1s)) {
+  .ev-stg > * {
+    animation: fadeUp 0.5s var(--ease-comet) both;
+    animation-delay: calc(sibling-index() * 0.05s);
   }
 }
 
-/* AI Skills Utility Classes */
-.ai-glow {
-  text-shadow: 0 0 8px var(--color-fuchsia-glow);
+/* Scroll-driven entrance for the panels that start below the fold — the skills
+   grid and the project pages. The short pages stagger on load instead, because
+   a reveal keyed to scrolling never fires on a page that does not scroll. No
+   utility carries `animation-timeline`. Browsers without view() timelines
+   ignore the timeline and run the animation once, which is the design's own
+   fallback. */
+.ev-reveal {
+  animation: fadeUp 0.6s linear both;
+  animation-timeline: view();
+  animation-range: entry 0% cover 24%;
 }
 
-.ai-shimmer-border {
-  background: linear-gradient(90deg, transparent, var(--color-fuchsia-glow), transparent);
-  background-size: 200% 100%;
-  animation: shimmer 3s infinite linear;
-}
-
-.animate-heartbeat {
-  animation: heartbeat 2s ease-in-out infinite;
-}
-
-.animate-typewriter-cursor {
-  border-right: 2px solid var(--color-fuchsia);
-  animation: typewriter-cursor 1s step-end infinite;
-}
-
-/* Reduced motion preference */
 @media (prefers-reduced-motion: reduce) {
-  *,
-  *::before,
-  *::after {
+  html {
+    scroll-behavior: auto;
+  }
+
+  * {
     animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
     transition-duration: 0.01ms !important;
+    /* A near-zero duration ends one pass, not an `infinite` one: the sky's drifts
+       keep cycling, now tens of thousands of times a second. They look still only
+       while 0.01ms divides the timeline's tick — the cloud layer already samples
+       two phases and 9px of travel per frame here, and an engine on a coarser
+       tick gives the full 28px. The count is what actually stops them. */
+    animation-iteration-count: 1 !important;
+  }
+
+  /* A scroll-progress timeline — `view()` or `scroll()` — runs on distance, not
+     on time, so collapsing the duration above leaves it animating. Only dropping
+     the animation stops it. Every rule carrying `animation-timeline` belongs
+     here; grep that property to find the ones that do. */
+  .ev-reveal,
+  .ev-hl,
+  .ev-prg,
+  .ev-prg-b,
+  .ev-prg-h {
+    animation-name: none !important;
+  }
+
+  /* `::view-transition-*` is outside the document tree, so the `*` above never
+     reaches it — without these the rules further up would still animate. */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
   }
 }

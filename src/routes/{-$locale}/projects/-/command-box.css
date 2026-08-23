@@ -1,0 +1,12 @@
+/* The terminal caret. No utility expresses a two-stop opacity flip, and the
+   design blinks rather than fades. */
+@keyframes evBlink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  56%,
+  100% {
+    opacity: 0;
+  }
+}

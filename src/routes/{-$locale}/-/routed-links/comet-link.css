@@ -1,0 +1,26 @@
+@keyframes evCometRun {
+  0% {
+    opacity: 0;
+    transform: translateX(calc(-100% + 10px));
+  }
+  12% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translateX(8%);
+  }
+}
+
+@keyframes evKiraPop {
+  from,
+  to {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1) rotate(95deg);
+  }
+}

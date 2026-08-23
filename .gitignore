@@ -7,7 +7,7 @@ node_modules/
 worker-configuration.d.ts
 .dev.vars
 
-# tanstacl
+# tanstack
 dist/
 
 # tsc --build incremental state
@@ -19,17 +19,14 @@ dist/
 # env
 .env
 
-# graphql
-src/generated/
-
-# tests
-coverage/
-*storybook.log
-storybook-static/
-.vitest-attachments/
-
 # TanStack Router codegen temp
 .tanstack/
 
 # Agent worktrees
 .claude/worktrees/
+
+# Claude Design mirror (source of truth is the design project, not the repo)
+.design/
+
+# macOS
+.DS_Store

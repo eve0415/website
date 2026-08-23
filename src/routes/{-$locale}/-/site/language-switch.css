@@ -1,0 +1,13 @@
+/* The comp's sparkle, on the pill that has just become the active language.
+   Same shape as `evKiraPop`, under its own name on purpose: keyframes are one
+   global namespace, so sharing the name would mean tuning this pill silently
+   retunes the comet links and the 404 stars. */
+@keyframes evLangKira {
+  from,
+  to {
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    transform: scale(1) rotate(95deg);
+  }
+}

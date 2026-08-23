@@ -1,42 +1,35 @@
-import type { DrizzleD1Database } from 'drizzle-orm/d1';
+import { createCsrfMiddleware, createMiddleware, createStart } from '@tanstack/react-start';
 
-import { createMiddleware, createStart } from '@tanstack/react-start';
-import { setResponseHeader } from '@tanstack/react-start/server';
+import { securityHeaders } from '#security-headers';
 
-import { buildCspHeader, buildSecurityHeaders, generateNonce } from './middleware/security';
+const SECURITY_HEADERS = securityHeaders(import.meta.env.DEV);
 
-// Global request middleware for security headers
-const securityMiddleware = createMiddleware().server(async ({ next }) => {
-  const nonce = generateNonce();
+// `next` is aliased because `node/callback-return` treats that exact name as a
+// Node-style callback and demands its call be returned.
+const withSecurityHeaders = createMiddleware({ type: 'request' }).server(async ({ next: proceed }) => {
+  const result = await proceed();
 
-  // Build and set security headers before proceeding
-  const csp = buildCspHeader(nonce);
-  const headers = buildSecurityHeaders(csp);
+  for (const [name, value] of SECURITY_HEADERS) result.response.headers.set(name, value);
 
-  for (const [key, value] of Object.entries(headers)) setResponseHeader(key, value);
-
-  // Execute the request with nonce in context
-  return next({
-    context: {
-      cspNonce: nonce,
-    },
-  });
+  return result;
 });
 
-export const startInstance = createStart(() => ({
-  requestMiddleware: [securityMiddleware],
-}));
+/**
+ * `createStartHandler` installs exactly this middleware on its own — but only
+ * while the app has no start entry at all. Adding one to get the headers above
+ * replaces that default outright, and the only thing that notices is a dev-only
+ * `console.warn`; in production the protection would simply be gone. So it is
+ * restored here, filter included: `handlerType: 'router'` is ordinary
+ * navigation, and demanding a same-origin `Sec-Fetch-Site` on that would refuse
+ * every inbound link.
+ *
+ * Defaults do the rest — `Sec-Fetch-Site: same-origin`, else an `Origin`
+ * matching the request's own, else `Referer`, and a 403 when all three are
+ * missing.
+ */
+const csrf = createCsrfMiddleware({ filter: ({ handlerType }) => handlerType === 'serverFn' });
 
-declare module '@tanstack/react-start' {
-  interface Register {
-    server: {
-      requestContext: {
-        db: DrizzleD1Database;
-        // securityMiddleware puts this on the context, but getGlobalStartContext()
-        // resolves its type with no middlewares, so it has to be declared here.
-        // Optional: the fetch handler builds the context before middleware runs.
-        cspNonce?: string;
-      };
-    };
-  }
-}
+// Order matters: the headers wrap the CSRF check, so its 403 carries them too.
+export const startInstance = createStart(() => ({
+  requestMiddleware: [withSecurityHeaders, csrf],
+}));

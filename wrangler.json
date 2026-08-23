@@ -1,68 +1,46 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "website",
-  "compatibility_date": "2026-06-23",
+  "compatibility_date": "2026-08-11",
   "compatibility_flags": ["nodejs_compat"],
+  "main": "./src/server.ts",
   "workers_dev": false,
   "preview_urls": true,
   "upload_source_maps": true,
+  "logpush": true,
   "placement": { "mode": "smart" },
-
+  // Empty, not absent. Omitting `triggers` leaves the Cron Triggers already
+  // deployed in place; only an explicit empty array removes them. `main` ran an
+  // hourly and a weekly job, and the `scheduled` handler they called is gone.
+  "triggers": { "crons": [] },
   "routes": [
     {
       "pattern": "eve0415.net",
       "custom_domain": true
     }
   ],
-
-  "main": "./src/server.ts",
-  "assets": { "directory": "./dist/client" },
-
   "observability": {
     "enabled": true,
     "traces": { "enabled": true }
   },
-
-  "triggers": {
-    "crons": ["0 * * * *", "30 18 * * 6"]
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CONTACT_RATE_LIMIT",
+        "class_name": "ContactRateLimiter"
+      }
+    ]
   },
-
-  "kv_namespaces": [
+  "migrations": [
     {
-      "binding": "CACHE",
-      "id": "7c81378ba627479abce566995492eda0"
-    },
-    {
-      "binding": "CONTACT_RATE_LIMIT",
-      "id": "fa789c815279403293672ad135db0a3f"
+      "tag": "v1",
+      "new_sqlite_classes": ["ContactRateLimiter"]
     }
   ],
-
   "send_email": [
     {
       "name": "CONTACT_EMAIL"
     }
   ],
-
-  "ai": {
-    "binding": "AI"
-  },
-
-  "d1_databases": [
-    {
-      "binding": "SKILLS_DB",
-      "database_name": "skills-history",
-      "database_id": "245ac084-56b9-40b1-9494-2d1c9481f056",
-      "migrations_dir": "./migrations",
-      "migrations_pattern": "migrations/*/migration.sql"
-    }
-  ],
-
-  "workflows": [
-    {
-      "name": "skills-analysis",
-      "binding": "SKILLS_WORKFLOW",
-      "class_name": "SkillsAnalysisWorkflow"
-    }
-  ]
+  "version_metadata": { "binding": "CF_VERSION_METADATA" }
 }
