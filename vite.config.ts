@@ -106,15 +106,13 @@ const sitemap = (): Plugin => ({
  * rather than a year. HTML carries no rule at all on purpose: a prerendered page
  * is rewritten on every deploy while its assets are not.
  */
-const CACHE_RULES = [
+const CACHE_RULES: [string, string][] = [
   ['/assets/*', 'public, max-age=31536000, immutable'],
-  ['/:file.ico', 'public, max-age=86400'],
-  ['/:file.png', 'public, max-age=86400'],
-  ['/:file.jpg', 'public, max-age=86400'],
-  ['/:file.svg', 'public, max-age=86400'],
-  ['/:file.webmanifest', 'public, max-age=86400'],
-  ['/:file.txt', 'public, max-age=86400'],
-] as const satisfies [string, string][];
+  ...['ico', 'png', 'jpg', 'webp', 'avif', 'svg', 'webmanifest', 'xml', 'txt'].map((extension): [string, string] => [
+    `/:file.${extension}`,
+    'public, max-age=86400',
+  ]),
+];
 
 const headersFile = (): string =>
   [
