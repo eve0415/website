@@ -1,9 +1,7 @@
 import type { RoutePath } from '#i18n/copy';
-import type { PluginObject } from '@babel/core';
 import type { Plugin } from 'vite';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
-import babel from '@rolldown/plugin-babel';
 import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
@@ -146,31 +144,6 @@ const headers = (): Plugin => ({
   },
 });
 
-/**
- * Drops the `tw()` marker calls, leaving the class list they wrap.
- *
- * `tw` exists so oxlint and oxfmt can see a class list that lives in a constant
- * rather than in JSX. It returns its argument unchanged, so nothing about it
- * needs to reach the browser.
- */
-const stripTw = (): PluginObject => ({
-  name: 'strip-tw',
-  visitor: {
-    CallExpression(path) {
-      const { callee, arguments: args } = path.node;
-      if (callee.type !== 'Identifier' || callee.name !== 'tw' || args.length !== 1) return;
-
-      const [argument] = args;
-      if (argument?.type !== 'StringLiteral') return;
-
-      const binding = path.scope.getBinding('tw');
-      if (binding?.path.parent.type !== 'ImportDeclaration' || binding.path.parent.source.value !== '#lib/tw') return;
-
-      path.replaceWith(argument);
-    },
-  },
-});
-
 export default defineConfig({
   plugins: [
     cloudflare({
@@ -200,9 +173,6 @@ export default defineConfig({
       eventBusConfig: { enabled: true },
     }),
     react({ compiler: { panicThreshold: 'critical_errors' } }),
-    babel({
-      plugins: [stripTw],
-    }),
     tailwindcss(),
     devtoolsJson(),
   ],
