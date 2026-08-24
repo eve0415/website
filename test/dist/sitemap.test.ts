@@ -43,8 +43,15 @@ it('lists every locale of every route exactly once', () => {
   expect(textIn('loc').toSorted()).toStrictEqual(PAGES.map(page => page.url).toSorted());
 });
 
+// Sorted on both sides: the sitemap's entry order comes from `ROUTE_SET` in
+// vite.config.ts and `PAGES`'s from the copy record, and nothing holds those two
+// key orders together. The order that matters is the one inside each cluster.
+const byLoc = (a: Entry, b: Entry): number => a.loc.localeCompare(b.loc);
+
 it('gives every entry the whole hreflang cluster for its route', () => {
-  expect([...SITEMAP.matchAll(/<url>([\s\S]*?)<\/url>/gu)].map(([, block = '']) => entryOf(block))).toStrictEqual(PAGES.map(page => expected(page)));
+  const entries = [...SITEMAP.matchAll(/<url>([\s\S]*?)<\/url>/gu)].map(([, block = '']) => entryOf(block));
+
+  expect(entries.toSorted(byLoc)).toStrictEqual(PAGES.map(page => expected(page)).toSorted(byLoc));
 });
 
 it('stamps every entry with a date-shaped lastmod', () => {

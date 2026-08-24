@@ -16,7 +16,7 @@ CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than f
 
 ## Tests
 
-Two vitest projects, declared under `test.projects` in `vitest.config.ts`. **`coverage` and `sequence` are read from the root config and nowhere else** — a project carrying either is ignored in silence, and `sequence.shuffle` spent one commit switched off that way. Everything else is per-project and is not inherited, so both entries spread the same shared block.
+Two vitest projects, declared under `test.projects` in `vitest.config.ts`. **`coverage` and `sequence` are read from the root config and nowhere else** — a project carrying either is ignored in silence, and `sequence.shuffle` spent five commits switched off that way before a review caught it. Everything else is per-project and is not inherited, so both entries spread the same shared block.
 
 ### `worker`
 
