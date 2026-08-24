@@ -107,13 +107,16 @@ describe('release', () => {
     expect(outcome).toStrictEqual([true, true, true, false]);
   });
 
-  it('does nothing on an object that has never reserved anything', async () => {
-    const outcome = await runInDurableObject(limiterFor('release-fresh'), async limiter => {
-      await limiter.release();
-      return reserveOneByOne(limiter, DELIVERIES + 1);
-    });
+  it('persists nothing on an object that has never reserved anything', async () => {
+    const stub = limiterFor('release-fresh');
+    await runInDurableObject(stub, async limiter => limiter.release());
 
-    expect(outcome).toStrictEqual([true, true, true, false]);
+    // The write is the observable part. Asserting the budget is still whole
+    // instead would hold just as well with both of release()'s guards deleted,
+    // because the next reserve() discards an expired window either way.
+    const rows = await runInDurableObject(stub, async (_limiter, state) => state.storage.list());
+
+    expect(rows.size).toBe(0);
   });
 });
 

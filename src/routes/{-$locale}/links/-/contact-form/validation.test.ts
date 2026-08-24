@@ -20,9 +20,11 @@ describe('checkContact', () => {
   });
 
   it.each([['<'], ['>'], ['"'], [','], [';'], [':'], ['\\']])(
-    'refuses %o in an address, because it carries meaning in the replyTo header the address becomes',
+    'refuses %o anywhere in an address, because the whole address carries meaning in the replyTo header it becomes',
     character => {
       expect(checkContact({ ...VALID, email: `ada${character}b@example.com` })).toBe('email');
+      expect(checkContact({ ...VALID, email: `ada@ex${character}ample.com` })).toBe('email');
+      expect(checkContact({ ...VALID, email: `ada@example.co${character}m` })).toBe('email');
     },
   );
 
@@ -42,6 +44,9 @@ describe('checkContact', () => {
     ['the name', { ...VALID, name: '', email: 'no-at-sign', message: '' }, 'name'],
     ['the email', { ...VALID, email: 'no-at-sign', message: '' }, 'email'],
     ['the message', { ...VALID, message: '' }, 'message'],
+    ['the name', { ...VALID, name: '', message: 'a'.repeat(MESSAGE_MAX + 1) }, 'name'],
+    ['the email', { ...VALID, email: 'no-at-sign', name: 'a'.repeat(NAME_MAX + 1) }, 'email'],
+    ['the message', { ...VALID, message: '', name: 'a'.repeat(NAME_MAX + 1) }, 'message'],
   ];
 
   it.each(precedence)('reports %s first, in the order the visitor meets the fields', (_field, input, failure) => {
@@ -57,7 +62,10 @@ describe('checkContact', () => {
     // the well-formed case below through as valid, and moved after the pattern
     // it would hand the pathological one to the regex.
     const wellFormedButTooLong = `${'a'.repeat(EMAIL_MAX)}@example.com`;
-    const pathological = `a@${'a.'.repeat(16_000)}`;
+    // The trailing `@` is what makes this quadratic rather than merely long: it
+    // is outside both negated classes, so no split of the address can match and
+    // the engine retries every dot. 227ms, measured, if the regex ever sees it.
+    const pathological = `a@${'a.'.repeat(16_000)}@`;
 
     expect(checkContact({ ...VALID, email: wellFormedButTooLong })).toBe('email');
     expect(checkContact({ ...VALID, email: pathological })).toBe('email');
