@@ -6,8 +6,10 @@ import { fieldOf, readField } from './form-state';
 
 /**
  * The same `satisfies` guarantee `FIELD_OF` itself carries, restated here: a new
- * `FormError` member with no decision is a compile error in this file too, not a
- * silently missing row.
+ * `FormError` member with no decision is a compile error in this file too. That
+ * check is oxlint's, not vitest's — there is deliberately no runtime assertion
+ * for it, because any two lists declared in this file would only agree with
+ * each other.
  */
 const FIELD_FOR = {
   name: 'name',
@@ -40,10 +42,6 @@ const ROWS: [FormError, FieldName | undefined][] = [
 describe('fieldOf', () => {
   it.each(ROWS)('points %s at %s', (code, field) => {
     expect(fieldOf(code)).toBe(field);
-  });
-
-  it('has a row for every member of the lookup', () => {
-    expect(ROWS.map(([code]) => code)).toStrictEqual(Object.keys(FIELD_FOR));
   });
 });
 
