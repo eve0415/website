@@ -5,17 +5,21 @@ import { defineConfig } from 'vitest/config';
 
 const CONTACT_FORM = 'src/routes/**/links/-/contact-form';
 
-/** A project reads only its own `test` block, so both entries spread this. */
+/**
+ * A project reads only its own `test` block, so both entries spread this.
+ * `sequence` is the exception and stays at the root: vitest serialises it from
+ * the root config alone, and a project carrying it is silently ignored.
+ */
 const SHARED = {
   restoreMocks: true,
   unstubEnvs: true,
   unstubGlobals: true,
-  sequence: { shuffle: true },
   expect: { requireAssertions: true },
 } satisfies TestUserConfig;
 
 export default defineConfig({
   test: {
+    sequence: { shuffle: true },
     projects: [
       {
         plugins: [
@@ -42,9 +46,6 @@ export default defineConfig({
         test: {
           name: 'dist',
           include: ['test/dist/**/*.test.ts'],
-          // The default `exclude` carries `**/dist/**` and beats `include`, so
-          // without this the project silently collects no files at all.
-          exclude: ['**/node_modules/**'],
           ...SHARED,
         },
       },
