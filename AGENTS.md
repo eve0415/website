@@ -16,7 +16,7 @@ CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than f
 
 ## Tests
 
-Two vitest projects, declared under `test.projects` in `vitest.config.ts`. Coverage stays at the root, where vitest reads it; every other `test.*` option is per-project and is not inherited, so both entries spread the same shared block.
+Two vitest projects, declared under `test.projects` in `vitest.config.ts`. **`coverage` and `sequence` are read from the root config and nowhere else** — a project carrying either is ignored in silence, and `sequence.shuffle` spent one commit switched off that way. Everything else is per-project and is not inherited, so both entries spread the same shared block.
 
 ### `worker`
 
@@ -42,12 +42,13 @@ Everything runs in workerd through `@cloudflare/vitest-plugin`, which is a plain
 
 ### `dist`
 
-Five files under `test/dist/`, 74 tests, over what `vite build` wrote: the `tw()` markers being gone from the client bundle, the 20 prerendered pages and each one's canonical, hreflang cluster and title, `sitemap.xml`, and `_headers`. Plain node, no cloudflare plugin — workerd has no `node:fs`, which is the whole reason this is a second project.
+Five files under `test/dist/`, 75 tests, over what `vite build` wrote: the `tw()` markers being gone from the client bundle, the 20 prerendered pages and each one's canonical, hreflang cluster and non-empty title, `sitemap.xml` down to its own hreflang cluster, and `_headers`. Plain node, no cloudflare plugin — workerd has no `node:fs`, which is the whole reason this is a second project.
 
 - **The build has to have happened.** `test/dist/client-output.ts` throws at import if `dist/client` is missing, rather than skipping: a suite reporting zero tests is the one failure these cannot see. Nothing here shells out to run a build.
-- **`test/dist/` is not the build output**, but three ignore lists thought it was. `.gitignore`, `oxlint.config.ts` and `oxfmt.config.ts` all carried a bare `dist` pattern, which matches the directory at any depth — the files were untracked, unlinted and unformatted, and `oxfmt --check` exits 0 when everything it was given is excluded. All three are anchored to `/dist` now. Vitest's own default `exclude` carries `**/dist/**` and beats `include`, so the project sets its own.
+- **`test/dist/` is not the build output**, but three ignore lists thought it was. `.gitignore`, `oxlint.config.ts` and `oxfmt.config.ts` all carried a bare `dist` pattern, which matches the directory at any depth — the files were untracked, unlinted and unformatted, and `oxfmt --check` exits 0 when everything it was given is excluded. All three are anchored to `/dist` now. Vitest's default `exclude` is only `node_modules` and `.git` as of 4.x, so `include` alone is enough — an `exclude` override here would drop `.git` rather than add anything. CI lints before it builds, so `dist/` is not there when the linters run: only a local gate, with a build already behind it, exercises the anchoring at all.
 - **The marked class lists are the discriminating assertion**, not `tw(`. The client bundle is minified, so `tw` is mangled long before a test looks at it and no build reaches `dist/client` with the name intact — with `stripTw` removed, `grep -a 'tw('` still finds nothing. What changes is the class list itself: stripped, it ships as a bare string literal; left alone, it ships as the argument of a call, and one bare identity binding (`Oe=e=>e`) turns up in the shared chunk.
 - **React renders the property, so the attribute is `hrefLang`.** A `/hreflang=/` regex matches zero. Head assertions are scoped to `<head>` because the body carries `<a hrefLang>` links of its own.
+- **The `dist` project can mask a coverage loss in `src/i18n/locale.ts`.** Coverage merges across projects, and `test/dist/client-output.ts` calls `localePath` for both locales and for both `/` and a non-`/` path — every branch. Delete the worker suite's `localePath` tests and `vitest run --coverage` still reports the file at 100%; `vitest run --project worker --coverage` catches it. That is the price of deriving the expected page set from the same function the site uses, and the alternative is a second transcription of the prefix rule. `src/i18n/head.ts` is only partly masked, and no other threshold glob is touched.
 - `_headers` is asserted as literal directives. Reading it back from `securityHeaders(false)` would compare the generator to itself and pass on any policy at all.
 
 ## Type safety
