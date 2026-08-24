@@ -43,5 +43,8 @@ jobs:
       - name: Check formatting
         run: pnpm exec oxfmt --check
 
+      - name: Test
+        run: pnpm exec vitest run
+
       - name: Build
         run: pnpm exec vite build
