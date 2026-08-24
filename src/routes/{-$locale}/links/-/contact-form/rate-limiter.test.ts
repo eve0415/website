@@ -12,9 +12,9 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const limiterFor = (name: string) => env.CONTACT_RATE_LIMIT.getByName(name);
 
 /**
- * One reservation at a time. Awaiting them together would let all four read the
- * same count before any write landed — the interleaving the object exists to
- * prevent, reached from inside it rather than through the binding.
+ * One reservation at a time. `Promise.all` here happens to give the same answer,
+ * but only because `reserve()` assigns the budget before its first `await` — the
+ * property this file does not test. Sequential keeps the claim independent of it.
  */
 const reserveOneByOne = async (limiter: ContactRateLimiter, times: number): Promise<boolean[]> => {
   const outcomes: boolean[] = [];

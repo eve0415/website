@@ -33,7 +33,7 @@ export default defineConfig({
         [`${CONTACT_FORM}/validation.ts`]: { statements: 100, branches: 100, functions: 100, lines: 100 },
         // Not 100: parseHextets' four-octet guard is unreachable, because parseIpv4
         // returns only when DOTTED_QUAD has already matched four groups.
-        [`${CONTACT_FORM}/rate-limit-key.ts`]: { statements: 98, branches: 97, functions: 100, lines: 100 },
+        [`${CONTACT_FORM}/rate-limit-key.ts`]: { statements: 98.46, branches: 97.67, functions: 100, lines: 100 },
       },
     },
   },
