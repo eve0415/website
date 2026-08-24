@@ -53,7 +53,11 @@ describe('checkContact', () => {
     expect(checkContact(input)).toBe(failure);
   });
 
-  it('measures the address against its ceiling inside the email step, before the pattern runs', () => {
+  // The timeout is the assertion that pins the *order*. Correct, the ceiling
+  // short-circuits and the body measures 0ms; with the ceiling moved after the
+  // pattern the regex scans a 256 003-character address and takes 14.6s, both
+  // measured. 500ms sits ~29x under the broken path and ~500x over the correct one.
+  it('measures the address against its ceiling inside the email step, before the pattern runs', { timeout: 500 }, () => {
     // Both halves of EMAIL_PATTERN are the same negated class and both admit
     // `.`, so a long address that cannot match backtracks quadratically — and
     // checkContact runs ahead of the Turnstile challenge and the rate limiter,
@@ -64,8 +68,8 @@ describe('checkContact', () => {
     const wellFormedButTooLong = `${'a'.repeat(EMAIL_MAX)}@example.com`;
     // The trailing `@` is what makes this quadratic rather than merely long: it
     // is outside both negated classes, so no split of the address can match and
-    // the engine retries every dot. 227ms, measured, if the regex ever sees it.
-    const pathological = `a@${'a.'.repeat(16_000)}@`;
+    // the engine retries every dot.
+    const pathological = `a@${'a.'.repeat(128_000)}@`;
 
     expect(checkContact({ ...VALID, email: wellFormedButTooLong })).toBe('email');
     expect(checkContact({ ...VALID, email: pathological })).toBe('email');

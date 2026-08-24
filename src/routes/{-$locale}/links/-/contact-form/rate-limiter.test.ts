@@ -12,9 +12,8 @@ import { afterEach, describe, expect, it, vi } from 'vitest';
 const limiterFor = (name: string) => env.CONTACT_RATE_LIMIT.getByName(name);
 
 /**
- * One reservation at a time. `Promise.all` here happens to give the same answer,
- * but only because `reserve()` assigns the budget before its first `await` — the
- * property this file does not test. Sequential keeps the claim independent of it.
+ * One reservation at a time, for the tests whose subject is the count rather than
+ * the concurrency. Atomicity has its own test, which reserves concurrently.
  */
 const reserveOneByOne = async (limiter: ContactRateLimiter, times: number): Promise<boolean[]> => {
   const outcomes: boolean[] = [];
@@ -43,6 +42,20 @@ describe('reserve', () => {
     const outcome = await runInDurableObject(limiterFor('reserve-cap'), async limiter => reserveOneByOne(limiter, DELIVERIES + 1));
 
     expect(outcome).toStrictEqual([true, true, true, false]);
+  });
+
+  it('counts reservations that arrive together against one budget, not each against the same count', async () => {
+    // Concurrent on purpose. `reserve` reads the count, decides on it and writes
+    // it back with no `await` in between, so four calls landing together still
+    // increment one at a time. Slip a single `await` between the check and the
+    // assignment and all four read a used count of zero and all four are granted.
+    const outcome = await runInDurableObject(limiterFor('reserve-atomic'), async limiter =>
+      Promise.all(Array.from({ length: DELIVERIES + 1 }, async () => limiter.reserve())),
+    );
+
+    const granted = outcome.filter(Boolean).length;
+
+    expect({ granted, refused: outcome.length - granted }).toStrictEqual({ granted: DELIVERIES, refused: 1 });
   });
 
   it('reads the count back from storage after the instance is torn down', async () => {
