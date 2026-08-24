@@ -10,6 +10,9 @@ worker-configuration.d.ts
 # tanstack
 dist/
 
+# vitest
+coverage/
+
 # tsc --build incremental state
 *.tsbuildinfo
 

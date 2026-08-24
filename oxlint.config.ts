@@ -3,7 +3,7 @@ import { defineConfig } from 'oxlint';
 export default defineConfig({
   plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'import', 'react', 'react-perf', 'jsx-a11y', 'node', 'promise'],
   jsPlugins: ['@tanstack/eslint-plugin-router', 'oxlint-tailwindcss', { name: 'anti-slop', specifier: './tools/oxlint/anti-slop/src/index.ts' }],
-  ignorePatterns: ['.wrangler', 'dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'tools/oxlint/anti-slop'],
+  ignorePatterns: ['.wrangler', 'coverage', 'dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'tools/oxlint/anti-slop'],
   settings: {
     tailwindcss: {
       entryPoint: 'src/routes/__root.css',
@@ -175,4 +175,15 @@ export default defineConfig({
     'anti-slop/no-widen-then-assert': 'error',
     'anti-slop/require-safety-comment-for-type-assertion': 'error',
   },
+  overrides: [
+    {
+      files: ['**/*.test.ts'],
+      rules: {
+        // The rule's fix is `Promise.all`, and the Durable Object under test
+        // exists to serialize exactly those calls — awaiting them together
+        // tests the interleaving it removes.
+        'no-await-in-loop': 'off',
+      },
+    },
+  ],
 });
