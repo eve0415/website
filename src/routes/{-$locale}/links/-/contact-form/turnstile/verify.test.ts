@@ -226,7 +226,13 @@ describe('the request', () => {
     const body = bodyOf(stub, 0);
     expect(fieldOf(body, 'response')).toBe(TOKEN);
     expect(fieldOf(body, 'remoteip')).toBe(REMOTE_IP);
-    expect(fieldOf(body, 'secret')).toBe(env.TURNSTILE_SECRET_KEY);
+    // Round-tripped through FormData rather than compared to the binding directly, so
+    // both sides take the same coercion: CI has no `.dev.vars`, and there the absent
+    // binding reaches siteverify as the string 'undefined'. One assertion, because a
+    // failing `toBe` prints both sides and one of them is the secret.
+    const expectedSecret = new FormData();
+    expectedSecret.append('secret', env.TURNSTILE_SECRET_KEY);
+    expect(body.get('secret')).toBe(expectedSecret.get('secret'));
   });
 });
 
