@@ -1,10 +1,6 @@
-import type { Page } from './client-output';
-
 import { expect, it } from 'vitest';
 
-import { DEFAULT_LOCALE, LOCALES } from '#i18n/locale';
-
-import { PAGES, pageUrl, read } from './client-output';
+import { PAGES, read } from './client-output';
 
 const SITEMAP = read('sitemap.xml');
 
@@ -25,11 +21,6 @@ const entryOf = (block: string): Entry => {
   return { loc, alternates };
 };
 
-const expected = (page: Page): Entry => ({
-  loc: page.url,
-  alternates: [...LOCALES.map((locale): [string, string] => [locale, pageUrl(locale, page.route)]), ['x-default', pageUrl(DEFAULT_LOCALE, page.route)]],
-});
-
 /**
  * The scheme is part of the namespace name and namespaces match as exact
  * strings, so the `https` spelling — which the generator this replaces hardcodes
@@ -44,14 +35,14 @@ it('lists every locale of every route exactly once', () => {
 });
 
 // Sorted on both sides: the sitemap's entry order comes from `ROUTE_SET` in
-// vite.config.ts and `PAGES`'s from the copy record, and nothing holds those two
-// key orders together. The order that matters is the one inside each cluster.
+// vite.config.ts and `PAGES`'s from the transcribed table, and nothing holds
+// those two orders together. The order that matters is the one inside each cluster.
 const byLoc = (a: Entry, b: Entry): number => a.loc.localeCompare(b.loc);
 
 it('gives every entry the whole hreflang cluster for its route', () => {
   const entries = [...SITEMAP.matchAll(/<url>([\s\S]*?)<\/url>/gu)].map(([, block = '']) => entryOf(block));
 
-  expect(entries.toSorted(byLoc)).toStrictEqual(PAGES.map(page => expected(page)).toSorted(byLoc));
+  expect(entries.toSorted(byLoc)).toStrictEqual(PAGES.map(({ url, alternates }): Entry => ({ loc: url, alternates })).toSorted(byLoc));
 });
 
 it('stamps every entry with a date-shaped lastmod', () => {

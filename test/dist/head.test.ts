@@ -1,8 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { DEFAULT_LOCALE, LOCALES } from '#i18n/locale';
-
-import { PAGES, pageUrl, read } from './client-output';
+import { PAGES, read } from './client-output';
 
 /**
  * Scoped to `<head>` so "exactly one canonical" is a claim about the head rather
@@ -28,24 +26,29 @@ const attributesOf = (tag: string): Map<string, string> =>
     }),
   );
 
-const linksIn = (head: string): Map<string, string>[] => [...head.matchAll(/<link\b[^>]*>/gu)].map(tag => attributesOf(tag[0]));
+/**
+ * Read per test rather than once in the `describe` body: a page missing from
+ * `dist/` throws, and thrown during collection that takes every test in this
+ * file out of the run — 60 of them silently becoming zero, which is the one
+ * failure these tests cannot see. Inside an `it` it is a red test instead.
+ */
+const linksOf = (file: string): Map<string, string>[] => [...headOf(file).matchAll(/<link\b[^>]*>/gu)].map(tag => attributesOf(tag[0]));
 
 describe.each(PAGES)('$file', page => {
-  const links = linksIn(headOf(page.file));
-
   it('carries exactly one canonical, and it points at this page', () => {
-    expect(links.filter(link => link.get('rel') === 'canonical').map(link => link.get('href'))).toStrictEqual([page.url]);
+    expect(
+      linksOf(page.file)
+        .filter(link => link.get('rel') === 'canonical')
+        .map(link => link.get('href')),
+    ).toStrictEqual([page.url]);
   });
 
   // React renders the property, so the attribute is `hrefLang`; a /hreflang=/
   // regex matches nothing at all here, in the head or in the body's own `<a>`s.
   it('carries both locales plus an x-default pointing at Japanese', () => {
-    const cluster = links.filter(link => link.get('rel') === 'alternate' && link.has('hrefLang'));
+    const cluster = linksOf(page.file).filter(link => link.get('rel') === 'alternate' && link.has('hrefLang'));
 
-    expect(cluster.map(link => [link.get('hrefLang'), link.get('href')])).toStrictEqual([
-      ...LOCALES.map(locale => [locale, pageUrl(locale, page.route)]),
-      ['x-default', pageUrl(DEFAULT_LOCALE, page.route)],
-    ]);
+    expect(cluster.map(link => [link.get('hrefLang'), link.get('href')])).toStrictEqual(page.alternates);
   });
 
   it('carries a non-empty title', () => {
