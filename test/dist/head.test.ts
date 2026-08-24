@@ -5,10 +5,10 @@ import { DEFAULT_LOCALE, LOCALES } from '#i18n/locale';
 import { PAGES, pageUrl, read } from './client-output';
 
 /**
- * Scoped to `<head>` because the body carries `<a hrefLang>` links of its own,
- * and read with `node:fs` rather than grepped: the markup is one enormous line
- * and carries NUL bytes inside TanStack's serialised route ids, so `grep` calls
- * it binary.
+ * Scoped to `<head>` so "exactly one canonical" is a claim about the head rather
+ * than the document, and read with `node:fs` rather than grepped: the markup is
+ * one enormous line and carries NUL bytes inside TanStack's serialised route
+ * ids, so `grep` calls it binary.
  */
 const headOf = (file: string): string => {
   const html = read(file);
@@ -38,7 +38,7 @@ describe.each(PAGES)('$file', page => {
   });
 
   // React renders the property, so the attribute is `hrefLang`; a /hreflang=/
-  // regex matches nothing at all here.
+  // regex matches nothing at all here, in the head or in the body's own `<a>`s.
   it('carries both locales plus an x-default pointing at Japanese', () => {
     const cluster = links.filter(link => link.get('rel') === 'alternate' && link.has('hrefLang'));
 
