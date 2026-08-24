@@ -6,12 +6,24 @@ Personal site. React 19 + TanStack Start on Cloudflare Workers, prerendered to s
 
 ```
 pnpm lint    # oxlint --fix && oxfmt — writes files
+pnpm test    # vitest run, inside workerd
 pnpm build   # must end with "Prerendered 20 pages"
 ```
 
-Run them as two separate commands and check each exit code. **Never pipe `pnpm lint` into `tail`/`head` before checking its result** — a pipe masks the exit code, and that has hidden real violations here more than once.
+Run them as three separate commands and check each exit code. **Never pipe `pnpm lint` into `tail`/`head` before checking its result** — a pipe masks the exit code, and that has hidden real violations here more than once.
 
-There are still no tests. CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than fix mode, spelled out as full commands rather than through the scripts above — `pnpm exec oxlint`, `pnpm exec oxfmt --check`, `pnpm exec vite build` — so it never rewrites files, and a formatting-only diff fails it instead of being silently fixed. Run the local gate before claiming anything is done, and say what it printed.
+CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than fix mode, spelled out as full commands rather than through the scripts above — `pnpm exec oxlint`, `pnpm exec oxfmt --check`, `pnpm exec vitest run`, `pnpm exec vite build` — so it never rewrites files, and a formatting-only diff fails it instead of being silently fixed. Run the local gate before claiming anything is done, and say what it printed.
+
+## Tests
+
+Three colocated `.test.ts` files, all under `src/routes/{-$locale}/links/-/contact-form/`: `rate-limit-key`, `validation`, and the `ContactRateLimiter` Durable Object. Nothing else in the repo has tests, and none of these render a component.
+
+Everything runs in workerd through `@cloudflare/vitest-plugin`, which is a plain Vite plugin in `vitest.config.ts` and takes its bindings from `wrangler.json`. miniflare stands every one of them up locally, including `send_email` and `version_metadata` — but `CONTACT_EMAIL` arrives as a plain `Fetcher` stand-in, so nothing is actually delivered and there is no sent mail to assert on. `test.globals` is off, so each file imports `describe`/`it`/`expect` from `vitest`.
+
+- **`main` is overridden** to the rate-limiter module. Pointed at `wrangler.json`'s own `main`, the pool tries to bundle `src/server.ts`, whose re-export of TanStack Start's server entry needs the `#tanstack-router-entry` subpath that only the `tanstackStart` Vite plugin supplies. That module has no default export, so `SELF` and `exports.default.fetch()` have nothing to reach — a test that wants to drive the app through a request needs a different entry.
+- **Storage is isolated per test _file_, not per test**, and the files run concurrently. Every Durable Object test takes its own object name; share one and the suite passes in declaration order and fails under `sequence.shuffle`, which is on.
+- **Fake timers do reach `Date.now()` inside the object**, so the window and `alarm()` are testable. Set the clock _ahead_ of the real one — pinned to a past instant, `setAlarm(now + WINDOW_MS)` is already due and miniflare fires it before `runDurableObjectAlarm` can.
+- **Coverage is Istanbul**, because V8's native coverage does not work in workerd. There is no global threshold — the repo would only fail or lie — but the three tested modules carry per-file thresholds, so they cannot quietly lose coverage.
 
 ## Type safety
 
@@ -64,7 +76,7 @@ Inside `-/`, nest by what the thing is, as deep as it needs. A component with ch
 
 - **Prerendering is not automatic.** `vite.config.ts` sets `autoStaticPathsDiscovery: false` and `crawlLinks: false`, so a new route needs an explicit entry in the `pages` array — in both locales — or it silently never prerenders, and `failOnError` will not catch the omission.
 - **Everything is prerendered then hydrated.** No `Math.random()`, `Date.now()`, `new Date()`, or `window`/`navigator`/`matchMedia` reads during render — they produce hydration mismatches. A seeded PRNG is already used for decorative randomness; reuse it.
-- **The prerendered HTML is one enormous line**, so `grep` treats it as binary. Use `grep -a` when inspecting `dist/client/`.
+- **The prerendered HTML carries NUL bytes**, inside TanStack's serialized route ids (`i:"__root__\0"`, eight of them in `about.html`), so `grep` treats it as binary. It is also one enormous line, but that alone greps fine. Use `grep -a` when inspecting `dist/client/`.
 - **A new Durable Object migration cannot ship through a branch build.** Cloudflare Workers Builds deploys non-production branches with `wrangler versions upload`, and the API refuses any version whose config carries an unapplied migration (`code: 10211`) — lifecycle changes land only through a non-versioned `wrangler deploy`. So `ContactRateLimiter`'s `v1` has to reach production once before a preview upload of a branch that declares it can succeed, and a Worker that implements a Durable Object stops getting Preview URLs at all.
 - Determine a library's behaviour from its type declarations or its shipped `src/` — never from bundled `dist/*.js`.
 
