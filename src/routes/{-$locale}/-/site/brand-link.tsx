@@ -5,6 +5,7 @@ import { Link } from '@tanstack/react-router';
 
 import { localeParams } from '#i18n/locale';
 
+import brandAvatar from './brand-avatar-96x96.png';
 import { BRAND_CLASS } from './header-classes';
 
 interface BrandLinkProps {
@@ -22,7 +23,7 @@ interface BrandLinkProps {
  */
 export const BrandLink: FC<BrandLinkProps> = ({ locale }) => (
   <Link to='/{-$locale}' params={localeParams(locale)} className={BRAND_CLASS}>
-    <img src='/web-app-icon-192x192.png' alt='' width='32' height='32' className='size-8 rounded-[50%] border border-[rgba(252,247,253,.4)]' />
+    <img src={brandAvatar} alt='' width='32' height='32' className='size-8 rounded-[50%] border border-[rgba(252,247,253,.4)]' />
     eve0415.net
   </Link>
 );
