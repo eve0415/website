@@ -15,8 +15,6 @@ export default defineConfig({
   ],
   test: {
     include: ['src/**/*.test.ts'],
-    clearMocks: true,
-    mockReset: true,
     restoreMocks: true,
     unstubEnvs: true,
     unstubGlobals: true,
@@ -27,7 +25,7 @@ export default defineConfig({
       // V8's native coverage is not available inside workerd.
       provider: 'istanbul',
       include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['src/**/*.test.ts', 'src/routeTree.gen.ts'],
+      exclude: ['src/routeTree.gen.ts'],
       thresholds: {
         [`${CONTACT_FORM}/rate-limiter.ts`]: { statements: 100, branches: 100, functions: 100, lines: 100 },
         [`${CONTACT_FORM}/validation.ts`]: { statements: 100, branches: 100, functions: 100, lines: 100 },
