@@ -128,8 +128,10 @@ describe('puffs', () => {
    * puts the first puff at `-8` exactly, and the last below
    * `-8 + 114 * (1 - 0.1 / count)`, which is under 106 for any count.
    *
-   * That one pair is what pins the `i` term, the `/ count`, the `114` and the `-8`
-   * together, with no golden values to rewrite when a seed changes.
+   * What that pins in both directions is the `i` term and the `/ count`. The `114` and
+   * the `-8` it only bounds one way — measured: widening to 120 or dropping to -9 goes
+   * red, narrowing to 100 or -7 does not — and it does not constrain the `0.9` jitter
+   * at all. That is the trade for having no golden values to rewrite when a seed moves.
    */
   it.each(PRERENDERED)('spreads %s left to right across the band without stacking or overflowing', (_label, seed, count, bottom0, bottom1, w0, w1) => {
     const generated = puffs(seed, count, bottom0, bottom1, w0, w1);
@@ -151,6 +153,9 @@ describe('puffs', () => {
    * first, so each moves by up to half a pixel and the ratio carries `±0.5 / w` of
    * slack. Every field above starts at `w0 >= 150`, which keeps the true range inside
    * these bounds; a narrower field would need wider ones.
+   *
+   * One-sided, like the band above: a widened span goes red (0.18 -> 0.2, 0.4 -> 0.42),
+   * a narrowed one does not.
    */
   it.each(PRERENDERED)('keeps every %s puff between two fifths and three fifths as tall as it is wide', (_label, seed, count, bottom0, bottom1, w0, w1) => {
     const generated = puffs(seed, count, bottom0, bottom1, w0, w1);
