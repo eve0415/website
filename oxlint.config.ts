@@ -179,9 +179,6 @@ export default defineConfig({
     {
       files: ['**/*.test.ts'],
       rules: {
-        // The release cap is order-dependent: the rule's `Promise.all` fix run
-        // over the limiter's nine reserve/release cycles lands only three
-        // reserves, so only three releases count and the cap never engages.
         'no-await-in-loop': 'off',
       },
     },
