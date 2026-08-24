@@ -16,14 +16,21 @@ CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than f
 
 ## Tests
 
-Three colocated `.test.ts` files, all under `src/routes/{-$locale}/links/-/contact-form/`: `rate-limit-key`, `validation`, and the `ContactRateLimiter` Durable Object. Nothing else in the repo has tests, and none of these render a component.
+Seven colocated `.test.ts` files across three directories, none of which render a component:
+
+- `src/routes/{-$locale}/links/-/contact-form/` — `rate-limit-key`, `validation`, `form-state`, and the `ContactRateLimiter` Durable Object.
+- `src/i18n/` — `locale` and `head`, where the traps are documented in the source and none of them are typed: the `/en` prefix that must not match `/english`, the English root that must not gain a trailing slash, and the self-referential canonical and hreflang cluster.
+- `src/security-headers.ts` — the dev/prod `'unsafe-eval'` split, Turnstile's origin in both `script-src` and `frame-src`, and no duplicate header names.
+
+Everything else in the repo is untested. `turnstile/size.ts` is deliberately left out: `isNarrowSlot` calls `globalThis.matchMedia`, which workerd does not have, and standing up a partial `MediaQueryList` would cost more than the one-line wrapper is worth.
 
 Everything runs in workerd through `@cloudflare/vitest-plugin`, which is a plain Vite plugin in `vitest.config.ts` and takes its bindings from `wrangler.json`. miniflare stands every one of them up locally, including `send_email` and `version_metadata` — but `CONTACT_EMAIL` arrives as a plain `Fetcher` stand-in, so nothing is actually delivered and there is no sent mail to assert on. `test.globals` is off, so each file imports `describe`/`it`/`expect` from `vitest`.
 
 - **`main` is overridden** to the rate-limiter module. Pointed at `wrangler.json`'s own `main`, the pool tries to bundle `src/server.ts`, whose re-export of TanStack Start's server entry needs the `#tanstack-router-entry` subpath that only the `tanstackStart` Vite plugin supplies. That module has no default export, so `SELF` and `exports.default.fetch()` have nothing to reach — a test that wants to drive the app through a request needs a different entry.
 - **Storage is isolated per test _file_, not per test**, and the files run concurrently. Every Durable Object test takes its own object name; share one and the suite passes in declaration order and fails under `sequence.shuffle`, which is on.
 - **Fake timers do reach `Date.now()` inside the object**, so the window and `alarm()` are testable. Set the clock _ahead_ of the real one — pinned to a past instant, `setAlarm(now + WINDOW_MS)` is already due and miniflare fires it before `runDurableObjectAlarm` can.
-- **Coverage is Istanbul**, because V8's native coverage does not work in workerd. There is no global threshold — the repo would only fail or lie — but the three tested modules carry per-file thresholds, so they cannot quietly lose coverage. Those thresholds are keyed by glob, and **a glob that matches nothing passes**: renaming any of the three files, or the directory holding them, silently turns its 100% guarantee into a no-op. Move a file, update `vitest.config.ts`.
+- **Coverage is Istanbul**, because V8's native coverage does not work in workerd. There is no global threshold — the repo would only fail or lie — but every tested module sits behind a `{ 100: true }` glob with `perFile`, so none of them can quietly lose coverage. Those thresholds are keyed by glob, and **a glob that matches nothing passes**: renaming a tested file, or a directory holding one, silently turns its 100% guarantee into a no-op. A more specific key does not override a broader one either — vitest applies every pattern that matches — so the globs stay enumerated rather than wildcarded. Move a file, update `vitest.config.ts`.
+- **Coverage is not the measure.** Every gap found here so far sat behind a green 100%: reserve atomicity, the ReDoS ordering, the release cap surviving eviction, the rolling window, and the length ceilings. Mutate the source and check the suite goes red; that is what says a test pins anything.
 
 ## Type safety
 
