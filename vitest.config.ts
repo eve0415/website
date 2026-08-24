@@ -10,6 +10,10 @@ export default defineConfig({
       // TanStack Start's server entry needs the `#tanstack-router-entry` subpath
       // that only the tanstackStart Vite plugin supplies.
       main: './src/routes/{-$locale}/links/-/contact-form/rate-limiter.ts',
+      // `.dev.vars` is gitignored, so in CI this binding would otherwise be absent
+      // and every read of it would stringify to 'undefined'. A fake value here is
+      // the same in both places, so a test can assert on it.
+      miniflare: { bindings: { TURNSTILE_SECRET_KEY: 'test-turnstile-secret' } },
       wrangler: { configPath: './wrangler.json' },
     }),
   ],

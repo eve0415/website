@@ -1,7 +1,6 @@
 import type { TurnstileRejection } from './verify';
 import type { Mock } from 'vitest';
 
-import { env } from 'cloudflare:workers';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TURNSTILE_ACTION } from './constants';
@@ -20,6 +19,8 @@ const MAX_TOKEN_LENGTH = 2048;
 const MAX_TOKEN_AGE_MS = 300_000;
 
 const TOKEN = 'widget-token';
+/** The fake `TURNSTILE_SECRET_KEY` that `vitest.config.ts` binds into the test environment. */
+const SECRET = 'test-turnstile-secret';
 const REMOTE_IP = '203.0.113.9';
 const HOSTNAME = 'eve0415.net';
 
@@ -226,19 +227,10 @@ describe('the request', () => {
     const body = bodyOf(stub, 0);
     expect(fieldOf(body, 'response')).toBe(TOKEN);
     expect(fieldOf(body, 'remoteip')).toBe(REMOTE_IP);
-    // Compared as a boolean, never as values: AGENTS.md forbids printing a secret, and
-    // `expect(field).toBe(secret)` puts it in the failure output. This says only whether
-    // they matched.
-    //
-    // Round-tripped through FormData so both sides take the same coercion. CI has no
-    // `.dev.vars`, so there the binding is absent and both sides are the string
-    // 'undefined' — which still refuses the token, but cannot tell one absent binding
-    // from another. Pinning that would need a binding in the test env, not a test change.
-    const expectedSecret = new FormData();
-    expectedSecret.append('secret', env.TURNSTILE_SECRET_KEY);
-    const secretMatches = body.get('secret') === expectedSecret.get('secret');
-
-    expect(secretMatches).toBe(true);
+    // The fake `vitest.config.ts` binds, asserted plainly: the expectation no longer comes
+    // from the same `env` read it is checking, and it holds in CI, which has no `.dev.vars`
+    // and so no binding at all without that injection.
+    expect(fieldOf(body, 'secret')).toBe(SECRET);
   });
 });
 
