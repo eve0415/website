@@ -18,6 +18,14 @@ describe('parseLocaleParam', () => {
     ['an unknown segment', 'fr', undefined],
     ['an empty segment', '', undefined],
     ['a path-shaped segment', 'en/about', undefined],
+    // Exact match, the same rule localeFromPathname follows. Case-folded or
+    // trimmed here, /EN/about renders English while the root's beforeLoad
+    // computed ja — English copy under a ja document lang, at a second URL.
+    ['an uppercase segment', 'EN', undefined],
+    ['a mixed-case segment', 'En', undefined],
+    ['a leading-space segment', ' en', undefined],
+    ['a trailing-space segment', 'en ', undefined],
+    ['an uppercase ja segment', 'JA', undefined],
   ])('resolves %s', (_label, param, locale) => {
     expect(parseLocaleParam(param)).toBe(locale);
   });
