@@ -28,7 +28,9 @@ export default defineConfig({
       exclude: ['src/routeTree.gen.ts'],
       thresholds: {
         perFile: true,
-        [`${CONTACT_FORM}/{rate-limiter,validation,rate-limit-key}.ts`]: { 100: true },
+        [`${CONTACT_FORM}/{form-state,rate-limiter,rate-limit-key,validation}.ts`]: { 100: true },
+        'src/i18n/{head,locale}.ts': { 100: true },
+        'src/security-headers.ts': { 100: true },
       },
     },
   },
