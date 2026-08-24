@@ -364,6 +364,7 @@ const skyPalette = (clock: number): SkyPalette => {
   for (let i = 0; i < PAL.length - 1; i++) {
     const lo = PAL[i];
     const hi = PAL[i + 1];
+    /* istanbul ignore next -- i stops at PAL.length - 2 and PAL is a module constant, so neither index can miss. */
     if (lo === undefined || hi === undefined) continue;
     if (c >= lo.t && c <= hi.t) {
       a = lo;
