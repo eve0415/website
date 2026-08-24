@@ -32,6 +32,16 @@ describe('checkContact', () => {
     expect(checkContact({ ...VALID, message })).toBe('message');
   });
 
+  const atCeiling: [string, ContactInput][] = [
+    ['a name of exactly NAME_MAX', { ...VALID, name: 'a'.repeat(NAME_MAX) }],
+    ['an address of exactly EMAIL_MAX', { ...VALID, email: `${'a'.repeat(EMAIL_MAX - '@example.com'.length)}@example.com` }],
+    ['a message of exactly MESSAGE_MAX', { ...VALID, message: 'a'.repeat(MESSAGE_MAX) }],
+  ];
+
+  it.each(atCeiling)('accepts %s, because the ceiling is the longest value still allowed', (_label, input) => {
+    expect(checkContact(input)).toBeUndefined();
+  });
+
   it('separates an over-long name from a malformed one', () => {
     expect(checkContact({ ...VALID, name: 'a'.repeat(NAME_MAX + 1) })).toBe('too-long');
   });
