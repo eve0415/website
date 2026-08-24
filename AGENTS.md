@@ -6,15 +6,19 @@ Personal site. React 19 + TanStack Start on Cloudflare Workers, prerendered to s
 
 ```
 pnpm lint    # oxlint --fix && oxfmt — writes files
-pnpm test    # vitest run, inside workerd
 pnpm build   # must end with "Prerendered 20 pages"
+pnpm test    # vitest run, both projects
 ```
 
 Run them as three separate commands and check each exit code. **Never pipe `pnpm lint` into `tail`/`head` before checking its result** — a pipe masks the exit code, and that has hidden real violations here more than once.
 
-CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than fix mode, spelled out as full commands rather than through the scripts above — `pnpm exec oxlint`, `pnpm exec oxfmt --check`, `pnpm exec vitest run`, `pnpm exec vite build` — so it never rewrites files, and a formatting-only diff fails it instead of being silently fixed. Run the local gate before claiming anything is done, and say what it printed.
+CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than fix mode, spelled out as full commands rather than through the scripts above — `pnpm exec oxlint`, `pnpm exec oxfmt --check`, `pnpm exec vite build`, `pnpm exec vitest run` — so it never rewrites files, and a formatting-only diff fails it instead of being silently fixed. The build runs before the tests, there and here, because the `dist` project reads what it writes; that costs the fail-fast of testing first. Run the local gate before claiming anything is done, and say what it printed.
 
 ## Tests
+
+Two vitest projects, declared under `test.projects` in `vitest.config.ts`. Coverage stays at the root, where vitest reads it; every other `test.*` option is per-project and is not inherited, so both entries spread the same shared block.
+
+### `worker`
 
 Twelve colocated `.test.ts` files, 308 tests, across four directories plus `src/security-headers.ts` at the root, none of which render a component:
 
@@ -24,7 +28,7 @@ Twelve colocated `.test.ts` files, 308 tests, across four directories plus `src/
 - `src/lib/` — `cn`, a table of which of two conflicting Tailwind classes survives.
 - `src/security-headers.ts` — the dev/prod `'unsafe-eval'` split, Turnstile's origin in both `script-src` and `frame-src`, and no duplicate header names.
 
-Everything else is untested, and some of it deliberately. `send-contact.ts` has no supported way to invoke a `createServerFn` handler (<https://github.com/TanStack/router/issues/7507>). `turnstile/size.ts` and `lib/prefers-reduced-motion.ts` both read `globalThis.matchMedia`, which workerd does not have, and standing up a partial `MediaQueryList` would cost more than either one-line wrapper is worth. The components need a DOM, which this pool has none of. `i18n/copy.ts` and `-/site/header-classes.ts` are left alone on purpose: `satisfies` already enforces copy's structure and `tw()` already puts the header's three class lists in front of oxlint and oxfmt, and assertions on editorial prose or on static class strings would only obstruct legitimate edits.
+Everything else is untested, and some of it deliberately. `send-contact.ts` has no supported way to invoke a `createServerFn` handler (<https://github.com/TanStack/router/issues/7507>). `turnstile/size.ts` and `lib/prefers-reduced-motion.ts` both read `globalThis.matchMedia`, which workerd does not have, and standing up a partial `MediaQueryList` would cost more than either one-line wrapper is worth. The components need a DOM, which this pool has none of. `i18n/copy.ts` and `-/site/header-classes.ts` are left alone on purpose: `satisfies` already enforces copy's structure and `tw()` already puts the header's three class lists in front of oxlint and oxfmt, and assertions on editorial prose or on static class strings would only obstruct legitimate edits. The `dist` project reads both — copy's keys for the route list, the header's three lists as needles — but asserts nothing about what either one says.
 
 Everything runs in workerd through `@cloudflare/vitest-plugin`, which is a plain Vite plugin in `vitest.config.ts` and takes its bindings from `wrangler.json`. miniflare stands every one of them up locally, including `send_email` and `version_metadata` — but `CONTACT_EMAIL` arrives as a plain `Fetcher` stand-in, so nothing is actually delivered and there is no sent mail to assert on. `test.globals` is off, so each file imports `describe`/`it`/`expect` from `vitest`.
 
@@ -35,6 +39,16 @@ Everything runs in workerd through `@cloudflare/vitest-plugin`, which is a plain
 - **Coverage is Istanbul**, because V8's native coverage does not work in workerd. There is no global threshold — the repo would only fail or lie — but every tested module sits behind a `{ 100: true }` glob with `perFile` and hits 100% on all four metrics, so none of them can quietly lose coverage. Those thresholds are keyed by glob, and **a glob that matches nothing passes**: renaming a tested file, or a directory holding one, silently turns its 100% guarantee into a no-op. A more specific key does not override a broader one either — vitest applies every pattern that matches — so the globs stay enumerated rather than wildcarded. Move a file, update `vitest.config.ts`.
 - **Two of those 100%s are asserted rather than earned.** `palette.ts` and `rate-limit-key.ts` each carry an `/* istanbul ignore next */` over a guard that `noUncheckedIndexedAccess` demands but that cannot fire — the index is bounded by a module constant, and the regex has already matched the four groups being read. No test reaches either line.
 - **Coverage is not the measure.** Every gap found here so far sat behind a green 100%: reserve atomicity, the ReDoS ordering, the release cap surviving eviction, the rolling window, and the length ceilings. Mutate the source and check the suite goes red; that is what says a test pins anything.
+
+### `dist`
+
+Five files under `test/dist/`, 74 tests, over what `vite build` wrote: the `tw()` markers being gone from the client bundle, the 20 prerendered pages and each one's canonical, hreflang cluster and title, `sitemap.xml`, and `_headers`. Plain node, no cloudflare plugin — workerd has no `node:fs`, which is the whole reason this is a second project.
+
+- **The build has to have happened.** `test/dist/client-output.ts` throws at import if `dist/client` is missing, rather than skipping: a suite reporting zero tests is the one failure these cannot see. Nothing here shells out to run a build.
+- **`test/dist/` is not the build output**, but three ignore lists thought it was. `.gitignore`, `oxlint.config.ts` and `oxfmt.config.ts` all carried a bare `dist` pattern, which matches the directory at any depth — the files were untracked, unlinted and unformatted, and `oxfmt --check` exits 0 when everything it was given is excluded. All three are anchored to `/dist` now. Vitest's own default `exclude` carries `**/dist/**` and beats `include`, so the project sets its own.
+- **The marked class lists are the discriminating assertion**, not `tw(`. The client bundle is minified, so `tw` is mangled long before a test looks at it and no build reaches `dist/client` with the name intact — with `stripTw` removed, `grep -a 'tw('` still finds nothing. What changes is the class list itself: stripped, it ships as a bare string literal; left alone, it ships as the argument of a call, and one bare identity binding (`Oe=e=>e`) turns up in the shared chunk.
+- **React renders the property, so the attribute is `hrefLang`.** A `/hreflang=/` regex matches zero. Head assertions are scoped to `<head>` because the body carries `<a hrefLang>` links of its own.
+- `_headers` is asserted as literal directives. Reading it back from `securityHeaders(false)` would compare the generator to itself and pass on any policy at all.
 
 ## Type safety
 
