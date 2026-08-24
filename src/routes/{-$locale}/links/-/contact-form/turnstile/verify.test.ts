@@ -1,6 +1,7 @@
 import type { TurnstileRejection } from './verify';
 import type { Mock } from 'vitest';
 
+import { env } from 'cloudflare:workers';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
 import { TURNSTILE_ACTION } from './constants';
@@ -43,7 +44,12 @@ type SiteverifyImpl = (url: unknown, init?: SiteverifyRequest) => Promise<Respon
 type SiteverifyStub = Mock<SiteverifyImpl>;
 
 const respondJson = (payload: unknown) => () => Response.json(payload);
-const respondNotOk = (): Response => new Response('siteverify is down', { status: 502 });
+/**
+ * A passing payload behind a failing status, deliberately: with an unreadable body
+ * the `!response.ok` guard and the `response.json()` catch are indistinguishable,
+ * and deleting the guard changes nothing. This tells them apart.
+ */
+const respondNotOk = (): Response => Response.json(PASSING, { status: 502 });
 const respondNonJson = (): Response => new Response('<html>edge error</html>');
 const respondThrow = (): Response => {
   throw new TypeError('network unreachable');
@@ -195,8 +201,16 @@ describe('the retry', () => {
     const first = fieldOf(bodyOf(stub, 0), 'idempotency_key');
     const second = fieldOf(bodyOf(stub, 1), 'idempotency_key');
 
-    expect(first).not.toBe('');
     expect(second).toBe(first);
+  });
+
+  it("mints a fresh key per verification, so siteverify cannot replay one submission's verdict at the next", async () => {
+    const stub = stubSiteverify(respondJson(PASSING));
+
+    await expect(verifyTurnstileToken(TOKEN, REMOTE_IP, HOSTNAME)).resolves.toStrictEqual({ ok: true });
+    await expect(verifyTurnstileToken(TOKEN, REMOTE_IP, HOSTNAME)).resolves.toStrictEqual({ ok: true });
+
+    expect(fieldOf(bodyOf(stub, 1), 'idempotency_key')).not.toBe(fieldOf(bodyOf(stub, 0), 'idempotency_key'));
   });
 });
 
@@ -212,8 +226,7 @@ describe('the request', () => {
     const body = bodyOf(stub, 0);
     expect(fieldOf(body, 'response')).toBe(TOKEN);
     expect(fieldOf(body, 'remoteip')).toBe(REMOTE_IP);
-    // The value is the secret, so only its presence is asserted.
-    expect(body.has('secret')).toBe(true);
+    expect(fieldOf(body, 'secret')).toBe(env.TURNSTILE_SECRET_KEY);
   });
 });
 
@@ -222,6 +235,7 @@ describe('the checks a passing verification still has to survive', () => {
     ['rendered with another action', { ...PASSING, action: 'signup' }],
     ['carrying no action', { success: true, hostname: HOSTNAME, challenge_ts: solvedAgo(0) }],
     ['carrying an action that is not a string', { ...PASSING, action: 42 }],
+    ['carrying an action that merely starts with ours', { ...PASSING, action: `${TURNSTILE_ACTION}-elsewhere` }],
   ];
 
   it.each(actions)('refuses a token %s', async (_label, payload) => {
@@ -234,6 +248,7 @@ describe('the checks a passing verification still has to survive', () => {
     ['served by another host', { ...PASSING, hostname: 'someone-else.example' }],
     ['carrying no hostname', { success: true, action: TURNSTILE_ACTION, challenge_ts: solvedAgo(0) }],
     ['carrying a hostname that is not a string', { ...PASSING, hostname: 42 }],
+    ['served by a host that merely ends with ours', { ...PASSING, hostname: `evil-${HOSTNAME}` }],
   ];
 
   it.each(hostnames)('refuses a token %s', async (_label, payload) => {
