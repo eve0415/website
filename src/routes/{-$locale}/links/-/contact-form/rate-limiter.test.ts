@@ -31,7 +31,13 @@ const RELEASES = 9;
  * alarm on its own and `runDurableObjectAlarm` finds nothing left to run.
  */
 const WINDOW_START = new Date('2030-01-01T00:00:00Z');
-const AFTER_WINDOW = new Date('2030-01-01T01:01:00Z');
+
+const MINUTE_MS = 60_000;
+
+/** Minutes after `WINDOW_START`, which is where every fake-clock test begins. */
+const at = (minutes: number) => new Date(WINDOW_START.getTime() + minutes * MINUTE_MS);
+
+const AFTER_WINDOW = at(61);
 
 afterEach(() => {
   vi.useRealTimers();
@@ -65,6 +71,24 @@ describe('reserve', () => {
     await evictDurableObject(stub);
 
     expect(await runInDurableObject(stub, async limiter => limiter.reserve())).toBe(false);
+  });
+
+  it('runs the window from the last accepted reservation rather than the first', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(WINDOW_START);
+    const stub = limiterFor('rolling-window');
+
+    await runInDurableObject(stub, async limiter => reserveOneByOne(limiter, DELIVERIES - 1));
+
+    vi.setSystemTime(at(59));
+    const last = await runInDurableObject(stub, async limiter => limiter.reserve());
+
+    // Past an hour from the first reservation, but not from the third — so the
+    // budget is still spent. A window pinned to the first would be open here.
+    vi.setSystemTime(at(61));
+    const afterFirstHour = await runInDurableObject(stub, async limiter => limiter.reserve());
+
+    expect([last, afterFirstHour]).toStrictEqual([true, false]);
   });
 
   it('starts a fresh window once the old one has expired', async () => {
@@ -109,6 +133,26 @@ describe('release', () => {
     expect(outcome).toStrictEqual([true, true, true, false]);
   });
 
+  it('keeps a spent release budget across an eviction, so evicting cannot buy more attempts', async () => {
+    const stub = limiterFor('release-cap-survives-eviction');
+    await runInDurableObject(stub, async limiter => {
+      for (let cycle = 0; cycle < RELEASES; cycle += 1) {
+        await limiter.reserve();
+        await limiter.release();
+      }
+    });
+
+    await evictDurableObject(stub);
+
+    const outcome = await runInDurableObject(stub, async limiter => {
+      const reserved = await limiter.reserve();
+      await limiter.release();
+      return [reserved, ...(await reserveOneByOne(limiter, DELIVERIES))];
+    });
+
+    expect(outcome).toStrictEqual([true, true, true, false]);
+  });
+
   it('does nothing when the caller holds no slot', async () => {
     const outcome = await runInDurableObject(limiterFor('release-idle'), async limiter => {
       await limiter.reserve();
@@ -118,6 +162,25 @@ describe('release', () => {
     });
 
     expect(outcome).toStrictEqual([true, true, true, false]);
+  });
+
+  it('persists nothing when a release arrives after its window has closed', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(WINDOW_START);
+    const stub = limiterFor('release-after-window');
+    await runInDurableObject(stub, async limiter => reserveOneByOne(limiter, DELIVERIES));
+
+    const before = await runInDurableObject(stub, async (_limiter, state) => state.storage.list());
+
+    vi.setSystemTime(AFTER_WINDOW);
+    await runInDurableObject(stub, async limiter => limiter.release());
+
+    // Without the expiry guard this decrements the stale count and writes it
+    // back, which is observable here even though the next reserve() would
+    // have discarded the window anyway.
+    const after = await runInDurableObject(stub, async (_limiter, state) => state.storage.list());
+
+    expect([...after]).toStrictEqual([...before]);
   });
 
   it('persists nothing on an object that has never reserved anything', async () => {
