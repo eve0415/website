@@ -1,0 +1,145 @@
+import type { ContactRateLimiter } from './rate-limiter';
+
+import { evictDurableObject, runDurableObjectAlarm, runInDurableObject } from 'cloudflare:test';
+import { env } from 'cloudflare:workers';
+import { afterEach, describe, expect, it, vi } from 'vitest';
+
+/**
+ * Storage is isolated per test file rather than per test, so every test below
+ * reaches for its own object name. Sharing one would make the suite pass in
+ * declaration order and fail under `sequence.shuffle`.
+ */
+const limiterFor = (name: string) => env.CONTACT_RATE_LIMIT.getByName(name);
+
+/**
+ * One reservation at a time. Awaiting them together would let all four read the
+ * same count before any write landed — the interleaving the object exists to
+ * prevent, reached from inside it rather than through the binding.
+ */
+const reserveOneByOne = async (limiter: ContactRateLimiter, times: number): Promise<boolean[]> => {
+  const outcomes: boolean[] = [];
+  for (let attempt = 0; attempt < times; attempt += 1) outcomes.push(await limiter.reserve());
+  return outcomes;
+};
+
+/** DELIVER_MAX and RELEASE_MAX, which the module keeps to itself. */
+const DELIVERIES = 3;
+const RELEASES = 9;
+
+/**
+ * Far enough ahead of the real clock that `setAlarm(now + WINDOW_MS)` is still in
+ * miniflare's future. Pinned to a past instant instead, the scheduler fires the
+ * alarm on its own and `runDurableObjectAlarm` finds nothing left to run.
+ */
+const WINDOW_START = new Date('2030-01-01T00:00:00Z');
+const AFTER_WINDOW = new Date('2030-01-01T01:01:00Z');
+
+afterEach(() => {
+  vi.useRealTimers();
+});
+
+describe('reserve', () => {
+  it('hands out one window of deliveries and then refuses', async () => {
+    const outcome = await runInDurableObject(limiterFor('reserve-cap'), async limiter => reserveOneByOne(limiter, DELIVERIES + 1));
+
+    expect(outcome).toStrictEqual([true, true, true, false]);
+  });
+
+  it('reads the count back from storage after the instance is torn down', async () => {
+    const stub = limiterFor('survives-eviction');
+    await runInDurableObject(stub, async limiter => reserveOneByOne(limiter, DELIVERIES));
+
+    await evictDurableObject(stub);
+
+    expect(await runInDurableObject(stub, async limiter => limiter.reserve())).toBe(false);
+  });
+
+  it('starts a fresh window once the old one has expired', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(WINDOW_START);
+    const stub = limiterFor('window-expiry');
+
+    const spent = await runInDurableObject(stub, async limiter => reserveOneByOne(limiter, DELIVERIES + 1));
+
+    vi.setSystemTime(AFTER_WINDOW);
+    const reopened = await runInDurableObject(stub, async limiter => limiter.reserve());
+
+    expect([spent.at(-1), reopened]).toStrictEqual([false, true]);
+  });
+});
+
+describe('release', () => {
+  it('hands a slot back so a failed delivery costs the sender nothing', async () => {
+    const outcome = await runInDurableObject(limiterFor('release-restores'), async limiter => {
+      await reserveOneByOne(limiter, DELIVERIES);
+      await limiter.release();
+      return limiter.reserve();
+    });
+
+    expect(outcome).toBe(true);
+  });
+
+  it('stops handing slots back once the window has spent its release budget', async () => {
+    const outcome = await runInDurableObject(limiterFor('release-cap'), async limiter => {
+      // Spends the whole release budget while leaving the delivery count at zero,
+      // which is the shape a free-send loop would have.
+      for (let cycle = 0; cycle < RELEASES; cycle += 1) {
+        await limiter.reserve();
+        await limiter.release();
+      }
+
+      const reserved = await limiter.reserve();
+      await limiter.release();
+      return [reserved, ...(await reserveOneByOne(limiter, DELIVERIES))];
+    });
+
+    expect(outcome).toStrictEqual([true, true, true, false]);
+  });
+
+  it('does nothing when the caller holds no slot', async () => {
+    const outcome = await runInDurableObject(limiterFor('release-idle'), async limiter => {
+      await limiter.reserve();
+      await limiter.release();
+      await limiter.release();
+      return reserveOneByOne(limiter, DELIVERIES + 1);
+    });
+
+    expect(outcome).toStrictEqual([true, true, true, false]);
+  });
+
+  it('does nothing on an object that has never reserved anything', async () => {
+    const outcome = await runInDurableObject(limiterFor('release-fresh'), async limiter => {
+      await limiter.release();
+      return reserveOneByOne(limiter, DELIVERIES + 1);
+    });
+
+    expect(outcome).toStrictEqual([true, true, true, false]);
+  });
+});
+
+describe('alarm', () => {
+  it('leaves a live window alone', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(WINDOW_START);
+    const stub = limiterFor('alarm-live-window');
+    await runInDurableObject(stub, async limiter => limiter.reserve());
+
+    const ran = await runDurableObjectAlarm(stub);
+    const rows = await runInDurableObject(stub, async (_limiter, state) => state.storage.list());
+
+    expect([ran, rows.size]).toStrictEqual([true, 1]);
+  });
+
+  it('drops the rows a spent window is still holding', async () => {
+    vi.useFakeTimers();
+    vi.setSystemTime(WINDOW_START);
+    const stub = limiterFor('alarm-spent-window');
+    await runInDurableObject(stub, async limiter => limiter.reserve());
+
+    vi.setSystemTime(AFTER_WINDOW);
+    const ran = await runDurableObjectAlarm(stub);
+    const rows = await runInDurableObject(stub, async (_limiter, state) => state.storage.list());
+
+    expect([ran, rows.size]).toStrictEqual([true, 0]);
+  });
+});
