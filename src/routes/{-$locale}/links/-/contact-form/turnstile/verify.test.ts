@@ -226,13 +226,19 @@ describe('the request', () => {
     const body = bodyOf(stub, 0);
     expect(fieldOf(body, 'response')).toBe(TOKEN);
     expect(fieldOf(body, 'remoteip')).toBe(REMOTE_IP);
-    // Round-tripped through FormData rather than compared to the binding directly, so
-    // both sides take the same coercion: CI has no `.dev.vars`, and there the absent
-    // binding reaches siteverify as the string 'undefined'. One assertion, because a
-    // failing `toBe` prints both sides and one of them is the secret.
+    // Compared as a boolean, never as values: AGENTS.md forbids printing a secret, and
+    // `expect(field).toBe(secret)` puts it in the failure output. This says only whether
+    // they matched.
+    //
+    // Round-tripped through FormData so both sides take the same coercion. CI has no
+    // `.dev.vars`, so there the binding is absent and both sides are the string
+    // 'undefined' — which still refuses the token, but cannot tell one absent binding
+    // from another. Pinning that would need a binding in the test env, not a test change.
     const expectedSecret = new FormData();
     expectedSecret.append('secret', env.TURNSTILE_SECRET_KEY);
-    expect(body.get('secret')).toBe(expectedSecret.get('secret'));
+    const secretMatches = body.get('secret') === expectedSecret.get('secret');
+
+    expect(secretMatches).toBe(true);
   });
 });
 
