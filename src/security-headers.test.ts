@@ -95,12 +95,13 @@ describe('what the comments call load-bearing', () => {
     expect([directive(dev, 'img-src'), directive(dev, 'font-src')]).toStrictEqual(["img-src 'self' data:", "font-src 'self' data:"]);
   });
 
-  // Compared as whitespace-delimited source expressions rather than as a
-  // substring: a substring match would also accept the origin appearing inside
-  // a longer host, which is a different origin to a browser.
+  // Each source expression is compared whole. A substring match would also
+  // accept the origin inside a longer host, which is a different origin to a
+  // browser — and CodeQL cannot tell `Array#includes` from `String#includes`
+  // here, so the equality is spelled out rather than left to a membership call.
   it.each(MODES)('names the Turnstile origin in exactly script-src, connect-src and frame-src in %s', (_label, dev) => {
     const naming = directivesOf(dev)
-      .filter(part => part.split(' ').includes(TURNSTILE_ORIGIN))
+      .filter(part => part.split(' ').some(source => source === TURNSTILE_ORIGIN))
       .map(part => part.split(' ').at(0));
     expect(naming).toStrictEqual(['connect-src', 'frame-src', 'script-src']);
   });
