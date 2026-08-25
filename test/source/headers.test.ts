@@ -1,8 +1,22 @@
-import { expect, it } from 'vitest';
+import { beforeAll, expect, it } from 'vitest';
 
-import { exists, read } from './client-output';
+import { emitted } from './plugin-harness';
 
-const HEADERS = exists('_headers') ? read('_headers') : '';
+/**
+ * `vite.config.ts`'s `headers()` plugin, driven through a real build rather than
+ * read back off `dist/`: `headersFile` and `CACHE_RULES` are locals of that file.
+ */
+let headers = '';
+
+// In `beforeAll` rather than at module scope: a build that throws during
+// collection turns these tests into none rather than into red ones.
+beforeAll(async () => {
+  const assets = await emitted('headers');
+  const source = assets.get('_headers');
+  if (source === undefined) throw new Error(`the headers plugin emitted ${[...assets.keys()].join(', ') || 'nothing'}`);
+
+  headers = source;
+});
 
 /**
  * Written out rather than read back from `securityHeaders(false)`, which would
@@ -25,20 +39,16 @@ const CACHE_BLOCKS = [
 /** Every rule's path, which is every line that is neither a comment, a value, nor blank. */
 const RULE_PATHS = ['/*', '/assets/*', ...['ico', 'png', 'jpg', 'webp', 'avif', 'svg', 'webmanifest', 'xml', 'txt'].map(extension => `/:file.${extension}`)];
 
-it('is written into the client build', () => {
-  expect(exists('_headers')).toBe(true);
-});
-
 it('serves the security block on every path', () => {
-  expect(HEADERS).toContain(SECURITY_BLOCK);
+  expect(headers).toContain(SECURITY_BLOCK);
 });
 
 it('serves the cache rules', () => {
-  expect(CACHE_BLOCKS.filter(block => !HEADERS.includes(block))).toStrictEqual([]);
+  expect(CACHE_BLOCKS.filter(block => !headers.includes(block))).toStrictEqual([]);
 });
 
 // No rule for the prerendered pages on purpose: a deploy rewrites them under the
 // same names while their content-hashed assets keep theirs.
 it('serves rules for exactly those paths', () => {
-  expect(HEADERS.split('\n').filter(line => line.startsWith('/'))).toStrictEqual(RULE_PATHS);
+  expect(headers.split('\n').filter(line => line.startsWith('/'))).toStrictEqual(RULE_PATHS);
 });

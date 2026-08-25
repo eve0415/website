@@ -1,10 +1,28 @@
-import { expect, it } from 'vitest';
+import { beforeAll, expect, it } from 'vitest';
 
-import { PAGES, read } from './client-output';
+import { PAGES } from '../pages';
 
-const SITEMAP = read('sitemap.xml');
+import { emitted } from './plugin-harness';
 
-const textIn = (tag: string): string[] => [...SITEMAP.matchAll(new RegExp(String.raw`<${tag}>([^<]*)</${tag}>`, 'gu'))].map(([, text = '']) => text);
+/**
+ * `vite.config.ts`'s `sitemap()` plugin, driven through a real build rather than
+ * read back off `dist/`: `sitemapXml` and the two namespace constants are locals
+ * of that file, and the exported config is the only way in that does not add an
+ * export.
+ */
+let sitemap = '';
+
+// In `beforeAll` rather than at module scope: a build that throws during
+// collection turns these four tests into none rather than into red ones.
+beforeAll(async () => {
+  const assets = await emitted('sitemap');
+  const source = assets.get('sitemap.xml');
+  if (source === undefined) throw new Error(`the sitemap plugin emitted ${[...assets.keys()].join(', ') || 'nothing'}`);
+
+  sitemap = source;
+});
+
+const textIn = (tag: string): string[] => [...sitemap.matchAll(new RegExp(String.raw`<${tag}>([^<]*)</${tag}>`, 'gu'))].map(([, text = '']) => text);
 
 interface Entry {
   loc: string;
@@ -27,7 +45,7 @@ const entryOf = (block: string): Entry => {
  * — is a different namespace, not a variant spelling of this one.
  */
 it('declares the sitemap namespace in the spelling the protocol defines', () => {
-  expect(SITEMAP).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">');
+  expect(sitemap).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">');
 });
 
 it('lists every locale of every route exactly once', () => {
@@ -40,11 +58,13 @@ it('lists every locale of every route exactly once', () => {
 const byLoc = (a: Entry, b: Entry): number => a.loc.localeCompare(b.loc);
 
 it('gives every entry the whole hreflang cluster for its route', () => {
-  const entries = [...SITEMAP.matchAll(/<url>([\s\S]*?)<\/url>/gu)].map(([, block = '']) => entryOf(block));
+  const entries = [...sitemap.matchAll(/<url>([\s\S]*?)<\/url>/gu)].map(([, block = '']) => entryOf(block));
 
   expect(entries.toSorted(byLoc)).toStrictEqual(PAGES.map(({ url, alternates }): Entry => ({ loc: url, alternates })).toSorted(byLoc));
 });
 
+// Shape only. The value is `new Date()` at build time, so asserting it would
+// either re-derive the clock the plugin read or pin a date that goes stale.
 it('stamps every entry with a date-shaped lastmod', () => {
   const lastmods = textIn('lastmod');
 

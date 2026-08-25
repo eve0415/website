@@ -49,6 +49,16 @@ export default defineConfig({
           ...SHARED,
         },
       },
+      {
+        // Also plain node, and separate from `dist` because of what it must not
+        // need: these drive `vite.config.ts`'s own plugins through a nested
+        // rolldown build, so they run before a build rather than after one.
+        test: {
+          name: 'source',
+          include: ['test/source/**/*.test.ts'],
+          ...SHARED,
+        },
+      },
     ],
     coverage: {
       enabled: true,
