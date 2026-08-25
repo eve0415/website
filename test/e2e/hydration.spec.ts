@@ -63,9 +63,15 @@ test.describe('every prerendered page hydrates without a page error', () => {
 
       await page.clock.setFixedTime(NOON);
       const response = await page.goto(path);
-      // Asserted so a page missing from `dist/` fails loudly instead of passing
-      // with an empty error list.
       expect(response?.status()).toBe(200);
+      // 200 on its own does not mean the page prerendered. `dist/server/wrangler.json`
+      // declares the assets directory with no `not_found_handling`, so a path the
+      // manifest does not have falls through to the Worker and is server-rendered:
+      // measured with `about.html` moved aside before the server started, `/about`
+      // answered 200 with a complete document that hydrated clean, and every
+      // assertion here passed. The asset server sets an `etag` and the SSR
+      // fallback does not — that is the difference between the two.
+      expect(await response?.headerValue('etag')).toEqual(expect.any(String));
 
       await expect(page.locator('html')).toHaveAttribute('style', HYDRATED);
       await page.waitForTimeout(SETTLE_MS);
