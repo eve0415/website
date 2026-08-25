@@ -5,17 +5,17 @@ import { stripped } from './plugin-harness';
 /**
  * `vite.config.ts`'s `stripTw()` plugin, over source it is handed directly.
  *
- * Sixty lines of offset arithmetic that the built output cannot show: the client
- * bundle is minified, so every offset and line number this plugin is careful
- * about is gone by the time a test could read it. What `test/dist/tw-markers`
- * still checks is the end of the chain — no marker survived into the shipped
- * chunks — and it cannot tell a correct rewrite from one that shifted every byte
- * after it, because the minifier rewrites the file either way.
+ * Sixty lines of offset arithmetic that the built output cannot show. The call is
+ * overwritten with spaces rather than cut out so the plugin can return no source
+ * map and leave the next plugin's map correct, which holds only while every byte
+ * keeps its offset and every line its number — and the client bundle is minified,
+ * so both are gone before a test could read them.
  *
- * The blanking is why that matters. The call is overwritten with spaces rather
- * than cut out, so the plugin can return no source map and leave the next
- * plugin's map correct — which only holds if every byte keeps its offset and
- * every line its number.
+ * Measured, not assumed: rewrite the loop to cut the call out instead, in reverse
+ * order so the remaining offsets stay valid, and `vite build` is green, all 90
+ * `dist` tests pass, and four of the six below go red. (A one-byte error in the
+ * blanking is caught harder still — it eats a quote and the build fails to parse —
+ * so it is the *correct-looking* rewrite that only this file sees.)
  */
 const IMPORT = "import { tw } from '#lib/tw';";
 
