@@ -18,6 +18,10 @@ export default defineConfig({
     // reads local time, and the marker the spec waits on is written only when
     // that reading differs from the prerendered 深夜 0時.
     timezoneId: 'UTC',
+    // A hydration failure may not reproduce off the runner, and with no retry
+    // there is no second chance to record one. Without this a CI red is a
+    // single minified React error code and nothing else.
+    trace: 'retain-on-failure',
   },
   webServer: {
     // The built output through workerd, `_headers` and all — not `vite dev`,

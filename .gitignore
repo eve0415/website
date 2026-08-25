@@ -15,6 +15,7 @@ coverage/
 
 # playwright
 /test-results/
+/playwright-report/
 
 # tsc --build incremental state
 *.tsbuildinfo
