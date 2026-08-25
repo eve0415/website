@@ -15,9 +15,13 @@ import config from '../../vite.config';
  * there is no assertion to get wrong — no `as`, no guard claiming `Plugin` on the
  * strength of a `name` alone — and a falsy or pending entry simply never matches.
  *
- * Nested because plugin factories return arrays: `cloudflare()` contributes 18
- * plugins and `tanstackStart()` 27, and the three looked for here are single
- * objects sitting between them.
+ * Nested because plugin factories return arrays: of the 68 named plugins the
+ * config flattens to, `cloudflare()` contributes 18 and `tanstackStart()` 26, and
+ * the three looked for here are single objects sitting between them. Three of
+ * tanstack's names appear twice (`code-splitter:compile-{reference,virtual,shared}-file`),
+ * so `find` taking the first match is not academic — `sitemap`, `headers` and
+ * `strip-tw` are each unique, measured, and a collision would be a wrong plugin
+ * rather than a missing one.
  */
 const flatten = (value: PluginOption | PluginOption[]): PluginOption[] => {
   if (Array.isArray(value)) return value.flatMap(entry => flatten(entry));
@@ -34,7 +38,7 @@ const PLUGINS = flatten(config.plugins ?? []);
  * failure these tests exist to catch, and a suite that skipped its assertions
  * instead of failing them would be silent about it.
  */
-export const plugin = (name: string): PluginOption => {
+const plugin = (name: string): PluginOption => {
   const found = PLUGINS.find(entry => typeof entry === 'object' && entry !== null && 'name' in entry && entry.name === name);
   if (found === undefined) throw new Error(`vite.config.ts declares no plugin named '${name}'`);
 
