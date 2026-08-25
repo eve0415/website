@@ -50,6 +50,7 @@ const parseHextets = (side: string): readonly number[] | undefined => {
       if (octets === undefined) return undefined;
 
       const [a, b, c, d] = octets;
+      /* istanbul ignore next -- DOTTED_QUAD has already matched four groups, so parseIpv4 cannot return fewer. */
       if (a === undefined || b === undefined || c === undefined || d === undefined) return undefined;
 
       hextets.push(a * 256 + b, c * 256 + d);

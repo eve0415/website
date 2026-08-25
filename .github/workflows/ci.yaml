@@ -43,5 +43,38 @@ jobs:
       - name: Check formatting
         run: pnpm exec oxfmt --check
 
+      # Before the tests, not after: the `dist` vitest project asserts over the
+      # built output and has no way to produce it itself.
       - name: Build
         run: pnpm exec vite build
+
+      - name: Test
+        run: pnpm exec vitest run
+
+      # ubuntu-24.04-arm ships no Chromium, and so none of the shared libraries
+      # one drags in either — unlike the x64 image, where they arrive with it.
+      # Its own step because apt is the one cost here nobody has measured.
+      - name: Install Playwright's system dependencies
+        run: pnpm exec playwright install-deps chromium
+
+      # Headless is all this runs, and the full chromium build is 640MB of the
+      # 984MB a plain install writes. Not cached: the shell is 124MB to restore
+      # against a 5s cold download of the same bytes, which is a wash, and
+      # Playwright's own CI docs advise against caching browser binaries.
+      - name: Install the Playwright browser
+        run: pnpm exec playwright install --only-shell chromium
+
+      # Hydration and axe: two failure classes nothing above can see. oxlint
+      # reads source a file at a time, the build renders but never hydrates,
+      # and all three vitest projects run without a DOM.
+      - name: Run the browser suite
+        run: pnpm exec playwright test
+
+      - name: Upload the failing traces
+        if: failure()
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: playwright-traces
+          path: test-results/
+          if-no-files-found: ignore
+          retention-days: 7

@@ -1,7 +1,7 @@
 import { defineConfig } from 'oxfmt';
 
 export default defineConfig({
-  ignorePatterns: ['.wrangler', 'dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'tools/oxlint/anti-slop'],
+  ignorePatterns: ['.wrangler', '/dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'tools/oxlint/anti-slop'],
   arrowParens: 'avoid',
   singleQuote: true,
   jsxSingleQuote: true,

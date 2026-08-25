@@ -13,6 +13,8 @@
     "dev": "vite dev",
     "build": "vite build",
     "lint": "oxlint --fix --fix-suggestions --fix-dangerously && oxfmt",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
     "generate": "wrangler types",
     "deploy": "vite build && wrangler deploy"
   },
@@ -21,10 +23,13 @@
     "tailwind-merge": "3.6.0"
   },
   "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
     "@cloudflare/vite-plugin": "1.53.1",
+    "@cloudflare/vitest-plugin": "1.0.0",
     "@fontsource/noto-sans-jp": "5.3.0",
     "@marsidev/react-turnstile": "1.6.0",
     "@oxlint/plugins": "1.79.0",
+    "@playwright/test": "1.62.1",
     "@tailwindcss/vite": "4.3.3",
     "@tanstack/devtools-vite": "0.8.5",
     "@tanstack/eslint-plugin-router": "1.162.0",
@@ -36,6 +41,7 @@
     "@types/react": "19.2.18",
     "@types/react-dom": "19.2.4",
     "@vitejs/plugin-react": "6.1.0",
+    "@vitest/coverage-istanbul": "4.1.11",
     "oxc-transform-react": "0.145.0",
     "oxfmt": "0.64.0",
     "oxlint": "1.79.0",
@@ -47,6 +53,7 @@
     "typescript": "7.0.2",
     "vite": "8.2.2",
     "vite-plugin-devtools-json": "1.1.0",
+    "vitest": "4.1.11",
     "wrangler": "4.125.0"
   },
   "devEngines": {

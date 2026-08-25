@@ -4,7 +4,7 @@
     "module": "esnext",
     "target": "esnext",
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
-    "types": ["./worker-configuration.d.ts", "vite/client"],
+    "types": ["./worker-configuration.d.ts", "vite/client", "@cloudflare/vitest-plugin/types"],
     "noUncheckedIndexedAccess": true,
     "exactOptionalPropertyTypes": true,
     "noImplicitReturns": true,
@@ -22,5 +22,5 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src/**/*", "vite.config.ts", "oxlint.config.ts", "oxfmt.config.ts"]
+  "include": ["src/**/*", "test/**/*", "playwright.config.ts", "vite.config.ts", "vitest.config.ts", "oxlint.config.ts", "oxfmt.config.ts"]
 }
