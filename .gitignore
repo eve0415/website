@@ -13,6 +13,9 @@ worker-configuration.d.ts
 # vitest
 coverage/
 
+# playwright
+/test-results/
+
 # tsc --build incremental state
 *.tsbuildinfo
 
