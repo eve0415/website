@@ -18,14 +18,18 @@ type Violations = Awaited<ReturnType<AxeBuilder['analyze']>>['violations'];
  *
  * The light/dark axis does not exist here at all. `prefers-color-scheme`,
  * `light-dark()` and Tailwind's `dark:` appear nowhere in `src/` and nowhere in
- * `dist/client/`, and running each of these pages under
- * `emulateMedia({ colorScheme })` both ways returned a byte-identical result —
- * every violation, every pass and every incomplete, ratios included.
+ * `dist/client/` — the one `color-scheme` in the built output is tailwind-merge's
+ * own class-group table in `cn-*.js`, inert data naming classes nobody writes —
+ * and running each of these pages under `emulateMedia({ colorScheme })` both
+ * ways returned a byte-identical result: every violation, every pass and every
+ * incomplete, ratios included.
  *
- * The axis that *does* move every colour on the page is the clock, and it was
- * measured too: `--sky-root` goes from `rgb(40,100,156)` at 13時 to
- * `rgb(4,2,26)` at 22時半 and the inks invert with it, yet axe's full result is
- * again identical on all ten pages. It has to be — see `PINNED_CLOCK`.
+ * The axis that *does* move every colour on the page is the clock. Measured at
+ * its two extremes and again at the hardest band the design names for itself —
+ * 17時半, where `--sky-glass-bg` flips from `rgba(255,255,255,0.32)` to
+ * `rgba(5,2,28,0.32)`, `--sky-accent` from navy to neon and the title ink
+ * inverts — axe's full result is still identical on all ten pages. It has to
+ * be; see `PINNED_CLOCK`.
  *
  * If a locale grows a component of its own, add the English paths here.
  */
@@ -39,16 +43,19 @@ const JA_PATHS = PAGES.filter(page => page.alternates.some(([tag, url]) => tag =
  * `--sky-*` and the wait below would time out on every page, for one minute a
  * day. The hydration spec pins noon for the same reason; this agrees with it.
  *
- * A second clock would buy nothing. Every element whose ink follows the clock
- * sits on the sky gradient, and axe declines to score contrast against a
- * gradient — `h1`, `h2` and the whole nav come back as *incomplete*, 13 to 27
- * nodes a page, which `analyze()` reports separately from `violations` and
- * which this spec therefore never sees. What is left for `color-contrast` to
- * actually score, 2 to 54 nodes a page, is the glass panels and accent chips,
- * and `palette.ts` holds those at their night colours all day on purpose. So
- * the one rule that could tell the two clocks apart is blind to everything
- * that differs between them. Add the second clock the day axe can read a
- * gradient, or the day sky-tinted text lands on an opaque surface.
+ * A second clock would buy nothing, and that was measured three times over —
+ * 13時 against 22時半, and noon against 17時半, all ten pages, identical every
+ * time. axe declines to score contrast against a background it cannot resolve,
+ * and on this site that is everything the clock touches: text on the sky
+ * gradient (`h1`, `h2`, the whole nav) and text on the translucent glass both
+ * come back *incomplete*, 13 to 27 nodes a page, which `analyze()` reports
+ * separately from `violations` and which this spec therefore never sees. What
+ * is left for `color-contrast` to actually score, 2 to 54 nodes a page, sits on
+ * the opaque `.ev-on-panel` surfaces — which `palette.ts` holds at their night
+ * colours all day on purpose. So the one rule that could tell two clocks apart
+ * is blind to everything that differs between them. Add the second clock the
+ * day axe can resolve a gradient, or the day sky-tinted text lands on an opaque
+ * surface.
  */
 const PINNED_CLOCK = new Date('2026-01-01T12:00:00Z');
 
@@ -99,10 +106,12 @@ test.describe('every prerendered page passes axe', () => {
       // to the clock in one paint instead of crossfading over 1.1s of
       // requestAnimationFrame, so the palette axe measures is the pinned one
       // rather than whichever frame `PAINTED` happened to land on. And the
-      // `view()`-driven `.ev-reveal` entrances stop, leaving the content
-      // partway down the page at its natural, fully visible state — which is
-      // more for axe to look at, not less: measured on `/`, 22 fewer elements
-      // sit below half opacity and axe scores 173 nodes rather than 164.
+      // `view()`-driven entrances stop. That last one is not cosmetic: a
+      // `view()` timeline advances on scroll, not on time, so left alone
+      // `.ev-hl` and `.ev-reveal` sit at opacity 0 for as long as nobody
+      // scrolls and axe skips them outright — measured on `/`, reduced motion
+      // puts 22 more elements above half opacity and gives axe 173 nodes to
+      // score rather than 164.
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.clock.setFixedTime(PINNED_CLOCK);
 
