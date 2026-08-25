@@ -27,6 +27,20 @@ const PATHS = PAGES.map(page => new URL(page.url).pathname);
 const HYDRATED = /--sky-root/;
 
 /**
+ * The clock every page is loaded under.
+ *
+ * Not decoration. `SkyClock` skips its first paint when the reading already
+ * equals the prerendered 0, so between 00:00:00 and 00:00:59 local it writes
+ * no `--sky-*` at all and the marker above never appears — measured: at
+ * `00:00:30Z` and `00:00:59Z` the inline style stays at `--header-h` alone,
+ * and every page would fail for one minute a day. Pinning noon also makes the
+ * browser's clock reliably disagree with the prerendered midnight, so a coarse
+ * clock read during render — `getHours()`, not just a timestamp — is a
+ * mismatch on every run rather than on 23 hours out of 24.
+ */
+const NOON = new Date('2026-01-01T12:00:00Z');
+
+/**
  * How long to keep listening after hydration.
  *
  * React does not report a recoverable error at a moment any DOM state marks:
@@ -47,6 +61,7 @@ test.describe('every prerendered page hydrates without a page error', () => {
       const errors: string[] = [];
       page.on('pageerror', error => errors.push(error.message));
 
+      await page.clock.setFixedTime(NOON);
       const response = await page.goto(path);
       // Asserted so a page missing from `dist/` fails loudly instead of passing
       // with an empty error list.

@@ -14,6 +14,10 @@ export default defineConfig({
   use: {
     baseURL: ORIGIN,
     browserName: 'chromium',
+    // Pinned so the spec's fixed clock lands on a known local hour: `SkyClock`
+    // reads local time, and the marker the spec waits on is written only when
+    // that reading differs from the prerendered 深夜 0時.
+    timezoneId: 'UTC',
   },
   webServer: {
     // The built output through workerd, `_headers` and all — not `vite dev`,
