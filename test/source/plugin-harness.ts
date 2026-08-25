@@ -46,14 +46,13 @@ const ENTRY_ID = '\0source-test-entry.js';
 
 const entry = (code: string): PluginOption => ({
   name: 'source-test-entry',
-  resolveId: id => {
-    if (id === 'source-test-entry') return ENTRY_ID;
-    // `stripTw` reads the import's source string off the AST and never resolves
-    // it, so marking it external keeps `src/lib/tw.ts` out of the graph.
-    if (id.startsWith('#lib/')) return { id, external: true };
-
-    return null;
-  },
+  // `pre`, because vite's own resolve plugin is ordered ahead of normal user
+  // plugins and would resolve a specifier like `#lib/cn` off disk first.
+  enforce: 'pre',
+  // Everything the entry imports is external, so the graph is that one module
+  // and a fixture can name any specifier it likes. `stripTw` reads the import's
+  // source string off the AST and never resolves it, so nothing is lost.
+  resolveId: id => (id === 'source-test-entry' ? ENTRY_ID : { id, external: true }),
   load: id => (id === ENTRY_ID ? code : null),
 });
 
