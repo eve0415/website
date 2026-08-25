@@ -52,7 +52,16 @@ const JA_PATHS = PAGES.filter(page => page.alternates.some(([tag, url]) => tag =
  */
 const PINNED_CLOCK = new Date('2026-01-01T12:00:00Z');
 
-/** `SkyClock`'s write onto `<html>`, which is what says the page hydrated and the palette on screen is the pinned one. */
+/**
+ * `SkyClock`'s write onto `<html>`, which says the page hydrated and the
+ * palette on screen is the pinned one.
+ *
+ * It is also the stale-server detector. `reuseExistingServer` is on locally, and
+ * `vite preview`'s asset manifest is fixed at startup — so a server left running
+ * across a rebuild serves fresh HTML pointing at bundle names it will not hand
+ * out, the page never hydrates, and every test here times out on this wait. A red
+ * `PAINTED` means rebuild and restart the server before looking at axe at all.
+ */
 const PAINTED = /--sky-root/;
 
 /**
@@ -92,7 +101,8 @@ test.describe('every prerendered page passes axe', () => {
       // rather than whichever frame `PAINTED` happened to land on. And the
       // `view()`-driven `.ev-reveal` entrances stop, leaving the content
       // partway down the page at its natural, fully visible state — which is
-      // more for axe to look at, not less.
+      // more for axe to look at, not less: measured on `/`, 22 fewer elements
+      // sit below half opacity and axe scores 173 nodes rather than 164.
       await page.emulateMedia({ reducedMotion: 'reduce' });
       await page.clock.setFixedTime(PINNED_CLOCK);
 
