@@ -44,8 +44,9 @@ const JA_PATHS = PAGES.filter(page => page.alternates.some(([tag, url]) => tag =
  * day. The hydration spec pins noon for the same reason; this agrees with it.
  *
  * A second clock would buy nothing, and that was measured three times over —
- * 13時 against 22時半, and noon against 17時半, all ten pages, identical every
- * time. axe declines to score contrast against a background it cannot resolve,
+ * 13時 against 22時半, and noon against 17時半 twice on a fresh build and server,
+ * all ten pages, identical every time. Not one of the 136–294 nodes axe scores
+ * on a page uses a colour that follows the clock. axe declines to score contrast against a background it cannot resolve,
  * and on this site that is everything the clock touches: text on the sky
  * gradient (`h1`, `h2`, the whole nav) and text on the translucent glass both
  * come back *incomplete*, 13 to 27 nodes a page, which `analyze()` reports
