@@ -1,28 +1,22 @@
-import { beforeAll, expect, it } from 'vitest';
+import { expect, it } from 'vitest';
 
 import { PAGES } from '../pages';
 
-import { emitted } from './plugin-harness';
+import { emittedFile } from './plugin-harness';
 
 /**
  * `vite.config.ts`'s `sitemap()` plugin, driven through a real build rather than
  * read back off `dist/`: `sitemapXml` and the two namespace constants are locals
  * of that file, and the exported config is the only way in that does not add an
  * export.
+ *
+ * Every expectation comes from `test/pages.ts`'s literal table, never from
+ * `localePath` — derived from the same function the plugin uses, both sides of a
+ * `<loc>` assertion would move together and the test would pass on any origin.
  */
-let sitemap = '';
+const sitemap = async (): Promise<string> => emittedFile('sitemap', 'sitemap.xml');
 
-// In `beforeAll` rather than at module scope: a build that throws during
-// collection turns these four tests into none rather than into red ones.
-beforeAll(async () => {
-  const assets = await emitted('sitemap');
-  const source = assets.get('sitemap.xml');
-  if (source === undefined) throw new Error(`the sitemap plugin emitted ${[...assets.keys()].join(', ') || 'nothing'}`);
-
-  sitemap = source;
-});
-
-const textIn = (tag: string): string[] => [...sitemap.matchAll(new RegExp(String.raw`<${tag}>([^<]*)</${tag}>`, 'gu'))].map(([, text = '']) => text);
+const textIn = (xml: string, tag: string): string[] => [...xml.matchAll(new RegExp(String.raw`<${tag}>([^<]*)</${tag}>`, 'gu'))].map(([, text = '']) => text);
 
 interface Entry {
   loc: string;
@@ -44,12 +38,12 @@ const entryOf = (block: string): Entry => {
  * strings, so the `https` spelling — which the generator this replaces hardcodes
  * — is a different namespace, not a variant spelling of this one.
  */
-it('declares the sitemap namespace in the spelling the protocol defines', () => {
-  expect(sitemap).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">');
+it('declares the sitemap namespace in the spelling the protocol defines', async () => {
+  expect(await sitemap()).toContain('<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">');
 });
 
-it('lists every locale of every route exactly once', () => {
-  expect(textIn('loc').toSorted()).toStrictEqual(PAGES.map(page => page.url).toSorted());
+it('lists every locale of every route exactly once', async () => {
+  expect(textIn(await sitemap(), 'loc').toSorted()).toStrictEqual(PAGES.map(page => page.url).toSorted());
 });
 
 // Sorted on both sides: the sitemap's entry order comes from `ROUTE_SET` in
@@ -57,16 +51,17 @@ it('lists every locale of every route exactly once', () => {
 // those two orders together. The order that matters is the one inside each cluster.
 const byLoc = (a: Entry, b: Entry): number => a.loc.localeCompare(b.loc);
 
-it('gives every entry the whole hreflang cluster for its route', () => {
-  const entries = [...sitemap.matchAll(/<url>([\s\S]*?)<\/url>/gu)].map(([, block = '']) => entryOf(block));
+it('gives every entry the whole hreflang cluster for its route', async () => {
+  const xml = await sitemap();
+  const entries = [...xml.matchAll(/<url>([\s\S]*?)<\/url>/gu)].map(([, block = '']) => entryOf(block));
 
   expect(entries.toSorted(byLoc)).toStrictEqual(PAGES.map(({ url, alternates }): Entry => ({ loc: url, alternates })).toSorted(byLoc));
 });
 
 // Shape only. The value is `new Date()` at build time, so asserting it would
 // either re-derive the clock the plugin read or pin a date that goes stale.
-it('stamps every entry with a date-shaped lastmod', () => {
-  const lastmods = textIn('lastmod');
+it('stamps every entry with a date-shaped lastmod', async () => {
+  const lastmods = textIn(await sitemap(), 'lastmod');
 
   expect(lastmods).toHaveLength(PAGES.length);
   expect(lastmods.filter(value => !/^\d{4}-\d{2}-\d{2}$/u.test(value))).toStrictEqual([]);

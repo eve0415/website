@@ -85,8 +85,23 @@ const run = async (code: string, plugins: PluginOption[]): Promise<[string, stri
   );
 };
 
-/** The assets a plugin emitted, keyed by file name. */
-export const emitted = async (name: string): Promise<Map<string, string>> => new Map(await run('export const entry = 1;\n', [plugin(name)]));
+/**
+ * The one asset a plugin emits, by the plugin's name and the file's.
+ *
+ * Called inside each `it` rather than once in a `beforeAll`: a `beforeAll` that
+ * throws reports its tests as **skipped**, not failed — measured, with
+ * `sitemap()` taken out of the config, as `4 tests | 4 skipped`. The run is still
+ * red at the file level, but a skipped test reads as a green one, and that is the
+ * shape this repo's suites are built to avoid. At ~20ms a build, running one per
+ * test is cheaper than the ambiguity.
+ */
+export const emittedFile = async (name: string, fileName: string): Promise<string> => {
+  const assets = new Map(await run('export const entry = 1;\n', [plugin(name)]));
+  const source = assets.get(fileName);
+  if (source === undefined) throw new Error(`the ${name} plugin emitted ${[...assets.keys()].join(', ') || 'nothing'}, not ${fileName}`);
+
+  return source;
+};
 
 /**
  * What `strip-tw` hands the next plugin in the chain, for one module.
