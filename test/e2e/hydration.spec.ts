@@ -6,10 +6,12 @@ import { PAGES } from '../dist/client-output';
  * Every prerendered page, as the path a browser asks for.
  *
  * Read off the same literal table the `dist` suite asserts against rather than
- * transcribed a third time: `client-output.ts` imports nothing but `node:fs`
- * and `node:path`, so it costs no vitest machinery here, and its import-time
- * throw when `dist/client` is missing is wanted — a run that reports zero pages
- * is the one failure this file cannot see.
+ * transcribed a third time: `client-output.ts` imports `node:fs`, `node:path`
+ * and `../pages`, which imports nothing at all, so it costs no vitest machinery
+ * here, and its import-time throw when `dist/client` is missing is wanted — a
+ * run that reports zero pages is the one failure this file cannot see. That
+ * throw is why the list is reached through `client-output` rather than straight
+ * from `../pages`.
  */
 const PATHS = PAGES.map(page => new URL(page.url).pathname);
 
