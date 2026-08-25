@@ -50,3 +50,30 @@ jobs:
 
       - name: Test
         run: pnpm exec vitest run
+
+      # Hydration is the one failure class nothing above can see: oxlint reads
+      # source, the build renders but never hydrates, and both vitest projects
+      # run without a DOM.
+      - name: Read the pinned Playwright version
+        id: playwright
+        run: echo "version=$(jq -r '.devDependencies["@playwright/test"]' package.json)" >> "$GITHUB_OUTPUT"
+
+      # ubuntu-24.04-arm ships no Chromium, and so none of the shared libraries
+      # one drags in either — unlike the x64 image, where they arrive with it.
+      # apt is system-wide, so the cache below cannot skip this step.
+      - name: Install Playwright's system dependencies
+        run: pnpm exec playwright install-deps chromium
+
+      - name: Cache the Playwright browser
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.cache/ms-playwright
+          key: playwright-${{ runner.os }}-${{ runner.arch }}-${{ steps.playwright.outputs.version }}
+
+      # Headless is all this runs, and the full chromium build is 640MB of the
+      # 984MB a plain install writes.
+      - name: Install the Playwright browser
+        run: pnpm exec playwright install --only-shell chromium
+
+      - name: Smoke-test hydration
+        run: pnpm exec playwright test
