@@ -48,8 +48,15 @@ const srcsetUrls = (srcset: string): string[] =>
     .map(candidate => candidate.trim().split(/\s+/u).at(0))
     .filter((url): url is string => url !== undefined && isRootRelative(url));
 
-/** Strips the site origin from an absolute `og:image` / `twitter:image` URL. */
-const pathOf = (url: string): string | undefined => (url.startsWith(ORIGIN) ? url.slice(ORIGIN.length) : undefined);
+/**
+ * Strips the site origin from an absolute `og:image` / `twitter:image` URL.
+ * Parsed rather than prefix-matched: `https://eve0415.net.example.com/x` starts
+ * with `ORIGIN` and is a different host.
+ */
+const pathOf = (url: string): string | undefined => {
+  const parsed = URL.parse(url);
+  return parsed?.origin === ORIGIN ? parsed.pathname : undefined;
+};
 
 interface References {
   /** `<link href>` values that point at a file: icons, manifest, preload, stylesheets. */
