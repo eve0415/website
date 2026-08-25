@@ -2,7 +2,7 @@ import { expect, it } from 'vitest';
 
 import { PAGES } from '../pages';
 
-import { emittedFile } from './plugin-harness';
+import { emittedFile, emittedForSsr } from './plugin-harness';
 
 /**
  * `vite.config.ts`'s `sitemap()` plugin, driven through a real build rather than
@@ -65,4 +65,10 @@ it('stamps every entry with a date-shaped lastmod', async () => {
 
   expect(lastmods).toHaveLength(PAGES.length);
   expect(lastmods.filter(value => !/^\d{4}-\d{2}-\d{2}$/u.test(value))).toStrictEqual([]);
+});
+
+// `applyToEnvironment` is the whole reason `sitemap.xml` does not also land in the
+// SSR bundle, and a client-only build cannot tell that guard from its absence.
+it('emits nothing outside the client environment', async () => {
+  expect(await emittedForSsr('sitemap')).toStrictEqual([]);
 });

@@ -48,6 +48,9 @@ const plugin = (name: string): PluginOption => {
 /** A module the build can start from, so nothing has to exist on disk. */
 const ENTRY_ID = '\0source-test-entry.js';
 
+/** What that module holds when the test is about an emitted asset, not a transform. */
+const ENTRY_CODE = 'export const entry = 1;\n';
+
 const entry = (code: string): PluginOption => ({
   name: 'source-test-entry',
   // `pre`, because vite's own resolve plugin is ordered ahead of normal user
@@ -61,8 +64,14 @@ const entry = (code: string): PluginOption => ({
 });
 
 /**
- * Runs a real client build over the given plugins and nothing else, writing
- * nothing to disk.
+ * Which environment the nested build stands up. A string rather than an `ssr`
+ * boolean because vite's environments are an open set, not two.
+ */
+type EnvironmentName = 'client' | 'ssr';
+
+/**
+ * Runs a real build of one environment over the given plugins and nothing else,
+ * writing nothing to disk.
  *
  * The bundler is what calls the hooks, so `applyToEnvironment` and a `transform`
  * filter are exercised rather than bypassed — which a hand-made `this` would not
@@ -72,12 +81,12 @@ const entry = (code: string): PluginOption => ({
  *
  * Measured at ~20ms per call, against ~800ms to import `vite.config.ts` once.
  */
-const run = async (code: string, plugins: PluginOption[]): Promise<[string, string][]> => {
+const run = async (code: string, plugins: PluginOption[], environment: EnvironmentName): Promise<[string, string][]> => {
   const result = await build({
     configFile: false,
     logLevel: 'silent',
     plugins: [entry(code), ...plugins],
-    build: { write: false, minify: false, rolldownOptions: { input: 'source-test-entry' } },
+    build: { write: false, minify: false, ssr: environment === 'ssr', rolldownOptions: { input: 'source-test-entry' } },
   });
 
   const outputs = Array.isArray(result) ? result : [result];
@@ -100,11 +109,26 @@ const run = async (code: string, plugins: PluginOption[]): Promise<[string, stri
  * test is cheaper than the ambiguity.
  */
 export const emittedFile = async (name: string, fileName: string): Promise<string> => {
-  const assets = new Map(await run('export const entry = 1;\n', [plugin(name)]));
+  const assets = new Map(await run(ENTRY_CODE, [plugin(name)], 'client'));
   const source = assets.get(fileName);
   if (source === undefined) throw new Error(`the ${name} plugin emitted ${[...assets.keys()].join(', ') || 'nothing'}, not ${fileName}`);
 
   return source;
+};
+
+/**
+ * Every asset a plugin emits when the environment is `ssr` rather than `client`.
+ *
+ * `sitemap()` and `headers()` both carry `applyToEnvironment: environment =>
+ * environment.name === 'client'`, and a default `build()` stands up the client
+ * environment alone — so deleting that guard leaves a client-only assertion green
+ * while both files start landing in the SSR bundle as well. Measured: with the
+ * line removed, every other test here still passed.
+ */
+export const emittedForSsr = async (name: string): Promise<string[]> => {
+  const assets = await run(ENTRY_CODE, [plugin(name)], 'ssr');
+
+  return assets.map(([fileName]) => fileName);
 };
 
 /**
@@ -126,7 +150,7 @@ export const stripped = async (code: string): Promise<string> => {
     },
   };
 
-  await run(code, [plugin('strip-tw'), capture]);
+  await run(code, [plugin('strip-tw'), capture], 'client');
   const [first] = seen;
   if (first === undefined) throw new Error('the entry module never reached the capturing transform');
 

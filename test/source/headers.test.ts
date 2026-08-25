@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 
-import { emittedFile } from './plugin-harness';
+import { emittedFile, emittedForSsr } from './plugin-harness';
 
 /**
  * `vite.config.ts`'s `headers()` plugin, driven through a real build rather than
@@ -45,4 +45,10 @@ it('serves rules for exactly those paths', async () => {
   const file = await headers();
 
   expect(file.split('\n').filter(line => line.startsWith('/'))).toStrictEqual(RULE_PATHS);
+});
+
+// Same guard as the sitemap's, and invisible to a client-only build: without it
+// `_headers` is written into the SSR bundle too, where nothing serves it.
+it('emits nothing outside the client environment', async () => {
+  expect(await emittedForSsr('headers')).toStrictEqual([]);
 });
