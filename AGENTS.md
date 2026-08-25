@@ -5,18 +5,19 @@ Personal site. React 19 + TanStack Start on Cloudflare Workers, prerendered to s
 ## The gate
 
 ```
-pnpm lint    # oxlint --fix && oxfmt — writes files
-pnpm build   # must end with "Prerendered 20 pages"
-pnpm test    # vitest run, both projects
+pnpm lint      # oxlint --fix && oxfmt — writes files
+pnpm build     # must end with "Prerendered 20 pages"
+pnpm test      # vitest run, both projects
+pnpm test:e2e  # playwright, the 20 prerendered pages in chromium
 ```
 
-Run them as three separate commands and check each exit code. **Never pipe `pnpm lint` into `tail`/`head` before checking its result** — a pipe masks the exit code, and that has hidden real violations here more than once.
+Run them as four separate commands and check each exit code. **Never pipe `pnpm lint` into `tail`/`head` before checking its result** — a pipe masks the exit code, and that has hidden real violations here more than once.
 
-CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than fix mode, spelled out as full commands rather than through the scripts above — `pnpm exec oxlint`, `pnpm exec oxfmt --check`, `pnpm exec vite build`, `pnpm exec vitest run` — so it never rewrites files, and a formatting-only diff fails it instead of being silently fixed. The build runs before the tests, there and here, because the `dist` project reads what it writes; that costs the fail-fast of testing first. Run the local gate before claiming anything is done, and say what it printed.
+CI (`.github/workflows/ci.yaml`) runs the same tools in check mode rather than fix mode, spelled out as full commands rather than through the scripts above — `pnpm exec oxlint`, `pnpm exec oxfmt --check`, `pnpm exec vite build`, `pnpm exec vitest run`, `pnpm exec playwright test` — so it never rewrites files, and a formatting-only diff fails it instead of being silently fixed. The build runs before the tests, there and here, because the `dist` project reads what it writes, and so does the browser; that costs the fail-fast of testing first. Run the local gate before claiming anything is done, and say what it printed.
 
 ## Tests
 
-Two vitest projects, declared under `test.projects` in `vitest.config.ts`. **`coverage` and `sequence` are read from the root config and nowhere else** — a project carrying either is ignored in silence, and `sequence.shuffle` spent five commits switched off that way before a review caught it. Everything else is per-project and is not inherited, so both entries spread the same shared block.
+Two vitest projects, declared under `test.projects` in `vitest.config.ts`, plus one Playwright spec that is deliberately in neither. **`coverage` and `sequence` are read from the root config and nowhere else** — a project carrying either is ignored in silence, and `sequence.shuffle` spent five commits switched off that way before a review caught it. Everything else is per-project and is not inherited, so both entries spread the same shared block.
 
 ### `worker`
 
@@ -50,6 +51,20 @@ Five files under `test/dist/`, 74 tests, over what `vite build` wrote: the `tw()
 - **React renders the property, so the attribute is `hrefLang`.** A `/hreflang=/` regex matches zero. Head assertions are scoped to `<head>` because the body carries `<a hrefLang>` links of its own.
 - **The expected paths and URLs are transcribed, not computed.** `test/dist/client-output.ts` carries a literal table of the 20 served files and their full `https://eve0415.net/…` URLs, `SITE_URL` spelled out along with them. Derived instead — the build lays the paths out through `localePath` and writes every canonical through `canonicalUrl`, which is `SITE_URL` plus that same `localePath` — both sides of every canonical, hreflang and `<loc>` assertion move together: pointing `SITE_URL` at `https://example.com` rewrote every URL in `dist/` and all 75 tests still passed. Deriving it also made this project a second execution of `localePath` across every branch, which held `src/i18n/locale.ts` at a merged 100% with the worker suite's `localePath` tests deleted. The table costs a second edit per new route, alongside `ROUTE_SET` in `vite.config.ts`, and buys assertions that can fail. It does not hand `locale.ts` its coverage back, though: delete the worker suite's `localePath` block today and the file is still at 100% and the run still green. `src/i18n/head.test.ts`'s `canonicalUrl` cases drive every branch of `localePath` against literal URLs — that file alone puts `locale.ts` at 25% functions and 28.57% branches, which is `localePath` entirely and nothing else in the module. That was already true before this table existed, so the `dist` project was a third redundant holder rather than the one propping the threshold up, and no glob here is load-bearing on one test.
 - `_headers` is asserted as literal directives. Reading it back from `securityHeaders(false)` would compare the generator to itself and pass on any policy at all.
+
+### `e2e`
+
+One spec, `test/e2e/hydration.spec.ts`, 20 tests — one per prerendered page, each one navigating and asserting that the browser reported no error.
+Not part of `pnpm test`: it wants a browser and a server, and the two vitest projects are meant to stay fast. It is `pnpm test:e2e`, and `playwright.config.ts` runs `pnpm exec vite preview` as its `webServer`, so the pages arrive through workerd with `_headers` applied, exactly as Cloudflare serves them. `.dev.vars` is not needed — measured with the file moved aside, the way CI has it.
+
+- **This exists for hydration mismatch, which nothing else in the gate can see.** oxlint's `react/purity` catches `Math.random()` and `Date.now()` in a component body but not `new Date()` — a `new Date().getHours()` rendered in the home route lints clean at every category and builds clean, measured. `vite build` renders but never hydrates. Both vitest projects run without a DOM.
+- **Assert `pageerror`, never the console.** Production React 19 does not log a mismatch: it goes `throwOnHydrationMismatch` → `onRecoverableError` → `reportError` → a window `error` event. That injected `getHours()` produced `Minified React error #418` on `pageerror` and nothing at all on the console.
+- **The wait is two things and only one of them catches a mismatch.** `SkyClock`'s `--sky-*` write onto `<html>` says hydration happened at all, which is what fails a page whose bundle never ran — that page would otherwise report an empty error list and pass. It does not order the error: against a broken build React's report landed between 0.1ms and 20.6ms after that write, and once 0.1ms before it. Asserting straight after the marker passed all twenty pages on a genuinely broken build, and over three runs caught one of six broken pages. The 500ms settle after it is what makes the failure deterministic, and a settle that is too short is a false _pass_ — the silent mode this whole layer exists to prevent. `networkidle` is deprecated and is not used.
+- **Every page is loaded under a pinned noon clock**, `timezoneId: 'UTC'` in the config and `page.clock.setFixedTime` in the spec. `SkyClock` returns before its first paint when the reading already equals the prerendered `0`, so between 00:00:00 and 00:00:59 local it writes no `--sky-*` and the marker never appears: at `00:00:30Z` and `00:00:59Z` the inline style stayed at `--header-h` alone and all twenty pages would have failed, for one minute a day. Pinning noon also makes the browser's clock reliably disagree with the prerendered midnight, so a coarse clock read during render is a mismatch on every run rather than on 23 hours out of 24.
+- **The path list is not a third transcription.** The spec reads `PAGES` out of `test/dist/client-output.ts` and takes each `pathname`; that module imports only `node:fs` and `node:path`, so it drags no vitest machinery into the browser context, and its import-time throw when `dist/client` is missing comes along with it. Each response is asserted at 200, so a page missing from `dist/` fails loudly rather than passing with an empty error list.
+- **No retries.** An error that only shows up sometimes is the signal here, not noise to be averaged away.
+- **The linters already saw `test/e2e/` on the day it appeared** — the `/dist` anchoring recorded above is what does it, and `oxfmt --check` went from 140 files to 142 with nothing configured. The one config change was a rule, not a path: `node/no-process-env` is off for `playwright.config.ts`, because Playwright has no config-level way to ask whether it is running in CI and both `forbidOnly` and `reuseExistingServer` turn on that answer.
+- **CI installs the headless shell only** (`playwright install --only-shell chromium`): 344MB against the 984MB a plain install writes, and the suite is green from a browser directory holding nothing else. `ubuntu-24.04-arm` ships no Chromium and none of the shared libraries one would drag in, so `playwright install-deps chromium` runs as its own step — apt is system-wide and the `~/.cache/ms-playwright` cache cannot skip it.
 
 ## Type safety
 
