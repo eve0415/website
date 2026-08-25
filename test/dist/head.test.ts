@@ -1,12 +1,20 @@
-import { describe, expect, it } from 'vitest';
+import { expect, it } from 'vitest';
 
 import { PAGES, read } from './client-output';
 
 /**
- * Scoped to `<head>` so "exactly one canonical" is a claim about the head rather
- * than the document, and read with `node:fs` rather than grepped: the markup is
- * one enormous line and carries NUL bytes inside TanStack's serialised route
- * ids, so `grep` calls it binary.
+ * Artifact-only, and one claim rather than three per page.
+ *
+ * `src/i18n/head.test.ts` already pins `localeHead`'s output against literal
+ * URLs at 100% — the canonical, the whole hreflang cluster and the title text all
+ * come from there. What that cannot see is whether the route ever asked for it:
+ * `localeHead` is spread into each route's `head()` by hand, ten routes over two
+ * locales, and a route that forgot to would render a page with no canonical while
+ * every source test stayed green.
+ *
+ * So the claim here is "the head was wired in", which is one thing about twenty
+ * pages, not sixty things. Collapsed to three assertions that name the offending
+ * page in their diff; the ×20 was multiplication, not coverage.
  */
 const headOf = (file: string): string => {
   const html = read(file);
@@ -26,34 +34,43 @@ const attributesOf = (tag: string): Map<string, string> =>
     }),
   );
 
-/**
- * Read per test rather than once in the `describe` body: a page missing from
- * `dist/` throws, and thrown during collection that takes every test in this
- * file out of the run — 60 of them silently becoming zero, which is the one
- * failure these tests cannot see. Inside an `it` it is a red test instead.
- */
 const linksOf = (file: string): Map<string, string>[] => [...headOf(file).matchAll(/<link\b[^>]*>/gu)].map(tag => attributesOf(tag[0]));
 
-describe.each(PAGES)('$file', page => {
-  it('carries exactly one canonical, and it points at this page', () => {
-    expect(
-      linksOf(page.file)
-        .filter(link => link.get('rel') === 'canonical')
-        .map(link => link.get('href')),
-    ).toStrictEqual([page.url]);
-  });
+/**
+ * Read inside each `it` rather than in the module body: a page missing from
+ * `dist/` throws, and thrown during collection that takes every test in this
+ * file out of the run silently rather than turning it red.
+ */
+it('carries exactly one canonical per page, pointing at that page', () => {
+  const found = PAGES.map(page => ({
+    file: page.file,
+    canonical: linksOf(page.file)
+      .filter(link => link.get('rel') === 'canonical')
+      .map(link => link.get('href')),
+  }));
 
-  // React renders the property, so the attribute is `hrefLang`; a /hreflang=/
-  // regex matches nothing at all here, in the head or in the body's own `<a>`s.
-  it('carries both locales plus an x-default pointing at Japanese', () => {
-    const cluster = linksOf(page.file).filter(link => link.get('rel') === 'alternate' && link.has('hrefLang'));
+  expect(found).toStrictEqual(PAGES.map(page => ({ file: page.file, canonical: [page.url] })));
+});
 
-    expect(cluster.map(link => [link.get('hrefLang'), link.get('href')])).toStrictEqual(page.alternates);
-  });
+// React renders the property, so the attribute is `hrefLang`; a /hreflang=/
+// regex matches nothing at all here, in the head or in the body's own `<a>`s.
+it('carries both locales plus an x-default pointing at Japanese, on every page', () => {
+  const found = PAGES.map(page => ({
+    file: page.file,
+    cluster: linksOf(page.file)
+      .filter(link => link.get('rel') === 'alternate' && link.has('hrefLang'))
+      .map(link => [link.get('hrefLang'), link.get('href')]),
+  }));
 
-  it('carries a non-empty title', () => {
+  expect(found).toStrictEqual(PAGES.map(page => ({ file: page.file, cluster: page.alternates })));
+});
+
+it('carries a non-empty title on every page', () => {
+  const empty = PAGES.filter(page => {
     const [, title = ''] = /<title>([^<]*)<\/title>/u.exec(headOf(page.file)) ?? [];
 
-    expect(title.length).toBeGreaterThan(0);
+    return title.length === 0;
   });
+
+  expect(empty.map(page => page.file)).toStrictEqual([]);
 });

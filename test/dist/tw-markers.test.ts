@@ -28,6 +28,14 @@ const wrappedIn = (list: string): RegExp => new RegExp(String.raw`[\w$]\(\s*['"\
 
 const BUNDLES = jsFiles().map(file => ({ file, code: read(file) }));
 
+/**
+ * Artifact-only. `test/source/strip-tw.test.ts` pins what the plugin does to a
+ * module it is handed; this is the end of the chain — that it was handed the real
+ * ones. Between them sit `vite:react-compiler`, which runs first and whose output
+ * shape the marker has to survive, the `code: 'tw('` filter deciding which real
+ * modules the handler ever sees, and the chunking that decides where the class
+ * lists land. None of the three is visible from a single-module build.
+ */
 describe('the tw() markers are stripped from the client bundle', () => {
   it('ships no identity binding, which is what a surviving marker would leave in the shared chunk', () => {
     expect(BUNDLES.filter(({ code }) => IDENTITY_BINDING.test(code)).map(({ file }) => file)).toStrictEqual([]);

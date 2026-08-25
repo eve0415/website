@@ -13,6 +13,14 @@ import { PAGES, exists, read } from './client-output';
  * root-relative. A leading "/" is therefore enough to tell "points at a file"
  * from "points at a page" without reading `rel` — confirmed against every
  * link in `dist/client`, not assumed.
+ *
+ * Artifact-only, and not splittable. Every `/assets/*` reference is
+ * content-hashed at build time, so no source test can know the name. The
+ * `public/` references — the favicons, the manifest link, the social cards —
+ * are source-level strings, but they live inside `__root.tsx`'s `head()`, so
+ * reaching them from node means importing the whole component tree to get at a
+ * route option. The manifest's own icon list needs none of that and moved to
+ * `test/source/manifest.test.ts`; the rest stays here.
  */
 const ORIGIN = 'https://eve0415.net';
 
@@ -117,15 +125,5 @@ describe.each(PAGES)('$file', page => {
     const missing = referencesOf(page.file).socialImages.filter(path => !exists(path.slice(1)));
 
     expect(missing).toStrictEqual([]);
-  });
-});
-
-describe('site.webmanifest', () => {
-  it('lists icons that all exist under dist/client', () => {
-    const manifest = read('site.webmanifest');
-    const icons = [...manifest.matchAll(/"src":\s*"([^"]+)"/gu)].map(([, src = '']) => src);
-
-    expect(icons.length).toBeGreaterThan(0);
-    expect(icons.filter(src => !exists(src.slice(1)))).toStrictEqual([]);
   });
 });
