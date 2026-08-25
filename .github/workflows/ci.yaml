@@ -64,10 +64,10 @@ jobs:
       - name: Install the Playwright browser
         run: pnpm exec playwright install --only-shell chromium
 
-      # Hydration is the one failure class nothing above can see: oxlint reads
-      # source, the build renders but never hydrates, and both vitest projects
-      # run without a DOM.
-      - name: Smoke-test hydration
+      # Hydration and axe: two failure classes nothing above can see. oxlint
+      # reads source a file at a time, the build renders but never hydrates,
+      # and both vitest projects run without a DOM.
+      - name: Run the browser suite
         run: pnpm exec playwright test
 
       - name: Upload the failing traces
