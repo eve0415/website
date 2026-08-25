@@ -15,6 +15,9 @@ const directive = (dev: boolean, name: string): string => {
   return found ?? '';
 };
 
+/** Turnstile's own origin, which the policy has to name to let the widget load. */
+const TURNSTILE_ORIGIN = 'https://challenges.cloudflare.com';
+
 const SHARED = [
   "default-src 'self'",
   "style-src 'self' 'unsafe-inline'",
@@ -92,11 +95,14 @@ describe('what the comments call load-bearing', () => {
     expect([directive(dev, 'img-src'), directive(dev, 'font-src')]).toStrictEqual(["img-src 'self' data:", "font-src 'self' data:"]);
   });
 
-  it.each(MODES)('names challenges.cloudflare.com in both script-src and frame-src in %s', (_label, dev) => {
-    expect({
-      script: directive(dev, 'script-src').includes('https://challenges.cloudflare.com'),
-      frame: directive(dev, 'frame-src').includes('https://challenges.cloudflare.com'),
-    }).toStrictEqual({ script: true, frame: true });
+  // Compared as whitespace-delimited source expressions rather than as a
+  // substring: a substring match would also accept the origin appearing inside
+  // a longer host, which is a different origin to a browser.
+  it.each(MODES)('names the Turnstile origin in exactly script-src, connect-src and frame-src in %s', (_label, dev) => {
+    const naming = directivesOf(dev)
+      .filter(part => part.split(' ').includes(TURNSTILE_ORIGIN))
+      .map(part => part.split(' ').at(0));
+    expect(naming).toStrictEqual(['connect-src', 'frame-src', 'script-src']);
   });
 
   it.each(MODES)('keeps default-src, frame-ancestors, object-src, base-uri and form-action locked down in %s', (_label, dev) => {
