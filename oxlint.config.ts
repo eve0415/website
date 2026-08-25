@@ -189,5 +189,13 @@ export default defineConfig({
         'no-await-in-loop': 'off',
       },
     },
+    {
+      // Playwright has no config-level way to ask whether it is running in CI,
+      // and `forbidOnly`/`reuseExistingServer` both turn on that answer.
+      files: ['playwright.config.ts'],
+      rules: {
+        'node/no-process-env': 'off',
+      },
+    },
   ],
 });
