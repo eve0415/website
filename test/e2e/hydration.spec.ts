@@ -14,16 +14,29 @@ import { PAGES } from '../dist/client-output';
 const PATHS = PAGES.map(page => new URL(page.url).pathname);
 
 /**
- * The marker that says hydration has happened.
+ * The marker that says hydration happened at all.
  *
  * `SkyClock` (`src/routes/{-$locale}/-/sky/sky-clock.tsx`) writes the whole
  * `--sky-*` palette onto `document.documentElement` from an effect, so an
- * inline `style` on `<html>` exists only after React has mounted. It says
- * hydration ran, not that it succeeded — React falls back to a client render on
- * a mismatch and the effect still fires — which is exactly the wait a
- * mismatch-hunting assertion wants.
+ * inline `style` on `<html>` exists only after React has mounted. It is not
+ * what catches a mismatch — React reports one within about twenty milliseconds
+ * of this write and in either order, measured — but it is what fails a page
+ * whose bundle never ran, which would otherwise report an empty error list and
+ * pass.
  */
 const HYDRATED = /--sky-root/;
+
+/**
+ * How long to keep listening after hydration.
+ *
+ * React does not report a recoverable error at a moment any DOM state marks:
+ * against a deliberately mismatched build the gap from the effect above to the
+ * `error` event measured between 0.1ms and 20.6ms over five runs, with the
+ * error first in one of them. Asserting straight after the marker passed all
+ * twenty pages on a build that was genuinely broken. This is the margin over
+ * that, not a guess at how long hydration takes.
+ */
+const SETTLE_MS = 500;
 
 test.describe('every prerendered page hydrates without a page error', () => {
   for (const path of PATHS) {
@@ -40,6 +53,7 @@ test.describe('every prerendered page hydrates without a page error', () => {
       expect(response?.status()).toBe(200);
 
       await expect(page.locator('html')).toHaveAttribute('style', HYDRATED);
+      await page.waitForTimeout(SETTLE_MS);
 
       expect(errors).toEqual([]);
     });
