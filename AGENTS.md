@@ -60,7 +60,7 @@ Four files under `test/dist/`, 90 tests, over what `vite build` wrote: the `tw()
 
 ### `source`
 
-Four files under `test/source/`, 14 tests, over `vite.config.ts`'s own plugins and `public/`. Plain node like `dist`, and a separate project because of what it must _not_ need: nothing here reads `dist/`, so `pnpm exec vitest run --project source` is runnable before a build.
+Four files under `test/source/`, 14 tests, over `vite.config.ts`'s own plugins and `public/`. Plain node like `dist`, and a separate project because of what it must _not_ need: nothing here reads `dist/`, so `pnpm exec vitest run --project source` is runnable before a build. `.dev.vars` is not needed either — measured with the file moved aside, the way CI has it, even though importing `vite.config.ts` constructs `cloudflare()` and `tanstackStart()`.
 
 `sitemap()`, `headers()` and `stripTw()` are unexported locals of `vite.config.ts`, and **adding an export to make them testable is not on the table** — which is why these assertions used to live in `dist`. The way in is the config that file already default-exports: `test/source/plugin-harness.ts` imports it, flattens `plugins`, and finds an entry by the `name` it declares.
 
