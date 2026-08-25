@@ -14,6 +14,7 @@
     "build": "vite build",
     "lint": "oxlint --fix --fix-suggestions --fix-dangerously && oxfmt",
     "test": "vitest run",
+    "test:e2e": "playwright test",
     "generate": "wrangler types",
     "deploy": "vite build && wrangler deploy"
   },
