@@ -1,7 +1,7 @@
 import type { RoutePath } from '#i18n/copy';
 import type { Plugin } from 'vite';
 
-import { mkdir, readFile, readdir, writeFile } from 'node:fs/promises';
+import { mkdir, readFile, readdir, rename, writeFile } from 'node:fs/promises';
 import nodePath from 'node:path';
 
 import { cloudflare } from '@cloudflare/vite-plugin';
@@ -106,24 +106,29 @@ const sitemap = (): Plugin => ({
 });
 
 /**
- * Content-hashed assets never change under their name, so they are immutable.
- * Everything else here is replaced on a deploy under the same name, hence a day
- * rather than a year. HTML carries no rule at all on purpose: a prerendered page
- * is rewritten on every deploy while its assets are not.
- */
-/**
  * A prerendered page is rewritten on every deploy, so it can never carry
  * `immutable` the way a hashed asset does. Without a rule of its own it falls
  * back to `must-revalidate`, which spends a round trip before rendering anything
  * on a hard entry; `stale-while-revalidate` renders the cached copy at once and
- * refreshes behind it. The cost is bounded and known: the first entry after a
- * deploy can show the previous build, and the one after it is current.
+ * refreshes behind it.
+ *
+ * What that costs is more than one stale render. A page names its assets by
+ * content hash, and a deploy that changes an asset changes the name — so a stale
+ * page can reference a file the current deployment no longer serves and render
+ * unstyled until it is reloaded. A visitor's own cache usually holds the matching
+ * assets it fetched alongside the page; a cache that does not is where this bites.
  *
  * Per path rather than `/*` because that pattern also covers `/assets/*`, and
  * Cloudflare combines every matching rule instead of letting the narrower one
  * replace the header — the assets would come back with both lifetimes.
  */
 const HTML_CACHE = 'public, max-age=0, stale-while-revalidate=604800';
+
+/**
+ * Content-hashed assets never change under their name, so they are immutable.
+ * Everything else here is replaced on a deploy under the same name, hence a day
+ * rather than a year.
+ */
 
 const CACHE_RULES: [string, string][] = [
   ['/assets/*', 'public, max-age=31536000, immutable'],
@@ -288,14 +293,26 @@ const SUBSET_DIR = 'src/routes/-fonts';
 
 const subsetFileName = (weight: number): string => `noto-sans-jp-japanese-${weight}-subset.woff2`;
 
+/**
+ * `writeFile` truncates before it writes, so a rewrite has a window where the
+ * file is zero bytes — and the dev server regenerates these while it is serving
+ * them, which hands the browser an unparseable font. Renaming into place is
+ * atomic on the same filesystem, so a reader sees either version, never neither.
+ */
+const writeAtomic = async (target: string, contents: Parameters<typeof writeFile>[1]): Promise<void> => {
+  const staging = `${target}.tmp`;
+  await writeFile(staging, contents);
+  await rename(staging, target);
+};
+
 /** The fallback family's stylesheet, imported by the contact form alone. */
 const FALLBACK_CSS = 'noto-sans-jp-fallback.css';
 
 /**
  * @fontsource ships the same unicode-range split Google Fonts serves — 120
- * numbered chunks per weight, ~9 KB each — and `unicode.json` is the only place
- * those ranges are published as data; the per-subset stylesheets bake them into
- * CSS this cannot read back.
+ * numbered chunks per weight, a 12 KB median and 47 KB at the widest — and
+ * `unicode.json` is the only place those ranges are published as data; the
+ * per-subset stylesheets bake them into CSS this cannot read back.
  *
  * Declaring all 240 is what makes the fallback cost nothing until it is used: a
  * chunk is only fetched once a character in its range is on the page, so a
@@ -331,7 +348,14 @@ const chunkFallbackCss = (): string => {
 const sourceGlyphs = async (root: string): Promise<string> => {
   const glyphs = new Set<string>();
 
+  const generated = join(root, SUBSET_DIR);
+
   const walk = async (dir: string): Promise<void> => {
+    // Skipping what this plugin writes: the fallback stylesheet is `.css` under
+    // `src`, so scanning it would fold the build's own output back into its
+    // input and make every write re-trigger the dev watcher below.
+    if (dir === generated) return;
+
     const entries = await readdir(dir, { withFileTypes: true });
 
     await Promise.all(
@@ -356,16 +380,20 @@ const sourceGlyphs = async (root: string): Promise<string> => {
 const subsetFonts = (): Plugin => {
   let root = process.cwd();
   let written: Promise<void> | null = null;
+  /** The glyph set the files on disk were cut to, so an edit that changes no copy costs nothing. */
+  let subsetOf: string | null = null;
 
   const write = async (): Promise<void> => {
     const [text] = await Promise.all([sourceGlyphs(root), mkdir(join(root, SUBSET_DIR), { recursive: true })]);
+    if (text === subsetOf) return;
+    subsetOf = text;
 
     await Promise.all([
       ...SUBSET_WEIGHTS.map(async weight => {
         const source = await readFile(join(root, `node_modules/@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-${weight}-normal.woff2`));
-        await writeFile(join(root, SUBSET_DIR, subsetFileName(weight)), await subsetFont(source, text, { targetFormat: 'woff2' }));
+        await writeAtomic(join(root, SUBSET_DIR, subsetFileName(weight)), await subsetFont(source, text, { targetFormat: 'woff2' }));
       }),
-      writeFile(join(root, SUBSET_DIR, FALLBACK_CSS), chunkFallbackCss()),
+      writeAtomic(join(root, SUBSET_DIR, FALLBACK_CSS), chunkFallbackCss()),
     ]);
   };
 
@@ -377,6 +405,36 @@ const subsetFonts = (): Plugin => {
     async buildStart() {
       written ??= write();
       await written;
+    },
+    /**
+     * `buildStart` runs once, so without this the dev server serves the subset it
+     * built at startup for the rest of the session: Japanese copy added while it
+     * is running renders in the system face, while a production build of the same
+     * source renders it correctly — a font bug with no cause visible in the diff.
+     *
+     * Re-reading `src` is cheap and subsetting is not, so `write` compares the
+     * glyph set first and returns without touching the files unless the edit
+     * actually introduced a character the current subset lacks. Chained rather
+     * than raced: two subsets writing the same path concurrently can interleave.
+     */
+    configureServer(server) {
+      server.watcher.on('all', (_event, file) => {
+        if (!SUBSET_SOURCES.test(file) || file.startsWith(join(root, SUBSET_DIR))) return;
+        const queued = written;
+
+        written = (async () => {
+          try {
+            await queued;
+          } catch {
+            // An earlier failure must not stop this run from trying again.
+          }
+          try {
+            await write();
+          } catch (error) {
+            server.config.logger.error(`subset-fonts: ${String(error)}`);
+          }
+        })();
+      });
     },
   };
 };

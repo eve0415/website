@@ -2,8 +2,9 @@
    so these fields are the only place that needs a face beyond the subset
    `__root.css` loads. Naming the fallback family after it lets the browser
    resolve a missing character per-character out of @fontsource's unicode-range
-   chunks — one ~9 KB chunk for the range it lands in, fetched only if it is
-   ever typed. Unlayered, so it beats the `font-[inherit]` utility on the field. */
+   chunks — one chunk for the range it lands in, 12 KB at the median, fetched
+   only if it is ever typed. Unlayered, so it beats the `font-[inherit]` utility
+   on the field. */
 
 .ev-cf-field {
   font-family: 'Noto Sans JP', 'Noto Sans JP Fallback', sans-serif;

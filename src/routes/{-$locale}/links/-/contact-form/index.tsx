@@ -29,7 +29,18 @@ import { checkContact } from './validation';
 let fallbackFont: Promise<unknown> | null = null;
 
 const loadFallbackFont = (): void => {
-  fallbackFont ??= import('../../../../-fonts/noto-sans-jp-fallback.css');
+  fallbackFont ??= (async () => {
+    try {
+      await import('../../../../-fonts/noto-sans-jp-fallback.css');
+    } catch {
+      // Clearing the memo is the retry: a chunk that failed once — an offline
+      // blip, a deploy that moved it — would otherwise stay memoized as a
+      // rejection and never be asked for again, leaving the rest of the session
+      // in the system face. Swallowed rather than rethrown, because nothing
+      // awaits this and the form still works without it.
+      fallbackFont = null;
+    }
+  })();
 };
 
 interface ContactFormProps {
