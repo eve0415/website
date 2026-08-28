@@ -111,8 +111,23 @@ const sitemap = (): Plugin => ({
  * rather than a year. HTML carries no rule at all on purpose: a prerendered page
  * is rewritten on every deploy while its assets are not.
  */
+/**
+ * A prerendered page is rewritten on every deploy, so it can never carry
+ * `immutable` the way a hashed asset does. Without a rule of its own it falls
+ * back to `must-revalidate`, which spends a round trip before rendering anything
+ * on a hard entry; `stale-while-revalidate` renders the cached copy at once and
+ * refreshes behind it. The cost is bounded and known: the first entry after a
+ * deploy can show the previous build, and the one after it is current.
+ *
+ * Per path rather than `/*` because that pattern also covers `/assets/*`, and
+ * Cloudflare combines every matching rule instead of letting the narrower one
+ * replace the header — the assets would come back with both lifetimes.
+ */
+const HTML_CACHE = 'public, max-age=0, stale-while-revalidate=604800';
+
 const CACHE_RULES: [string, string][] = [
   ['/assets/*', 'public, max-age=31536000, immutable'],
+  ...PAGES.map(({ path }): [string, string] => [path, HTML_CACHE]),
   ...['ico', 'png', 'jpg', 'webp', 'avif', 'svg', 'webmanifest', 'xml', 'txt'].map((extension): [string, string] => [
     `/:file.${extension}`,
     'public, max-age=86400',
