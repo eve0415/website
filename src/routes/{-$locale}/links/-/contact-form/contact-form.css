@@ -1,3 +1,14 @@
+/* The only text on the site the build never sees is what a visitor types here,
+   so these fields are the only place that needs a face beyond the subset
+   `__root.css` loads. Naming the fallback family after it lets the browser
+   resolve a missing character per-character out of @fontsource's unicode-range
+   chunks — one ~9 KB chunk for the range it lands in, fetched only if it is
+   ever typed. Unlayered, so it beats the `font-[inherit]` utility on the field. */
+
+.ev-cf-field {
+  font-family: 'Noto Sans JP', 'Noto Sans JP Fallback', sans-serif;
+}
+
 /* The form→sent swap runs as a view transition scoped to this box, so only
    these pseudos exist and only they need timing. `::view-transition-*` lives
    outside the document tree, which is why `__root.css`'s blanket `*` reduced-

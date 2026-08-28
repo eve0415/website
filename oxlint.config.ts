@@ -177,8 +177,9 @@ export default defineConfig({
   },
   overrides: [
     {
-      // The only files that run in Node rather than workerd: they read `dist/`.
-      files: ['test/**/*.ts'],
+      // The files that run in Node rather than workerd: the suites read `dist/`,
+      // and the build config subsets the Japanese faces off the filesystem.
+      files: ['test/**/*.ts', 'vite.config.ts'],
       rules: {
         'import/no-nodejs-modules': 'off',
       },

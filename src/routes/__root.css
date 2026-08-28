@@ -326,7 +326,12 @@
    and pair every .woff2 with a .woff no supported browser will request.
 
    The latin rules follow the japanese ones so they win for the ranges they
-   declare; the japanese rules carry no unicode-range and cover everything else. */
+   declare; the japanese rules carry no unicode-range and cover everything else.
+
+   The japanese files are the build's subsets, not the shipped 1 MB faces — see
+   `subsetFonts` in vite.config.ts for what they contain and why. They cover
+   every character the site renders; the contact form declares the fallback that
+   covers the ones only a visitor can type. */
 
 @font-face {
   font-family: 'Noto Sans JP';
@@ -336,7 +341,7 @@
   src:
     local('Noto Sans JP Regular'),
     local('NotoSansJP-Regular'),
-    url('@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-400-normal.woff2') format('woff2');
+    url('./-fonts/noto-sans-jp-japanese-400-subset.woff2') format('woff2');
 }
 
 @font-face {
@@ -361,7 +366,7 @@
   src:
     local('Noto Sans JP Bold'),
     local('NotoSansJP-Bold'),
-    url('@fontsource/noto-sans-jp/files/noto-sans-jp-japanese-700-normal.woff2') format('woff2');
+    url('./-fonts/noto-sans-jp-japanese-700-subset.woff2') format('woff2');
 }
 
 @font-face {
