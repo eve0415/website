@@ -45,7 +45,7 @@ const RootDocument: FC<PropsWithChildren> = ({ children }) => {
 
         <SkyClock />
         <PageTransition />
-        <OpeningCurtain skipLabel={SITE_COPY[locale].skip} />
+        <OpeningCurtain skipLabel={SITE_COPY[locale].skip} introLabel={SITE_COPY[locale].introAria} />
 
         {import.meta.env.DEV && (
           <TanStackDevtools

@@ -98,6 +98,34 @@ const lines = (violations: Violations): string[] =>
     }),
   );
 
+/**
+ * The three seconds the curtain is up are a state the suite below never reaches:
+ * it emulates reduced motion precisely so the curtain does not play. That is
+ * right for scanning the page, and it is why `landmark-one-main` and
+ * `page-has-heading-one` could both fail in a real browser while every test here
+ * stayed green — with the page `inert`, the curtain was the whole accessibility
+ * tree and had no semantics of its own.
+ *
+ * One page is enough: the curtain is in `__root.tsx` and covers every route
+ * identically, and what is being scanned is the overlay, not what it covers.
+ */
+test('the opening curtain is accessible while it covers the page', async ({ page }) => {
+  await page.clock.setFixedTime(PINNED_CLOCK);
+
+  const response = await page.goto('/');
+  expect(response?.status()).toBe(200);
+
+  // The gate is the blocking state itself, not the fix for it: `inert` siblings
+  // are what the curtain does regardless of how it describes itself, so this
+  // waits for the window the scan is meant to cover and would still land in it
+  // if the semantics below were removed.
+  await expect(page.locator('body > *[inert]').first()).toBeAttached();
+  await expect(page.locator('#curtain')).toHaveAttribute('aria-modal', 'true');
+
+  const { violations } = await new AxeBuilder({ page }).analyze();
+  expect(lines(violations)).toEqual([]);
+});
+
 test.describe('every prerendered page passes axe', () => {
   for (const path of JA_PATHS) {
     test(path, async ({ page }) => {
