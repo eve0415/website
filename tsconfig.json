@@ -19,8 +19,9 @@
     "isolatedModules": true,
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force",
+    "resolveJsonModule": true,
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src/**/*", "test/**/*", "playwright.config.ts", "vite.config.ts", "vitest.config.ts", "oxlint.config.ts", "oxfmt.config.ts"]
+  "include": ["src/**/*", "test/**/*", "playwright.config.ts", "subset-font.d.ts", "vite.config.ts", "vitest.config.ts", "oxlint.config.ts", "oxfmt.config.ts"]
 }

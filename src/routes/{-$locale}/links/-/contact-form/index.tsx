@@ -18,6 +18,31 @@ import { isNarrowSlot, notNarrowWhenPrerendered, sizeDecidedOnce } from './turns
 import { TurnstileWidget } from './turnstile/widget';
 import { checkContact } from './validation';
 
+/**
+ * The fallback family is ~190 KB of `@font-face` rules — every unicode-range
+ * chunk @fontsource ships — and nothing on the page needs it until someone
+ * types a character the build never saw. Imported statically it was a
+ * render-blocking stylesheet on this route; fetched on the first focus of a
+ * field it arrives well before a keystroke can produce one, and costs every
+ * other visitor nothing.
+ */
+let fallbackFont: Promise<unknown> | null = null;
+
+const loadFallbackFont = (): void => {
+  fallbackFont ??= (async () => {
+    try {
+      await import('../../../../-fonts/noto-sans-jp-fallback.css');
+    } catch {
+      // Clearing the memo is the retry: a chunk that failed once — an offline
+      // blip, a deploy that moved it — would otherwise stay memoized as a
+      // rejection and never be asked for again, leaving the rest of the session
+      // in the system face. Swallowed rather than rethrown, because nothing
+      // awaits this and the form still works without it.
+      fallbackFont = null;
+    }
+  })();
+};
+
 interface ContactFormProps {
   locale: Locale;
 }
@@ -265,7 +290,7 @@ export const ContactForm: FC<ContactFormProps> = ({ locale }) => {
         // rather than per-field bubbles, and `checkContact` is stricter than the
         // native checks anyway. `required` still belongs on the controls: it is
         // what announces them as required, and it is not what validates them.
-        <form action={submit} noValidate className='grid gap-4'>
+        <form action={submit} noValidate onFocusCapture={loadFallbackFont} className='grid gap-4'>
           <ContactFields locale={locale} invalidField={invalidField} errorId={errorId} onFocusField={startChallenge} />
 
           {/* No minimum on the slot: the widget's own floor is the thing that has

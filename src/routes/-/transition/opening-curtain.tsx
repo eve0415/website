@@ -56,7 +56,7 @@ const STAR = tw('absolute rounded-full');
  * in the body it was reachable only by tabbing past everything it exists to
  * skip, which took longer than simply waiting.
  */
-export const OpeningCurtain: FC<{ skipLabel: string }> = ({ skipLabel }) => {
+export const OpeningCurtain: FC<{ skipLabel: string; introLabel: string }> = ({ skipLabel, introLabel }) => {
   const [open, setOpen] = useState(true);
   // Also gates the skip control out of the prerendered HTML, where it would be
   // a dead button for anyone with scripts off.
@@ -119,8 +119,23 @@ export const OpeningCurtain: FC<{ skipLabel: string }> = ({ skipLabel }) => {
 
   if (!open) return null;
 
+  /**
+   * Dialog semantics only while it is actually blocking: the `inert` effect above
+   * runs under the same condition, and together they are what the roles claim —
+   * everything else is out of the accessibility tree and focus cannot leave. Under
+   * reduced motion none of that happens, the halves are gone on the first frame,
+   * and a dialog role would be describing something that is not there.
+   *
+   * Without a name the three seconds read as an unnamed dialog containing one
+   * button; with `aria-modal` they also read as the whole document, which is why
+   * `landmark-one-main` and `page-has-heading-one` are satisfied here rather than
+   * suppressed — while a modal is up the page's landmarks genuinely are not
+   * available, and saying so is what makes that true rather than a gap.
+   */
+  const modal = plays ? ({ role: 'dialog', 'aria-modal': true, 'aria-label': introLabel } as const) : {};
+
   return (
-    <div ref={rootRef} className='pointer-events-none fixed inset-0 z-50 overflow-hidden'>
+    <div ref={rootRef} id='curtain' {...modal} className='pointer-events-none fixed inset-0 z-50 overflow-hidden'>
       {plays ? (
         <button
           ref={skipRef}

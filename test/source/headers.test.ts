@@ -21,13 +21,47 @@ const SECURITY_BLOCK = [
   '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()',
 ].join('\n');
 
+/**
+ * Written out rather than derived from the route list, for the same reason the
+ * security block is: a page gaining or losing its cache rule has to be
+ * acknowledged here, not inherited from whatever the config happens to emit.
+ */
+const PAGE_PATHS = [
+  '/',
+  '/en',
+  '/projects',
+  '/en/projects',
+  '/projects/ifpatcher',
+  '/en/projects/ifpatcher',
+  '/projects/cella',
+  '/en/projects/cella',
+  '/projects/oasts',
+  '/en/projects/oasts',
+  '/projects/dotclaude',
+  '/en/projects/dotclaude',
+  '/projects/website',
+  '/en/projects/website',
+  '/skills',
+  '/en/skills',
+  '/links',
+  '/en/links',
+  '/about',
+  '/en/about',
+];
+
 const CACHE_BLOCKS = [
   '/assets/*\n  Cache-Control: public, max-age=31536000, immutable',
+  ...PAGE_PATHS.map(path => `${path}\n  Cache-Control: private, max-age=0, stale-while-revalidate=604800`),
   ...['ico', 'png', 'jpg', 'webp', 'avif', 'svg', 'webmanifest', 'xml', 'txt'].map(extension => `/:file.${extension}\n  Cache-Control: public, max-age=86400`),
 ];
 
 /** Every rule's path, which is every line that is neither a comment, a value, nor blank. */
-const RULE_PATHS = ['/*', '/assets/*', ...['ico', 'png', 'jpg', 'webp', 'avif', 'svg', 'webmanifest', 'xml', 'txt'].map(extension => `/:file.${extension}`)];
+const RULE_PATHS = [
+  '/*',
+  '/assets/*',
+  ...PAGE_PATHS,
+  ...['ico', 'png', 'jpg', 'webp', 'avif', 'svg', 'webmanifest', 'xml', 'txt'].map(extension => `/:file.${extension}`),
+];
 
 it('serves the security block on every path', async () => {
   expect(await headers()).toContain(SECURITY_BLOCK);
@@ -39,8 +73,12 @@ it('serves the cache rules', async () => {
   expect(CACHE_BLOCKS.filter(block => !file.includes(block))).toStrictEqual([]);
 });
 
-// No rule for the prerendered pages on purpose: a deploy rewrites them under the
-// same names while their content-hashed assets keep theirs.
+// The prerendered pages carry `stale-while-revalidate` rather than the
+// `must-revalidate` they fall back to without a rule: a deploy rewrites them
+// under the same names, so they cannot be immutable, but a hard entry should not
+// spend a round trip before it renders either. `private` is load-bearing — a
+// shared cache would serve a stale page to a client that never had the assets it
+// names by hash.
 it('serves rules for exactly those paths', async () => {
   const file = await headers();
 

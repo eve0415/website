@@ -28,6 +28,12 @@ interface SiteCopy {
   navAbout: string;
   /** Dismisses the opening curtain. */
   skip: string;
+  /**
+   * Names the opening curtain while it is up. It covers the viewport and marks
+   * everything under it `inert`, so for those three seconds it is the only thing
+   * in the accessibility tree — an unnamed one would announce as a bare dialog.
+   */
+  introAria: string;
   /** The bypass link: eight identical chrome stops sit in front of `<main>`. */
   skipToContent: string;
   /** Footer dwell line, read as `${dwellPrefix} ${duration}`. */
@@ -52,6 +58,7 @@ export const SITE_COPY = {
     navLinks: 'つながる',
     navAbout: 'About',
     skip: 'スキップ',
+    introAria: 'オープニング',
     skipToContent: '本文へスキップ',
     dwellPrefix: 'ここに来てから',
     dwellHours: '時間',
@@ -66,6 +73,7 @@ export const SITE_COPY = {
     navLinks: 'Contact',
     navAbout: 'About',
     skip: 'Skip',
+    introAria: 'Opening',
     skipToContent: 'Skip to content',
     dwellPrefix: 'Here for',
     dwellHours: 'hr',
