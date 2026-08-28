@@ -115,14 +115,21 @@ const sitemap = (): Plugin => ({
  * What that costs is more than one stale render. A page names its assets by
  * content hash, and a deploy that changes an asset changes the name — so a stale
  * page can reference a file the current deployment no longer serves and render
- * unstyled until it is reloaded. A visitor's own cache usually holds the matching
- * assets it fetched alongside the page; a cache that does not is where this bites.
+ * unstyled until it is reloaded.
+ *
+ * `private` is what bounds that. A visitor's own cache holds the page and the
+ * assets it fetched alongside it, so the two stay consistent; a shared cache
+ * holds the page without them, and would hand it to a client that never had the
+ * old assets at all. Nothing is given up by excluding shared caches here: the
+ * previous header was `max-age=0, must-revalidate`, which none of them may store
+ * either, and the prerendered pages still answered `cf-cache-status: HIT` —
+ * Cloudflare's asset server keeps them independently of this header.
  *
  * Per path rather than `/*` because that pattern also covers `/assets/*`, and
  * Cloudflare combines every matching rule instead of letting the narrower one
  * replace the header — the assets would come back with both lifetimes.
  */
-const HTML_CACHE = 'public, max-age=0, stale-while-revalidate=604800';
+const HTML_CACHE = 'private, max-age=0, stale-while-revalidate=604800';
 
 /**
  * Content-hashed assets never change under their name, so they are immutable.

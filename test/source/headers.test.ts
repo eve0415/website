@@ -51,7 +51,7 @@ const PAGE_PATHS = [
 
 const CACHE_BLOCKS = [
   '/assets/*\n  Cache-Control: public, max-age=31536000, immutable',
-  ...PAGE_PATHS.map(path => `${path}\n  Cache-Control: public, max-age=0, stale-while-revalidate=604800`),
+  ...PAGE_PATHS.map(path => `${path}\n  Cache-Control: private, max-age=0, stale-while-revalidate=604800`),
   ...['ico', 'png', 'jpg', 'webp', 'avif', 'svg', 'webmanifest', 'xml', 'txt'].map(extension => `/:file.${extension}\n  Cache-Control: public, max-age=86400`),
 ];
 
@@ -76,7 +76,9 @@ it('serves the cache rules', async () => {
 // The prerendered pages carry `stale-while-revalidate` rather than the
 // `must-revalidate` they fall back to without a rule: a deploy rewrites them
 // under the same names, so they cannot be immutable, but a hard entry should not
-// spend a round trip before it renders either.
+// spend a round trip before it renders either. `private` is load-bearing — a
+// shared cache would serve a stale page to a client that never had the assets it
+// names by hash.
 it('serves rules for exactly those paths', async () => {
   const file = await headers();
 
