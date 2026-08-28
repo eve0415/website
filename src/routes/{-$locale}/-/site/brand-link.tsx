@@ -5,7 +5,7 @@ import { Link } from '@tanstack/react-router';
 
 import { localeParams } from '#i18n/locale';
 
-import brandAvatar from './brand-avatar-96x96.png';
+import brandAvatar from './brand-avatar-96x96.webp';
 import { BRAND_CLASS } from './header-classes';
 
 interface BrandLinkProps {
