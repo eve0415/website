@@ -6,7 +6,20 @@ import './page-transition/page-transition.css';
 import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
 import { tw } from '#lib/tw';
 
-/** Delay 2.15s + 0.8s of travel, then the small margin the comp leaves. */
+/** The small margin the comp leaves after the halves have gone, before the curtain leaves the DOM. */
+const RETIRE_MS = 100;
+
+/**
+ * Delay 2.15s + 0.8s of travel + that margin, and only a fallback.
+ *
+ * The halves are animated by CSS, so their clock starts at the document's first
+ * paint; this effect's clock starts at hydration, which is later by however long
+ * the bundle took. Retiring on a timer from here left the page `inert` — out of
+ * the tab order and out of the accessibility tree — for that difference after the
+ * curtain had visibly gone. So the timer is no longer what retires it; it is what
+ * catches a curtain with no animation to wait on, where a stuck overlay would
+ * black out the whole site.
+ */
 const CURTAIN_MS = 3050;
 
 /**
@@ -62,18 +75,58 @@ export const OpeningCurtain: FC<{ skipLabel: string; introLabel: string }> = ({ 
   // a dead button for anyone with scripts off.
   const plays = useSyncExternalStore(subscribeToHydration, playsOnClient, playsOnServer);
   const rootRef = useRef<HTMLDivElement>(null);
+  const halfRef = useRef<HTMLDivElement>(null);
   const skipRef = useRef<HTMLButtonElement>(null);
 
+  /**
+   * Retirement follows the half's own animation rather than a duration counted
+   * from here, so it lands on the same clock the halves move on. `getAnimations`
+   * without a subtree is exactly `curtainUp` — the stars inside run their own
+   * `twinkle` and are not asked about. An animation that has already finished by
+   * the time this runs is still returned, since `forwards` keeps it relevant, and
+   * its promise is already resolved.
+   */
   useEffect(() => {
-    const id = setTimeout(
-      () => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+
+    const retire = (delay: number) => {
+      timer = setTimeout(() => {
         setOpen(false);
-      },
-      plays ? CURTAIN_MS : 0,
-    );
+      }, delay);
+    };
+
+    const stop = () => {
+      clearTimeout(timer);
+    };
+
+    // Reduced motion: the halves are gone on the first frame, so there is
+    // nothing to sit through and nothing to listen to.
+    if (!plays) {
+      retire(0);
+      return stop;
+    }
+
+    const [curtain] = halfRef.current?.getAnimations() ?? [];
+
+    if (curtain === undefined) {
+      retire(CURTAIN_MS);
+      return stop;
+    }
+
+    if (curtain.playState === 'finished') {
+      retire(RETIRE_MS);
+      return stop;
+    }
+
+    const onFinish = () => {
+      retire(RETIRE_MS);
+    };
+
+    curtain.addEventListener('finish', onFinish);
 
     return () => {
-      clearTimeout(id);
+      curtain.removeEventListener('finish', onFinish);
+      stop();
     };
   }, [plays]);
 
@@ -149,7 +202,7 @@ export const OpeningCurtain: FC<{ skipLabel: string; introLabel: string }> = ({ 
         </button>
       ) : null}
 
-      <div className={`${HALF} top-0 bottom-1/2 animate-[curtainUp_.8s_var(--ease-curtain)_2.15s_forwards]`}>
+      <div ref={halfRef} className={`${HALF} top-0 bottom-1/2 animate-[curtainUp_.8s_var(--ease-curtain)_2.15s_forwards]`}>
         <span aria-hidden='true' className={`${STAR} top-[30%] left-[15%] size-[3px] animate-[twinkle_1.8s_ease-in-out_infinite] bg-(--star-white)`} />
         <span aria-hidden='true' className={`${STAR} top-[55%] left-[70%] size-0.5 animate-[twinkle_2.2s_ease-in-out_.5s_infinite] bg-(--star-white)`} />
         <span aria-hidden='true' className={`${STAR} top-[20%] left-[85%] size-0.5 animate-[twinkle_1.6s_ease-in-out_.9s_infinite] bg-(--star-ice)`} />
