@@ -18,11 +18,11 @@ type Violations = Awaited<ReturnType<AxeBuilder['analyze']>>['violations'];
  *
  * The light/dark axis does not exist here at all. `prefers-color-scheme`,
  * `light-dark()` and Tailwind's `dark:` appear nowhere in `src/` and nowhere in
- * `dist/client/` — the one `color-scheme` in the built output is tailwind-merge's
- * own class-group table in `cn-*.js`, inert data naming classes nobody writes —
- * and running each of these pages under `emulateMedia({ colorScheme })` both
- * ways returned a byte-identical result: every violation, every pass and every
- * incomplete, ratios included.
+ * `dist/client/`, and `__root.css` pins `<html>` to `color-scheme: dark`, so
+ * the reader's preference reaches nothing the page draws — running each of
+ * these pages under `emulateMedia({ colorScheme })` both ways returned a
+ * byte-identical result: every violation, every pass and every incomplete,
+ * ratios included.
  *
  * The axis that *does* move every colour on the page is the clock. Measured at
  * its two extremes and again at the hardest band the design names for itself —
