@@ -10,19 +10,6 @@ import { tw } from '#lib/tw';
 const RETIRE_MS = 100;
 
 /**
- * Delay 2.15s + 0.8s of travel + that margin, and only a fallback.
- *
- * The halves are animated by CSS, so their clock starts at the document's first
- * paint; this effect's clock starts at hydration, which is later by however long
- * the bundle took. Retiring on a timer from here left the page `inert` — out of
- * the tab order and out of the accessibility tree — for that difference after the
- * curtain had visibly gone. So the timer is no longer what retires it; it is what
- * catches a curtain with no animation to wait on, where a stuck overlay would
- * black out the whole site.
- */
-const CURTAIN_MS = 3050;
-
-/**
  * Whether there is an intro to sit through: never during the prerender, and not
  * in a browser that asked for less motion, where the reduced-motion rules have
  * already collapsed the whole thing to nothing.
@@ -79,56 +66,105 @@ export const OpeningCurtain: FC<{ skipLabel: string; introLabel: string }> = ({ 
   const skipRef = useRef<HTMLButtonElement>(null);
 
   /**
-   * Retirement follows the half's own animation rather than a duration counted
-   * from here, so it lands on the same clock the halves move on. `getAnimations`
-   * without a subtree is exactly `curtainUp` — the stars inside run their own
-   * `twinkle` and are not asked about. An animation that has already finished by
-   * the time this runs is still returned, since `forwards` keeps it relevant, and
-   * its promise is already resolved.
+   * Retirement follows the half's own animation, and nothing else.
+   *
+   * Not a duration. The halves are moved by CSS, so their clock starts at the
+   * document's first paint, while a timer's starts at hydration — and on iOS the
+   * two can be a whole intro apart, because a web view that is not on screen has
+   * its rendering suspended and the animation barely advances while `setTimeout`
+   * keeps counting real time. Retiring on 3050ms cut the curtain mid-comet on a
+   * real phone, and on a fast one left the page `inert` past the end of it.
+   *
+   * `plays` is deliberately absent from the body and from the dependencies. It
+   * comes from `useSyncExternalStore`, whose hydration snapshot is `false`, so
+   * this effect runs once with a stale `false` before React re-renders with the
+   * real value — measured in a browser as `plays=false` at 114ms and `plays=true`
+   * at 115ms. A branch that retired the curtain on that `false` was scheduling
+   * `setOpen(false)` on the next macrotask and relying on a cleanup one
+   * millisecond later to cancel it, which anything slower than a desktop loses.
+   *
+   * `getAnimations` without a subtree is exactly `curtainUp` — the stars inside
+   * run their own `twinkle` and are not asked about.
+   */
+  /**
+   * Retirement follows the half's own animations, and nothing else.
+   *
+   * Not a duration. The halves are moved by CSS, so their clock starts at the
+   * document's first paint, while a timer's starts at hydration — and on iOS the
+   * two can be a whole intro apart, because a web view that is not on screen has
+   * its rendering suspended and the animation barely advances while `setTimeout`
+   * keeps counting real time. Retiring on 3050ms cut the curtain mid-comet on a
+   * real phone, and on a fast one left the page `inert` past the end of it.
+   *
+   * `plays` is deliberately absent from the body and from the dependencies. It
+   * comes from `useSyncExternalStore`, whose hydration snapshot is `false`, so
+   * this effect runs once with a stale `false` before React re-renders with the
+   * real value — measured in a browser as `plays=false` at 114ms and `plays=true`
+   * at 115ms. A branch keyed on that `false` was scheduling `setOpen(false)` on
+   * the next macrotask and relying on a cleanup one millisecond later to cancel
+   * it, which anything slower than a desktop loses. Reduced motion needs no
+   * branch of its own either: `__root.css` collapses the duration to 0.01ms, so
+   * the same wait below simply ends at once.
+   *
+   * All of them, never `[0]`. `getAnimations` returns transitions too, and the
+   * reduced-motion rule gives `transition-duration` a non-zero value on `*`,
+   * which switches transitions on for every inherited property — so `SkyClock`'s
+   * palette write puts a `scrollbar-color` transition on this element *ahead* of
+   * `curtainUp`. Measured under `reduce`: `[CSSTransition|scrollbar-color,
+   * CSSAnimation|curtainUp]`, against `[CSSAnimation|curtainUp]` without. The
+   * stars run their own `twinkle` and are children, so they are not in the list.
+   *
+   * An empty list retires at once, which is right for a curtain with no
+   * animation: it has no fill either, so nothing is covering the page.
    */
   useEffect(() => {
     let timer: ReturnType<typeof setTimeout> | undefined;
+    let scheduled = false;
 
     const retire = (delay: number) => {
+      if (scheduled) return;
+      scheduled = true;
       timer = setTimeout(() => {
         setOpen(false);
       }, delay);
     };
 
-    const stop = () => {
-      clearTimeout(timer);
+    const pending = new Set(halfRef.current?.getAnimations());
+
+    const done = (animation: Animation) => {
+      if (!pending.delete(animation)) return;
+      if (pending.size === 0) retire(RETIRE_MS);
     };
 
-    // Reduced motion: the halves are gone on the first frame, so there is
-    // nothing to sit through and nothing to listen to.
-    if (!plays) {
-      retire(0);
-      return stop;
-    }
+    /* `cancel` as well as `finish`: a transition that is replaced — which the
+       palette write does on every tween frame — ends by being cancelled, and
+       waiting only on `finish` would leave the curtain up for good. */
+    const listeners = [...pending].map(animation => {
+      const settle = () => {
+        done(animation);
+      };
 
-    const [curtain] = halfRef.current?.getAnimations() ?? [];
+      animation.addEventListener('finish', settle);
+      animation.addEventListener('cancel', settle);
 
-    if (curtain === undefined) {
-      retire(CURTAIN_MS);
-      return stop;
-    }
+      return { animation, settle };
+    });
 
-    if (curtain.playState === 'finished') {
-      retire(RETIRE_MS);
-      return stop;
-    }
+    // One can end between the snapshot above and its listener, and neither event
+    // is replayed for a listener that arrives after it.
+    for (const { animation } of listeners) if (animation.playState === 'finished' || animation.playState === 'idle') done(animation);
 
-    const onFinish = () => {
-      retire(RETIRE_MS);
-    };
-
-    curtain.addEventListener('finish', onFinish);
+    if (pending.size === 0) retire(RETIRE_MS);
 
     return () => {
-      curtain.removeEventListener('finish', onFinish);
-      stop();
+      for (const { animation, settle } of listeners) {
+        animation.removeEventListener('finish', settle);
+        animation.removeEventListener('cancel', settle);
+      }
+
+      clearTimeout(timer);
     };
-  }, [plays]);
+  }, []);
 
   /**
    * Everything the curtain covers is taken out of the tab order and out of the

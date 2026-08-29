@@ -60,3 +60,20 @@ test('the page stops being inert when the curtain stops covering it', async ({ p
 
   expect(gap).toBeLessThan(MAX_GAP_MS);
 });
+
+/**
+ * Reduced motion has no branch of its own any more — `plays` was taken out of
+ * the retirement path because its hydration snapshot is `false`, and a branch
+ * keyed on that was racing a one-millisecond cleanup. What retires the curtain
+ * for a reader who asked for less motion is the same animation as everyone
+ * else's, collapsed to 0.01ms by `__root.css`. This is what says that still
+ * works: a curtain that fell through to the fallback timer would sit here for
+ * three seconds over a page it is not covering.
+ */
+test('retires at once for a reader who asked for less motion', async ({ page }) => {
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await page.goto('/');
+
+  await expect(page.locator('#curtain')).toHaveCount(0, { timeout: 1500 });
+  expect(await page.evaluate(() => document.body.querySelector(':scope > [inert]') !== null)).toBe(false);
+});
