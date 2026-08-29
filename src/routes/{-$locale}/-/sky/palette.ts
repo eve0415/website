@@ -64,6 +64,18 @@ interface PaletteStop extends SkyPalette {
  */
 export interface SkyCss {
   rootBg: string;
+  /**
+   * The one opaque colour the page has. The `html` rule in `__root.css` says
+   * why a gradient alone is not enough for iOS Safari; this is the value.
+   *
+   * The 55% stop, because one value has to serve both ends of the page and the
+   * middle of the ramp is the closest a single colour gets to each. The stops
+   * are 14 units apart at 15時 and 35 on the blue channel at 深夜, so the seam
+   * is invisible by day and near-black at night either way. On home the top
+   * edge is the hero's 0% stop rather than the root's — `#01010e` against
+   * `#05021c` — so the seam there is a little wider, in the darker direction.
+   */
+  rootSolid: string;
   heroBg: string;
   nebulaBg: string;
   starAlpha: number;
@@ -577,12 +589,17 @@ export const skyCss = (clock: number, day: number): SkyCss => {
   const cs = mix(p.cs, p.cd, shade);
   const inkT = mix(p.inkT, deep([4, 20, 36], [10, 36, 64]), day);
 
+  /* The gradient's own middle, named because two fields want it: the 55% stop
+     below, and the one opaque colour the document carries. */
+  const rootMid = held(p.root[1]);
+
   return {
     rootBg: gradient([
       [held(p.root[0]), 0],
-      [held(p.root[1]), 55],
+      [rootMid, 55],
       [held(p.root[2]), 100],
     ]),
+    rootSolid: rgb(rootMid),
     heroBg: gradient([
       [p.hero[0], 0],
       [p.hero[1], 32],
@@ -656,6 +673,7 @@ export const skyCss = (clock: number, day: number): SkyCss => {
 /** The custom properties `__root.css` reads the whole scene through. */
 export const skyVars = (sky: SkyCss) => ({
   '--sky-root': sky.rootBg,
+  '--sky-root-solid': sky.rootSolid,
   '--sky-hero': sky.heroBg,
   '--sky-nebula': sky.nebulaBg,
   '--sky-star-alpha': String(sky.starAlpha),

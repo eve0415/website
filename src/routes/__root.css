@@ -394,6 +394,26 @@
 
 @layer base {
   html {
+    /* iOS Safari 26 paints two regions this page does not lay out into: the
+       status-bar inset above the header, and the floating tab bar's inset below
+       the footer. It fills both by blending `html` and `body`'s background
+       *colours* — `LocalFrameView::documentBackgroundColor` has excluded
+       background images since 2011 (bug 59540), and `theme-color` no longer
+       overrides it. The sky is a gradient, so before this line there was no
+       colour to read and both bands came out `systemBackgroundColor` white.
+
+       On `html` rather than `body` on purpose. A background here stops the
+       body-to-canvas propagation, and that propagation was the other half of
+       the problem: the canvas *tiles* the root box's gradient rather than
+       stretching it, so overscrolling past either end restarted the ramp. One
+       flat colour out there is what the design wants anyway.
+
+       `color-scheme` has to be on this element and nowhere else:
+       `LocalFrameView::rendererForColorScheme` only reads the document element,
+       and only when it is set explicitly. Without it WebKit resolves light and
+       the last-resort fallback stays white even on a phone in dark mode. */
+    background-color: var(--sky-root-solid);
+    color-scheme: dark;
     scroll-behavior: smooth;
     /* The header renders at its own height times the ultra-wide zoom, but this
        sits on the unzoomed html, so it has to reserve the rendered height. */
@@ -407,9 +427,11 @@
 
   body {
     zoom: var(--z, 1);
-    /* The clock's own gradient, not the midnight token: this is the canvas the
-       browser paints past the ends of the page, so a fixed one shows a band of
-       night above a daylight page on any overscroll. */
+    /* The clock's own gradient, not the midnight token — it used to reach the
+       canvas by propagation and a fixed value showed a band of night above a
+       daylight page. It no longer propagates: the `html` rule above paints the
+       canvas now, and this covers the body box alone. Still the clock's, since
+       the box is the whole document and the page below is on the clock. */
     background: var(--sky-root);
     font-family: var(--font-sans);
     color: var(--ink-muted);
