@@ -6,8 +6,27 @@ import './page-transition/page-transition.css';
 import { prefersReducedMotion } from '#lib/prefers-reduced-motion';
 import { tw } from '#lib/tw';
 
-/** Delay 2.15s + 0.8s of travel, then the small margin the comp leaves. */
+/** The small margin the comp leaves after the halves have gone, before the curtain leaves the DOM. */
+const RETIRE_MS = 100;
+
+/**
+ * The backstop, counted in frames the visitor actually saw.
+ *
+ * Only reachable if the halves never move — a stylesheet that did not arrive,
+ * where there is no black to sit behind either. It exists so a curtain that
+ * cannot animate still stops holding the page `inert`.
+ */
 const CURTAIN_MS = 3050;
+
+/**
+ * The most one frame may contribute to that count.
+ *
+ * `requestAnimationFrame` timestamps are wall-clock, so a web view that stopped
+ * rendering hands the next callback a gap of however long it was away. Capping
+ * the gap is what makes the total "time on screen" rather than "time since
+ * hydration", which is the whole distinction this file turns on.
+ */
+const FRAME_CAP_MS = 100;
 
 /**
  * Whether there is an intro to sit through: never during the prerender, and not
@@ -62,20 +81,69 @@ export const OpeningCurtain: FC<{ skipLabel: string; introLabel: string }> = ({ 
   // a dead button for anyone with scripts off.
   const plays = useSyncExternalStore(subscribeToHydration, playsOnClient, playsOnServer);
   const rootRef = useRef<HTMLDivElement>(null);
+  const halfRef = useRef<HTMLDivElement>(null);
   const skipRef = useRef<HTMLButtonElement>(null);
 
+  /**
+   * Retirement asks one question, once a frame: is the curtain still covering
+   * the page?
+   *
+   * Nothing here consults a duration or the animation objects, and both of those
+   * were wrong on a real phone. A timer counts real time while an iOS web view
+   * that is not on screen has its rendering suspended, so `setTimeout(3050)` from
+   * hydration expired with the comet barely started. `getAnimations()` is worse:
+   * at hydration on that same suspended view it returns an **empty list**,
+   * because the animations do not exist yet — read as "nothing to wait for", it
+   * retired the curtain 100ms later, which is the collapse this replaces. It also
+   * returns transitions, and under reduced motion `[0]` is a `scrollbar-color`
+   * transition rather than `curtainUp`.
+   *
+   * `requestAnimationFrame` has none of those failure modes because it is
+   * suspended by exactly the thing that suspends the animation: no frames, no
+   * progress, no retirement. When the view comes back, the halves are still over
+   * the viewport and the wait simply continues.
+   *
+   * `plays` is deliberately absent, from the body and from the dependencies. It
+   * comes from `useSyncExternalStore`, whose hydration snapshot is `false`, so
+   * this effect runs once with a stale `false` before React re-renders with the
+   * real value — measured in a browser as `plays=false` at 114ms and `plays=true`
+   * at 115ms. A branch keyed on that `false` scheduled `setOpen(false)` on the
+   * next macrotask behind a cleanup one millisecond later. Reduced motion needs
+   * no branch either: the halves are off the viewport on the first frame, so the
+   * first measurement below is already the answer.
+   */
   useEffect(() => {
-    const id = setTimeout(
-      () => {
-        setOpen(false);
-      },
-      plays ? CURTAIN_MS : 0,
-    );
+    const half = halfRef.current;
+    if (half === null) return;
+
+    let frame = 0;
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    let onScreenMs = 0;
+    let previous: number | undefined;
+
+    const check = (now: number) => {
+      onScreenMs += Math.min(now - (previous ?? now), FRAME_CAP_MS);
+      previous = now;
+
+      // Off the top of the viewport, or past the backstop.
+      if (half.getBoundingClientRect().bottom <= 0 || onScreenMs > CURTAIN_MS) {
+        timer = setTimeout(() => {
+          setOpen(false);
+        }, RETIRE_MS);
+
+        return;
+      }
+
+      frame = requestAnimationFrame(check);
+    };
+
+    frame = requestAnimationFrame(check);
 
     return () => {
-      clearTimeout(id);
+      cancelAnimationFrame(frame);
+      clearTimeout(timer);
     };
-  }, [plays]);
+  }, []);
 
   /**
    * Everything the curtain covers is taken out of the tab order and out of the
@@ -149,7 +217,7 @@ export const OpeningCurtain: FC<{ skipLabel: string; introLabel: string }> = ({ 
         </button>
       ) : null}
 
-      <div className={`${HALF} top-0 bottom-1/2 animate-[curtainUp_.8s_var(--ease-curtain)_2.15s_forwards]`}>
+      <div ref={halfRef} className={`${HALF} top-0 bottom-1/2 animate-[curtainUp_.8s_var(--ease-curtain)_2.15s_forwards]`}>
         <span aria-hidden='true' className={`${STAR} top-[30%] left-[15%] size-[3px] animate-[twinkle_1.8s_ease-in-out_infinite] bg-(--star-white)`} />
         <span aria-hidden='true' className={`${STAR} top-[55%] left-[70%] size-0.5 animate-[twinkle_2.2s_ease-in-out_.5s_infinite] bg-(--star-white)`} />
         <span aria-hidden='true' className={`${STAR} top-[20%] left-[85%] size-0.5 animate-[twinkle_1.6s_ease-in-out_.9s_infinite] bg-(--star-ice)`} />

@@ -8,7 +8,7 @@ Personal site. React 19 + TanStack Start on Cloudflare Workers, prerendered to s
 pnpm lint      # oxlint --fix && oxfmt — writes files
 pnpm build     # must end with "Prerendered 20 pages"
 pnpm test      # vitest run, all three projects
-pnpm test:e2e  # playwright, 33 tests over the prerendered pages in chromium
+pnpm test:e2e  # playwright, 35 tests over the prerendered pages in chromium
 ```
 
 Run them as four separate commands and check each exit code. **Never pipe `pnpm lint` into `tail`/`head` before checking its result** — a pipe masks the exit code, and that has hidden real violations here more than once.
@@ -74,7 +74,7 @@ Four files under `test/source/`, 16 tests, over `vite.config.ts`'s own plugins a
 
 ### `e2e`
 
-Three specs, 33 tests. `test/e2e/hydration.spec.ts` is 20 of them — one per prerendered page, each one navigating and asserting that the browser reported no error. `test/e2e/a11y.spec.ts` is 11, running axe over the Japanese half of the same list. `test/e2e/inset-background.spec.ts` is the last 2, asserting that `<html>` resolves to an opaque background colour before hydration and after — the one thing iOS Safari reads when it fills the insets around the viewport.
+Four specs, 35 tests. `test/e2e/hydration.spec.ts` is 20 of them — one per prerendered page, each one navigating and asserting that the browser reported no error. `test/e2e/a11y.spec.ts` is 11, running axe over the Japanese half of the same list. `test/e2e/inset-background.spec.ts` is 2, asserting that `<html>` resolves to an opaque background colour before hydration and after — the one thing iOS Safari reads when it fills the insets around the viewport. `test/e2e/opening-curtain.spec.ts` is the last 2. One is the slowest test in the suite at ~3.1s and asserts the curtain stops holding the page `inert` when it stops covering it, which is what `OpeningCurtain`'s `requestAnimationFrame` loop exists to make true. The second runs under `reducedMotion: reduce`, where the halves are off the viewport on the first frame and the curtain has to retire at once; it is the discriminating one — take the covering check out of that loop and it goes red while the other stays green.
 Neither is part of `pnpm test`: it wants a browser and a server, and the two vitest projects are meant to stay fast. It is `pnpm test:e2e`, and `playwright.config.ts` runs `pnpm exec vite preview` as its `webServer`, so the pages arrive through workerd with `_headers` applied, exactly as Cloudflare serves them. `.dev.vars` is not needed — measured with the file moved aside, the way CI has it.
 
 - **This exists for hydration mismatch, which nothing else in the gate can see.** oxlint's `react/purity` catches `Math.random()` and `Date.now()` in a component body but not `new Date()` — a `new Date().getHours()` rendered in the home route lints clean at every category and builds clean, measured. `vite build` renders but never hydrates. Both vitest projects run without a DOM.

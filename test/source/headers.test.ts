@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 
-import { emittedFile, emittedForSsr } from './plugin-harness';
+import { ROOT_CSS, emittedFile, emittedForSsr } from './plugin-harness';
 
 /**
  * `vite.config.ts`'s `headers()` plugin, driven through a real build rather than
@@ -87,6 +87,28 @@ it('serves rules for exactly those paths', async () => {
 
 // Same guard as the sitemap's, and invisible to a client-only build: without it
 // `_headers` is written into the SSR bundle too, where nothing serves it.
+/**
+ * The page's own response headers name the one render-blocking stylesheet, so
+ * Cloudflare can replay it as a `103 Early Hints` and the browser can start it
+ * before the document has arrived. The `<link>` tags in `<head>` are already
+ * found the moment the head is parsed; this is the only thing that gets ahead of
+ * them, and on a phone it is a round trip.
+ *
+ * Asserted per page and then counted, because the header belongs to the twenty
+ * pages and to nothing else: `/assets/*` and the file-extension rules would be
+ * announcing a stylesheet to a request that is already for one.
+ */
+const PRELOAD = `  Link: </${ROOT_CSS}>; rel=preload; as=style`;
+
+it('announces the root stylesheet to every page and to nothing else', async () => {
+  const file = await headers();
+
+  expect({
+    missing: PAGE_PATHS.filter(path => !file.includes(`${path}\n  Cache-Control: private, max-age=0, stale-while-revalidate=604800\n${PRELOAD}`)),
+    total: file.split('\n').filter(line => line === PRELOAD).length,
+  }).toStrictEqual({ missing: [], total: PAGE_PATHS.length });
+});
+
 it('emits nothing outside the client environment', async () => {
   expect(await emittedForSsr('headers')).toStrictEqual([]);
 });
