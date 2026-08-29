@@ -64,6 +64,24 @@ interface PaletteStop extends SkyPalette {
  */
 export interface SkyCss {
   rootBg: string;
+  /**
+   * The one opaque colour the page has, and the only thing iOS Safari can read.
+   *
+   * Safari 26 fills the regions outside the layout viewport — the status-bar
+   * inset above the header and the floating tab bar's inset below the footer —
+   * by blending `html` and `body`'s background *colours*. WebKit has excluded
+   * background images from that computation since 2011 (bug 59540: including
+   * them "is time-intensive, and would lead to unpredictable results"), so a
+   * page whose sky is only a gradient hands it nothing and falls all the way
+   * back to `systemBackgroundColor`, which is white. `theme-color` no longer
+   * overrides it; on iOS 26 Safari stopped reading that tag.
+   *
+   * The 55% stop, because one value has to serve both bands and the middle of
+   * the ramp is the closest a single colour gets to each end. They are 14 units
+   * apart at 15時 and 35 on the blue channel at 深夜, so the seam is invisible
+   * by day and near-black at night either way.
+   */
+  rootSolid: string;
   heroBg: string;
   nebulaBg: string;
   starAlpha: number;
@@ -583,6 +601,7 @@ export const skyCss = (clock: number, day: number): SkyCss => {
       [held(p.root[1]), 55],
       [held(p.root[2]), 100],
     ]),
+    rootSolid: rgb(held(p.root[1])),
     heroBg: gradient([
       [p.hero[0], 0],
       [p.hero[1], 32],
@@ -656,6 +675,7 @@ export const skyCss = (clock: number, day: number): SkyCss => {
 /** The custom properties `__root.css` reads the whole scene through. */
 export const skyVars = (sky: SkyCss) => ({
   '--sky-root': sky.rootBg,
+  '--sky-root-solid': sky.rootSolid,
   '--sky-hero': sky.heroBg,
   '--sky-nebula': sky.nebulaBg,
   '--sky-star-alpha': String(sky.starAlpha),
