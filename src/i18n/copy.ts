@@ -704,8 +704,8 @@ interface LabCopy {
    */
   stateUnknown: string;
   /**
-   * What the row means. Thirteen of the seventeen describe something this site
-   * really does; the other four are features it watches rather than uses, and
+   * What the row means. Fourteen of the seventeen describe something this site
+   * really does; the other three are features it watches rather than uses, and
    * their notes say so outright — the badge is a fact about the visitor's
    * browser, so a note that claimed the site used the feature would badge a lie
    * as live.
@@ -728,7 +728,7 @@ export const LAB_COPY = {
       scrollState: 'ヘッダーが貼り付いている間だけ、下の線が光ります。',
       scrollDriven: '読み進めた分だけ要素が現れ、ヘッダーの彗星が進みます。',
       siblingIndex: 'タグの登場を1つずつずらしています。JS は使っていません。',
-      squircleCorners: 'まだ入れていません。カードの角は今のところ普通の丸角です。',
+      squircleCorners: 'カードの角を squircle にしています。',
       textBoxTrim: '見出しの上下の余白を字面に合わせて詰めています。',
       textScale: '文字を全部 rem で組んであり、OS の文字サイズ設定がそのまま反映されます。',
       fieldSizing: 'お問い合わせの入力欄が中身に合わせて伸びます。',
@@ -756,7 +756,7 @@ export const LAB_COPY = {
       scrollState: 'The hairline under the header lights up only while it is stuck.',
       scrollDriven: 'Sections reveal as you scroll, and the comet on the header tracks progress.',
       siblingIndex: 'Tags stagger in by their index, with no JavaScript.',
-      squircleCorners: 'Not in yet — card corners are still plain radii.',
+      squircleCorners: 'Card corners are superellipses instead of plain radii.',
       textBoxTrim: 'Headings are trimmed to their cap height and baseline.',
       textScale: 'All type is set in rem, so your OS text-size setting carries through.',
       fieldSizing: 'The contact textarea grows with its content.',

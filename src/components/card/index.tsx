@@ -24,8 +24,14 @@ export const HEADING_INK = {
 
 type CardVariant = 'solid' | 'soft' | 'dashed';
 
+/**
+ * `corner-shape` is on the card and not on LinkRow on purpose: the design gives
+ * every 16px and 18px surface a superellipse corner and leaves the 14px rows on
+ * a plain radius. An engine without the property drops it and keeps the radius,
+ * which is the same fallback the design's own token comment describes.
+ */
 const BASE = tw(
-  'ev-on-panel block rounded-(--radius-card) border border-(--line-panel) bg-(--surface-panel) p-(--pad-card) font-sans text-inherit no-underline',
+  'ev-on-panel block rounded-(--radius-card) border border-(--line-panel) bg-(--surface-panel) p-(--pad-card) font-sans text-inherit no-underline [corner-shape:squircle]',
 );
 
 const VARIANT = {
