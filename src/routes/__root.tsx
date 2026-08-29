@@ -77,9 +77,14 @@ export const Route = createRootRoute({
          prerenders. It was `#0a0a0a` before, a near-black picked off the
          palette entirely — nothing on the site was ever that colour. iOS 26 no
          longer reads this tag at all; Android Chrome still tints its bar with
-         it, and that bar should agree with the page under it. Static, because
-         the tag is written once during render while the sky moves after
-         hydration. */
+         it, and that bar should agree with the page under it.
+
+         Frozen at 深夜 rather than following the clock, which is a choice and
+         not a constraint: `SkyClock` already rewrites the palette after
+         hydration and could rewrite this too. Browser chrome that changes
+         colour under the reader is worse than chrome that is one shade off, and
+         a repeated `theme-color` write is a `<head>` mutation some Android
+         builds flicker on. */
       { name: 'theme-color', content: MIDNIGHT.rootSolid },
       { name: 'apple-mobile-web-app-title', content: SITE_NAME },
       { property: 'og:site_name', content: SITE_NAME },
