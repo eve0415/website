@@ -64,6 +64,29 @@ const entry = (code: string): PluginOption => ({
 });
 
 /**
+ * The name a stand-in root stylesheet is emitted under.
+ *
+ * `headers()` reads the real one's content-hashed name off the bundle so it can
+ * announce it in a `Link` header, and the synthetic entry above imports nothing
+ * — so without a stylesheet in the bundle the plugin's own guard fires and every
+ * assertion here fails on a build error. Emitting one puts that lookup under
+ * test rather than around it, and lets the test name the value it expects.
+ */
+export const ROOT_CSS = 'assets/__root-Testh4sh.css';
+
+/**
+ * Client builds only, and first in the array so its `generateBundle` has already
+ * added the file by the time a plugin under test looks for it. It is deliberately
+ * absent from `emittedForSsr`, which asserts an empty asset list.
+ */
+const rootStylesheet: PluginOption = {
+  name: 'source-test-root-css',
+  generateBundle() {
+    this.emitFile({ type: 'asset', fileName: ROOT_CSS, source: '/* stand-in for the root stylesheet */\n' });
+  },
+};
+
+/**
  * Which environment the nested build stands up. A string rather than an `ssr`
  * boolean because vite's environments are an open set, not two.
  */
@@ -109,7 +132,7 @@ const run = async (code: string, plugins: PluginOption[], environment: Environme
  * test is cheaper than the ambiguity.
  */
 export const emittedFile = async (name: string, fileName: string): Promise<string> => {
-  const assets = new Map(await run(ENTRY_CODE, [plugin(name)], 'client'));
+  const assets = new Map(await run(ENTRY_CODE, [rootStylesheet, plugin(name)], 'client'));
   const source = assets.get(fileName);
   if (source === undefined) throw new Error(`the ${name} plugin emitted ${[...assets.keys()].join(', ') || 'nothing'}, not ${fileName}`);
 
