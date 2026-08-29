@@ -65,21 +65,15 @@ interface PaletteStop extends SkyPalette {
 export interface SkyCss {
   rootBg: string;
   /**
-   * The one opaque colour the page has, and the only thing iOS Safari can read.
+   * The one opaque colour the page has. The `html` rule in `__root.css` says
+   * why a gradient alone is not enough for iOS Safari; this is the value.
    *
-   * Safari 26 fills the regions outside the layout viewport — the status-bar
-   * inset above the header and the floating tab bar's inset below the footer —
-   * by blending `html` and `body`'s background *colours*. WebKit has excluded
-   * background images from that computation since 2011 (bug 59540: including
-   * them "is time-intensive, and would lead to unpredictable results"), so a
-   * page whose sky is only a gradient hands it nothing and falls all the way
-   * back to `systemBackgroundColor`, which is white. `theme-color` no longer
-   * overrides it; on iOS 26 Safari stopped reading that tag.
-   *
-   * The 55% stop, because one value has to serve both bands and the middle of
-   * the ramp is the closest a single colour gets to each end. They are 14 units
-   * apart at 15時 and 35 on the blue channel at 深夜, so the seam is invisible
-   * by day and near-black at night either way.
+   * The 55% stop, because one value has to serve both ends of the page and the
+   * middle of the ramp is the closest a single colour gets to each. The stops
+   * are 14 units apart at 15時 and 35 on the blue channel at 深夜, so the seam
+   * is invisible by day and near-black at night either way. On home the top
+   * edge is the hero's 0% stop rather than the root's — `#01010e` against
+   * `#05021c` — so the seam there is a little wider, in the darker direction.
    */
   rootSolid: string;
   heroBg: string;
@@ -595,13 +589,17 @@ export const skyCss = (clock: number, day: number): SkyCss => {
   const cs = mix(p.cs, p.cd, shade);
   const inkT = mix(p.inkT, deep([4, 20, 36], [10, 36, 64]), day);
 
+  /* The gradient's own middle, named because two fields want it: the 55% stop
+     below, and the one opaque colour the document carries. */
+  const rootMid = held(p.root[1]);
+
   return {
     rootBg: gradient([
       [held(p.root[0]), 0],
-      [held(p.root[1]), 55],
+      [rootMid, 55],
       [held(p.root[2]), 100],
     ]),
-    rootSolid: rgb(held(p.root[1])),
+    rootSolid: rgb(rootMid),
     heroBg: gradient([
       [p.hero[0], 0],
       [p.hero[1], 32],
