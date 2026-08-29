@@ -74,11 +74,12 @@ export const Route = createRootRoute({
       // text-size preference scale the page instead of being ignored.
       { name: 'text-scale', content: 'scale' },
       /* The same colour `__root.css` gives `<html>`, at the clock every page
-         prerenders. It is a near-black off the palette entirely until now, and
-         nothing on the site was that colour. iOS 26 no longer reads this tag at
-         all; Android Chrome still tints its bar with it, and that bar should
-         agree with the page under it. Static, because the tag is written once
-         during render while the sky moves after hydration. */
+         prerenders. It was `#0a0a0a` before, a near-black picked off the
+         palette entirely — nothing on the site was ever that colour. iOS 26 no
+         longer reads this tag at all; Android Chrome still tints its bar with
+         it, and that bar should agree with the page under it. Static, because
+         the tag is written once during render while the sky moves after
+         hydration. */
       { name: 'theme-color', content: MIDNIGHT.rootSolid },
       { name: 'apple-mobile-web-app-title', content: SITE_NAME },
       { property: 'og:site_name', content: SITE_NAME },
