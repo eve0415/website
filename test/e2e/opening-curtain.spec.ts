@@ -1,35 +1,27 @@
 import { expect, test } from '@playwright/test';
 
 /**
- * The curtain's two clocks, and the gap that used to open between them.
+ * The curtain must stop holding the page `inert` when it stops covering it.
  *
- * The halves are animated by CSS out of the prerendered HTML, so they start
- * moving at the document's first paint. The effect that retires the curtain —
- * and with it the `inert` attribute the curtain puts on every sibling, which
- * takes the whole page out of the tab order and out of the accessibility tree —
- * runs at hydration, which is later by however long the bundle takes. Retiring
- * on a duration counted from hydration therefore left a visible page that could
- * not be clicked or read for exactly that difference.
+ * `inert` takes every sibling of the curtain out of the tab order and out of the
+ * accessibility tree (WCAG 2.2 SC 2.4.11), so any gap between "the halves have
+ * gone" and "the attribute is lifted" is a visible page nobody can click or
+ * read. Retirement is driven by a `requestAnimationFrame` loop measuring whether
+ * the half still covers the viewport, so the two land within a frame of each
+ * other plus the design's own margin.
  *
- * Delaying only the JavaScript is what makes the two clocks separable: the
- * stylesheets still resolve at their usual time so first paint does not move,
- * while hydration is pushed a second out. Against the old timer the gap
- * measured here was the delay itself; against the animation it is the design's
- * own 100ms margin.
+ * No artificial delay on the bundles. An earlier version of this file delayed
+ * them by a second to prove that retirement had stopped following hydration's
+ * clock; it aborted its own `evaluate` against a cold server, and it stopped
+ * meaning anything once retirement was tied to layout rather than to hydration.
+ * The mutation that matters is still caught: take the covering check out of the
+ * loop and this goes red.
  */
-const JS_DELAY_MS = 1000;
 
 /** The 100ms margin plus room for a loaded runner to get round to the timer. */
 const MAX_GAP_MS = 500;
 
 test('the page stops being inert when the curtain stops covering it', async ({ page }) => {
-  await page.route(/\/assets\/.*\.js$/u, async route => {
-    await new Promise(resolve => {
-      setTimeout(resolve, JS_DELAY_MS);
-    });
-    await route.continue();
-  });
-
   await page.goto('/');
 
   const gap = await page.evaluate(async () => {
@@ -61,15 +53,6 @@ test('the page stops being inert when the curtain stops covering it', async ({ p
   expect(gap).toBeLessThan(MAX_GAP_MS);
 });
 
-/**
- * Reduced motion has no branch of its own any more — `plays` was taken out of
- * the retirement path because its hydration snapshot is `false`, and a branch
- * keyed on that was racing a one-millisecond cleanup. What retires the curtain
- * for a reader who asked for less motion is the same animation as everyone
- * else's, collapsed to 0.01ms by `__root.css`. This is what says that still
- * works: a curtain that fell through to the fallback timer would sit here for
- * three seconds over a page it is not covering.
- */
 test('retires at once for a reader who asked for less motion', async ({ page }) => {
   await page.emulateMedia({ reducedMotion: 'reduce' });
   await page.goto('/');

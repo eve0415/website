@@ -10,6 +10,25 @@ import { tw } from '#lib/tw';
 const RETIRE_MS = 100;
 
 /**
+ * The backstop, counted in frames the visitor actually saw.
+ *
+ * Only reachable if the halves never move — a stylesheet that did not arrive,
+ * where there is no black to sit behind either. It exists so a curtain that
+ * cannot animate still stops holding the page `inert`.
+ */
+const CURTAIN_MS = 3050;
+
+/**
+ * The most one frame may contribute to that count.
+ *
+ * `requestAnimationFrame` timestamps are wall-clock, so a web view that stopped
+ * rendering hands the next callback a gap of however long it was away. Capping
+ * the gap is what makes the total "time on screen" rather than "time since
+ * hydration", which is the whole distinction this file turns on.
+ */
+const FRAME_CAP_MS = 100;
+
+/**
  * Whether there is an intro to sit through: never during the prerender, and not
  * in a browser that asked for less motion, where the reduced-motion rules have
  * already collapsed the whole thing to nothing.
@@ -66,102 +85,62 @@ export const OpeningCurtain: FC<{ skipLabel: string; introLabel: string }> = ({ 
   const skipRef = useRef<HTMLButtonElement>(null);
 
   /**
-   * Retirement follows the half's own animation, and nothing else.
+   * Retirement asks one question, once a frame: is the curtain still covering
+   * the page?
    *
-   * Not a duration. The halves are moved by CSS, so their clock starts at the
-   * document's first paint, while a timer's starts at hydration — and on iOS the
-   * two can be a whole intro apart, because a web view that is not on screen has
-   * its rendering suspended and the animation barely advances while `setTimeout`
-   * keeps counting real time. Retiring on 3050ms cut the curtain mid-comet on a
-   * real phone, and on a fast one left the page `inert` past the end of it.
+   * Nothing here consults a duration or the animation objects, and both of those
+   * were wrong on a real phone. A timer counts real time while an iOS web view
+   * that is not on screen has its rendering suspended, so `setTimeout(3050)` from
+   * hydration expired with the comet barely started. `getAnimations()` is worse:
+   * at hydration on that same suspended view it returns an **empty list**,
+   * because the animations do not exist yet — read as "nothing to wait for", it
+   * retired the curtain 100ms later, which is the collapse this replaces. It also
+   * returns transitions, and under reduced motion `[0]` is a `scrollbar-color`
+   * transition rather than `curtainUp`.
    *
-   * `plays` is deliberately absent from the body and from the dependencies. It
+   * `requestAnimationFrame` has none of those failure modes because it is
+   * suspended by exactly the thing that suspends the animation: no frames, no
+   * progress, no retirement. When the view comes back, the halves are still over
+   * the viewport and the wait simply continues.
+   *
+   * `plays` is deliberately absent, from the body and from the dependencies. It
    * comes from `useSyncExternalStore`, whose hydration snapshot is `false`, so
    * this effect runs once with a stale `false` before React re-renders with the
    * real value — measured in a browser as `plays=false` at 114ms and `plays=true`
-   * at 115ms. A branch that retired the curtain on that `false` was scheduling
-   * `setOpen(false)` on the next macrotask and relying on a cleanup one
-   * millisecond later to cancel it, which anything slower than a desktop loses.
-   *
-   * `getAnimations` without a subtree is exactly `curtainUp` — the stars inside
-   * run their own `twinkle` and are not asked about.
-   */
-  /**
-   * Retirement follows the half's own animations, and nothing else.
-   *
-   * Not a duration. The halves are moved by CSS, so their clock starts at the
-   * document's first paint, while a timer's starts at hydration — and on iOS the
-   * two can be a whole intro apart, because a web view that is not on screen has
-   * its rendering suspended and the animation barely advances while `setTimeout`
-   * keeps counting real time. Retiring on 3050ms cut the curtain mid-comet on a
-   * real phone, and on a fast one left the page `inert` past the end of it.
-   *
-   * `plays` is deliberately absent from the body and from the dependencies. It
-   * comes from `useSyncExternalStore`, whose hydration snapshot is `false`, so
-   * this effect runs once with a stale `false` before React re-renders with the
-   * real value — measured in a browser as `plays=false` at 114ms and `plays=true`
-   * at 115ms. A branch keyed on that `false` was scheduling `setOpen(false)` on
-   * the next macrotask and relying on a cleanup one millisecond later to cancel
-   * it, which anything slower than a desktop loses. Reduced motion needs no
-   * branch of its own either: `__root.css` collapses the duration to 0.01ms, so
-   * the same wait below simply ends at once.
-   *
-   * All of them, never `[0]`. `getAnimations` returns transitions too, and the
-   * reduced-motion rule gives `transition-duration` a non-zero value on `*`,
-   * which switches transitions on for every inherited property — so `SkyClock`'s
-   * palette write puts a `scrollbar-color` transition on this element *ahead* of
-   * `curtainUp`. Measured under `reduce`: `[CSSTransition|scrollbar-color,
-   * CSSAnimation|curtainUp]`, against `[CSSAnimation|curtainUp]` without. The
-   * stars run their own `twinkle` and are children, so they are not in the list.
-   *
-   * An empty list retires at once, which is right for a curtain with no
-   * animation: it has no fill either, so nothing is covering the page.
+   * at 115ms. A branch keyed on that `false` scheduled `setOpen(false)` on the
+   * next macrotask behind a cleanup one millisecond later. Reduced motion needs
+   * no branch either: the halves are off the viewport on the first frame, so the
+   * first measurement below is already the answer.
    */
   useEffect(() => {
+    const half = halfRef.current;
+    if (half === null) return;
+
+    let frame = 0;
     let timer: ReturnType<typeof setTimeout> | undefined;
-    let scheduled = false;
+    let onScreenMs = 0;
+    let previous: number | undefined;
 
-    const retire = (delay: number) => {
-      if (scheduled) return;
-      scheduled = true;
-      timer = setTimeout(() => {
-        setOpen(false);
-      }, delay);
-    };
+    const check = (now: number) => {
+      onScreenMs += Math.min(now - (previous ?? now), FRAME_CAP_MS);
+      previous = now;
 
-    const pending = new Set(halfRef.current?.getAnimations());
+      // Off the top of the viewport, or past the backstop.
+      if (half.getBoundingClientRect().bottom <= 0 || onScreenMs > CURTAIN_MS) {
+        timer = setTimeout(() => {
+          setOpen(false);
+        }, RETIRE_MS);
 
-    const done = (animation: Animation) => {
-      if (!pending.delete(animation)) return;
-      if (pending.size === 0) retire(RETIRE_MS);
-    };
-
-    /* `cancel` as well as `finish`: a transition that is replaced — which the
-       palette write does on every tween frame — ends by being cancelled, and
-       waiting only on `finish` would leave the curtain up for good. */
-    const listeners = [...pending].map(animation => {
-      const settle = () => {
-        done(animation);
-      };
-
-      animation.addEventListener('finish', settle);
-      animation.addEventListener('cancel', settle);
-
-      return { animation, settle };
-    });
-
-    // One can end between the snapshot above and its listener, and neither event
-    // is replayed for a listener that arrives after it.
-    for (const { animation } of listeners) if (animation.playState === 'finished' || animation.playState === 'idle') done(animation);
-
-    if (pending.size === 0) retire(RETIRE_MS);
-
-    return () => {
-      for (const { animation, settle } of listeners) {
-        animation.removeEventListener('finish', settle);
-        animation.removeEventListener('cancel', settle);
+        return;
       }
 
+      frame = requestAnimationFrame(check);
+    };
+
+    frame = requestAnimationFrame(check);
+
+    return () => {
+      cancelAnimationFrame(frame);
       clearTimeout(timer);
     };
   }, []);
