@@ -25,7 +25,7 @@
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
     "@cloudflare/vite-plugin": "1.54.4",
-    "@cloudflare/vitest-plugin": "1.1.4",
+    "@cloudflare/vitest-plugin": "https://pkg.pr.new/@cloudflare/vitest-plugin@7b89dc4",
     "@fontsource/noto-sans-jp": "5.3.0",
     "@marsidev/react-turnstile": "1.6.1",
     "@oxlint/plugins": "1.81.0",
