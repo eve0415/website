@@ -1,24 +1,14 @@
-import type { TestUserConfig } from 'vitest/config';
-
 import { cloudflareTest } from '@cloudflare/vitest-plugin';
 import { defineConfig } from 'vitest/config';
 
 const CONTACT_FORM = 'src/routes/**/links/-/contact-form';
 
-/**
- * A project reads only its own `test` block, so both entries spread this.
- * `sequence` is the exception and stays at the root: vitest serialises it from
- * the root config alone, and a project carrying it is silently ignored.
- */
-const SHARED = {
-  restoreMocks: true,
-  unstubEnvs: true,
-  unstubGlobals: true,
-  expect: { requireAssertions: true },
-} satisfies TestUserConfig;
-
 export default defineConfig({
   test: {
+    restoreMocks: true,
+    unstubEnvs: true,
+    unstubGlobals: true,
+    expect: { requireAssertions: true },
     sequence: { shuffle: true },
     projects: [
       {
@@ -38,7 +28,6 @@ export default defineConfig({
         test: {
           name: 'worker',
           include: ['src/**/*.test.ts'],
-          ...SHARED,
         },
       },
       {
@@ -46,7 +35,6 @@ export default defineConfig({
         test: {
           name: 'dist',
           include: ['test/dist/**/*.test.ts'],
-          ...SHARED,
         },
       },
       {
@@ -56,7 +44,6 @@ export default defineConfig({
         test: {
           name: 'source',
           include: ['test/source/**/*.test.ts'],
-          ...SHARED,
         },
       },
     ],
