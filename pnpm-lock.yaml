@@ -106,8 +106,8 @@ settings:
   excludeLinksFromLockfile: false
 
 overrides:
-  miniflare: 5.20260903.0-alpha
-  wrangler: 4.129.0
+  '@cloudflare/vitest-plugin>miniflare': 5.20260903.0-alpha
+  '@cloudflare/vitest-plugin>wrangler': 4.129.0
 
 importers:
 
@@ -382,7 +382,7 @@ packages:
     hasBin: true
     peerDependencies:
       vite: ^6.1.0 || ^7.0.0 || ^8.0.0
-      wrangler: 4.129.0
+      wrangler: ^4.129.0
 
   '@cloudflare/vitest-plugin@https://pkg.pr.new/@cloudflare/vitest-plugin@7b89dc4':
     resolution: {integrity: sha512-8wlTDkHp6+9+G9u8qeI1xoqeg1OabMw8EAelMoaTTHi2auaM/8vwd82+Hm9q3w2ArFvcM1j1Qyuw1RVIWIL4Fg==, tarball: https://pkg.pr.new/@cloudflare/vitest-plugin@7b89dc4}

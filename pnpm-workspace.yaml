@@ -2,9 +2,8 @@ allowBuilds:
   esbuild: false
   workerd: false
 
-# The @cloudflare/vitest-plugin preview build of cloudflare/workers-sdk#15500 declares
-# its workspace siblings as pkg.pr.new URLs, which pnpm rejects as exotic subdeps. The PR
-# touches only packages/vitest-plugin, so these resolve to what the published 1.1.4 pins.
+# The @cloudflare/vitest-plugin preview build of https://github.com/cloudflare/workers-sdk/pull/15500 declares its workspace siblings as pkg.pr.new URLs, which pnpm rejects as exotic subdeps.
+# That PR touches only packages/vitest-plugin, so these pin back to what the published 1.1.4 resolves.
 overrides:
-  miniflare: 5.20260903.0-alpha
-  wrangler: 4.129.0
+  '@cloudflare/vitest-plugin>miniflare': 5.20260903.0-alpha
+  '@cloudflare/vitest-plugin>wrangler': 4.129.0
