@@ -28,7 +28,7 @@ jobs:
           persist-credentials: false
 
       - name: Set up pnpm and Node.js
-        uses: pnpm/setup@84cb39b217b10273981911c288cd62326dc7c6d2 # v2.0.2
+        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
 
       - name: Update dependencies and open a pull request
         uses: pnpm/update@76f98d727df25f56f9bbd38e60ad663fd785d3d4 # v0.0.0
