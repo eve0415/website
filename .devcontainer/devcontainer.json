@@ -1,12 +1,12 @@
 {
   "name": "eve0415 website devcontainer",
-  "image": "mcr.microsoft.com/devcontainers/typescript-node:5.1.2-24-trixie",
+  "image": "mcr.microsoft.com/devcontainers/typescript-node:5.2.3-24-trixie",
   "postStartCommand": "git submodule update --init --recursive && pnpm install --frozen-lockfile && pnpm generate",
   "containerEnv": {
     "TZ": "Asia/Tokyo"
   },
   "features": {
-    "ghcr.io/devcontainers/features/github-cli:1.1.2": {
+    "ghcr.io/devcontainers/features/github-cli:1.1.3": {
       "extensions": "github/gh-stack",
       "installDirectlyFromGitHubRelease": true,
       "version": "latest"
