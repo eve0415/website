@@ -35,14 +35,14 @@ export const CometLink: FC<CometLinkProps> = props => {
           aria-hidden='true'
         />
         <span
-          className='absolute bottom-[-1.5px] left-0 h-[5px] w-full transform-[translateX(calc(-100%+10px))] opacity-0 group-hover:[animation:evCometRun_0.6s_var(--ease-comet)_0.08s_both]'
+          className='absolute bottom-[-1.5px] left-0 h-[5px] w-full transform-[translateX(calc(-100%+10px))] opacity-0 group-hover:animate-[evCometRun_0.6s_var(--ease-comet)_0.08s_both]'
           aria-hidden='true'
         >
           <span className='absolute top-px right-0 h-[3px] w-6.5 rounded-[3px] bg-[linear-gradient(90deg,transparent,rgba(252,247,253,.95))] shadow-[0_0_8px_1px_rgba(4,254,255,.8)]' />
           <span className='absolute top-0 right-[-2px] size-[5px] rounded-[50%] bg-(--star-white) shadow-[0_0_10px_3px_rgba(4,254,255,.9)]' />
         </span>
         <span
-          className='absolute right-[-7px] -bottom-px size-[13px] transform-[scale(0)] bg-(--star-white) drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:var(--shape-sparkle)] group-hover:[animation:evKiraPop_0.5s_ease-in-out_0.45s_both]'
+          className='absolute right-[-7px] -bottom-px size-[13px] transform-[scale(0)] bg-(--star-white) drop-shadow-[0_0_5px_rgba(4,254,255,.9)] [clip-path:var(--shape-sparkle)] group-hover:animate-[evKiraPop_0.5s_ease-in-out_0.45s_both]'
           aria-hidden='true'
         />
       </span>
