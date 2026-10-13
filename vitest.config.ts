@@ -27,6 +27,8 @@ export default defineConfig({
         ],
         test: {
           name: 'worker',
+          // Workerd cannot read the host-side module cache; drop this once https://github.com/cloudflare/workers-sdk/pull/16163 ships.
+          fsModuleCache: false,
           include: ['src/**/*.test.ts'],
         },
       },
