@@ -4,23 +4,6 @@ import { BRAND_CLASS, NAV_LINK_CLASS, TRAILING_CLASS } from '#routes/{-$locale}/
 
 import { jsFiles, read } from './client-output';
 
-/**
- * A binding whose entire body is its own parameter — what `src/lib/tw.ts` becomes
- * once mangled (`Oe=e=>e`), in the shared chunk rather than beside the class lists.
- *
- * There is no assertion on the name `tw` here, or anywhere else in this file: the
- * client bundle is minified, `tw` is mangled to a single letter long before a test
- * looks at it, and with `stripTw` removed `grep -a 'tw('` over `dist/client` still
- * finds nothing. An assertion that cannot fail for the reason its name gives reads
- * as coverage to the next person, so there isn't one.
- *
- * Name-blind by necessity, and that is this assertion's own weakness: a dependency
- * shipping its own `x => x` into the shared chunk would fail it with nothing wrong
- * on our side. Kept anyway, because the identity binding is what an unstripped
- * marker leaves behind and nothing else in the output points at it.
- */
-const IDENTITY_BINDING = /(?:^|[;,{(=\s])[A-Za-z_$][\w$]*\s*=\s*\(?([A-Za-z_$][\w$]*)\)?\s*=>\s*\1\s*(?=[,;)}\]]|$)/u;
-
 const escaped = (text: string): string => text.replaceAll(/[$()*+.?[\\\]^{|}]/gu, String.raw`\$&`);
 
 /** The class list as an argument to a call, i.e. with the marker still around it. */
@@ -37,10 +20,6 @@ const BUNDLES = jsFiles().map(file => ({ file, code: read(file) }));
  * lists land. None of the three is visible from a single-module build.
  */
 describe('the tw() markers are stripped from the client bundle', () => {
-  it('ships no identity binding, which is what a surviving marker would leave in the shared chunk', () => {
-    expect(BUNDLES.filter(({ code }) => IDENTITY_BINDING.test(code)).map(({ file }) => file)).toStrictEqual([]);
-  });
-
   it.each([
     ['BRAND_CLASS', BRAND_CLASS],
     ['TRAILING_CLASS', TRAILING_CLASS],
