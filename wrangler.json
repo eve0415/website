@@ -45,5 +45,9 @@
   "version_metadata": {
     "binding": "CF_VERSION_METADATA"
   },
-  "previews": {}
+  "previews": {
+    "version_metadata": {
+      "binding": "CF_VERSION_METADATA"
+    }
+  }
 }
