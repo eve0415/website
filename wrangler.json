@@ -21,6 +21,9 @@
     "enabled": true,
     "traces": {
       "enabled": true
+    },
+    "issues": {
+      "enabled": true
     }
   },
   "durable_objects": {
