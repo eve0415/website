@@ -1,10 +1,10 @@
 import type { ContactRateLimiter } from './rate-limiter';
 import type { TurnstileRejection } from './turnstile/verify';
-import type { ContactFailure, ContactResult } from './validation';
+import type { ContactFailure, ContactInput, ContactResult } from './validation';
 
 import { createServerFn } from '@tanstack/react-start';
 import { getRequest, getRequestUrl } from '@tanstack/react-start/server';
-import { env } from 'cloudflare:workers';
+import { env, tracing } from 'cloudflare:workers';
 
 import { rateLimitKey } from './rate-limit-key';
 import { verifyTurnstileToken } from './turnstile/verify';
@@ -95,43 +95,51 @@ const deliver = async (input: Delivery): Promise<ContactResult> => {
   return { ok: true };
 };
 
+const submit = async (data: ContactInput): Promise<ContactResult> => {
+  const failure = checkContact(data);
+  if (failure !== undefined) return { ok: false, reason: failure };
+
+  const remoteIp = getRequest().headers.get('CF-Connecting-IP') ?? UNKNOWN_IP;
+
+  // The host of the request being answered rather than a fixed domain — an
+  // allowlist has no entry for a preview deployment's generated hostname.
+  // `getRequestUrl().hostname` and not the Host header, which carries a port
+  // that siteverify's `hostname` never has.
+  const verdict = await verifyTurnstileToken(data.token, remoteIp, getRequestUrl().hostname);
+  if (!verdict.ok) return { ok: false, reason: failureFor(verdict.reason) };
+
+  // After the challenge, so an unverified flood cannot burn a real visitor's
+  // budget by guessing their address. `rateLimitKey` and not the raw address:
+  // an IPv6 host owns a whole /64 and would otherwise get a counter per request.
+  const limiter = env.CONTACT_RATE_LIMIT.getByName(rateLimitKey(remoteIp));
+
+  const reservation = await reserveSlot(limiter);
+  if (reservation === 'blocked') return { ok: false, reason: 'rate-limited' };
+
+  const result = await deliver(data);
+
+  // A send that never happened must not cost the sender anything, or three
+  // retries during a mail outage leave them locked out of a form that has
+  // delivered nothing. Only a slot this request actually took is ours to
+  // return, and the object caps how often it will take one back.
+  if (!result.ok && reservation === 'held') {
+    try {
+      await limiter.release();
+    } catch {
+      // The budget keeps a slot it did not need. The mail is already lost;
+      // failing the request a second time over the counter helps nobody.
+    }
+  }
+
+  return result;
+};
+
 export const sendContact = createServerFn({ method: 'POST' })
   .validator(parseContactInput)
   .handler(async ({ data }): Promise<ContactResult> => {
-    const failure = checkContact(data);
-    if (failure !== undefined) return { ok: false, reason: failure };
-
-    const remoteIp = getRequest().headers.get('CF-Connecting-IP') ?? UNKNOWN_IP;
-
-    // The host of the request being answered rather than a fixed domain — an
-    // allowlist has no entry for a preview deployment's generated hostname.
-    // `getRequestUrl().hostname` and not the Host header, which carries a port
-    // that siteverify's `hostname` never has.
-    const verdict = await verifyTurnstileToken(data.token, remoteIp, getRequestUrl().hostname);
-    if (!verdict.ok) return { ok: false, reason: failureFor(verdict.reason) };
-
-    // After the challenge, so an unverified flood cannot burn a real visitor's
-    // budget by guessing their address. `rateLimitKey` and not the raw address:
-    // an IPv6 host owns a whole /64 and would otherwise get a counter per request.
-    const limiter = env.CONTACT_RATE_LIMIT.getByName(rateLimitKey(remoteIp));
-
-    const reservation = await reserveSlot(limiter);
-    if (reservation === 'blocked') return { ok: false, reason: 'rate-limited' };
-
-    const result = await deliver(data);
-
-    // A send that never happened must not cost the sender anything, or three
-    // retries during a mail outage leave them locked out of a form that has
-    // delivered nothing. Only a slot this request actually took is ours to
-    // return, and the object caps how often it will take one back.
-    if (!result.ok && reservation === 'held') {
-      try {
-        await limiter.release();
-      } catch {
-        // The budget keeps a slot it did not need. The mail is already lost;
-        // failing the request a second time over the counter helps nobody.
-      }
-    }
-
+    const result = await submit(data);
+    // On the request's own span, so a trace says which way the form went
+    // without a log line that would need to carry the sender's details.
+    tracing.getActiveSpan()?.setAttribute('contact.result', result.ok ? 'sent' : result.reason);
     return result;
   });
