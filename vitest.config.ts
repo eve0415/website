@@ -54,7 +54,7 @@ export default defineConfig({
       // V8's native coverage is not available inside workerd.
       provider: 'istanbul',
       include: ['src/**/*.ts', 'src/**/*.tsx'],
-      exclude: ['src/routeTree.gen.ts'],
+      exclude: ['src/routeTree.gen.ts', 'src/lib/cn-tables.gen.ts'],
       thresholds: {
         [`${CONTACT_FORM}/{form-state,rate-limiter,rate-limit-key,validation,turnstile/verify}.ts`]: { 100: true, perFile: true },
         'src/routes/**/-/sky/{palette,puffs,seeded-random}.ts': { 100: true, perFile: true },

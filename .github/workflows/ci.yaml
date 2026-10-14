@@ -32,10 +32,10 @@ jobs:
         with:
           cache: true
 
-      # .dev.vars is gitignored, so the secret names come from the committed
-      # example instead — without them the three `env.*` reads have no type.
-      - name: Generate Worker types
-        run: pnpm exec wrangler types --env-file .dev.vars.example
+      # Worker types from .dev.vars.example, since .dev.vars is gitignored, and the
+      # cn tables, which oxlint type-checks through cn.ts before the build runs.
+      - name: Generate types and cn tables
+        run: pnpm generate
 
       - name: Lint
         run: pnpm exec oxlint

@@ -40,7 +40,7 @@ jobs:
           # sits waiting for a maintainer to approve it. This gates the update
           # without that click.
           verify: |
-            pnpm exec wrangler types --env-file .dev.vars.example
+            pnpm generate
             pnpm exec oxlint
             pnpm exec oxfmt --check
             pnpm exec vite build

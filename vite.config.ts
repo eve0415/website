@@ -10,6 +10,7 @@ import tailwindcss from '@tailwindcss/vite';
 import { devtools } from '@tanstack/devtools-vite';
 import { tanstackStart } from '@tanstack/react-start/plugin/vite';
 import react from '@vitejs/plugin-react';
+import { cn } from 'cn/vite';
 import subsetFont from 'subset-font';
 import { defineConfig, parseSync } from 'vite';
 import devtoolsJson from 'vite-plugin-devtools-json';
@@ -17,6 +18,8 @@ import devtoolsJson from 'vite-plugin-devtools-json';
 import { SITE_URL } from '#i18n/head';
 import { DEFAULT_LOCALE, LOCALES, localePath } from '#i18n/locale';
 import { securityHeaders } from '#security-headers';
+
+import { cnOptions } from './cn-tables.config';
 
 /**
  * Every route, keyed by the `RoutePath` its copy is written against.
@@ -510,6 +513,7 @@ export default defineConfig({
     react({ compiler: { panicThreshold: 'critical_errors' } }),
     stripTw(),
     tailwindcss(),
+    cn(cnOptions),
     devtoolsJson(),
   ],
   build: {

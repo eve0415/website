@@ -15,7 +15,7 @@ import config from '../../vite.config';
  * there is no assertion to get wrong — no `as`, no guard claiming `Plugin` on the
  * strength of a `name` alone — and a falsy or pending entry simply never matches.
  *
- * Nested because plugin factories return arrays: of the 68 named plugins the
+ * Nested because plugin factories return arrays: of the 70 named plugins the
  * config flattens to, `cloudflare()` contributes 18 and `tanstackStart()` 26, and
  * the three looked for here are single objects sitting between them. Three of
  * tanstack's names appear twice (`code-splitter:compile-{reference,virtual,shared}-file`),

@@ -23,5 +23,15 @@
     "skipLibCheck": true,
     "noEmit": true
   },
-  "include": ["src/**/*", "test/**/*", "playwright.config.ts", "subset-font.d.ts", "vite.config.ts", "vitest.config.ts", "oxlint.config.ts", "oxfmt.config.ts"]
+  "include": [
+    "src/**/*",
+    "test/**/*",
+    "cn-tables.config.ts",
+    "playwright.config.ts",
+    "subset-font.d.ts",
+    "vite.config.ts",
+    "vitest.config.ts",
+    "oxlint.config.ts",
+    "oxfmt.config.ts"
+  ]
 }

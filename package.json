@@ -15,12 +15,11 @@
     "lint": "oxlint --fix --fix-suggestions --fix-dangerously && oxfmt",
     "test": "vitest run",
     "test:e2e": "playwright test",
-    "generate": "wrangler types",
+    "generate": "wrangler types --env-file .dev.vars.example && node cn-tables.config.ts",
     "deploy": "vite build && wrangler deploy"
   },
   "dependencies": {
-    "clsx": "2.1.1",
-    "tailwind-merge": "3.7.0"
+    "cn": "0.4.0"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.13.0",
