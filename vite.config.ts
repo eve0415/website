@@ -19,7 +19,7 @@ import { SITE_URL } from '#i18n/head';
 import { DEFAULT_LOCALE, LOCALES, localePath } from '#i18n/locale';
 import { securityHeaders } from '#security-headers';
 
-import { cnOptions } from './cn-tables.config';
+import { cnOptions } from './cn-tables.config.ts';
 
 /**
  * Every route, keyed by the `RoutePath` its copy is written against.
