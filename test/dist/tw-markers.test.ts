@@ -4,14 +4,9 @@ import { readFileSync } from 'node:fs';
 import { Visitor, parseSync } from 'vite';
 import { describe, expect, it } from 'vitest';
 
-import { BRAND_CLASS, NAV_LINK_CLASS, TRAILING_CLASS } from '#routes/{-$locale}/-/site/header-classes';
-
 import { jsFiles, read } from './client-output';
 
 const escaped = (text: string): string => text.replaceAll(/[$()*+.?[\\\]^{|}]/gu, String.raw`\$&`);
-
-/** The class list as an argument to a call, i.e. with the marker still around it. */
-const wrappedIn = (list: string): RegExp => new RegExp(String.raw`[\w$]\(\s*['"\u0060]${escaped(list)}`, 'u');
 
 /** The class list as a whole string literal, in any of the three quotes the minifier may pick. */
 const quoted = (list: string): RegExp => new RegExp(String.raw`(['"\u0060])${escaped(list)}\1`, 'u');
@@ -22,60 +17,90 @@ const calledWith = (list: string): RegExp => new RegExp(String.raw`[\w$]\(\s*(['
 const BUNDLES = jsFiles().map(file => ({ file, code: read(file) }));
 
 /**
- * Every source file that can hold a marker.
- * `git grep --untracked` takes milliseconds over `src`, includes files not yet committed, honours `.gitignore`, and pre-filters on the same `tw(` needle as `stripTw`'s own `code` filter.
+ * Every source file that can import the marker, including files with only a bare reference.
+ * `git grep --untracked` includes uncommitted files and honours `.gitignore`.
  */
 const markerFiles = (): string[] =>
-  execFileSync('git', ['grep', '-l', '--untracked', '-F', 'tw(', '--', 'src/*.ts', 'src/*.tsx'], { encoding: 'utf8' })
+  execFileSync('git', ['grep', '-l', '--untracked', '-F', '#lib/tw', '--', 'src/*.ts', 'src/*.tsx'], { encoding: 'utf8' })
     .split('\n')
     .filter(file => file !== '');
 
-/** The literal argument of every `tw(...)` call in `src`, with the file it sits in. */
-const markedLists = (): { file: string; list: string }[] =>
-  markerFiles().flatMap(file => {
-    const lists: { file: string; list: string }[] = [];
+/** What one source file marks: the literal of each call `stripTw` strips, and every use of `tw` it cannot. */
+interface Marked {
+  lists: { file: string; list: string }[];
+  unstrippable: string[];
+}
+
+const marked = (): Marked => {
+  const result: Marked = { lists: [], unstrippable: [] };
+  for (const file of markerFiles()) {
+    const { program } = parseSync(file, readFileSync(file, 'utf8'));
+    const imports = program.body.filter(
+      node =>
+        node.type === 'ImportDeclaration' &&
+        node.source.value === '#lib/tw' &&
+        node.specifiers.some(specifier => specifier.type === 'ImportSpecifier' && specifier.local.name === 'tw'),
+    );
+    if (imports.length === 0) continue;
+
+    const identifiers = new Set<number>();
+    const callCallees = new Set<number>();
+    const nonReferences = new Set<number>();
     new Visitor({
       CallExpression(node) {
         if (node.callee.type !== 'Identifier' || node.callee.name !== 'tw') return;
+        callCallees.add(node.callee.start);
         const argument = node.arguments.at(0);
-        // `stripTw` only removes a call with one string literal, so anything else is reported under a list no bundle can contain.
-        const literal = node.arguments.length === 1 && argument?.type === 'Literal' && typeof argument.value === 'string' ? argument.value : null;
-        lists.push({ file, list: literal ?? `a tw() call at offset ${node.start} that stripTw cannot strip` });
+        // `stripTw` only removes a call with exactly one string literal.
+        if (node.arguments.length === 1 && argument?.type === 'Literal' && typeof argument.value === 'string') {
+          result.lists.push({ file, list: argument.value });
+        } else {
+          result.unstrippable.push(`${file}: a tw() call at offset ${node.start}`);
+        }
       },
-    }).visit(parseSync(file, readFileSync(file, 'utf8')).program);
+      Identifier(node) {
+        if (node.name === 'tw') identifiers.add(node.start);
+      },
+      MemberExpression(node) {
+        if (!node.computed && node.property.type === 'Identifier') nonReferences.add(node.property.start);
+      },
+      Property(node) {
+        if (!node.computed && !node.shorthand && node.key.type === 'Identifier') nonReferences.add(node.key.start);
+      },
+    }).visit(program);
 
-    return lists;
-  });
+    for (const offset of identifiers) {
+      if (imports.some(node => node.start <= offset && offset < node.end)) continue;
+      if (callCallees.has(offset) || nonReferences.has(offset)) continue;
+      result.unstrippable.push(`${file}: a tw reference at offset ${offset}`);
+    }
+  }
+
+  return result;
+};
 
 /**
- * Artifact-only. `test/source/strip-tw.test.ts` pins what the plugin does to a
- * module it is handed; this is the end of the chain — that it was handed the real
- * ones. Between them sit `vite:react-compiler`, which runs first and whose output
- * shape the marker has to survive, the `code: 'tw('` filter deciding which real
- * modules the handler ever sees, and the chunking that decides where the class
- * lists land. None of the three is visible from a single-module build.
+ * `test/source/strip-tw.test.ts` pins what the plugin does to a module it is handed; this checks the real imports, bare references and the client bundle.
+ * Between source and bundle sit `vite:react-compiler`, the `code: 'tw('` filter, and chunking.
  *
- * Reading `src` does not make the last test a source test: it only names which strings to look for, and every verdict is read off the built bundle.
+ * Source identifies imports and references; the built bundle decides whether each valid call shipped as a bare string.
  */
 describe('the tw() markers are stripped from the client bundle', () => {
-  it.each([
-    ['BRAND_CLASS', BRAND_CLASS],
-    ['TRAILING_CLASS', TRAILING_CLASS],
-    ['NAV_LINK_CLASS', NAV_LINK_CLASS],
-  ])('ships %s as a bare string literal, not as the argument of a call', (_name, list) => {
-    const holders = BUNDLES.filter(({ code }) => code.includes(list));
-
-    expect(holders.length).toBeGreaterThan(0);
-    expect(holders.filter(({ code }) => wrappedIn(list).test(code)).map(({ file }) => file)).toStrictEqual([]);
+  it('leaves no use of an imported tw that stripTw cannot strip', () => {
+    expect(marked().unstrippable).toStrictEqual([]);
   });
 
-  it('ships every tw()-marked class list in src as a whole string literal, and none as the argument of a call', () => {
-    const marked = markedLists();
+  it('ships every imported tw()-marked list as a whole string literal, and none as the argument of a call', () => {
+    const { lists } = marked();
 
-    expect(marked.length).toBeGreaterThan(0);
+    expect(lists.length).toBeGreaterThan(0);
     expect(
-      marked
-        .filter(({ list }) => !BUNDLES.some(({ code }) => quoted(list).test(code)) || BUNDLES.some(({ code }) => calledWith(list).test(code)))
+      lists
+        .filter(({ list }) => {
+          const asLiteral = quoted(list);
+          const asArgument = calledWith(list);
+          return !BUNDLES.some(({ code }) => asLiteral.test(code)) || BUNDLES.some(({ code }) => asArgument.test(code));
+        })
         .map(({ file, list }) => `${file}: ${list}`),
     ).toStrictEqual([]);
   });
