@@ -108,7 +108,7 @@ export const SiteHeader: FC<SiteHeaderProps> = ({ navLabel, skipLabel, brandElem
             the padding moves that edge out without moving the row. */}
         <nav
           aria-label={navLabel}
-          className='ml-auto flex min-w-0 items-center gap-[clamp(10px,2vw,22px)] [@media(width<45em)]:order-3 [@media(width<45em)]:-m-1 [@media(width<45em)]:basis-full [@media(width<45em)]:[scrollbar-width:none] [@media(width<45em)]:justify-between [@media(width<45em)]:gap-0.5 [@media(width<45em)]:overflow-x-auto [@media(width<45em)]:p-1 [@media(width<45em)]:[&::-webkit-scrollbar]:hidden'
+          className='ml-auto flex min-w-0 items-center gap-[clamp(10px,2vw,22px)] [@media(width<45em)]:order-3 [@media(width<45em)]:-m-1 [@media(width<45em)]:basis-full [@media(width<45em)]:scrollbar-none [@media(width<45em)]:justify-between [@media(width<45em)]:gap-0.5 [@media(width<45em)]:overflow-x-auto [@media(width<45em)]:p-1 [@media(width<45em)]:[&::-webkit-scrollbar]:hidden'
         >
           {items.map(item => (
             <Fragment key={item.key}>{item.element}</Fragment>

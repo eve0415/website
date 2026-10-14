@@ -120,7 +120,7 @@ const CLOUDS_LOW = puffs(4_040_415, 11, -175, -55, 220, 360);
  * out to the corner of a very wide display.
  */
 const CAT_BOX = tw(
-  'relative z-1 mr-[-9vw] mb-10 w-[clamp(200px,min(58vw,26svh),330px)] justify-self-end [@media(min-aspect-ratio:1.02)]:absolute [@media(min-aspect-ratio:1.02)]:right-[max(3vw/var(--z,1),50vw/var(--z,1)_-_810px)] [@media(min-aspect-ratio:1.02)]:bottom-[5%] [@media(min-aspect-ratio:1.02)]:m-0 [@media(min-aspect-ratio:1.02)]:w-[clamp(260px,36vw/var(--z,1),600px)]',
+  'relative z-1 mr-[-9vw] mb-10 w-[clamp(200px,min(58vw,26svh),330px)] justify-self-end [@media(min-aspect-ratio:1.02)]:absolute [@media(min-aspect-ratio:1.02)]:right-[max(3vw/var(--z,1),50vw/var(--z,1)-810px)] [@media(min-aspect-ratio:1.02)]:bottom-[5%] [@media(min-aspect-ratio:1.02)]:m-0 [@media(min-aspect-ratio:1.02)]:w-[clamp(260px,36vw/var(--z,1),600px)]',
 );
 
 const CAT_SIZES = '(min-aspect-ratio: 1.02) clamp(260px, 36vw, 600px), clamp(200px, min(58vw, 26svh), 330px)';

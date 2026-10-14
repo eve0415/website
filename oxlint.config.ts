@@ -3,7 +3,7 @@ import { defineConfig } from 'oxlint';
 export default defineConfig({
   plugins: ['eslint', 'typescript', 'unicorn', 'oxc', 'import', 'react', 'react-perf', 'jsx-a11y', 'node', 'promise'],
   jsPlugins: ['@tanstack/eslint-plugin-router', 'oxlint-tailwindcss', { name: 'anti-slop', specifier: './tools/oxlint/anti-slop/src/index.ts' }],
-  ignorePatterns: ['.wrangler', 'coverage', '/dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'tools/oxlint/anti-slop'],
+  ignorePatterns: ['.wrangler', 'coverage', '/dist', 'worker-configuration.d.ts', 'src/routeTree.gen.ts', 'src/lib/cn-tables.gen.ts', 'tools/oxlint/anti-slop'],
   settings: {
     tailwindcss: {
       entryPoint: 'src/routes/__root.css',

@@ -1,6 +1,5 @@
 import { rootRouteId, useRouteContext } from '@tanstack/react-router';
-import { useEffect, useEffectEvent, useRef, useState } from 'react';
-import { flushSync } from 'react-dom';
+import { ViewTransition, startTransition, useEffect, useEffectEvent, useRef, useState } from 'react';
 
 import { Button } from '#components/button';
 import { NOT_FOUND_COPY, SITE_COPY } from '#i18n/copy';
@@ -126,14 +125,15 @@ export const NotFound = () => {
       setResult(foundCount);
       if (last) setBubble({ idx: 2, on: true });
     };
-    // Without flushSync the state update lands after the transition has
-    // already captured the old frame, and the chips pop in instead of growing.
-    if ('startViewTransition' in document && !prefersReducedMotion()) {
-      document.startViewTransition(() => {
-        flushSync(apply);
-      });
-    } else {
+    // The update has to be async for `<ViewTransition>` to capture it: React
+    // takes the old frame, commits, and takes the new one, which is what grows
+    // the chips in rather than popping them. A reader who asked for less motion
+    // gets the plain commit, because the work has to be skipped and not just
+    // shortened — see `prefersReducedMotion`.
+    if (prefersReducedMotion()) {
       apply();
+    } else {
+      startTransition(apply);
     }
   });
 
@@ -296,37 +296,42 @@ export const NotFound = () => {
               {searching ? copy.btnSearching : done ? copy.btnDone : copy.btnSearch}
             </Button>
 
-            <div
-              aria-live='polite'
-              className='pointer-events-none absolute top-[calc(100%+16px)] left-1/2 grid w-[min(92vw,640px)] -translate-x-1/2 content-start justify-items-center gap-2.5'
-            >
-              {item !== undefined && !searching ? (
-                <p className='ev-404-resline text-(length:--text-ui) leading-[1.7] text-(--ink-ice) [text-shadow:0_1px_12px_var(--ink-shadow)] [view-transition-name:resline]'>
-                  {copy.rescued(item)}
-                </p>
-              ) : null}
-              {done && !searching ? (
-                <p className='ev-404-resline text-(length:--text-nav) leading-[1.7] text-(--hue-violet) [text-shadow:0_1px_12px_var(--ink-shadow)]'>
-                  {copy.resultFinal}
-                </p>
-              ) : null}
-              {foundCount > 0 ? (
-                <div className='ev-on-panel flex flex-wrap items-center justify-center gap-2'>
-                  <span className='rounded-[999px] border border-(--line-panel) bg-(--surface-panel) px-3 py-1 text-[0.78125rem] tracking-[0.14em] text-(--ink-muted)'>
-                    {copy.foundLabel}
-                  </span>
-                  {copy.items.slice(0, foundCount).map((label, index) => (
-                    <span
-                      key={label}
-                      className='ev-404-chip rounded-[999px] border border-dashed border-(--line-accent-dashed) bg-(--surface-panel) px-3 py-1 text-[0.78125rem] text-(--ink-ice)'
-                      style={{ viewTransitionName: `chip${index}` }}
-                    >
-                      {label}
+            {/* Triggers the capture; `none` keeps the container itself out of
+                it, so only the named children below animate, as they did under
+                the hand-rolled `document.startViewTransition`. */}
+            <ViewTransition default='none'>
+              <div
+                aria-live='polite'
+                className='pointer-events-none absolute top-[calc(100%+16px)] left-1/2 grid w-[min(92vw,640px)] -translate-x-1/2 content-start justify-items-center gap-2.5'
+              >
+                {item !== undefined && !searching ? (
+                  <p className='ev-404-resline text-(length:--text-ui) leading-[1.7] text-(--ink-ice) [text-shadow:0_1px_12px_var(--ink-shadow)] [view-transition-name:resline]'>
+                    {copy.rescued(item)}
+                  </p>
+                ) : null}
+                {done && !searching ? (
+                  <p className='ev-404-resline text-(length:--text-nav) leading-[1.7] text-(--hue-violet) [text-shadow:0_1px_12px_var(--ink-shadow)]'>
+                    {copy.resultFinal}
+                  </p>
+                ) : null}
+                {foundCount > 0 ? (
+                  <div className='ev-on-panel flex flex-wrap items-center justify-center gap-2'>
+                    <span className='rounded-[999px] border border-(--line-panel) bg-(--surface-panel) px-3 py-1 text-[0.78125rem] tracking-[0.14em] text-(--ink-muted)'>
+                      {copy.foundLabel}
                     </span>
-                  ))}
-                </div>
-              ) : null}
-            </div>
+                    {copy.items.slice(0, foundCount).map((label, index) => (
+                      <span
+                        key={label}
+                        className='ev-404-chip rounded-[999px] border border-dashed border-(--line-accent-dashed) bg-(--surface-panel) px-3 py-1 text-[0.78125rem] text-(--ink-ice)'
+                        style={{ viewTransitionName: `chip${index}` }}
+                      >
+                        {label}
+                      </span>
+                    ))}
+                  </div>
+                ) : null}
+              </div>
+            </ViewTransition>
           </div>
         </div>
       </main>

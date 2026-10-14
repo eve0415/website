@@ -12,8 +12,8 @@ import { stripped } from './plugin-harness';
  * so both are gone before a test could read them.
  *
  * Measured, not assumed: rewrite the loop to cut the call out instead, in reverse
- * order so the remaining offsets stay valid, and `vite build` is green, all 90
- * `dist` tests pass, and four of the six below go red. (A one-byte error in the
+ * order so the remaining offsets stay valid, and `vite build` is green, every
+ * `dist` test passes, and four of the six below go red. (A one-byte error in the
  * blanking is caught harder still — it eats a quote and the build fails to parse —
  * so it is the *correct-looking* rewrite that only this file sees.)
  */

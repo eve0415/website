@@ -14,7 +14,7 @@ concurrency:
 jobs:
   update:
     if: github.repository == 'eve0415/website'
-    runs-on: ubuntu-24.04-arm
+    runs-on: ubuntu-26.04-arm
 
     permissions:
       contents: write
@@ -28,14 +28,11 @@ jobs:
           persist-credentials: false
 
       - name: Set up pnpm and Node.js
-        uses: pnpm/setup@703c52620218391530e48b9e8870d5c0082e1b9b # v2.1.0
+        uses: pnpm/setup@a0881977cd8ea73b1ed212236c99ca10dcc80cf4 # v3.1.1
 
       - name: Update dependencies and open a pull request
         uses: pnpm/update@76f98d727df25f56f9bbd38e60ad663fd785d3d4 # v0.0.0
         with:
-          # pnpm 12 has no stable release yet, so the default (latest release
-          # of the pinned major) has nothing to move onto.
-          update-pnpm: next-12
           # Only bumps devEngines.runtime, leaving .node-version and engines.node
           # pinned to the old version.
           node: false
@@ -43,7 +40,7 @@ jobs:
           # sits waiting for a maintainer to approve it. This gates the update
           # without that click.
           verify: |
-            pnpm exec wrangler types --env-file .dev.vars.example
+            pnpm generate
             pnpm exec oxlint
             pnpm exec oxfmt --check
             pnpm exec vite build

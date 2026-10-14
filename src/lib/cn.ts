@@ -1,11 +1,10 @@
-import type { ClassValue } from 'clsx';
+import { createCn } from 'cn/engine';
 
-import { clsx } from 'clsx';
-import { twMerge } from 'tailwind-merge';
+import tables from './cn-tables.gen';
 
 /**
  * Merge Tailwind class lists so the last conflicting utility wins.
  * Lets a component ship a default class list that a caller can override
  * without fighting source order.
  */
-export const cn = (...inputs: ClassValue[]): string => twMerge(clsx(inputs));
+export const cn = createCn(tables);
