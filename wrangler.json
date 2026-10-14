@@ -2,17 +2,17 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "website",
   "compatibility_date": "2026-10-06",
-  "compatibility_flags": ["nodejs_compat"],
+  "compatibility_flags": [
+    "nodejs_compat"
+  ],
   "main": "./src/server.ts",
   "workers_dev": false,
   "preview_urls": true,
   "upload_source_maps": true,
   "logpush": true,
-  "placement": { "mode": "smart" },
-  // Empty, not absent. Omitting `triggers` leaves the Cron Triggers already
-  // deployed in place; only an explicit empty array removes them. `main` ran an
-  // hourly and a weekly job, and the `scheduled` handler they called is gone.
-  "triggers": { "crons": [] },
+  "placement": {
+    "mode": "smart"
+  },
   "routes": [
     {
       "pattern": "eve0415.net",
@@ -21,7 +21,9 @@
   ],
   "observability": {
     "enabled": true,
-    "traces": { "enabled": true }
+    "traces": {
+      "enabled": true
+    }
   },
   "durable_objects": {
     "bindings": [
@@ -34,7 +36,9 @@
   "migrations": [
     {
       "tag": "v1",
-      "new_sqlite_classes": ["ContactRateLimiter"]
+      "new_sqlite_classes": [
+        "ContactRateLimiter"
+      ]
     }
   ],
   "send_email": [
@@ -42,5 +46,8 @@
       "name": "CONTACT_EMAIL"
     }
   ],
-  "version_metadata": { "binding": "CF_VERSION_METADATA" }
+  "version_metadata": {
+    "binding": "CF_VERSION_METADATA"
+  },
+  "previews": {}
 }
