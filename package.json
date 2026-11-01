@@ -19,42 +19,42 @@
     "deploy": "vite build && wrangler deploy"
   },
   "dependencies": {
-    "cn": "0.5.0"
+    "cn": "0.5.1"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.14.0",
-    "@cloudflare/vite-plugin": "1.64.0",
-    "@cloudflare/vitest-plugin": "1.4.4",
+    "@cloudflare/vite-plugin": "1.66.0",
+    "@cloudflare/vitest-plugin": "1.4.11",
     "@fontsource/noto-sans-jp": "5.3.1",
-    "@marsidev/react-turnstile": "1.6.2",
-    "@oxlint/plugins": "1.88.0",
+    "@marsidev/react-turnstile": "1.6.3",
+    "@oxlint/plugins": "1.90.0",
     "@playwright/test": "1.64.1",
     "@tailwindcss/vite": "4.3.3",
-    "@tanstack/devtools-vite": "0.8.5",
+    "@tanstack/devtools-vite": "0.8.6",
     "@tanstack/eslint-plugin-router": "1.162.0",
-    "@tanstack/react-devtools": "0.10.13",
-    "@tanstack/react-router": "1.170.45",
+    "@tanstack/react-devtools": "0.10.14",
+    "@tanstack/react-router": "1.170.46",
     "@tanstack/react-router-devtools": "1.167.2",
-    "@tanstack/react-start": "1.169.3",
-    "@types/node": "26.6.5",
+    "@tanstack/react-start": "1.169.4",
+    "@types/node": "26.6.6",
     "@types/react": "19.3.0",
     "@types/react-dom": "19.3.0",
     "@vitejs/plugin-react": "6.1.2",
     "@vitest/coverage-istanbul": "5.0.5",
-    "oxc-transform-react": "0.154.0",
-    "oxfmt": "0.73.0",
-    "oxlint": "1.88.0",
-    "oxlint-tailwindcss": "1.16.0",
-    "oxlint-tsgolint": "7.0.2004",
+    "oxc-transform-react": "0.156.0",
+    "oxfmt": "0.75.0",
+    "oxlint": "1.90.0",
+    "oxlint-tailwindcss": "1.17.1",
+    "oxlint-tsgolint": "7.0.2005",
     "react": "19.3.1",
     "react-dom": "19.3.1",
     "subset-font": "2.9.0",
     "tailwindcss": "4.3.3",
     "typescript": "7.0.2",
-    "vite": "8.3.4",
+    "vite": "8.3.5",
     "vite-plugin-devtools-json": "1.1.2",
     "vitest": "5.0.5",
-    "wrangler": "4.151.1"
+    "wrangler": "4.156.0"
   },
   "devEngines": {
     "runtime": {
@@ -66,5 +66,5 @@
   "engines": {
     "node": "24.21.0"
   },
-  "packageManager": "pnpm@12.14.0"
+  "packageManager": "pnpm@12.16.1"
 }
